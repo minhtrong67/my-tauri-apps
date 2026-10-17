@@ -17,7 +17,7 @@ export function MediaCard({ track, title, subtitle, onOpen, onPlay, round, onCon
     >
       <div className="relative">
         {track ? (
-          <Cover track={track} className={`w-full aspect-square ${round ? '' : 'rounded-xl'}`} round={round} iconSize={48} />
+          <div className={`overflow-hidden ${round ? 'rounded-full' : 'rounded-xl'}`}><div className="transition-transform duration-500 ease-emphasized group-hover:scale-110"><Cover track={track} className="w-full aspect-square" round={round} iconSize={48} /></div></div>
         ) : (
           <div className={`w-full aspect-square bg-secondary-container text-on-secondary-container flex items-center justify-center ${round ? 'rounded-full' : 'rounded-xl'}`}>{fallbackIcon ?? <Icon name="queue_music" size={48} fill />}</div>
         )}

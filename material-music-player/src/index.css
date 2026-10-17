@@ -1,49 +1,42 @@
-/* Material Symbols Rounded — subset to the icons this app uses (see scripts/subset-icons.py), FILL axis kept */
-@font-face {
-  font-family: 'Material Symbols Rounded';
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url('./assets/material-symbols-subset.woff2') format('woff2');
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --md-primary: 103 80 164;
+  /* Material Theme Builder export (material-theme-blue.json, light scheme) — replaced at runtime by applyTheme() */
+  --md-primary: 54 97 142;
   --md-on-primary: 255 255 255;
-  --md-primary-container: 234 221 255;
-  --md-on-primary-container: 33 0 93;
-  --md-secondary: 98 91 113;
+  --md-primary-container: 209 228 255;
+  --md-on-primary-container: 25 73 117;
+  --md-secondary: 83 95 112;
   --md-on-secondary: 255 255 255;
-  --md-secondary-container: 232 222 248;
-  --md-on-secondary-container: 29 25 43;
-  --md-tertiary: 125 82 96;
+  --md-secondary-container: 215 227 247;
+  --md-on-secondary-container: 59 72 88;
+  --md-tertiary: 107 87 120;
   --md-on-tertiary: 255 255 255;
-  --md-tertiary-container: 255 216 228;
-  --md-on-tertiary-container: 49 17 29;
-  --md-error: 179 38 30;
+  --md-tertiary-container: 242 218 255;
+  --md-on-tertiary-container: 82 63 95;
+  --md-error: 186 26 26;
   --md-on-error: 255 255 255;
-  --md-error-container: 249 222 220;
-  --md-on-error-container: 65 14 11;
-  --md-surface: 254 247 255;
-  --md-surface-dim: 222 216 225;
-  --md-surface-bright: 254 247 255;
-  --md-surface-variant: 231 224 236;
+  --md-error-container: 255 218 214;
+  --md-on-error-container: 147 0 10;
+  --md-surface: 248 249 255;
+  --md-surface-dim: 216 218 224;
+  --md-surface-bright: 248 249 255;
+  --md-surface-variant: 223 226 235;
   --md-surface-container-lowest: 255 255 255;
-  --md-surface-container-low: 247 242 250;
-  --md-surface-container: 243 237 247;
-  --md-surface-container-high: 236 230 240;
-  --md-surface-container-highest: 230 224 233;
-  --md-on-surface: 29 27 32;
-  --md-on-surface-variant: 73 69 79;
-  --md-outline: 121 116 126;
-  --md-outline-variant: 202 196 208;
-  --md-inverse-surface: 50 47 53;
-  --md-inverse-on-surface: 245 239 247;
-  --md-inverse-primary: 208 188 255;
+  --md-surface-container-low: 242 243 250;
+  --md-surface-container: 236 238 244;
+  --md-surface-container-high: 230 232 238;
+  --md-surface-container-highest: 225 226 232;
+  --md-on-surface: 25 28 32;
+  --md-on-surface-variant: 67 71 78;
+  --md-outline: 115 119 127;
+  --md-outline-variant: 195 199 207;
+  --md-inverse-surface: 46 49 53;
+  --md-inverse-on-surface: 239 240 247;
+  --md-inverse-primary: 160 202 253;
+  --app-font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 html, body, #root { height: 100%; }
@@ -54,28 +47,15 @@ body {
   -webkit-user-select: none;
   background: rgb(var(--md-surface));
   color: rgb(var(--md-on-surface));
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: var(--app-font);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   font-size: 14px;
 }
 img { -webkit-user-drag: none; }
 input, textarea { user-select: text; -webkit-user-select: text; }
 
-.msr {
-  font-family: 'Material Symbols Rounded';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  flex-shrink: 0;
-}
+.lucide { flex-shrink: 0; }
 
 /* Thanh cuộn */
 ::-webkit-scrollbar { width: 12px; height: 12px; }
@@ -144,4 +124,47 @@ input, textarea { user-select: text; -webkit-user-select: text; }
 button { -webkit-tap-highlight-color: transparent; }
 
 .focus-ring:focus-visible { outline: 2px solid rgb(var(--md-primary)); outline-offset: 2px; }
+/* Material ripple (state layer press feedback) */
+.ripple { position: relative; overflow: hidden; isolation: isolate; }
+.ripple-wave {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
+  background: currentColor; opacity: 0.22; transform: scale(0);
+  animation: ripple 0.65s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+
+/* Playing cover: soft breathing glow in the theme colour */
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 10px 40px -8px rgb(var(--md-primary) / 0.35); transform: scale(1); }
+  50% { box-shadow: 0 18px 70px -4px rgb(var(--md-primary) / 0.65); transform: scale(1.025); }
+}
+.breathe { animation: breathe 3.2s ease-in-out infinite; }
+
+/* Aurora blobs behind Now Playing */
+@keyframes aurora {
+  0% { transform: translate3d(-8%, -6%, 0) scale(1); }
+  50% { transform: translate3d(10%, 8%, 0) scale(1.25); }
+  100% { transform: translate3d(-4%, 12%, 0) scale(1.05); }
+}
+.aurora { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; pointer-events: none; animation: aurora 14s ease-in-out infinite alternate; }
+
+/* Splash logo: pulsing ring */
+@keyframes ring { 0% { transform: scale(0.85); opacity: 0.7; } 100% { transform: scale(1.7); opacity: 0; } }
+.splash-ring { position: absolute; inset: 0; border-radius: 22%; border: 2px solid rgb(var(--md-primary)); animation: ring 1.6s ease-out infinite; }
+
+/* Heart / play icon pop */
+@keyframes heart { 0% { transform: scale(0.4); } 45% { transform: scale(1.35) rotate(-8deg); } 100% { transform: scale(1) rotate(0); } }
+.pop-heart { animation: heart 0.45s cubic-bezier(0.2, 0, 0, 1); }
+
+/* Navigation icon bounce when its item becomes active */
+@keyframes nav-bounce { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-4px) scale(1.18); } 100% { transform: translateY(0) scale(1); } }
+.nav-active .lucide { animation: nav-bounce 0.45s cubic-bezier(0.2, 0, 0, 1); }
+
+/* Smooth theme switch: cross-fade the whole window (View Transitions) */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.45s; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+
+/* Title text slides in when the song changes */
+@keyframes title-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.title-in { animation: title-in 0.35s cubic-bezier(0.2, 0, 0, 1) both; }
+
 @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }

@@ -21,7 +21,6 @@ export const readLyrics = (path: string) => invoke<string | null>('read_lyrics',
 export const loadState = (name: 'library' | 'user') => invoke<string | null>('load_state', { name });
 export const saveState = (name: 'library' | 'user', data: string) => invoke<void>('save_state', { name, data });
 export const getCoverDir = () => invoke<string | null>('get_cover_dir');
-export const checkMissing = (paths: string[]) => invoke<string[]>('check_missing', { paths });
 export const isDir = (path: string) => invoke<boolean>('is_dir', { path });
 export const writeTextFile = (path: string, content: string) => invoke<void>('write_text_file', { path, content });
 export const readTextFile = (path: string) => invoke<string>('read_text_file', { path });

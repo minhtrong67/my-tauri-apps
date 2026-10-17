@@ -16,10 +16,12 @@ import { AlbumView, AlbumsView, ArtistView, ArtistsView, HomeView, LikedView, Pl
 import { SettingsView } from './views/Settings';
 import { useCurrent, useStore } from './lib/store';
 import { engine } from './lib/audio';
-import { applyTheme } from './lib/theme';
+import { applyFont, applyTheme } from './lib/theme';
 import { seedFromCover } from './lib/cover';
-import { assetUrl, launchArgs, setCloseToTray } from './lib/tauri';
+import { launchArgs, setCloseToTray } from './lib/tauri';
 import { enterMini, exitMini, win } from './lib/window';
+
+let booted = false;
 
 function CurrentView() {
   const view = useStore((s) => s.view);
@@ -41,6 +43,8 @@ function CurrentView() {
 }
 
 export default function App() {
+  const themeApplied = useRef(false);
+  const lastKey = useRef('');
   const ready = useStore((s) => s.ready);
   const settings = useStore((s) => s.settings);
   const showQueue = useStore((s) => s.showQueue);
@@ -57,8 +61,10 @@ export default function App() {
     win().setTitle(current ? `${current.title} — ${current.artist}` : 'Material Music Player').catch(() => undefined);
   }, [current?.id]);
 
-  // Khởi tạo
+  // Khởi tạo (chỉ một lần, kể cả khi React StrictMode chạy effect hai lần ở chế độ dev)
   useEffect(() => {
+    if (booted) return;
+    booted = true;
     const st = useStore.getState();
     st.init().then(async () => {
       try {
@@ -72,15 +78,26 @@ export default function App() {
   // Chủ đề Material 3 (màu hạt giống / màu động theo ảnh bìa)
   useEffect(() => {
     let alive = true;
-    const apply = (seed: string) => applyTheme(seed, settings.themeMode);
-    try { localStorage.setItem('app-theme', JSON.stringify({ seed: settings.seedColor, mode: settings.themeMode })); } catch { /* ignore */ }
-    apply(settings.seedColor);
+    const apply = (seed: string, animate = false) => {
+      const run = () => applyTheme(seed, settings.themeMode);
+      const vt = (document as Document & { startViewTransition?: (cb: () => void) => unknown }).startViewTransition;
+      if (animate && themeApplied.current && vt && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) vt.call(document, run);
+      else run();
+      themeApplied.current = true;
+    };
+    try { localStorage.setItem('app-theme', JSON.stringify({ seed: settings.seedColor, mode: settings.themeMode, font: settings.fontFamily })); } catch { /* ignore */ }
+    const key = `${settings.seedColor}|${settings.themeMode}`;
+    apply(settings.seedColor, key !== lastKey.current);
+    lastKey.current = key;
     if (settings.dynamicColor && current) seedFromCover(current).then((hex) => alive && hex && apply(hex));
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const onChange = () => settings.themeMode === 'system' && apply(settings.seedColor);
     mq.addEventListener('change', onChange);
     return () => { alive = false; mq.removeEventListener('change', onChange); };
   }, [settings.themeMode, settings.seedColor, settings.dynamicColor, current?.id]);
+
+  // Phông chữ
+  useEffect(() => { applyFont(settings.fontFamily); }, [settings.fontFamily]);
 
   // Cửa sổ: luôn trên cùng, thu nhỏ xuống khay
   const retrack = useRef<number | undefined>(undefined);
@@ -141,7 +158,7 @@ export default function App() {
       }
     }, 1000);
     const save = window.setInterval(() => {
-      if (useStore.getState().isPlaying) useStore.getState().set({ settings: { ...useStore.getState().settings } });
+      if (useStore.getState().isPlaying) useStore.getState().saveSession();
     }, 15000);
     return () => { clearInterval(i); clearInterval(save); };
   }, []);
@@ -201,7 +218,7 @@ export default function App() {
   }, []);
 
   if (!ready) {
-    return <div className="h-full flex flex-col items-center justify-center gap-4 bg-surface"><Logo size={72} /><div className="text-body-md text-on-surface-variant">{tr('loading')}</div></div>;
+    return <div className="h-full flex flex-col items-center justify-center gap-4 bg-surface"><div className="relative"><span className="splash-ring" /><Logo size={72} /></div><div className="text-body-md text-on-surface-variant">{tr('loading')}</div></div>;
   }
 
   if (mini) return (<div key={lang} className="h-full"><MiniPlayer /><ContextMenu /><Snackbar /></div>);
@@ -240,4 +257,3 @@ export default function App() {
   );
 }
 
-void assetUrl;

@@ -10,11 +10,11 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
 ![Rust](https://img.shields.io/badge/Rust-stable-DEA584?logo=rust&logoColor=black)
-![Design](https://img.shields.io/badge/Design-Material%20Design%203-6750A4)
+![Design](https://img.shields.io/badge/Design-Material%20Design%203-2196F3)
 ![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D4?logo=windows&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-![Author](https://img.shields.io/badge/Author-minhtrong67-6750A4?style=for-the-badge)
+![Author](https://img.shields.io/badge/Author-minhtrong67-2196F3?style=for-the-badge)
 ![AI](https://img.shields.io/badge/AI%20support-Claude-D97757?style=for-the-badge)
 
 [English](README.md) · Tiếng Việt
@@ -28,13 +28,12 @@
 1. [Giới thiệu](#giới-thiệu)
 2. [Screenshot](#screenshot)
 3. [Tính năng](#tính-năng)
-4. [Download](#download)
-5. [Cài đặt](#cài-đặt)
-6. [Tech stack](#tech-stack)
-7. [Development](#development)
-8. [Build](#build)
-9. [Cấu trúc project](#cấu-trúc-project)
-10. [License](#license)
+4. [Cài đặt](#cài-đặt)
+5. [Tech stack](#tech-stack)
+6. [Development](#development)
+7. [Build](#build)
+8. [Cấu trúc project](#cấu-trúc-project)
+9. [License](#license)
 
 ---
 
@@ -44,7 +43,7 @@
 
 - **Hệ màu Material You** sinh từ một màu chủ đề bạn chọn – hoặc từ ảnh bìa bài đang phát – ở chế độ **sáng**, **tối** hoặc **theo hệ thống**.
 - Giao diện **Tiếng Việt và English**, đổi bất cứ lúc nào.
-- **Font hệ thống** (`system-ui`) – font gốc của Windows, không đóng gói font riêng.
+- **Mặc định dùng font hệ thống** (`system-ui`), có thể chọn font phổ biến (Roboto, Inter, Open Sans, Segoe UI, Arial, Verdana, Georgia, Consolas …) và bộ icon **Lucide** sắc nét.
 - **Thư viện** tự quét thư mục *Music* của Windows, đọc thẻ nhạc và ảnh bìa, tạo playlist từ thư mục.
 - Đầy đủ trình phát: hàng chờ, playlist, equalizer, lời bài hát đồng bộ, hẹn giờ tắt, trình phát mini và nhiều hơn nữa.
 
@@ -52,19 +51,19 @@
 
 ## Screenshot
 
-> Các ảnh nằm trong thư mục [`screenshot`](screenshot) và đặt tên `image01.png`, `image02.png`, `image03.png`… Hãy thay từng ảnh giữ chỗ bằng ảnh chụp thật, giữ nguyên tên tệp.
+> Các ảnh nằm trong thư mục [`screenshots`](screenshots) và đặt tên `image01.png`, `image02.png`, `image03.png`… Hãy thay từng ảnh giữ chỗ bằng ảnh chụp thật, giữ nguyên tên tệp.
 
 | Trang chủ | Bài hát (danh sách) |
 |:---:|:---:|
-| ![Trang chủ](screenshot/image01.png) | ![Bài hát](screenshot/image02.png) |
+| ![Trang chủ](screenshots/image01.png) | ![Bài hát](screenshots/image02.png) |
 
 | Album (dạng ô) | Đang phát |
 |:---:|:---:|
-| ![Album](screenshot/image03.png) | ![Đang phát](screenshot/image04.png) |
+| ![Album](screenshots/image03.png) | ![Đang phát](screenshots/image04.png) |
 
 | Cài đặt |
 |:---:|
-| ![Cài đặt](screenshot/image05.png) |
+| ![Cài đặt](screenshots/image05.png) |
 
 ## Tính năng
 
@@ -93,7 +92,7 @@
 - Chuyển động mượt kiểu Material: thẻ xuất hiện lần lượt, nhấc lên khi rê chuột, nút chuyển trượt, phản hồi khi bấm và chuyển màn hình (tự giảm khi tắt hiệu ứng động của Windows).
 
 ### Hiệu năng
-- **Khởi động nhanh:** font icon được rút gọn riêng (khoảng 12 KB thay vì 4,6 MB), cửa sổ chỉ hiện sau khi khung hình đầu tiên đã vẽ xong (không còn màn hình trắng nháy) và chủ đề lần trước được áp dụng trước khi vẽ.
+- **Khởi động nhanh:** icon là SVG Lucide chỉ nạp phần dùng đến (không cần tải font icon), cửa sổ chỉ hiện sau khi khung hình đầu tiên đã vẽ xong (không còn màn hình trắng nháy) và chủ đề lần trước được áp dụng trước khi vẽ.
 - **Mượt với thư viện lớn:** danh sách và lưới ảo hoá, ảnh thu nhỏ tạo dần khi cần, ảnh được giải mã ngoài luồng chính, ghi đĩa nhỏ và có độ trễ gộp.
 - **Bền vững:** có màn hình báo lỗi kèm nút *Tải lại* thay cho cửa sổ trắng.
 
@@ -114,7 +113,9 @@
 | `Ctrl+F` | Tìm kiếm | `F5` | Làm mới thư viện |
 | `F11` | Toàn màn hình | `Esc` | Đóng cửa sổ / thoát toàn màn hình |
 
-## Download
+## Cài đặt
+
+### Download
 
 Tải bộ cài mới nhất ở trang **Releases** của repository này:
 
@@ -129,7 +130,7 @@ Tải bộ cài mới nhất ở trang **Releases** của repository này:
 
 Định dạng âm thanh hỗ trợ: **MP3, FLAC, WAV, OGG, Opus, M4A, AAC** (phát bằng bộ giải mã WebView2). Muốn tự build? Xem mục [Build](#build).
 
-## Cài đặt
+### Cài đặt
 
 1. Chạy **`Material Music Player_1.0.0_x64-setup.exe`**. Bộ cài cài theo từng người dùng nên **không cần quyền quản trị**.
 2. Nếu Windows SmartScreen hiện *"Windows protected your PC"* (bộ cài chưa ký số), bấm **More info → Run anyway**.
@@ -154,7 +155,7 @@ Tải bộ cài mới nhất ở trang **Releases** của repository này:
 | Giao diện | [React 18](https://react.dev) + [TypeScript 5](https://www.typescriptlang.org) |
 | Công cụ build | [Vite 5](https://vitejs.dev) |
 | Styling | [Tailwind CSS 3](https://tailwindcss.com) với design token Material 3 |
-| Design system | Material Design 3 – [`@material/material-color-utilities`](https://github.com/material-foundation/material-color-utilities), [Material Symbols](https://fonts.google.com/icons), font `system-ui` |
+| Design system | Material Design 3 – [`@material/material-color-utilities`](https://github.com/material-foundation/material-color-utilities), icon [Lucide](https://lucide.dev), font `system-ui` (+ Roboto / Inter / Open Sans đóng gói sẵn, giấy phép SIL OFL) |
 | State | [Zustand](https://zustand-demo.pmnd.rs) |
 | Âm thanh | HTML5 `<audio>` + Web Audio API (equalizer, visualizer) trên Microsoft Edge WebView2 |
 | Rust crates | `tauri`, `tauri-plugin-dialog`, `tauri-plugin-single-instance`, `lofty` (thẻ nhạc & ảnh bìa), `walkdir`, `base64`, `serde` |
@@ -177,7 +178,7 @@ npm run dev
 | `npm run dev` | Chạy ứng dụng desktop (Tauri), có hot reload |
 | `npm run build` | Đóng gói bộ cài cho Windows |
 | `npm run vite:dev` | Chỉ chạy giao diện trên trình duyệt (tính năng Tauri không dùng được) |
-| `npm run icons` | Tạo lại font icon rút gọn sau khi thêm icon mới (cần Python + `pip install fonttools brotli`) |
+| `npm run icons` | Tạo lại toàn bộ icon app / setup / uninstall màu `#E91E63` (cần Python + `pip install pillow`) |
 | `npx tsc --noEmit` | Kiểm tra kiểu cho frontend |
 | `cargo check` (trong `src-tauri`) | Kiểm tra backend Rust |
 
@@ -193,7 +194,8 @@ members = [
 
 | Tùy biến | Vị trí |
 |---|---|
-| Màu chủ đề mặc định | `defaultSettings.seedColor` trong `src/lib/types.ts` |
+| Màu chủ đề mặc định | `defaultSettings.seedColor` trong `src/lib/types.ts` và `DEFAULT_SEED` trong `src/lib/theme.ts` |
+| Danh sách màu / font | `MATERIAL_COLORS` / `FONT_OPTIONS` trong `src/lib/theme.ts` |
 | Thêm ngôn ngữ | thêm từ điển trong `src/lib/i18n.ts` (trình biên dịch kiểm tra đủ khóa dịch) |
 | Kích thước cửa sổ mặc định | `app.windows` trong `src-tauri/tauri.conf.json` |
 | Đuôi âm thanh được hỗ trợ | `AUDIO_EXTS` trong `src-tauri/src/lib.rs` và `src/lib/tauri.ts` |
@@ -220,17 +222,24 @@ npm run build
 
 | Tệp | Dùng cho | Kích thước |
 |---|---|---|
-| `src-tauri/icons/icon.ico` | ứng dụng, thanh tác vụ, Explorer, cửa sổ | 16, 20, 24, 32, 40, 48, 64, 96, 128, 256 px |
-| `src-tauri/icons/installer.ico` | tệp setup `.exe` **và** `uninstall.exe` | 16, 20, 24, 32, 40, 48, 64, 96, 128, 256 px |
+| `src-tauri/icons/icon.ico` | ứng dụng, thanh tác vụ, Explorer, cửa sổ | 16, 20, 24, 32, 40, 48, 64, 128, 256 px |
+| `src-tauri/icons/setup.ico` | trình cài đặt `setup.exe` (icon + huy hiệu tải xuống) | 16, 20, 24, 32, 40, 48, 64, 128, 256 px |
+| `src-tauri/icons/uninstall.ico` | `uninstall.exe` (icon + huy hiệu thùng rác) | 16, 20, 24, 32, 40, 48, 64, 128, 256 px |
+| `installer-header.bmp` / `installer-sidebar.bmp` | hình nền trình cài đặt NSIS | 150×57 / 164×314 |
 | `32x32.png`, `64x64.png`, `128x128.png`, `128x128@2x.png` (256), `256x256.png`, `icon.png` (512) | Tauri / bundler / màn hình độ phân giải cao | theo tên tệp |
 
-Muốn dùng hình khác, thay `src-tauri/icons/icon.png` (vuông, ≥ 512 px), chạy `npx tauri icon src-tauri/icons/icon.png`, rồi giữ đủ các kích thước chuẩn trong `installer.ico`.
+Muốn dùng hình khác, thay `src-tauri/icons/icon.png` (vuông, ≥ 512 px), chạy `npx tauri icon src-tauri/icons/icon.png`, rồi chỉnh `scripts/generate-icons.py` nếu muốn tạo lại icon setup / uninstall tương ứng.
+
+**Landing page** – `index.html` ở thư mục gốc là trang giới thiệu một tệp HTML theo phong cách Material Design (responsive, đủ thẻ meta SEO và chia sẻ mạng xã hội, song ngữ EN/VI). Nút Download trỏ tới `download/Material-Music-Player_1.0.0_x64-setup.exe`; hãy chép bộ cài đã build vào thư mục [`download`](download) với đúng tên này. Mở bằng cách nhấp đúp, hoặc host thư mục gốc (ví dụ GitHub Pages).
 
 ## Cấu trúc project
 
 ```
 material-music-player/
-├─ screenshot/                ảnh chụp dùng trong README (image01.png … image05.png)
+├─ screenshots/                ảnh chụp dùng trong README (image01.png … image05.png)
+├─ index.html                 landing page (một tệp HTML, Material Design, SEO)
+├─ download/                  đặt tệp cài đặt .exe vào đây
+├─ app.html                   điểm vào của ứng dụng (Vite)
 ├─ public/                    tài nguyên tĩnh (logo dùng trong giao diện)
 ├─ src/                       frontend React + TypeScript + Tailwind
 │  ├─ main.tsx, App.tsx       điểm vào, bố cục, phím tắt toàn cục, kéo thả, chủ đề
@@ -246,7 +255,7 @@ material-music-player/
 │  │                          Collection, TrackRow, TrackListView, MediaCard, Dialogs, ui (bộ M3) …
 │  └─ views/                  Library (trang chủ, bài hát, album, nghệ sĩ, playlist, tìm kiếm), Settings
 ├─ scripts/
-│  └─ subset-icons.py         tạo font icon rút gọn trong src/assets
+│  └─ generate-icons.py       tạo toàn bộ icon (app, setup, uninstall) màu #E91E63
 ├─ src-tauri/                 backend Rust
 │  ├─ src/lib.rs              lệnh: quét, thẻ nhạc & ảnh bìa, lời bài hát, trạng thái, khay, nhớ cửa sổ
 │  ├─ src/main.rs
@@ -263,4 +272,4 @@ material-music-player/
 
 Phát hành theo [Giấy phép MIT](LICENSE) © 2026 minhtrong67.
 
-Thiết kế và phát triển bởi **minhtrong67** với sự hỗ trợ của trợ lý AI **Claude** (Anthropic). Xây dựng với [Tauri](https://tauri.app), [React](https://react.dev), [Tailwind CSS](https://tailwindcss.com), [Zustand](https://zustand-demo.pmnd.rs), [Material Color Utilities](https://github.com/material-foundation/material-color-utilities), [Material Symbols](https://fonts.google.com/icons) và [lofty](https://crates.io/crates/lofty).
+Thiết kế và phát triển bởi **minhtrong67** với sự hỗ trợ của trợ lý AI **Claude** (Anthropic). Xây dựng với [Tauri](https://tauri.app), [React](https://react.dev), [Tailwind CSS](https://tailwindcss.com), [Zustand](https://zustand-demo.pmnd.rs), [Material Color Utilities](https://github.com/material-foundation/material-color-utilities), [Lucide](https://lucide.dev) và [lofty](https://crates.io/crates/lofty).

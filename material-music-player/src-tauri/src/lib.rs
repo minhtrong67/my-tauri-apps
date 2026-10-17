@@ -613,18 +613,10 @@ fn set_start_mode(app: AppHandle, mode: String) {
 /// Frontend finished its first paint: reveal the window (it is created hidden, so no white flash)
 struct Ready(AtomicBool);
 
-fn reveal_main(app: &AppHandle) {
-    if let Some(w) = app.get_webview_window("main") {
-        let _ = w.show();
-        let _ = w.unminimize();
-        let _ = w.set_focus();
-    }
-}
-
 #[tauri::command]
 fn app_ready(app: AppHandle, ready: State<Ready>) {
     if !ready.0.swap(true, Ordering::SeqCst) {
-        reveal_main(&app);
+        show_main(&app);
     }
 }
 
@@ -682,11 +674,6 @@ fn get_cover_dir(app: AppHandle) -> Option<String> {
         .app_cache_dir()
         .ok()
         .map(|d| d.join("covers").to_string_lossy().to_string())
-}
-
-#[tauri::command]
-fn check_missing(paths: Vec<String>) -> Vec<String> {
-    paths.into_iter().filter(|p| !Path::new(p).exists()).collect()
 }
 
 #[tauri::command]
@@ -806,7 +793,7 @@ pub fn run() {
             std::thread::spawn(move || {
                 std::thread::sleep(Duration::from_secs(8));
                 if !late.state::<Ready>().0.swap(true, Ordering::SeqCst) {
-                    reveal_main(&late);
+                    show_main(&late);
                 }
             });
             // background saver: writes the window geometry at most twice a second while it changes
@@ -843,7 +830,6 @@ pub fn run() {
             read_lyrics,
             load_state,
             save_state,
-            check_missing,
             find_removed,
             get_music_dir,
             is_dir,

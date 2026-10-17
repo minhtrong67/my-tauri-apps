@@ -20,11 +20,11 @@ export function PlayerBar() {
         <button className="shrink-0 group relative" onClick={() => t && st.set({ showNowPlaying: true })} aria-label={tr('openNowPlaying')} disabled={!t}>
           <Cover track={t} eager className="w-16 h-16 rounded-2xl" iconSize={28} />
         </button>
-        <div className="min-w-0">
+        <div key={t?.id} className="min-w-0 title-in">
           <div className="truncate text-title-sm text-on-surface">{t?.title ?? tr('nothingPlaying')}</div>
           <div className="truncate text-body-sm text-on-surface-variant">{t ? `${t.artist} • ${t.album}` : tr('pickSong')}</div>
         </div>
-        {t && <IconButton icon="favorite" title={`${tr('favorite')} (L)`} active={liked} fill={liked} onClick={() => st.toggleLike(t.id)} />}
+        {t && <IconButton icon="favorite" title={`${tr('favorite')} (L)`} active={liked} fill={liked} pop onClick={() => st.toggleLike(t.id)} />}
       </div>
 
       <div className="flex-1 flex flex-col items-center gap-0.5 min-w-0">

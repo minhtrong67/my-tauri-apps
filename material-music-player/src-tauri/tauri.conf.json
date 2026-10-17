@@ -5,7 +5,7 @@
   "identifier": "com.minhtrong67.material-music-player",
   "build": {
     "beforeDevCommand": "npm run vite:dev",
-    "devUrl": "http://localhost:1420",
+    "devUrl": "http://localhost:1420/app.html",
     "beforeBuildCommand": "npm run vite:build",
     "frontendDist": "../dist"
   },
@@ -47,7 +47,7 @@
       "icons/icon.png",
       "icons/icon.ico"
     ],
-    "shortDescription": "Trình phát nhạc Material Design 3",
+    "shortDescription": "Material Design 3 music player for Windows",
     "fileAssociations": [
       {
         "ext": [
@@ -60,15 +60,27 @@
           "aac"
         ],
         "name": "Audio file",
-        "description": "Tệp âm thanh",
+        "description": "Audio file",
         "role": "Viewer"
       }
     ],
     "windows": {
       "nsis": {
-        "installerIcon": "icons/installer.ico",
-        "uninstallerIcon": "icons/installer.ico"
+        "installerIcon": "icons/setup.ico",
+        "uninstallerIcon": "icons/uninstall.ico",
+        "headerImage": "icons/installer-header.bmp",
+        "sidebarImage": "icons/installer-sidebar.bmp",
+        "languages": [
+          "English",
+          "Vietnamese"
+        ],
+        "displayLanguageSelector": false,
+        "installMode": "currentUser"
       }
-    }
+    },
+    "longDescription": "A beautiful local music player with a Material Design 3 interface, English and Vietnamese UI, themes, equalizer, lyrics and playlists.",
+    "publisher": "minhtrong67",
+    "category": "Music",
+    "copyright": "Copyright (c) 2026 minhtrong67 - MIT License"
   }
 }

@@ -10,12 +10,13 @@
     "vite:build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "icons": "python scripts/subset-icons.py ."
+    "icons": "python scripts/generate-icons.py"
   },
   "dependencies": {
     "@material/material-color-utilities": "^0.3.0",
     "@tauri-apps/api": "^2.0.0",
     "@tauri-apps/plugin-dialog": "^2.0.0",
+    "lucide-react": "^1.58.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "zustand": "^5.0.0"
@@ -26,7 +27,6 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
-    "material-symbols": "^0.28.0",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
     "typescript": "~5.6.2",

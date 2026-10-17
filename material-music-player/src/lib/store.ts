@@ -67,6 +67,7 @@ export interface State {
   openMenu: (x: number, y: number, items: MenuItem[]) => void;
   closeMenu: () => void;
   set: (p: Partial<State>) => void;
+  saveSession: () => void;
 
   importFolder: () => Promise<void>;
   importFiles: () => Promise<void>;
@@ -374,6 +375,7 @@ export const useStore = create<State>((set, get) => {
   };
 
   let errorStreak = 0;
+  let initPromise: Promise<void> | null = null;
 
   return {
     ready: false,
@@ -410,9 +412,13 @@ export const useStore = create<State>((set, get) => {
     menu: null,
 
     set: (p) => set(p),
+    saveSession: () => scheduleSave('user'),
 
     init: async () => {
-      if (get().ready) return;
+      if (initPromise) return initPromise;
+      let finish: () => void = () => undefined;
+      initPromise = new Promise<void>((r) => (finish = r));
+      try {
       let session: { queue?: string[]; baseQueue?: string[]; index?: number; position?: number; shuffle?: boolean; repeat?: RepeatMode } | null = null;
       try {
         const [libRaw, userRaw] = await Promise.all([api.loadState('library'), api.loadState('user')]);
@@ -528,6 +534,9 @@ export const useStore = create<State>((set, get) => {
         )
           scheduleSave('user');
       });
+      } finally {
+        finish();
+      }
     },
 
     nav: (v) =>
@@ -677,7 +686,14 @@ export const useStore = create<State>((set, get) => {
           playlists: s.playlists.map((p) => ({ ...p, trackIds: p.trackIds.filter((x) => !rm.has(x)) })),
         };
       });
-      if (get().index < 0) engine.pause();
+      const st = get();
+      if (st.index < 0 || !st.queue.length) {
+        engine.pause();
+        set({ index: -1, isPlaying: false, position: 0, duration: 0 });
+      } else if (engine.path && st.byId[st.queue[st.index]]?.path !== engine.path) {
+        // the song that was playing is gone: load the one that took its place (keep playing only if music was playing)
+        playCurrentIndex(st.index, st.isPlaying);
+      }
     },
     clearLibrary: () => {
       engine.pause();
@@ -695,6 +711,13 @@ export const useStore = create<State>((set, get) => {
       if (!path) return;
       try {
         applySnapshot(await api.readTextFile(path));
+        const cfg = get().settings;
+        setActiveLang(cfg.language);
+        pushTrayLabels();
+        void api.setStartMode(cfg.startMode);
+        engine.setVolume(cfg.volume, cfg.muted);
+        engine.setRate(cfg.playbackRate);
+        engine.setEq(cfg.eqEnabled, cfg.eqGains, cfg.preamp);
         engine.pause();
         set({ queue: [], baseQueue: [], index: -1, isPlaying: false });
         get().showToast(tr('restored'));
@@ -810,7 +833,9 @@ export const useStore = create<State>((set, get) => {
         if (i === s.index) return {};
         const id = s.queue[i];
         const queue = s.queue.filter((_, k) => k !== i);
-        return { queue, baseQueue: s.baseQueue.filter((x) => x !== id), index: i < s.index ? s.index - 1 : s.index };
+        const bi = s.baseQueue.indexOf(id);
+        const baseQueue = bi >= 0 ? [...s.baseQueue.slice(0, bi), ...s.baseQueue.slice(bi + 1)] : s.baseQueue;
+        return { queue, baseQueue, index: i < s.index ? s.index - 1 : s.index };
       }),
     moveInQueue: (from, to) =>
       set((s) => {

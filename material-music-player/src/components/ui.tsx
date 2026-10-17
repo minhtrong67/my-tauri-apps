@@ -2,25 +2,29 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type Mous
 import { tr } from '../lib/i18n';
 import { useStore } from '../lib/store';
 import type { MenuItem } from '../lib/types';
+import { FILLABLE, ICONS } from './icons';
 
-export function Icon({ name, fill, size, className = '' }: { name: string; fill?: boolean; size?: number; className?: string }) {
+export function Icon({ name, fill, size = 24, className = '' }: { name: string; fill?: boolean; size?: number; className?: string }) {
+  const Cmp = ICONS[name];
+  if (!Cmp) {
+    if (import.meta.env.DEV) console.warn(`Unknown icon: ${name}`);
+    return <span style={{ width: size, height: size }} className={`inline-block shrink-0 ${className}`} />;
+  }
   return (
-    <span
-      className={`msr ${className}`}
-      style={{ fontVariationSettings: `'FILL' ${fill ? 1 : 0}, 'wght' 400, 'GRAD' 0, 'opsz' 24`, fontSize: size }}
-    >
-      {name}
-    </span>
+    <Cmp
+      aria-hidden="true" size={size} strokeWidth={size >= 40 ? 1.5 : 2} absoluteStrokeWidth={size < 20}
+      fill={fill && FILLABLE.has(name) ? 'currentColor' : 'none'} className={`shrink-0 ${className}`}
+    />
   );
 }
 
 type IBVariant = 'standard' | 'filled' | 'tonal' | 'outlined';
 export function IconButton({
-  icon, onClick, title, variant = 'standard', size = 'md', active, fill, className = '', disabled, onContextMenu,
+  icon, onClick, title, variant = 'standard', size = 'md', active, fill, className = '', disabled, onContextMenu, pop,
 }: {
   icon: string; onClick?: (e: MouseEvent<HTMLButtonElement>) => void; title?: string; variant?: IBVariant;
   size?: 'sm' | 'md' | 'lg'; active?: boolean; fill?: boolean; className?: string; disabled?: boolean;
-  onContextMenu?: (e: MouseEvent<HTMLButtonElement>) => void;
+  onContextMenu?: (e: MouseEvent<HTMLButtonElement>) => void; pop?: boolean;
 }) {
   const dim = size === 'sm' ? 'w-8 h-8' : size === 'lg' ? 'w-14 h-14' : 'w-10 h-10';
   const isz = size === 'lg' ? 28 : size === 'sm' ? 20 : 24;
@@ -35,9 +39,9 @@ export function IconButton({
   return (
     <button
       type="button" title={title} aria-label={title} disabled={disabled} onClick={onClick} onContextMenu={onContextMenu}
-      className={`${dim} ${v} rounded-full inline-flex items-center justify-center transition-all duration-200 ease-emphasized active:scale-90 focus-ring disabled:opacity-40 disabled:pointer-events-none shrink-0 ${className}`}
+      className={`ripple ${dim} ${v} rounded-full inline-flex items-center justify-center transition-all duration-200 ease-emphasized active:scale-90 focus-ring disabled:opacity-40 disabled:pointer-events-none shrink-0 ${className}`}
     >
-      <Icon name={icon} fill={fill || active} size={isz} />
+      {pop ? <span key={`${icon}${active ? 1 : 0}`} className="pop-heart inline-flex"><Icon name={icon} fill={fill || active} size={isz} /></span> : <Icon name={icon} fill={fill || active} size={isz} />}
     </button>
   );
 }
@@ -59,7 +63,7 @@ export function Button({
   return (
     <button
       type="button" disabled={disabled} onClick={onClick}
-      className={`h-10 ${icon ? 'pl-4 pr-6' : 'px-6'} rounded-full inline-flex items-center justify-center gap-2 text-label-lg transition-all duration-200 ease-emphasized active:scale-[0.96] focus-ring disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap ${v} ${className}`}
+      className={`ripple h-10 ${icon ? 'pl-4 pr-6' : 'px-6'} rounded-full inline-flex items-center justify-center gap-2 text-label-lg transition-all duration-200 ease-emphasized active:scale-[0.96] focus-ring disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap ${v} ${className}`}
     >
       {icon && <Icon name={icon} size={18} />}
       {children}
@@ -67,11 +71,12 @@ export function Button({
   );
 }
 
-export function Switch({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+export function Switch({ checked, onChange, decorative, label }: { checked: boolean; onChange?: (v: boolean) => void; decorative?: boolean; label?: string }) {
   return (
     <button
-      type="button" role="switch" aria-checked={checked} onClick={() => onChange(!checked)}
-      className={`relative w-[52px] h-8 rounded-full border-2 transition-colors duration-200 focus-ring shrink-0 ${checked ? 'bg-primary border-primary' : 'bg-surface-container-highest border-outline'}`}
+      type="button" role="switch" aria-checked={checked} aria-label={label} aria-hidden={decorative || undefined} tabIndex={decorative ? -1 : 0}
+      onClick={decorative ? undefined : () => onChange?.(!checked)}
+      className={`relative w-[52px] h-8 rounded-full border-2 transition-colors duration-200 focus-ring shrink-0 ${decorative ? 'pointer-events-none' : ''} ${checked ? 'bg-primary border-primary' : 'bg-surface-container-highest border-outline'}`}
     >
       <span
         className={`absolute top-1/2 -translate-y-1/2 rounded-full transition-all duration-200 ease-emphasized flex items-center justify-center ${checked ? 'left-[22px] w-6 h-6 bg-on-primary' : 'left-1.5 w-4 h-4 bg-outline'}`}
@@ -88,7 +93,7 @@ export function Segmented<T extends string>({ value, options, onChange }: { valu
       {options.map((o, i) => (
         <button
           key={o.value} type="button" onClick={() => onChange(o.value)}
-          className={`h-10 px-4 inline-flex items-center gap-2 text-label-lg transition-all duration-200 active:scale-[0.97] ${i > 0 ? 'border-l border-outline' : ''} ${value === o.value ? 'bg-secondary-container text-on-secondary-container' : 'text-on-surface hover:bg-on-surface/[.08]'}`}
+          className={`ripple h-10 px-4 inline-flex items-center gap-2 text-label-lg transition-all duration-200 active:scale-[0.97] ${i > 0 ? 'border-l border-outline' : ''} ${value === o.value ? 'bg-secondary-container text-on-secondary-container' : 'text-on-surface hover:bg-on-surface/[.08]'}`}
         >
           {value === o.value ? <Icon name="check" size={18} className="animate-pop" /> : o.icon ? <Icon name={o.icon} size={18} /> : null}
           {o.label}
@@ -102,7 +107,7 @@ export function Chip({ children, selected, onClick, icon }: { children: ReactNod
   return (
     <button
       type="button" onClick={onClick}
-      className={`h-8 px-3 rounded-lg inline-flex items-center gap-1.5 text-label-lg border transition-colors whitespace-nowrap ${selected ? 'bg-secondary-container text-on-secondary-container border-transparent' : 'border-outline text-on-surface-variant hover:bg-on-surface/[.08]'}`}
+      className={`ripple h-8 px-3 rounded-lg inline-flex items-center gap-1.5 text-label-lg border transition-colors whitespace-nowrap ${selected ? 'bg-secondary-container text-on-secondary-container border-transparent' : 'border-outline text-on-surface-variant hover:bg-on-surface/[.08]'}`}
     >
       {icon && <Icon name={icon} size={18} />}
       {children}
@@ -189,7 +194,7 @@ export function ContextMenu() {
           <button
             key={i} type="button" disabled={it.disabled}
             onClick={() => { close(); it.onClick?.(); }}
-            className={`w-full h-12 px-3 flex items-center gap-3 text-body-lg text-left hover:bg-on-surface/[.08] disabled:opacity-40 ${it.danger ? 'text-error' : 'text-on-surface'}`}
+            className={`ripple w-full h-12 px-3 flex items-center gap-3 text-body-lg text-left hover:bg-on-surface/[.08] disabled:opacity-40 ${it.danger ? 'text-error' : 'text-on-surface'}`}
           >
             <span className="w-6 flex justify-center text-on-surface-variant">{it.icon && <Icon name={it.icon} size={20} className={it.danger ? 'text-error' : ''} />}</span>
             <span className="truncate text-body-md">{it.label}</span>
@@ -248,4 +253,19 @@ export function AuthorCredit({ center }: { center?: boolean }) {
 
 export function Logo({ size = 28 }: { size?: number }) {
   return <img src="/icon.png" width={size} height={size} alt="" draggable={false} className="rounded-lg" />;
+}
+
+/** Material ripple: spawns an expanding wave from the pointer on any `.ripple` element */
+export function installRipple() {
+  document.addEventListener('pointerdown', (e) => {
+    const el = (e.target as HTMLElement | null)?.closest<HTMLElement>('.ripple');
+    if (!el || (el as HTMLButtonElement).disabled) return;
+    const r = el.getBoundingClientRect();
+    const d = Math.hypot(Math.max(e.clientX - r.left, r.right - e.clientX), Math.max(e.clientY - r.top, r.bottom - e.clientY)) * 2;
+    const w = document.createElement('span');
+    w.className = 'ripple-wave';
+    w.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`;
+    el.appendChild(w);
+    w.addEventListener('animationend', () => w.remove());
+  }, { passive: true });
 }

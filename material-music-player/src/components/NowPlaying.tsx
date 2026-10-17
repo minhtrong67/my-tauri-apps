@@ -21,7 +21,8 @@ export function Visualizer() {
     const draw = () => {
       const dpr = window.devicePixelRatio || 1;
       const w = c.clientWidth, h = c.clientHeight;
-      if (c.width !== w * dpr) { c.width = w * dpr; c.height = h * dpr; }
+      const cw = Math.round(w * dpr), ch = Math.round(h * dpr);
+      if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       const rgb = getComputedStyle(document.documentElement).getPropertyValue('--md-primary').trim().split(' ').join(',');
@@ -103,11 +104,14 @@ export function NowPlaying() {
   const cover = useCover(t);
   const liked = useStore((s) => (t ? !!s.liked[t.id] : false));
   const [tab, setTab] = useState<'lyrics' | 'viz' | 'queue'>('lyrics');
+  const playing = useStore((s) => s.isPlaying);
   const st = useStore.getState();
   if (!t) return null;
   return (
     <div className="fixed inset-0 z-40 bg-surface animate-slide-up overflow-hidden flex flex-col">
       {cover && <img src={cover} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20 blur-3xl scale-125 pointer-events-none" />}
+      <div className="aurora w-[55vw] h-[55vw] bg-primary -top-[20vw] -left-[15vw]" />
+      <div className="aurora w-[45vw] h-[45vw] bg-tertiary -bottom-[18vw] -right-[10vw]" style={{ animationDelay: '-7s' }} />
       <div className="absolute inset-0 bg-gradient-to-b from-primary-container/30 to-surface/80 pointer-events-none" />
       <div data-tauri-drag-region className="relative h-14 shrink-0 flex items-center justify-between px-3">
         <IconButton icon="expand_more" title={`${tr('collapse')} (Esc)`} onClick={() => st.set({ showNowPlaying: false })} />
@@ -116,14 +120,14 @@ export function NowPlaying() {
       </div>
       <div className="relative flex-1 min-h-0 grid grid-cols-1 md:grid-cols-[minmax(340px,5fr)_6fr] gap-8 px-10 pb-8">
         <div className="flex flex-col items-center justify-center min-h-0 gap-5">
-          <Cover track={t} eager className="w-[min(46vh,100%)] aspect-square max-w-[440px] rounded-[40px] shadow-2xl" iconSize={96} />
+          <Cover track={t} eager className={`w-[min(46vh,100%)] aspect-square max-w-[440px] rounded-[40px] shadow-2xl transition-transform duration-500 ${playing ? 'breathe' : 'scale-95'}`} iconSize={96} />
           <div className="w-full max-w-[440px]">
             <div className="flex items-center gap-2">
               <div className="min-w-0 flex-1">
                 <div className="truncate text-headline-sm">{t.title}</div>
                 <div className="truncate text-body-lg text-on-surface-variant">{t.artist} • {t.album}</div>
               </div>
-              <IconButton icon="favorite" active={liked} fill={liked} title={`${tr('favorite')} (L)`} onClick={() => st.toggleLike(t.id)} />
+              <IconButton icon="favorite" active={liked} fill={liked} pop title={`${tr('favorite')} (L)`} onClick={() => st.toggleLike(t.id)} />
             </div>
             <SeekBar className="mt-2" />
             <div className="flex justify-center mt-2"><TransportControls size="lg" /></div>

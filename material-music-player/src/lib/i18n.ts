@@ -243,6 +243,28 @@ const en = {
   author: "Author",
   withAi: "with the support of the AI assistant",
   shortcutsBtn: "Keyboard shortcuts",
+  generalSection: "General",
+  settingsSub: "Customize the look, playback and library",
+  fontFamily: "Font",
+  fontDesc: "Pick a typeface for the whole app",
+  fontSystem: "System default",
+  fontPreview: "The quick brown fox jumps over the lazy dog",
+  seekBar: "Seek bar",
+  importGroup: "Add music",
+  importGroupDesc: "Import a folder (it becomes a playlist) or individual files",
+  maintainGroup: "Keep it tidy",
+  maintainDesc: "Rescan the disk, or drop entries whose files no longer exist",
+  backupGroup: "Backup & restore",
+  backupDesc: "Save the library, playlists, favorites and settings to a file",
+  dangerZone: "Danger zone",
+  clearLibraryDesc: "Remove everything from the app. Your music files stay on the disk.",
+  version: "Version",
+  alwaysOnTopDesc: "Keep the player above other windows",
+  sleepDesc: "Stop playback automatically after a while",
+  themeModeDesc: "Follow Windows, or force light / dark",
+  languageDesc: "Detected from your device the first time you open the app",
+  shortcutsDesc: "Everything you can do from the keyboard",
+  colorSelected: "Selected",
   unknownArtist: "Unknown artist",
   unknownAlbum: "Unknown album",
   variousArtists: "Various artists",
@@ -538,6 +560,28 @@ const vi: Record<Key, string> = {
   author: "Tác giả",
   withAi: "với sự hỗ trợ của trợ lý AI",
   shortcutsBtn: "Phím tắt",
+  generalSection: "Chung",
+  settingsSub: "Tùy chỉnh giao diện, phát nhạc và thư viện",
+  fontFamily: "Phông chữ",
+  fontDesc: "Chọn phông chữ cho toàn bộ ứng dụng",
+  fontSystem: "Mặc định hệ thống",
+  fontPreview: "Nghe nhạc thật thư giãn, quên hết muộn phiền",
+  seekBar: "Thanh tua",
+  importGroup: "Thêm nhạc",
+  importGroupDesc: "Nhập một thư mục (thành playlist) hoặc từng tệp riêng lẻ",
+  maintainGroup: "Giữ thư viện gọn gàng",
+  maintainDesc: "Quét lại ổ đĩa hoặc bỏ những bài không còn tệp",
+  backupGroup: "Sao lưu & khôi phục",
+  backupDesc: "Lưu thư viện, playlist, yêu thích và cài đặt ra một tệp",
+  dangerZone: "Vùng nguy hiểm",
+  clearLibraryDesc: "Xóa mọi dữ liệu trong app. Tệp nhạc trên máy được giữ nguyên.",
+  version: "Phiên bản",
+  alwaysOnTopDesc: "Giữ trình phát luôn nằm trên các cửa sổ khác",
+  sleepDesc: "Tự động dừng phát sau một khoảng thời gian",
+  themeModeDesc: "Theo Windows hoặc cố định sáng / tối",
+  languageDesc: "Tự nhận diện theo thiết bị khi mở app lần đầu",
+  shortcutsDesc: "Mọi thao tác có thể dùng bàn phím",
+  colorSelected: "Đã chọn",
   unknownArtist: "Nghệ sĩ không rõ",
   unknownAlbum: "Album không rõ",
   variousArtists: "Nhiều nghệ sĩ",
@@ -593,7 +637,12 @@ const dicts = { en, vi };
 export type ActiveLang = 'en' | 'vi';
 
 export function resolveLang(l: Lang): ActiveLang {
-  if (l === 'auto') return typeof navigator !== 'undefined' && navigator.language.toLowerCase().startsWith('vi') ? 'vi' : 'en';
+  if (l === 'auto') {
+    if (typeof navigator === 'undefined') return 'en';
+    const prefs = navigator.languages?.length ? navigator.languages : [navigator.language];
+    const first = prefs.find((x) => /^(vi|en)\b/i.test(x));
+    return first && first.toLowerCase().startsWith('vi') ? 'vi' : 'en';
+  }
   return l;
 }
 

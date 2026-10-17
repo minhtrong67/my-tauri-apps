@@ -10,11 +10,11 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
 ![Rust](https://img.shields.io/badge/Rust-stable-DEA584?logo=rust&logoColor=black)
-![Design](https://img.shields.io/badge/Design-Material%20Design%203-6750A4)
+![Design](https://img.shields.io/badge/Design-Material%20Design%203-2196F3)
 ![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D4?logo=windows&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-![Author](https://img.shields.io/badge/Author-minhtrong67-6750A4?style=for-the-badge)
+![Author](https://img.shields.io/badge/Author-minhtrong67-2196F3?style=for-the-badge)
 ![AI](https://img.shields.io/badge/AI%20support-Claude-D97757?style=for-the-badge)
 
 English · [Tiếng Việt](README.vi.md)
@@ -28,13 +28,12 @@ English · [Tiếng Việt](README.vi.md)
 1. [Introduction](#introduction)
 2. [Screenshots](#screenshots)
 3. [Features](#features)
-4. [Download](#download)
-5. [Installation](#installation)
-6. [Tech Stack](#tech-stack)
-7. [Development](#development)
-8. [Build](#build)
-9. [Project Structure](#project-structure)
-10. [License](#license)
+4. [Installation](#installation)
+5. [Tech Stack](#tech-stack)
+6. [Development](#development)
+7. [Build](#build)
+8. [Project Structure](#project-structure)
+9. [License](#license)
 
 ---
 
@@ -44,7 +43,7 @@ English · [Tiếng Việt](README.vi.md)
 
 - **Material You colors** generated from one theme color of your choice – or from the cover art of the song that is playing – in **light**, **dark** or **follow-system** mode.
 - **English and Vietnamese** user interface, switchable at any time.
-- **System UI font** (`system-ui`) – the native Windows font, no bundled typefaces.
+- **System font by default** (`system-ui`) with a font picker (Roboto, Inter, Open Sans, Segoe UI, Arial, Verdana, Georgia, Consolas …) and crisp **Lucide** icons.
 - A **library** that scans your Windows *Music* folder automatically, reads tags and cover art, and builds playlists from folders.
 - A full player: queue, playlists, equalizer, synced lyrics, sleep timer, mini player and more.
 
@@ -52,19 +51,19 @@ English · [Tiếng Việt](README.vi.md)
 
 ## Screenshots
 
-> The images live in the [`screenshot`](screenshot) folder and are named `image01.png`, `image02.png`, `image03.png`… Replace each placeholder with a real screenshot using the same file name.
+> The images live in the [`screenshots`](screenshots) folder and are named `image01.png`, `image02.png`, `image03.png`… Replace each placeholder with a real screenshot using the same file name.
 
 | Home | Songs (list) |
 |:---:|:---:|
-| ![Home](screenshot/image01.png) | ![Songs](screenshot/image02.png) |
+| ![Home](screenshots/image01.png) | ![Songs](screenshots/image02.png) |
 
 | Albums (grid) | Now Playing |
 |:---:|:---:|
-| ![Albums](screenshot/image03.png) | ![Now Playing](screenshot/image04.png) |
+| ![Albums](screenshots/image03.png) | ![Now Playing](screenshots/image04.png) |
 
 | Settings |
 |:---:|
-| ![Settings](screenshot/image05.png) |
+| ![Settings](screenshots/image05.png) |
 
 ## Features
 
@@ -88,17 +87,18 @@ English · [Tiếng Việt](README.vi.md)
 - Sleep timer (15 – 120 minutes or after the current song), Windows media keys, restore of the previous session.
 
 ### Appearance & languages
-- Light, dark or system theme; theme color presets + custom color; **dynamic color from the cover art**.
+- Light, dark or system theme; **18 Material theme colors** + custom color (default theme = `material-theme-blue.json`); optional **dynamic color from the cover art**; **font picker** with popular fonts.
+- A tidy, grouped **Settings** page: General · Appearance · Playback · Library · About.
 - English / Vietnamese UI, automatic by default.
 - Smooth Material motion: staggered card entrances, hover lift, sliding toggles, press feedback and screen transitions (reduced automatically when Windows animations are off).
 
 ### Performance
-- **Fast start-up:** the icon font is a custom subset (about 12 KB instead of 4.6 MB), the window is revealed only after the first frame is painted (no white flash) and the last theme is applied before the first paint.
+- **Fast start-up:** icons are tree-shaken Lucide SVGs (no icon font to load), the window is revealed only after the first frame is painted (no white flash) and the last theme is applied before the first paint.
 - **Smooth with large libraries:** virtualized lists and grids, lazily generated thumbnails, images decoded off the main thread, and small, debounced writes to disk.
 - **Resilient:** a built-in error screen with *Reload* replaces any blank window.
 
 ### Windows integration
-- **Window on startup** (*Settings → System*): choose **Remember size** – the app reopens with the window size, position and state you left it in – or **Always maximized** – it opens maximized every time (a normal maximize, not `F11` fullscreen; restoring down returns to your last size). Fullscreen and the mini player are never saved, and if a monitor is unplugged the window is re-centered.
+- **Window on startup** (*Settings → General*): choose **Remember size** – the app reopens with the window size, position and state you left it in – or **Always maximized** – it opens maximized every time (a normal maximize, not `F11` fullscreen; restoring down returns to your last size). Fullscreen and the mini player are never saved, and if a monitor is unplugged the window is re-centered.
 - System tray with play / pause / previous / next, optional *close to tray*, always on top, single instance.
 - Frameless Material title bar.
 
@@ -114,7 +114,9 @@ English · [Tiếng Việt](README.vi.md)
 | `Ctrl+F` | Search | `F5` | Refresh library |
 | `F11` | Fullscreen | `Esc` | Close dialog / leave fullscreen |
 
-## Download
+## Installation
+
+### Download
 
 Download the latest installer from the **Releases** page of this repository:
 
@@ -129,7 +131,7 @@ Download the latest installer from the **Releases** page of this repository:
 
 Supported audio: **MP3, FLAC, WAV, OGG, Opus, M4A, AAC** (playback uses the WebView2 media stack). Prefer to build it yourself? See [Build](#build).
 
-## Installation
+### Install
 
 1. Run **`Material Music Player_1.0.0_x64-setup.exe`**. It installs per user, so **no administrator rights** are needed.
 2. If Windows SmartScreen shows *"Windows protected your PC"* (the installer is not code-signed), click **More info → Run anyway**.
@@ -154,7 +156,7 @@ Supported audio: **MP3, FLAC, WAV, OGG, Opus, M4A, AAC** (playback uses the WebV
 | UI | [React 18](https://react.dev) + [TypeScript 5](https://www.typescriptlang.org) |
 | Build tool | [Vite 5](https://vitejs.dev) |
 | Styling | [Tailwind CSS 3](https://tailwindcss.com) with Material 3 design tokens |
-| Design system | Material Design 3 – [`@material/material-color-utilities`](https://github.com/material-foundation/material-color-utilities), [Material Symbols](https://fonts.google.com/icons), `system-ui` font |
+| Design system | Material Design 3 – [`@material/material-color-utilities`](https://github.com/material-foundation/material-color-utilities), [Lucide](https://lucide.dev) icons, `system-ui` font (+ bundled Roboto / Inter / Open Sans, SIL OFL) |
 | State | [Zustand](https://zustand-demo.pmnd.rs) |
 | Audio | HTML5 `<audio>` + Web Audio API (equalizer, visualizer) on Microsoft Edge WebView2 |
 | Rust crates | `tauri`, `tauri-plugin-dialog`, `tauri-plugin-single-instance`, `lofty` (tags & cover art), `walkdir`, `base64`, `serde` |
@@ -177,7 +179,7 @@ npm run dev
 | `npm run dev` | Run the desktop app (Tauri) with hot reload |
 | `npm run build` | Build the Windows installer |
 | `npm run vite:dev` | UI only in a browser (Tauri features are unavailable) |
-| `npm run icons` | Rebuild the subset icon font after adding a new icon (needs Python + `pip install fonttools brotli`) |
+| `npm run icons` | Regenerate every app / setup / uninstall icon in `#E91E63` (needs Python + `pip install pillow`) |
 | `npx tsc --noEmit` | Type-check the frontend |
 | `cargo check` (inside `src-tauri`) | Type-check the Rust backend |
 
@@ -193,7 +195,8 @@ members = [
 
 | Customization | Where |
 |---|---|
-| Default theme color | `defaultSettings.seedColor` in `src/lib/types.ts` |
+| Default theme color | `defaultSettings.seedColor` in `src/lib/types.ts` and `DEFAULT_SEED` in `src/lib/theme.ts` |
+| Theme colors / fonts offered | `MATERIAL_COLORS` / `FONT_OPTIONS` in `src/lib/theme.ts` |
 | Add a language | add a dictionary in `src/lib/i18n.ts` (the compiler checks every key is translated) |
 | Default window size | `app.windows` in `src-tauri/tauri.conf.json` |
 | Supported audio extensions | `AUDIO_EXTS` in `src-tauri/src/lib.rs` and `src/lib/tauri.ts` |
@@ -220,17 +223,24 @@ npm run build
 
 | File | Used for | Sizes |
 |---|---|---|
-| `src-tauri/icons/icon.ico` | app, taskbar, Explorer, window | 16, 20, 24, 32, 40, 48, 64, 96, 128, 256 px |
-| `src-tauri/icons/installer.ico` | setup `.exe` **and** `uninstall.exe` | 16, 20, 24, 32, 40, 48, 64, 96, 128, 256 px |
+| `src-tauri/icons/icon.ico` | app, taskbar, Explorer, window | 16, 20, 24, 32, 40, 48, 64, 128, 256 px |
+| `src-tauri/icons/setup.ico` | setup `.exe` (icon + download badge) | 16, 20, 24, 32, 40, 48, 64, 128, 256 px |
+| `src-tauri/icons/uninstall.ico` | `uninstall.exe` (icon + trash badge) | 16, 20, 24, 32, 40, 48, 64, 128, 256 px |
+| `installer-header.bmp` / `installer-sidebar.bmp` | NSIS installer artwork | 150×57 / 164×314 |
 | `32x32.png`, `64x64.png`, `128x128.png`, `128x128@2x.png` (256), `256x256.png`, `icon.png` (512) | Tauri / bundler / high-DPI | as named |
 
-To use your own artwork replace `src-tauri/icons/icon.png` (square, ≥ 512 px), run `npx tauri icon src-tauri/icons/icon.png`, and keep all the standard sizes in `installer.ico`.
+To use your own artwork replace `src-tauri/icons/icon.png` (square, ≥ 512 px), run `npx tauri icon src-tauri/icons/icon.png`, and update `scripts/generate-icons.py` if you also want matching setup / uninstall icons.
+
+**Landing page** – `index.html` at the project root is a single-file Material Design landing page (responsive, SEO + social meta tags, EN/VI). Its Download button points to `download/Material-Music-Player_1.0.0_x64-setup.exe`; copy your built installer into the [`download`](download) folder with that name. Open it by double-clicking, or host the repository root (e.g. GitHub Pages).
 
 ## Project Structure
 
 ```
 material-music-player/
-├─ screenshot/                README screenshots (image01.png … image05.png)
+├─ screenshots/                README screenshots (image01.png … image05.png)
+├─ index.html                 landing page (single HTML file, Material Design, SEO)
+├─ download/                  put the setup .exe here (linked from the landing page)
+├─ app.html                   app entry (Vite)
 ├─ public/                    static assets (logo used by the UI)
 ├─ src/                       React + TypeScript + Tailwind frontend
 │  ├─ main.tsx, App.tsx       entry point, layout, global shortcuts, drag & drop, theme
@@ -246,7 +256,7 @@ material-music-player/
 │  │                          Collection, TrackRow, TrackListView, MediaCard, Dialogs, ui (M3 kit) …
 │  └─ views/                  Library (home, songs, albums, artists, playlists, search), Settings
 ├─ scripts/
-│  └─ subset-icons.py         builds the small icon font in src/assets
+│  └─ generate-icons.py       generates every icon (app, setup, uninstall) in #E91E63
 ├─ src-tauri/                 Rust backend
 │  ├─ src/lib.rs              commands: scan, tags & covers, lyrics, state, tray, window memory
 │  ├─ src/main.rs
@@ -263,4 +273,4 @@ material-music-player/
 
 Released under the [MIT License](LICENSE) © 2026 minhtrong67.
 
-Designed and developed by **minhtrong67** with the support of the AI assistant **Claude** (Anthropic). Built with [Tauri](https://tauri.app), [React](https://react.dev), [Tailwind CSS](https://tailwindcss.com), [Zustand](https://zustand-demo.pmnd.rs), [Material Color Utilities](https://github.com/material-foundation/material-color-utilities), [Material Symbols](https://fonts.google.com/icons) and [lofty](https://crates.io/crates/lofty).
+Designed and developed by **minhtrong67** with the support of the AI assistant **Claude** (Anthropic). Built with [Tauri](https://tauri.app), [React](https://react.dev), [Tailwind CSS](https://tailwindcss.com), [Zustand](https://zustand-demo.pmnd.rs), [Material Color Utilities](https://github.com/material-foundation/material-color-utilities), [Lucide](https://lucide.dev) and [lofty](https://crates.io/crates/lofty).

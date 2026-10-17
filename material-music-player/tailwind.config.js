@@ -13,7 +13,7 @@ const colors = Object.fromEntries(names.map((n) => [n, `rgb(var(--md-${n}) / <al
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  content: ['./app.html', './src/**/*.{ts,tsx}'],
   darkMode: 'class',
   theme: {
     extend: {

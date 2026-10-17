@@ -59,7 +59,7 @@ export const TrackRow = memo(function TrackRow({ track: t, index, onPlay, onRemo
       </div>
       {showAlbum && <div className="hidden lg:block w-[26%] truncate text-body-md text-on-surface-variant">{t.album}</div>}
       <div className="w-8 shrink-0">
-        <IconButton icon="favorite" size="sm" active={liked} fill={liked} title={liked ? tr('unfavorite') : tr('favorite')} className={liked ? '' : 'opacity-0 group-hover:opacity-100'} onClick={(e) => { e.stopPropagation(); toggleLike(t.id); }} />
+        <IconButton icon="favorite" size="sm" active={liked} fill={liked} pop title={liked ? tr('unfavorite') : tr('favorite')} className={liked ? '' : 'opacity-0 group-hover:opacity-100'} onClick={(e) => { e.stopPropagation(); toggleLike(t.id); }} />
       </div>
       <div className="w-12 text-right text-body-md text-on-surface-variant tabular-nums shrink-0">{fmtTime(t.duration)}</div>
       <IconButton icon="more_vert" size="sm" title={tr('options')} className="opacity-0 group-hover:opacity-100" onClick={(e) => openMenuBelow(e, menu(), true)} />

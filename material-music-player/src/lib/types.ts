@@ -54,6 +54,7 @@ export interface Settings {
   themeMode: ThemeMode;
   seedColor: string;
   dynamicColor: boolean;
+  fontFamily: string;
   volume: number;
   muted: boolean;
   playbackRate: number;
@@ -72,8 +73,9 @@ export interface Settings {
 
 export const defaultSettings: Settings = {
   themeMode: 'system',
-  seedColor: '#6750A4',
-  dynamicColor: true,
+  seedColor: '#2196F3',
+  dynamicColor: false,
+  fontFamily: 'system',
   volume: 0.8,
   muted: false,
   playbackRate: 1,

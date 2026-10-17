@@ -1,12 +1,228 @@
 <!doctype html>
-<html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Material Music Player</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Material Music Player — Material Design 3 music player for Windows</title>
+<meta name="description" content="Material Music Player is a free, open-source local music player for Windows with a Material Design 3 interface, themes, equalizer, synced lyrics, playlists and English / Vietnamese UI." />
+<meta name="keywords" content="music player, Windows music player, Material Design 3, Tauri, open source, local music, equalizer, lyrics, playlist, minhtrong67" />
+<meta name="author" content="minhtrong67" />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#F8F9FF" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#111418" media="(prefers-color-scheme: dark)" />
+<link rel="canonical" href="./" />
+<link rel="icon" type="image/png" href="src-tauri/icons/icon.png" />
+<link rel="apple-touch-icon" href="src-tauri/icons/icon.png" />
+<!-- Open Graph / social sharing (replace the relative URLs with absolute ones once the page is hosted) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Material Music Player" />
+<meta property="og:title" content="Material Music Player — a beautiful music player for Windows" />
+<meta property="og:description" content="Free & open source. Material Design 3, light / dark themes, equalizer, synced lyrics, playlists, English & Vietnamese." />
+<meta property="og:image" content="screenshots/image01.png" />
+<meta property="og:image:alt" content="Material Music Player screenshot" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="vi_VN" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Material Music Player — a beautiful music player for Windows" />
+<meta name="twitter:description" content="Free & open source. Material Design 3, themes, equalizer, synced lyrics and playlists." />
+<meta name="twitter:image" content="screenshots/image01.png" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material Music Player","operatingSystem":"Windows 10, Windows 11","applicationCategory":"MultimediaApplication","softwareVersion":"1.0.0","license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"minhtrong67"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Local music player for Windows with a Material Design 3 interface."}
+</script>
+<style>
+:root{
+  --primary:#36618E;--on-primary:#fff;--primary-container:#D1E4FF;--on-primary-container:#194975;
+  --secondary-container:#D7E3F7;--on-secondary-container:#3B4858;
+  --tertiary-container:#F2DAFF;--on-tertiary-container:#523F5F;
+  --surface:#F8F9FF;--on-surface:#191C20;--on-surface-variant:#43474E;--outline-variant:#C3C7CF;
+  --c-low:#F2F3FA;--c:#ECEEF4;--c-high:#E6E8EE;--pink:#E91E63;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --primary:#A0CAFD;--on-primary:#003258;--primary-container:#194975;--on-primary-container:#D1E4FF;
+  --secondary-container:#3B4858;--on-secondary-container:#D7E3F7;
+  --tertiary-container:#523F5F;--on-tertiary-container:#F2DAFF;
+  --surface:#111418;--on-surface:#E1E2E8;--on-surface-variant:#C3C7CF;--outline-variant:#43474E;
+  --c-low:#191C20;--c:#1D2024;--c-high:#272A2F;
+}}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--surface);color:var(--on-surface);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+/* top app bar */
+header{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:color-mix(in srgb,var(--surface) 82%,transparent);border-bottom:1px solid transparent;transition:border-color .3s}
+header.scrolled{border-color:var(--outline-variant)}
+.bar{display:flex;align-items:center;gap:12px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;text-decoration:none;min-width:0}
+.brand img{width:34px;height:34px;border-radius:10px}
+.brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spacer{flex:1}
+nav.links{display:flex;gap:4px}
+nav.links a{padding:8px 14px;border-radius:99px;text-decoration:none;font-size:14px;font-weight:500;color:var(--on-surface-variant);transition:background .2s}
+nav.links a:hover{background:color-mix(in srgb,var(--on-surface) 8%,transparent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 24px;border-radius:99px;border:0;font:500 15px var(--font);text-decoration:none;cursor:pointer;transition:transform .2s,box-shadow .2s,filter .2s;white-space:nowrap}
+.btn:active{transform:scale(.96)}
+.btn.fill{background:var(--primary);color:var(--on-primary)}
+.btn.fill:hover{box-shadow:0 6px 18px color-mix(in srgb,var(--primary) 40%,transparent);filter:brightness(1.07)}
+.btn.tonal{background:var(--secondary-container);color:var(--on-secondary-container)}
+.btn.tonal:hover{filter:brightness(.96)}
+.btn.lg{height:56px;padding:0 32px;font-size:16px}
+.lang{height:36px;padding:0 14px;font-size:13px;background:transparent;border:1px solid var(--outline-variant);color:var(--on-surface)}
+svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+/* hero */
+.hero{position:relative;padding:72px 0 56px;text-align:center;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;z-index:-1;animation:drift 14s ease-in-out infinite alternate}
+.blob.a{width:420px;height:420px;background:var(--primary-container);top:-120px;left:-100px}
+.blob.b{width:360px;height:360px;background:color-mix(in srgb,var(--pink) 35%,transparent);top:60px;right:-120px;animation-delay:-6s}
+@keyframes drift{to{transform:translate(40px,30px) scale(1.12)}}
+.logo{width:112px;height:112px;margin:0 auto 24px;border-radius:30px;box-shadow:0 18px 40px color-mix(in srgb,var(--pink) 40%,transparent);animation:float 5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px) rotate(-2deg)}}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;background:var(--tertiary-container);color:var(--on-tertiary-container);font-size:13px;font-weight:500;margin-bottom:18px}
+h1{font-size:clamp(34px,6vw,60px);line-height:1.1;font-weight:500;letter-spacing:-.5px;max-width:15em;margin:0 auto 18px;overflow-wrap:anywhere}
+h1 em{font-style:normal;color:var(--primary)}
+.lead{font-size:clamp(16px,2.2vw,19px);color:var(--on-surface-variant);max-width:38em;margin:0 auto 32px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.meta{margin-top:16px;font-size:13px;color:var(--on-surface-variant)}
+.shot{margin:48px auto 0;max-width:960px;border-radius:28px;overflow:hidden;border:1px solid var(--outline-variant);box-shadow:0 30px 70px rgba(0,0,0,.18);background:var(--c)}
+/* sections */
+section{padding:72px 0}
+.title{text-align:center;margin-bottom:40px}
+.title h2{font-size:clamp(26px,4vw,38px);font-weight:500;line-height:1.2}
+.title p{color:var(--on-surface-variant);margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.card{background:var(--c-low);border-radius:28px;padding:26px;transition:transform .3s cubic-bezier(.2,0,0,1),background .3s,box-shadow .3s}
+.card:hover{transform:translateY(-6px);background:var(--c-high);box-shadow:0 14px 30px rgba(0,0,0,.1)}
+.ic{width:48px;height:48px;border-radius:16px;background:var(--primary-container);color:var(--on-primary-container);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.card h3{font-size:18px;font-weight:500;margin-bottom:6px}
+.card p{font-size:14.5px;color:var(--on-surface-variant)}
+.alt{background:var(--c-low)}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.gallery img{border-radius:20px;border:1px solid var(--outline-variant);width:100%;transition:transform .35s cubic-bezier(.2,0,0,1)}
+.gallery img:hover{transform:scale(1.03)}
+.steps{counter-reset:s;display:grid;gap:14px;max-width:720px;margin:auto}
+.step{display:flex;gap:16px;align-items:flex-start;background:var(--c-low);padding:20px;border-radius:24px}
+.step:before{counter-increment:s;content:counter(s);flex:none;width:36px;height:36px;border-radius:50%;background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-weight:600}
+.step code{background:var(--c-high);padding:2px 8px;border-radius:8px;font-size:13px;overflow-wrap:anywhere}
+.dl{text-align:center;background:var(--primary-container);color:var(--on-primary-container);border-radius:40px;padding:56px 24px}
+.dl h2{font-size:clamp(26px,4vw,36px);font-weight:500;margin-bottom:10px}
+.dl p{margin-bottom:26px;opacity:.85}
+footer{padding:36px 0 48px;text-align:center;color:var(--on-surface-variant);font-size:14px}
+.credit{display:flex;flex-wrap:wrap;gap:8px 10px;justify-content:center;align-items:center;margin-bottom:10px}
+.pill{padding:4px 14px;border-radius:99px;font-weight:500;font-size:13px}
+.pill.me{background:var(--primary);color:var(--on-primary)}
+.pill.ai{background:var(--tertiary-container);color:var(--on-tertiary-container)}
+/* reveal */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,0,0,1),transform .7s cubic-bezier(.2,0,0,1)}
+.rv.in{opacity:1;transform:none}
+@media (max-width:720px){nav.links{display:none}.hero{padding-top:44px}.card{padding:22px}.dl{border-radius:28px}.btn.lg{width:100%}.cta{width:100%}section{padding:52px 0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<header id="top">
+  <div class="wrap bar">
+    <a class="brand" href="#top"><img src="src-tauri/icons/icon.png" alt="" width="34" height="34" /><span>Material Music Player</span></a>
+    <nav class="links"><a href="#features" data-i="navFeatures">Features</a><a href="#screenshots" data-i="navShots">Screenshots</a><a href="#install" data-i="navInstall">Install</a></nav>
+    <div class="spacer"></div>
+    <button class="btn lang" id="lang" type="button" aria-label="Language">VI</button>
+    <a class="btn fill" href="#download" data-i="navDl">Download</a>
+  </div>
+</header>
+
+<main>
+<div class="hero"><div class="blob a"></div><div class="blob b"></div>
+  <div class="wrap">
+    <img class="logo" src="src-tauri/icons/icon.png" alt="Material Music Player icon" width="112" height="112" />
+    <div class="chip"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg><span data-i="chip">Free &amp; open source · Windows 10/11</span></div>
+    <h1 data-i="h1">Your music, in a <em>beautiful</em> Material design</h1>
+    <p class="lead" data-i="lead">A fast, lightweight local music player built with Tauri. Material You colours, equalizer, synced lyrics, playlists and a mini player — in English and Vietnamese.</p>
+    <div class="cta">
+      <a class="btn fill lg" href="download/Material-Music-Player_1.0.0_x64-setup.exe" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg><span data-i="dl">Download for Windows</span></a>
+      <a class="btn tonal lg" href="#features" data-i="learn">Explore features</a>
+    </div>
+    <p class="meta" data-i="meta">Version 1.0.0 · Windows 10 / 11 (64-bit) · MIT license</p>
+    <div class="shot rv"><img src="screenshots/image01.png" alt="Material Music Player home screen" width="1280" height="720" loading="eager" /></div>
+  </div>
+</div>
+
+<section id="features"><div class="wrap">
+  <div class="title rv"><h2 data-i="fT">Everything you need to enjoy music</h2><p data-i="fS">Thoughtful details, smooth animations, tiny footprint.</p></div>
+  <div class="grid">
+    <div class="card rv"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 22a10 10 0 1 1 10-10c0 3-2 4-4 4h-2a2 2 0 0 0-1 3.7c.6.5.3 2.3-3 2.3z"/></svg></div><h3 data-i="f1t">Material You themes</h3><p data-i="f1p">Light, dark or system mode, 18 Material colours, custom colour and dynamic colour from the cover art.</p></div>
+    <div class="card rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M2 10v3M6 6v11M10 3v18M14 8v8M18 5v14M22 10v3"/></svg></div><h3 data-i="f2t">Equalizer &amp; sound</h3><p data-i="f2p">10-band equalizer with presets, pre-amp, playback speed and a live visualizer.</p></div>
+    <div class="card rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div><h3 data-i="f3t">Smart library</h3><p data-i="f3p">Auto-scans your Music folder, reads tags and covers, folder playlists, M3U import / export and instant search.</p></div>
+    <div class="card rv"><div class="ic"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5"/></svg></div><h3 data-i="f4t">Synced lyrics</h3><p data-i="f4p">Reads .lrc files and embedded lyrics, highlights the current line and seeks on click.</p></div>
+    <div class="card rv"><div class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M12 12h6v5h-6z"/></svg></div><h3 data-i="f5t">Mini player &amp; tray</h3><p data-i="f5p">Always-on-top mini player, system tray controls, media keys and sleep timer.</p></div>
+    <div class="card rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg></div><h3 data-i="f6t">English &amp; Vietnamese</h3><p data-i="f6p">Detects your system language automatically and remembers your window size or opens maximized.</p></div>
+  </div>
+</div></section>
+
+<section id="screenshots" class="alt"><div class="wrap">
+  <div class="title rv"><h2 data-i="sT">Screenshots</h2></div>
+  <div class="gallery">
+    <img class="rv" src="screenshots/image02.png" alt="Songs" loading="lazy" width="1280" height="720" />
+    <img class="rv" src="screenshots/image03.png" alt="Albums" loading="lazy" width="1280" height="720" />
+    <img class="rv" src="screenshots/image04.png" alt="Now playing" loading="lazy" width="1280" height="720" />
+    <img class="rv" src="screenshots/image05.png" alt="Settings" loading="lazy" width="1280" height="720" />
+  </div>
+</div></section>
+
+<section id="install"><div class="wrap">
+  <div class="title rv"><h2 data-i="iT">Install in seconds</h2></div>
+  <div class="steps">
+    <div class="step rv"><div><strong data-i="i1">Download the installer</strong><br /><span data-i="i1p">Click the download button — the file is a regular Windows setup (.exe).</span></div></div>
+    <div class="step rv"><div><strong data-i="i2">Run the setup</strong><br /><span data-i="i2p">Follow the wizard. If SmartScreen appears choose “More info → Run anyway” (the app is not code-signed).</span></div></div>
+    <div class="step rv"><div><strong data-i="i3">Press play</strong><br /><span data-i="i3p">Your Music folder is scanned automatically. Drop folders or files onto the window to add more.</span></div></div>
+  </div>
+</div></section>
+
+<section id="download"><div class="wrap">
+  <div class="dl rv">
+    <h2 data-i="dT">Ready to listen?</h2>
+    <p data-i="dP">Free forever, open source under the MIT license.</p>
+    <a class="btn fill lg" href="download/Material-Music-Player_1.0.0_x64-setup.exe" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg><span data-i="dl">Download for Windows</span></a>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <div class="credit"><span data-i="by">Designed &amp; developed by</span><span class="pill me">minhtrong67</span><span data-i="with">with the support of AI</span><span class="pill ai">✦ Claude</span></div>
+  <div>© 2026 Material Music Player · MIT License</div>
+</div></footer>
+
+<script>
+(function(){
+  var T={en:{},vi:{
+    navFeatures:'Tính năng',navShots:'Ảnh chụp',navInstall:'Cài đặt',navDl:'Tải về',
+    chip:'Miễn phí & mã nguồn mở · Windows 10/11',h1:'Âm nhạc của bạn trong giao diện Material <em>tuyệt đẹp</em>',
+    lead:'Trình phát nhạc cục bộ nhanh và nhẹ, xây dựng bằng Tauri. Màu Material You, equalizer, lời bài hát đồng bộ, playlist và mini player — hỗ trợ tiếng Anh và tiếng Việt.',
+    dl:'Tải cho Windows',learn:'Khám phá tính năng',meta:'Phiên bản 1.0.0 · Windows 10 / 11 (64-bit) · Giấy phép MIT',
+    fT:'Mọi thứ bạn cần để tận hưởng âm nhạc',fS:'Chi tiết tinh tế, hiệu ứng mượt mà, dung lượng nhỏ gọn.',
+    f1t:'Giao diện Material You',f1p:'Sáng, tối hoặc theo hệ thống, 18 màu Material, màu tùy chọn và màu động theo ảnh bìa.',
+    f2t:'Equalizer & âm thanh',f2p:'Equalizer 10 băng tần có preset, pre-amp, tốc độ phát và visualizer thời gian thực.',
+    f3t:'Thư viện thông minh',f3p:'Tự quét thư mục Music, đọc thẻ và ảnh bìa, playlist theo thư mục, nhập / xuất M3U và tìm kiếm tức thì.',
+    f4t:'Lời bài hát đồng bộ',f4p:'Đọc tệp .lrc và lời nhúng, tô sáng dòng đang hát và tua khi nhấn vào dòng.',
+    f5t:'Mini player & khay hệ thống',f5p:'Mini player luôn nổi, điều khiển từ khay, phím media và hẹn giờ tắt nhạc.',
+    f6t:'Tiếng Anh & Tiếng Việt',f6p:'Tự nhận diện ngôn ngữ hệ thống, ghi nhớ kích thước cửa sổ hoặc luôn mở phóng to.',
+    sT:'Ảnh chụp màn hình',iT:'Cài đặt trong vài giây',
+    i1:'Tải bộ cài',i1p:'Nhấn nút tải về — tệp là bộ cài Windows (.exe) thông thường.',
+    i2:'Chạy bộ cài',i2p:'Làm theo trình hướng dẫn. Nếu SmartScreen hiện ra, chọn “More info → Run anyway” (ứng dụng chưa ký số).',
+    i3:'Nhấn phát',i3p:'Thư mục Music được quét tự động. Kéo thả thư mục hoặc tệp vào cửa sổ để thêm nhạc.',
+    dT:'Sẵn sàng nghe nhạc?',dP:'Miễn phí mãi mãi, mã nguồn mở theo giấy phép MIT.',by:'Thiết kế & phát triển bởi',with:'với sự hỗ trợ của AI'}};
+  var els=[].slice.call(document.querySelectorAll('[data-i]'));
+  els.forEach(function(e){T.en[e.getAttribute('data-i')]=e.innerHTML});
+  var btn=document.getElementById('lang'),cur='en';
+  function set(l){cur=l;document.documentElement.lang=l;els.forEach(function(e){var v=T[l][e.getAttribute('data-i')];if(v)e.innerHTML=v});btn.textContent=l==='en'?'VI':'EN';try{localStorage.setItem('mmp-lang',l)}catch(x){}}
+  btn.onclick=function(){set(cur==='en'?'vi':'en')};
+  var saved=null;try{saved=localStorage.getItem('mmp-lang')}catch(x){}
+  var auto=(navigator.languages&&navigator.languages[0]||navigator.language||'en').toLowerCase().indexOf('vi')===0?'vi':'en';
+  if((saved||auto)==='vi')set('vi');
+  var h=document.getElementById('top');addEventListener('scroll',function(){h.classList.toggle('scrolled',scrollY>8)},{passive:true});
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
+  [].forEach.call(document.querySelectorAll('.rv'),function(e,i){e.style.transitionDelay=(i%3)*70+'ms';io.observe(e)});
+})();
+</script>
+</body>
 </html>
