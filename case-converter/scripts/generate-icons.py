@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generates every icon and installer image of Case Converter (Material Design 3 style).
+Generates every icon and installer image of Case Converter (Material Design 3 style, brand color #FF5722).
 
 Outputs (src-tauri/icons):
   32x32.png  128x128.png  128x128@2x.png  icon.png      application icon (PNG)
@@ -30,9 +30,10 @@ ICONS = ROOT / "src-tauri" / "icons"
 FONT = ROOT / "src" / "vendor" / "fonts" / "roboto-latin-500-normal.woff2"
 ICONS.mkdir(parents=True, exist_ok=True)
 
-# Material 3 colors taken from material-theme-blue-original.json
-P50, P40, P30, P20 = "#5177B8", "#365E9D", "#194683", "#002F64"
-PRIMARY_CONTAINER, TERTIARY_CONTAINER, ON_TERTIARY_CONTAINER = "#D6E3FF", "#FAD8FD", "#573E5C"
+# App icon palette: Material Deep Orange built around the brand color #FF5722
+BRAND = "#FF5722"
+P50, P40, P30, P20 = "#FF7A4D", BRAND, "#E64A19", "#BF360C"
+PRIMARY_CONTAINER, TERTIARY_CONTAINER, ON_TERTIARY_CONTAINER = "#FFDBD0", "#FFE3D9", "#8A2A00"
 ERROR, ERROR_CONTAINER = "#BA1A1A", "#FFDAD6"
 
 font = TTFont(str(FONT))
@@ -164,10 +165,10 @@ def mini_icon(x, y, size, badge=None):
 
 def header(badge):
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="150" height="57" viewBox="0 0 150 57">
-  <defs><linearGradient id="h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F9F9FF"/><stop offset="1" stop-color="{PRIMARY_CONTAINER}"/></linearGradient></defs>
+  <defs><linearGradient id="h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF8F6"/><stop offset="1" stop-color="{PRIMARY_CONTAINER}"/></linearGradient></defs>
   <rect width="150" height="57" fill="url(#h)"/>
   <circle cx="20" cy="4" r="30" fill="{TERTIARY_CONTAINER}" opacity="0.55"/>
-  <circle cx="140" cy="62" r="34" fill="#AAC7FF" opacity="0.45"/>
+  <circle cx="140" cy="62" r="34" fill="#FFB59E" opacity="0.55"/>
   {mini_icon(94, 6, 46, badge)}
 </svg>"""
 
@@ -179,7 +180,7 @@ def sidebar():
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="164" height="314" viewBox="0 0 164 314">
   <defs><linearGradient id="s" x1="0" y1="0" x2="0.6" y2="1"><stop offset="0" stop-color="{P40}"/><stop offset="1" stop-color="{P20}"/></linearGradient></defs>
   <rect width="164" height="314" fill="url(#s)"/>
-  <circle cx="150" cy="40" r="90" fill="#AAC7FF" opacity="0.16"/>
+  <circle cx="150" cy="40" r="90" fill="#FFB59E" opacity="0.22"/>
   <circle cx="10" cy="210" r="70" fill="{TERTIARY_CONTAINER}" opacity="0.14"/>
   <circle cx="170" cy="300" r="80" fill="#FFFFFF" opacity="0.07"/>
   {mini_icon(26, 44, 112)}

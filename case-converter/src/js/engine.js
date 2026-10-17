@@ -3,7 +3,8 @@
 // A "word" is an acronym (XML), a Capitalized/lowercase word, a run of capitals, digits, or CJK-like letters.
 const WORD_RE = /\p{Lu}+(?=\p{Lu}\p{Ll})|\p{Lu}?\p{Ll}+|\p{Lu}+|\p{N}+|\p{Lo}+/gu;
 
-export const words = (s) => s.normalize('NFC').match(WORD_RE) || [];
+// Apostrophes inside a word are dropped first, so "don't" becomes dont, not don + t.
+export const words = (s) => s.normalize('NFC').replace(/(\p{L})['’](?=\p{L})/gu, '$1').match(WORD_RE) || [];
 export const lines = (s) => s.split(/\r?\n/);
 const perLine = (f) => (s) => lines(s).map(f).join('\n');
 const ident = (join) => perLine((l) => join(words(l)));

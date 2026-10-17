@@ -8,9 +8,16 @@
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "icons": "python scripts/generate-icons.py"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2"
-  }
+  },
+  "keywords": [
+    "tauri",
+    "case-converter",
+    "material-design",
+    "desktop-app"
+  ]
 }

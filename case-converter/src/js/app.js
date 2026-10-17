@@ -2,6 +2,7 @@ import { CASES, CASE_GROUPS, TOOLS, displayName, textStats } from './engine.js';
 import { t, setLanguage, getLanguage, detectLanguage } from './i18n.js';
 import { icon, hydrateIcons } from './icons.js';
 import { PRESETS, DEFAULT_SEED, schemeFor, applyScheme } from './theme.js';
+import { availableFonts, applyFont, findFont } from './fonts.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -23,15 +24,19 @@ const state = {
   theme: store.get('theme', 'system'),          // system | light | dark
   seed: (store.get('seed', DEFAULT_SEED) || DEFAULT_SEED).toUpperCase(),
   langPref: store.get('lang', 'auto'),           // auto | en | vi
+  font: store.get('font', 'system'),
   winMode: 'remember',
 };
 if (!['convert', 'all', 'tools'].includes(state.tab)) state.tab = 'convert';
 if (!CASES.some((c) => c.id === state.cse)) state.cse = 'camel';
 if (!TOOLS.some((c) => c.id === state.tool)) state.tool = 'dedupe';
+if (!['system', 'light', 'dark'].includes(state.theme)) state.theme = 'system';
+if (!['auto', 'en', 'vi'].includes(state.langPref)) state.langPref = 'auto';
 if (!/^#[0-9A-F]{6}$/.test(state.seed)) state.seed = DEFAULT_SEED;
 
 const lang = () => getLanguage();
 const opts = () => ({ smart: state.smart, lang: lang() });
+const currentItem = () => (state.tab === 'tools' ? TOOLS.find((x) => x.id === state.tool) : CASES.find((c) => c.id === state.cse));
 let out = '';
 
 /* ---------- small helpers ---------- */
@@ -40,6 +45,7 @@ function debounce(fn, ms) {
   return (...a) => { clearTimeout(id); id = setTimeout(() => fn(...a), ms); };
 }
 const nextFrame = () => new Promise((r) => requestAnimationFrame(() => r()));
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 function retrigger(el, cls = 'swap-in') {
   el.classList.remove(cls);
@@ -111,11 +117,13 @@ function flashCopied() {
   $('#copyTx').textContent = t('copied');
   b.classList.add('done');
   clearTimeout(copyTimer);
-  copyTimer = setTimeout(() => {
-    $('#copyIc').innerHTML = icon('copy');
-    $('#copyTx').textContent = t('copy');
-    b.classList.remove('done');
-  }, 1600);
+  copyTimer = setTimeout(resetCopyButton, 1600);
+}
+function resetCopyButton() {
+  clearTimeout(copyTimer);
+  $('#copyIc').innerHTML = icon('copy');
+  $('#copyTx').textContent = t('copy');
+  $('#bCopy').classList.remove('done');
 }
 
 /* ---------- rendering ---------- */
@@ -125,59 +133,79 @@ const output = $('#out');
 function chipHtml(attr, id, label, on) {
   return `<button class="chip rip" role="radio" ${attr}="${id}" aria-checked="${on}"><span class="chk">${icon('check')}</span><span>${label}</span></button>`;
 }
+const groupNames = () => ({ text: t('gText'), code: t('gCode'), other: t('gOther') });
 
 function buildChips() {
-  const G = { text: t('gText'), code: t('gCode'), other: t('gOther') };
+  const G = groupNames();
   $('#chips').innerHTML = CASE_GROUPS.map(
     (g) =>
-      `<div class="glabel">${G[g]}</div><div class="chips" role="radiogroup">` +
+      `<div class="pgroup"><div class="glabel">${G[g]}</div><div class="chips" role="radiogroup">` +
       CASES.filter((c) => c.g === g).map((c) => chipHtml('data-c', c.id, esc(displayName(c, lang())), c.id === state.cse)).join('') +
-      '</div>',
+      '</div></div>',
   ).join('');
   $('#tools').innerHTML = TOOLS.map((x) => chipHtml('data-tool', x.id, esc(displayName(x, lang())), x.id === state.tool)).join('');
 }
-
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 function renderStats(s) {
   const st = textStats(s);
   $('#stat').textContent = `${st.chars.toLocaleString()} ${t('chars')}  ·  ${st.words.toLocaleString()} ${t('wordsU')}  ·  ${st.lines.toLocaleString()} ${t('linesU')}`;
 }
 
-function renderAll(s) {
-  const el = $('#list');
-  if (!s) { el.innerHTML = `<div class="empty">${esc(t('emptyAll'))}</div>`; return; }
+/* "All cases": rows are built once per language, then only their text is refreshed while typing. */
+let allRows = [];
+function buildAllRows() {
+  const G = groupNames();
+  let n = 0;
+  $('#list').innerHTML =
+    `<div class="empty">${esc(t('emptyAll'))}</div>` +
+    CASE_GROUPS.map(
+      (g) =>
+        `<div class="pgroup"><div class="glabel">${G[g]}</div>` +
+        CASES.filter((c) => c.g === g).map((c) =>
+          `<button class="row rip" data-c="${c.id}" style="--n:${n++}"><span class="rn">${esc(displayName(c, lang()))}</span><span class="rv"></span>${icon('copy')}</button>`,
+        ).join('') +
+        '</div>',
+    ).join('');
+  allRows = $$('#list .row').map((el) => ({ el, c: CASES.find((c) => c.id === el.dataset.c), rv: $('.rv', el) }));
+}
+
+function updateAll(s) {
+  const list = $('#list');
+  list.classList.toggle('is-empty', !s);
+  if (!s) return;
   const sample = s.length > 20000 ? s.slice(0, 20000) : s;
-  const G = { text: t('gText'), code: t('gCode'), other: t('gOther') };
-  el.innerHTML = CASE_GROUPS.map((g) =>
-    `<div class="glabel">${G[g]}</div>` +
-    CASES.filter((c) => c.g === g).map((c) => {
-      const r = c.f(sample, opts());
-      const first = r.split(/\r?\n/)[0];
-      const shown = first.length > 140 ? first.slice(0, 140) + '…' : first;
-      const more = r.includes('\n') || s.length > sample.length ? ' …' : '';
-      return `<button class="row rip" data-c="${c.id}" title="${esc(first)}"><span class="rn">${esc(displayName(c, lang()))}</span><span class="rv">${esc(shown)}${more}</span>${icon('copy')}</button>`;
-    }).join(''),
-  ).join('');
-  $$('.row', el).forEach((r, i) => r.style.setProperty('--n', i));
+  for (const { el, c, rv } of allRows) {
+    const r = c.f(sample, opts());
+    const first = r.split(/\r?\n/)[0];
+    const shown = first.length > 140 ? first.slice(0, 140) + '…' : first;
+    rv.textContent = shown + (r.includes('\n') || s.length > sample.length ? ' …' : '');
+    el.title = first;
+  }
+}
+
+let lastTag = '';
+function updateTag() {
+  const tag = $('#oTag');
+  tag.hidden = state.tab === 'all';
+  if (tag.hidden) return;
+  const name = displayName(currentItem(), lang());
+  if (name !== lastTag) { tag.textContent = name; retrigger(tag, 'pop'); lastTag = name; }
 }
 
 function update() {
   const s = input.value;
   renderStats(s);
   saveDraft(s);
+  $('#bSample').hidden = !!s;
   if (state.tab === 'all') {
     out = '';
-    renderAll(s);
-  } else if (state.tab === 'tools') {
-    const x = TOOLS.find((y) => y.id === state.tool);
-    out = x ? x.f(s, opts()) : '';
-    output.value = out;
+    updateAll(s);
   } else {
-    out = CASES.find((c) => c.id === state.cse).f(s, opts());
+    out = currentItem().f(s, opts());
     output.value = out;
   }
   $('#bCopy').disabled = $('#bSwap').disabled = $('#bSave').disabled = !out;
+  if (!out) resetCopyButton();
 }
 
 const saveDraft = debounce((s) => store.set('draft', s.length < 2_000_000 ? s : ''), 500);
@@ -190,22 +218,40 @@ function schedule() {
   else raf = requestAnimationFrame(update);
 }
 
+function syncSmart() {
+  $('#smartWrap').hidden = !(state.tab === 'convert' && state.cse === 'title');
+}
+
 function setTab(k, animate = true) {
   state.tab = k;
   store.set('tab', k);
+  $('#content').dataset.tab = k;
   $$('.rail-item').forEach((b) => {
     const on = b.dataset.tab === k;
     b.setAttribute('aria-selected', String(on));
     b.tabIndex = on ? 0 : -1;
   });
-  $('#vConvert').hidden = k !== 'convert';
-  $('#vTools').hidden = k !== 'tools';
+  $('#chips').hidden = k !== 'convert';
+  $('#tools').hidden = k !== 'tools';
+  $('#cardPick').hidden = k === 'all';
   $('#list').hidden = k !== 'all';
   $('#outField').hidden = k === 'all';
   $('#outActions').hidden = k === 'all';
   $('#oTitle').textContent = t(k === 'all' ? 'allTitle' : k === 'tools' ? 'toolsTitle' : 'result');
+  $('#pTitle').textContent = t(k === 'tools' ? 'pickTool' : 'pickStyle');
+  syncSmart();
+  updateTag();
   update();
-  if (animate) [$('#vConvert'), $('#vTools'), $('#list'), $('#outField')].filter((e) => !e.hidden).forEach((e) => retrigger(e));
+  if (animate) {
+    [$('#cardPick'), $('#outField')].filter((e) => !e.hidden).forEach((e) => retrigger(e));
+    const list = $('#list');
+    if (!list.hidden) {
+      list.classList.remove('enter');
+      void list.offsetWidth;
+      list.classList.add('enter');
+      setTimeout(() => list.classList.remove('enter'), 900);
+    }
+  }
 }
 
 /* ---------- i18n ---------- */
@@ -214,13 +260,20 @@ function activeLang() { return state.langPref === 'auto' ? detectLanguage() : st
 function applyI18n() {
   setLanguage(activeLang());
   $$('[data-i]').forEach((e) => { e.textContent = t(e.dataset.i); });
-  $$('[data-tt]').forEach((e) => { e.title = t(e.dataset.tt); e.setAttribute('aria-label', t(e.dataset.tt)); });
+  $$('[data-tt]').forEach((e) => {
+    e.title = t(e.dataset.tt);
+    if (e.tagName !== 'LABEL') e.setAttribute('aria-label', t(e.dataset.tt));
+  });
   $$('[data-ph]').forEach((e) => { e.placeholder = t(e.dataset.ph); });
   $$('[data-tt-label]').forEach((e) => e.setAttribute('aria-label', t(e.dataset.ttLabel)));
   buildChips();
+  buildAllRows();
   buildSwatches();
+  buildFonts();
   updateWinHint();
   syncMaxIcon();
+  lastTag = '';
+  resetCopyButton();
   setTab(state.tab, false);
 }
 
@@ -239,7 +292,6 @@ function swatchColors(el, seed) {
   const s = schemeFor(seed, isDark());
   el.style.setProperty('--sw-a', s.primary);
   el.style.setProperty('--sw-b', s.primaryContainer);
-  el.style.setProperty('--sw-c', s.primaryContainer);
 }
 
 function buildSwatches() {
@@ -259,9 +311,14 @@ function buildSwatches() {
   c.className = 'swatch custom';
   c.setAttribute('role', 'radio');
   c.title = t('custom');
-  c.innerHTML = `${icon('check')}<input type="color" aria-label="${esc(t('custom'))}">`;
+  c.innerHTML = `${icon('check')}<span class="pip">${icon('pipette')}</span><input type="color" aria-label="${esc(t('custom'))}">`;
   host.append(c);
   paintSwatches();
+}
+
+function colorLabel() {
+  const p = PRESETS.find((x) => x.seed === state.seed);
+  return `${p ? t(p.key) : t('custom')} · ${state.seed}`;
 }
 
 function paintSwatches() {
@@ -272,17 +329,44 @@ function paintSwatches() {
     } else {
       const isCustom = !PRESETS.some((p) => p.seed === state.seed);
       b.setAttribute('aria-checked', String(isCustom));
+      swatchColors(b, state.seed);
       const inp = $('input', b);
       if (inp.value.toUpperCase() !== state.seed) inp.value = state.seed.toLowerCase();
-      if (isCustom) b.title = `${t('custom')}: ${state.seed}`;
+      b.title = isCustom ? `${t('custom')}: ${state.seed}` : t('custom');
     }
   });
+  $('#colorName').textContent = colorLabel();
 }
 
 function setSeed(seed) {
   state.seed = seed.toUpperCase();
   store.set('seed', state.seed);
   paint();
+}
+
+/* ---------- font ---------- */
+function buildFonts() {
+  const host = $('#fontGrid');
+  host.textContent = '';
+  availableFonts().forEach((f) => {
+    const b = document.createElement('button');
+    b.className = 'font-tile rip';
+    b.setAttribute('role', 'radio');
+    b.dataset.font = f.id;
+    b.style.setProperty('--f', f.stack);
+    b.innerHTML = `<span class="aa">Aa</span><span class="fn">${esc(f.id === 'system' ? t('fSystem') : f.name)}</span>${icon('check')}`;
+    host.append(b);
+  });
+  paintFonts();
+}
+function paintFonts() {
+  $$('#fontGrid .font-tile').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.font === state.font)));
+}
+function setFont(id) {
+  state.font = findFont(id).id;
+  store.set('font', state.font);
+  applyFont(state.font);
+  paintFonts();
 }
 
 /* ---------- window (Tauri) ---------- */
@@ -298,6 +382,16 @@ function syncMaxIcon() {
     b.title = t(m ? 'restore' : 'maximize');
     b.setAttribute('aria-label', b.title);
   }).catch(() => {});
+}
+
+async function setWindowMode(mode) {
+  if (!invoke) return;
+  try {
+    await invoke('set_window_mode', { mode });
+    state.winMode = mode;
+    setChecked($('#segWin'), mode);
+    updateWinHint();
+  } catch { /* keep previous value */ }
 }
 
 async function initWindow() {
@@ -369,9 +463,16 @@ function openDlg(d) { if (!d.open) d.showModal(); }
 function closeDlg(d) {
   if (!d.open || d.classList.contains('closing')) return;
   d.classList.add('closing');
-  const fin = () => { d.classList.remove('closing'); if (d.open) d.close(); };
-  d.addEventListener('animationend', (e) => { if (e.target === d && e.animationName === 'dlg-out') fin(); });
-  setTimeout(fin, 320);
+  let timer;
+  const fin = () => {
+    clearTimeout(timer);
+    d.removeEventListener('animationend', onEnd);
+    d.classList.remove('closing');
+    if (d.open) d.close();
+  };
+  const onEnd = (e) => { if (e.target === d && e.animationName === 'dlg-out') fin(); };
+  d.addEventListener('animationend', onEnd);
+  timer = setTimeout(fin, 320);
 }
 $$('dialog').forEach((d) => {
   d.addEventListener('cancel', (e) => { e.preventDefault(); closeDlg(d); });
@@ -393,6 +494,8 @@ $('#chips').addEventListener('click', (e) => {
   state.cse = b.dataset.c;
   store.set('cse', state.cse);
   $$('#chips [data-c]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+  syncSmart();
+  updateTag();
   update();
 });
 $('#tools').addEventListener('click', (e) => {
@@ -401,6 +504,7 @@ $('#tools').addEventListener('click', (e) => {
   state.tool = b.dataset.tool;
   store.set('tool', state.tool);
   $$('#tools [data-tool]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+  updateTag();
   update();
 });
 $('#list').addEventListener('click', (e) => {
@@ -445,8 +549,9 @@ $('#bPaste').addEventListener('click', async () => {
   try {
     setInput(await navigator.clipboard.readText());
     input.focus();
-  } catch { toast(t('pasteFail')); }
+  } catch { input.focus(); toast(t('pasteFail')); }
 });
+$('#bSample').addEventListener('click', () => { setInput(t('sampleText')); input.focus(); });
 $('#bSave').addEventListener('click', saveFile);
 $('#bOpen').addEventListener('click', openFile);
 $('#file').addEventListener('change', (e) => {
@@ -477,15 +582,9 @@ $('#segLang').addEventListener('click', (e) => {
   setChecked($('#segLang'), state.langPref);
   applyI18n();
 });
-$('#segWin').addEventListener('click', async (e) => {
+$('#segWin').addEventListener('click', (e) => {
   const b = e.target.closest('[data-v]');
-  if (!b || !invoke) return;
-  try {
-    await invoke('set_window_mode', { mode: b.dataset.v });
-    state.winMode = b.dataset.v;
-    setChecked($('#segWin'), state.winMode);
-    updateWinHint();
-  } catch { /* keep previous value */ }
+  if (b) setWindowMode(b.dataset.v);
 });
 $('#swatches').addEventListener('click', (e) => {
   const b = e.target.closest('.swatch[data-seed]');
@@ -493,6 +592,23 @@ $('#swatches').addEventListener('click', (e) => {
 });
 $('#swatches').addEventListener('input', (e) => {
   if (e.target.matches('input[type=color]')) setSeed(e.target.value);
+});
+$('#fontGrid').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-font]');
+  if (b) setFont(b.dataset.font);
+});
+$('#bReset').addEventListener('click', async () => {
+  state.theme = 'system'; state.langPref = 'auto'; state.seed = DEFAULT_SEED; state.smart = true;
+  ['theme', 'lang', 'seed'].forEach((k) => store.set(k, k === 'seed' ? DEFAULT_SEED : k === 'theme' ? 'system' : 'auto'));
+  store.set('smart', '1');
+  $('#smart').checked = true;
+  setChecked($('#segTheme'), 'system');
+  setChecked($('#segLang'), 'auto');
+  setFont('system');
+  await setWindowMode('remember');
+  paint();
+  applyI18n();
+  toast(t('resetDone'));
 });
 
 document.addEventListener('keydown', (e) => {
@@ -515,6 +631,8 @@ async function start() {
   hydrateIcons();
   setChecked($('#segTheme'), state.theme);
   setChecked($('#segLang'), state.langPref);
+  state.font = findFont(state.font).id;
+  applyFont(state.font);
   paint();
   applyI18n();
   input.value = store.get('draft', '') || '';

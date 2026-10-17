@@ -6,7 +6,7 @@
 
 **Convert text between 19 letter cases, with handy text tools. Fast, offline and beautiful.**
 
-Material Design 3 · Light, dark and system themes · English and Vietnamese
+Material Design 3 · Light, dark and system themes · English and Vietnamese · [Landing page](index.html)
 
 ![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)
 ![Rust](https://img.shields.io/badge/Rust-stable-000000?logo=rust&logoColor=white)
@@ -27,7 +27,7 @@ Case Converter turns any text into the style you need: `UPPERCASE`, `Title Case`
 | :---: | :---: |
 | ![Convert](screenshots/image01.png) | ![Dark theme, Vietnamese](screenshots/image02.png) |
 | ![All cases](screenshots/image03.png) | ![Text tools](screenshots/image04.png) |
-| ![Settings](screenshots/image05.png) | ![About](screenshots/image06.png) |
+| ![Settings](screenshots/image05.png) | ![About and shortcuts](screenshots/image06.png) |
 
 > The images in `screenshots/` are previews of the interface. Replace them with your own captures (keep the names `image01`, `image02`, ...) at any time.
 
@@ -49,14 +49,21 @@ Case Converter turns any text into the style you need: `UPPERCASE`, `Title Case`
 - Undo for Clear and for "Use result as source text"
 - Character, word and line counters; your draft and settings are remembered
 
+**Layout**
+- Source text and result sit side by side; the style picker spans the full width underneath, so the flow is always: type, choose, copy
+- The result card names the active style, and the Smart Title Case switch only appears when Title Case is selected
+- A "Try a sample" button fills an empty editor
+
 **Material Design 3 experience**
 - Light, dark and system themes
 - Theme color: the default Material theme, 18 Material palette colors, or any custom color. A full tonal palette (primary, secondary, tertiary, surfaces) is generated with Material Color Utilities
+- Font: the system UI font by default, or pick a popular font (Roboto, Segoe UI, Arial, Calibri, Verdana, Tahoma, Georgia, Consolas and more). Only fonts installed on the device are listed
+- Tidy Settings dialog with one card per topic and a "Reset to defaults" button
 - English and Vietnamese, detected automatically from your device language (you can also pick one in Settings)
 - Window startup option: **remember the window size** or **always start maximized**
 - Smooth animations: ripple and state layers, animated chips, switches, dialogs, snackbars and a startup reveal. Reduced motion settings are respected
-- Responsive layout: navigation rail with two columns on wide windows, bottom navigation bar and stacked cards on narrow ones
-- Custom Material title bar, app icon, installer icon and uninstaller icon
+- Responsive layout: navigation rail with two columns on wide windows, stacked cards on medium ones, bottom navigation bar on narrow ones
+- Custom Material title bar, [Lucide](https://lucide.dev) icons, and an orange (`#FF5722`) app icon, installer icon and uninstaller icon
 
 ### Keyboard shortcuts
 
@@ -79,7 +86,8 @@ Case Converter turns any text into the style you need: `UPPERCASE`, `Title Case`
 - [Tauri 2](https://tauri.app): small Rust core and the WebView2 runtime that ships with Windows, so no browser engine is bundled
 - Vanilla HTML, CSS and JavaScript (ES modules), no runtime framework
 - [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) (bundled in `src/vendor/mcu.js`) for dynamic color
-- Roboto, bundled offline (Latin, Latin Extended and Vietnamese)
+- [Lucide](https://lucide.dev) icons (ISC license), bundled as inline SVG
+- System UI font by default; Roboto is bundled offline (Latin, Latin Extended and Vietnamese) as an optional font
 - Rust crates: `tauri-plugin-dialog`, `serde`, `serde_json`
 
 ## Development
@@ -120,7 +128,9 @@ After replacing icons, run `cargo clean -p case-converter` once so Cargo re-embe
 
 ```
 case-converter/
-  screenshots/            README images (image01, image02, ...)
+  index.html              Landing page (single file, Material Design 3, SEO and social meta tags)
+  download/               Put the setup file here; the landing page links to it
+  screenshots/            README and landing page images (image01, image02, ...)
   scripts/
     generate-icons.py     Generates app, setup and uninstall icons and installer images
   src/                    Frontend
@@ -132,9 +142,10 @@ case-converter/
       i18n.js             English and Vietnamese strings, language detection
       theme.js            Material 3 theming and color presets
       theme-default.js    Default scheme exported from Material Theme Builder
-      icons.js            Material icons (including the settings cog)
+      icons.js            Lucide icons (including the settings cog wheel)
+      fonts.js            Font choices and installed-font detection
     vendor/               Roboto fonts and Material Color Utilities
-    assets/logo.svg
+    assets/               logo.svg and og-image.png (social preview)
   src-tauri/
     src/lib.rs            Rust core: files, save dialog, window size memory
     src/main.rs           Entry point
@@ -148,9 +159,17 @@ case-converter/
 
 Window preferences are stored in `window.json` inside the app config folder (`%APPDATA%\com.minhtrong67.caseconverter`).
 
+## Landing page
+
+`index.html` in the project root is a standalone landing page (one file, no build step). It follows Material Design 3, supports light/dark, a live theme color picker, English and Vietnamese (auto detected), and is responsive down to phones. To publish it:
+
+1. Build the app and copy the installer to `download/Case Converter_1.0.0_x64-setup.exe`.
+2. Host the project root (for example with GitHub Pages).
+3. In `index.html`, replace `https://minhtrong67.github.io/case-converter/` (canonical, Open Graph and Twitter tags, JSON-LD) with your real address.
+
 ## Credits
 
-Designed and maintained by **minhtrong67**. Built with the assistance of **Claude**, an AI assistant made by Anthropic, which helped with design, implementation and documentation.
+Designed and maintained by **minhtrong67**. Built with the assistance of **Claude**, an AI assistant made by Anthropic, which helped with design, implementation and documentation. Icons by [Lucide](https://lucide.dev).
 
 ## License
 
