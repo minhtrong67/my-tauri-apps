@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Case Converter",
+  "version": "1.0.0",
+  "identifier": "com.minhtrong67.caseconverter",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Case Converter",
+        "width": 1100,
+        "height": 760,
+        "minWidth": 360,
+        "minHeight": 480,
+        "center": true,
+        "decorations": false,
+        "shadow": true,
+        "visible": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src ipc: http://ipc.localhost",
+      "devCsp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' ws: wss: ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "publisher": "minhtrong67",
+    "copyright": "Copyright (c) 2026 minhtrong67",
+    "shortDescription": "Convert text between letter cases",
+    "longDescription": "Case Converter converts text between many letter cases and offers handy text tools. Material Design 3, English and Vietnamese.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "installerIcon": "icons/setup.ico",
+        "headerImage": "icons/installer-header.bmp",
+        "sidebarImage": "icons/installer-sidebar.bmp",
+        "installerHooks": "installer/hooks.nsh"
+      }
+    }
+  }
+}

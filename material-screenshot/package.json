@@ -1,0 +1,16 @@
+{
+  "name": "material-screenshot",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Material Screenshot: turn plain screenshots into polished images",
+  "author": "minhtrong67",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

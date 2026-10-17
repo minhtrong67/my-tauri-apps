@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- Material 3 launcher icon: tonal squircle, flat geometric glyph (palette from the Material Theme Builder export) -->
+  <rect x="8" y="8" width="240" height="240" rx="68" fill="#415F91"/>
+  <rect x="48" y="52" width="152" height="144" rx="20" fill="#F9F9FF"/>
+  <path d="M48 72a20 20 0 0 1 20-20h112a20 20 0 0 1 20 20v28H48z" fill="#284777"/>
+  <g fill="#D6E3FF"><rect x="64" y="68" width="30" height="10" rx="5"/><rect x="108" y="68" width="30" height="10" rx="5"/><rect x="152" y="68" width="30" height="10" rx="5"/></g>
+  <g stroke="#C4C6D0" stroke-width="6"><path d="M48 136h152M48 168h152M98 100v96M148 100v96"/></g>
+  <g transform="translate(180 180) rotate(45)">
+    <rect x="-17" y="-92" width="34" height="108" rx="8" fill="#FAD8FD"/>
+    <rect x="-17" y="-92" width="34" height="22" rx="8" fill="#705575"/>
+    <rect x="-17" y="-76" width="34" height="8" fill="#D6E3FF"/>
+    <path d="M-17 16h34L0 52z" fill="#F9F9FF"/>
+    <path d="M-7 39h14L0 52z" fill="#284777"/>
+  </g>
+</svg>

@@ -1,0 +1,10 @@
+{
+  "name": "material-readme",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Material Readme: a Material Design 3 Markdown editor and viewer for the desktop",
+  "author": "minhtrong67",
+  "license": "MIT",
+  "scripts": { "dev": "tauri dev", "build": "tauri build", "tauri": "tauri" },
+  "devDependencies": { "@tauri-apps/cli": "^2" }
+}

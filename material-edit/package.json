@@ -1,0 +1,18 @@
+{
+  "name": "material-edit",
+  "version": "1.0.0",
+  "description": "A simple, Material Design 3 video editor.",
+  "author": "minhtrong67",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "icons": "python3 tools/make-icons.py",
+    "sprite": "node tools/build-sprite.mjs"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

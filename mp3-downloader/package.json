@@ -1,0 +1,16 @@
+{
+  "name": "mp3-downloader",
+  "private": true,
+  "version": "0.4.0",
+  "description": "Download MP3 from YouTube, TikTok and Spotify \u2014 Tauri 2 + Material Design 3",
+  "author": "minhtrong67",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

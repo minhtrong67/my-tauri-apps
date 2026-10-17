@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f8f9ff" />
+  <title>Material Docx</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="style.css" />
+  <style id="print-style"></style>
+</head>
+<body class="view-print">
+  <div id="app">
+    <!-- Title bar: quick access, document name, search, theme, settings -->
+    <header id="titlebar">
+      <div class="brand" aria-hidden="true">
+        <svg viewBox="0 0 32 32" class="logo"><rect width="32" height="32" rx="8" fill="var(--md-primary)"/><path d="M9 8h9l5 5v11a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" fill="var(--md-on-primary)"/><path d="M18 8v5h5z" fill="var(--md-primary-container)"/><path d="M11 17h10M11 20.500h10M11 24h6" stroke="var(--md-primary)" stroke-width="1.700" stroke-linecap="round"/></svg>
+      </div>
+      <div id="quick" class="quick"></div>
+      <div class="doc-title">
+        <input id="doc-name" type="text" spellcheck="false" maxlength="120" aria-label="Document name" />
+        <span id="save-state" class="save-state"></span>
+      </div>
+      <div class="spacer"></div>
+      <button class="search-pill" id="btn-search" type="button"></button>
+      <button class="icon-btn" id="btn-theme" type="button"></button>
+      <button class="icon-btn" id="btn-settings" type="button"></button>
+    </header>
+
+    <!-- Ribbon -->
+    <nav id="tabs" role="tablist"></nav>
+    <section id="ribbon" role="tabpanel"></section>
+
+    <div id="body">
+      <aside id="sidepane" hidden>
+        <div class="side-head">
+          <div class="seg" id="side-tabs"></div>
+          <button class="icon-btn sm" id="side-close" type="button"></button>
+        </div>
+        <div id="side-content"></div>
+      </aside>
+
+      <div id="stage">
+        <div id="findbar" hidden></div>
+        <main id="workspace" tabindex="-1">
+          <div id="ruler-wrap"><div id="ruler"></div></div>
+          <div id="zoomer">
+            <div id="sheet">
+              <article id="editor" contenteditable="true" spellcheck="true" autocapitalize="off" role="textbox" aria-multiline="true"><p><br></p></article>
+              <div id="overlay" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div id="img-handles" hidden></div>
+        </main>
+      </div>
+    </div>
+
+    <footer id="statusbar"></footer>
+
+    <!-- File (backstage) view -->
+    <div id="backstage" hidden></div>
+  </div>
+
+  <input type="file" id="file-image" accept="image/*" hidden />
+  <input type="file" id="file-open" accept=".docx,.html,.htm,.txt,.md" hidden />
+  <div id="popup-layer"></div>
+  <div id="snackbar" role="status" aria-live="polite"></div>
+  <div id="drop-hint" hidden></div>
+
+  <dialog id="dlg-confirm" class="dialog confirm">
+    <h2 id="cf-title"></h2>
+    <p id="cf-msg"></p>
+    <div class="dlg-actions">
+      <button class="btn text" id="cf-cancel" type="button"></button>
+      <span class="spacer"></span>
+      <button class="btn text" id="cf-no" type="button"></button>
+      <button class="btn filled" id="cf-yes" type="button"></button>
+    </div>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

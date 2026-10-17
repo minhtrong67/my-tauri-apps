@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Material Docx",
+  "version": "2.0.0",
+  "identifier": "com.minhtrong67.materialdocx",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Material Docx",
+        "width": 1320,
+        "height": 860,
+        "minWidth": 900,
+        "minHeight": 600,
+        "center": true,
+        "dragDropEnabled": true,
+        "visible": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; style-src-attr 'unsafe-inline'; style-src-elem 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'; connect-src ipc: http://ipc.localhost",
+      "dangerousDisableAssetCspModification": [
+        "style-src",
+        "style-src-elem",
+        "style-src-attr"
+      ]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "minhtrong67",
+    "copyright": "Copyright © 2026 minhtrong67",
+    "category": "Productivity",
+    "shortDescription": "A Word-style Material 3 word processor",
+    "longDescription": "Material Docx is a lightweight Material Design 3 word processor with a Word-style ribbon, paginated page view, headers/footers, tables, images, styles, .docx import/export, light/dark/system themes, custom accent colors and English/Vietnamese UI.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/installer.ico",
+        "sidebarImage": "icons/nsis-sidebar.bmp",
+        "headerImage": "icons/nsis-header.bmp",
+        "languages": [
+          "English",
+          "Vietnamese"
+        ],
+        "displayLanguageSelector": true,
+        "installMode": "currentUser",
+        "installerHooks": "installer-hooks.nsh"
+      }
+    }
+  }
+}

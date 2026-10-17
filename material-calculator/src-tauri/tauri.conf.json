@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Material Calculator",
+  "version": "1.0.0",
+  "identifier": "com.minhtrong67.material-calculator",
+  "build": {
+    "beforeDevCommand": "npm run dev:web",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build:web",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Material Calculator",
+        "width": 1000,
+        "height": 720,
+        "minWidth": 420,
+        "minHeight": 620,
+        "center": true,
+        "resizable": true,
+        "visible": false,
+        "dragDropEnabled": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost",
+      "devCsp": "default-src 'self' http://localhost:1420; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost http://localhost:1420 ws://localhost:1420"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "app", "dmg", "deb", "rpm", "appimage"],
+    "category": "Utility",
+    "shortDescription": "A Material Design 3 calculator",
+    "longDescription": "Standard, scientific, programmer, unit converter and date calculator in one fast, beautiful Material Design 3 desktop app. Built with Tauri 2.",
+    "copyright": "Copyright (c) 2026 minhtrong67",
+    "license": "MIT",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "installer/setup.ico",
+        "uninstallerIcon": "installer/uninstall.ico",
+        "sidebarImage": "installer/sidebar.bmp",
+        "headerImage": "installer/header.bmp",
+        "uninstallerHeaderImage": "installer/header.bmp",
+        "installMode": "currentUser",
+        "languages": ["English", "Vietnamese"],
+        "displayLanguageSelector": true,
+        "compression": "lzma"
+      }
+    },
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Material Photo",
+  "version": "1.0.0",
+  "identifier": "com.minhtrong67.materialphoto",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Material Photo",
+        "width": 1280,
+        "height": 820,
+        "minWidth": 480,
+        "minHeight": 420,
+        "center": true,
+        "visible": false
+      }
+    ],
+    "security": {
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "**"
+        ]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "publisher": "minhtrong67",
+    "copyright": "Copyright (c) 2026 minhtrong67",
+    "shortDescription": "View and edit your pictures",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "fileAssociations": [
+      {
+        "ext": [
+          "png",
+          "jpg",
+          "jpeg",
+          "jfif",
+          "gif",
+          "webp",
+          "bmp",
+          "ico",
+          "avif"
+        ],
+        "name": "Image",
+        "description": "Picture",
+        "role": "Viewer",
+        "mimeType": "image/png"
+      }
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "installerIcon": "installer/setup.ico",
+        "uninstallerIcon": "installer/uninstall.ico",
+        "headerImage": "installer/header.bmp",
+        "sidebarImage": "installer/sidebar.bmp"
+      }
+    },
+    "longDescription": "Material Photo is a fast photo viewer and editor with a Material Design 3 interface.",
+    "category": "Photography"
+  }
+}

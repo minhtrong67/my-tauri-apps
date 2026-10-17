@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Material Edit — A simple Material Design 3 video editor</title>
+  <meta name="description" content="Material Edit is a free, open-source desktop video editor with a Material Design 3 look: multi-track timeline, trim & split, filters, transitions, text, music and fast MP4 export. English & Tiếng Việt." />
+  <meta name="keywords" content="video editor, Material Design 3, Tauri, desktop app, open source, timeline, MP4 export, trình chỉnh sửa video, dựng video" />
+  <meta name="author" content="minhtrong67" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#673AB7" />
+  <link rel="canonical" href="https://minhtrong67.github.io/material-edit/" />
+  <link rel="icon" type="image/png" href="src/assets/logo.png" />
+  <link rel="apple-touch-icon" href="src-tauri/icons/256x256.png" />
+
+  <!-- Open Graph / social sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Material Edit" />
+  <meta property="og:title" content="Material Edit — A simple Material Design 3 video editor" />
+  <meta property="og:description" content="Free & open-source desktop video editor. Multi-track timeline, filters, transitions, text, music, fast MP4 export." />
+  <meta property="og:url" content="https://minhtrong67.github.io/material-edit/" />
+  <meta property="og:image" content="https://minhtrong67.github.io/material-edit/screenshots/image02.png" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="760" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="vi_VN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Material Edit — A simple Material Design 3 video editor" />
+  <meta name="twitter:description" content="Free & open-source desktop video editor with a Material Design 3 look." />
+  <meta name="twitter:image" content="https://minhtrong67.github.io/material-edit/screenshots/image02.png" />
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material Edit","applicationCategory":"MultimediaApplication","operatingSystem":"Windows","softwareVersion":"1.0.0","license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"minhtrong67"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A simple, open-source Material Design 3 video editor."}
+  </script>
+
+  <style>
+    :root {
+      --primary: #673ab7; --on-primary: #fff; --primary-container: #ede7f6; --on-primary-container: #2a1060;
+      --secondary-container: #e6defa; --surface: #fdf8ff; --surface-1: #f6f0fb; --surface-2: #efe8f7; --on-surface: #1d1a22;
+      --on-surface-variant: #4a4453; --outline: #7b7485; --outline-variant: #cfc7d9; --tertiary: #8e4585;
+      --e1: 0 1px 3px rgb(0 0 0 / .14), 0 1px 2px rgb(0 0 0 / .2); --e3: 0 8px 24px rgb(40 20 90 / .18);
+      --ease: cubic-bezier(.2, 0, 0, 1); --ease-out: cubic-bezier(.05, .7, .1, 1);
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #cfbcff; --on-primary: #381e72; --primary-container: #4f378b; --on-primary-container: #eaddff;
+        --secondary-container: #4a4458; --surface: #141218; --surface-1: #1d1b20; --surface-2: #26232b; --on-surface: #e6e0e9;
+        --on-surface-variant: #cac4d0; --outline: #948f99; --outline-variant: #49454f; --tertiary: #efb8c8;
+        --e1: 0 1px 3px rgb(0 0 0 / .5); --e3: 0 8px 28px rgb(0 0 0 / .5);
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+    body { margin: 0; font: 400 16px/24px var(--font); background: var(--surface); color: var(--on-surface); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; text-decoration: none; }
+    .i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+    .wrap { width: min(1120px, 100% - 40px); margin-inline: auto; }
+
+    /* top bar */
+    .bar { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(14px); background: color-mix(in srgb, var(--surface) 82%, transparent); border-bottom: 1px solid transparent; transition: border-color .3s, box-shadow .3s; }
+    .bar.scrolled { border-color: var(--outline-variant); }
+    .bar .wrap { display: flex; align-items: center; gap: 8px; height: 64px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; margin-right: auto; }
+    .brand img { width: 34px; height: 34px; border-radius: 9px; }
+    .nav a { padding: 8px 14px; border-radius: 20px; font-weight: 500; font-size: 14px; color: var(--on-surface-variant); transition: background .2s; }
+    .nav a:hover { background: color-mix(in srgb, var(--on-surface) 8%, transparent); }
+    .lang { display: flex; border: 1px solid var(--outline); border-radius: 18px; overflow: hidden; }
+    .lang button { border: 0; background: transparent; color: var(--on-surface); font: 500 12px var(--font); padding: 6px 11px; cursor: pointer; }
+    .lang button.on { background: var(--secondary-container); }
+
+    /* buttons */
+    .btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 48px; padding: 0 28px; border-radius: 24px; border: 0; font: 500 15px var(--font); cursor: pointer; transition: transform .2s var(--ease), box-shadow .2s var(--ease), background .2s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: scale(.97); }
+    .btn.filled { background: var(--primary); color: var(--on-primary); box-shadow: var(--e1); }
+    .btn.filled:hover { box-shadow: var(--e3); }
+    .btn.tonal { background: var(--secondary-container); color: var(--on-primary-container); }
+    .btn.lg { height: 56px; padding: 0 34px; font-size: 16px; border-radius: 28px; }
+    .btn .i { width: 20px; height: 20px; }
+
+    /* hero */
+    .hero { position: relative; padding: 72px 0 40px; overflow: hidden; }
+    .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; z-index: -1; animation: float 14s ease-in-out infinite; }
+    .hero::before { width: 420px; height: 420px; background: color-mix(in srgb, var(--primary) 45%, transparent); top: -120px; left: -100px; }
+    .hero::after { width: 380px; height: 380px; background: color-mix(in srgb, var(--tertiary) 40%, transparent); right: -80px; top: 120px; animation-delay: -6s; }
+    @keyframes float { 50% { transform: translate(30px, 24px) scale(1.08); } }
+    .hero-grid { display: grid; gap: 48px; align-items: center; text-align: center; justify-items: center; }
+    .chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 16px; background: var(--primary-container); color: var(--on-primary-container); font: 500 13px var(--font); }
+    .chip .i { width: 16px; height: 16px; }
+    h1 { margin: 18px 0 16px; font: 700 clamp(34px, 6vw, 60px)/1.08 var(--font); letter-spacing: -1px; }
+    h1 em { font-style: normal; color: var(--primary); }
+    .lead { margin: 0 auto 28px; max-width: 56ch; color: var(--on-surface-variant); font-size: clamp(16px, 2vw, 19px); line-height: 1.55; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .meta { margin-top: 14px; color: var(--on-surface-variant); font-size: 13px; }
+    .shot { width: min(980px, 100%); border-radius: 20px; border: 1px solid var(--outline-variant); box-shadow: var(--e3); background: var(--surface-1); overflow: hidden; transform: perspective(1400px) rotateX(4deg); transition: transform .6s var(--ease-out); }
+    .shot:hover { transform: perspective(1400px) rotateX(0); }
+
+    /* sections */
+    section { padding: 72px 0; }
+    .eyebrow { color: var(--primary); font: 600 13px var(--font); letter-spacing: 1.2px; text-transform: uppercase; }
+    h2 { margin: 8px 0 12px; font: 700 clamp(26px, 4vw, 38px)/1.15 var(--font); letter-spacing: -.5px; }
+    .sub { color: var(--on-surface-variant); max-width: 60ch; margin: 0 0 40px; }
+    .features { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    .card { padding: 24px; border-radius: 24px; background: var(--surface-1); border: 1px solid transparent; transition: transform .3s var(--ease-out), border-color .3s, box-shadow .3s; }
+    .card:hover { transform: translateY(-6px); border-color: var(--outline-variant); box-shadow: var(--e3); }
+    .card .ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 16px; background: var(--primary-container); color: var(--on-primary-container); margin-bottom: 16px; transition: transform .3s var(--ease-out); }
+    .card:hover .ico { transform: rotate(-8deg) scale(1.1); }
+    .card h3 { margin: 0 0 6px; font: 600 18px/24px var(--font); }
+    .card p { margin: 0; color: var(--on-surface-variant); font-size: 14px; line-height: 21px; }
+
+    .gallery { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+    .gallery figure { margin: 0; border-radius: 20px; overflow: hidden; background: var(--surface-1); border: 1px solid var(--outline-variant); transition: transform .4s var(--ease-out), box-shadow .4s; }
+    .gallery figure:hover { transform: translateY(-6px) scale(1.01); box-shadow: var(--e3); }
+    .gallery figcaption { padding: 12px 18px; font-size: 14px; color: var(--on-surface-variant); }
+    .gallery img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+
+    .dl { border-radius: 32px; padding: clamp(28px, 5vw, 56px); text-align: center; background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 55%, #000)); color: var(--on-primary); position: relative; overflow: hidden; }
+    @media (prefers-color-scheme: dark) { .dl { background: linear-gradient(135deg, #4f378b, #2a1a52); color: #eaddff; } }
+    .dl h2 { margin-top: 0; }
+    .dl p { margin: 0 auto 28px; max-width: 52ch; opacity: .9; }
+    .dl .btn.filled { background: #fff; color: #4527a0; }
+    .dl .btn.ghost { background: transparent; color: inherit; border: 1px solid rgb(255 255 255 / .5); }
+    .dl .row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .dl small { display: block; margin-top: 18px; opacity: .75; }
+
+    footer { padding: 36px 0 48px; color: var(--on-surface-variant); font-size: 14px; border-top: 1px solid var(--outline-variant); }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; }
+    footer a { text-decoration: underline; text-underline-offset: 3px; }
+
+    /* reveal on scroll */
+    .rv { opacity: 0; transform: translateY(28px); transition: opacity .7s var(--ease-out), transform .7s var(--ease-out); transition-delay: var(--d, 0s); }
+    .rv.in { opacity: 1; transform: none; }
+    .hero .rv { animation: up .8s var(--ease-out) both; animation-delay: var(--d, 0s); opacity: 1; transform: none; transition: none; }
+    @keyframes up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+
+    @media (max-width: 720px) {
+      .nav { display: none; }
+      .hero { padding-top: 40px; }
+      section { padding: 52px 0; }
+      .shot { transform: none; border-radius: 14px; }
+      .btn.lg { width: 100%; }
+      .cta { width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .rv { opacity: 1; transform: none; } html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="dl" viewBox="0 0 24 24"><path d="M12 15V3M7 10l5 5 5-5M5 21h14"/></symbol>
+    <symbol id="gh" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4M9 18c-4.51 2-5-2-7-2"/></symbol>
+    <symbol id="scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></symbol>
+    <symbol id="layers" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65M22 12.65l-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></symbol>
+    <symbol id="wand" viewBox="0 0 24 24"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72ZM14 7l3 3M5 6v4M19 14v4M10 2v2M7 8H3M21 16h-4M11 3H9"/></symbol>
+    <symbol id="type" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></symbol>
+    <symbol id="zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
+    <symbol id="palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></symbol>
+    <symbol id="globe" viewBox="0 0 24 24"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></symbol>
+    <symbol id="folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+    <symbol id="music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+  </svg>
+
+  <header class="bar" id="bar">
+    <div class="wrap">
+      <a class="brand" href="#top"><img src="src/assets/logo.png" alt="" width="34" height="34" />Material Edit</a>
+      <nav class="nav" aria-label="Main">
+        <a href="#features" data-t="nav_features">Features</a>
+        <a href="#screens" data-t="nav_screens">Screenshots</a>
+        <a href="#download" data-t="nav_download">Download</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Language"><button data-l="en">EN</button><button data-l="vi">VI</button></div>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="chip rv" style="--d:.05s"><svg class="i"><use href="#zap"/></svg><span data-t="chip">Free · Open source · Tauri 2</span></span>
+          <h1 class="rv" style="--d:.12s"><span data-t="h1a">A simple video editor,</span><br /><em data-t="h1b">designed with Material 3</em></h1>
+          <p class="lead rv" style="--d:.2s" data-t="lead">Cut, arrange, add text, filters and music on a multi-track timeline, then export a crisp MP4 — fast, light and beautiful on your desktop.</p>
+          <div class="cta rv" style="--d:.28s">
+            <a class="btn filled lg" id="dl-main" href="download/Material-Edit_1.0.0_x64-setup.exe" download><svg class="i"><use href="#dl"/></svg><span data-t="dl">Download for Windows</span></a>
+            <a class="btn tonal lg" href="#features"><span data-t="learn">Explore features</span></a>
+          </div>
+          <div class="meta rv" style="--d:.34s" data-t="meta">Version 1.0.0 · Windows 10/11 · MIT license</div>
+        </div>
+        <img class="shot rv" style="--d:.4s" src="screenshots/image02.png" alt="Material Edit editor with a multi-track timeline" width="1280" height="760" />
+      </div>
+    </div>
+
+    <section id="features">
+      <div class="wrap">
+        <div class="eyebrow" data-t="f_eyebrow">Features</div>
+        <h2 data-t="f_title">Everything you need to tell your story</h2>
+        <p class="sub" data-t="f_sub">A focused toolset with smooth motion and a clean, responsive interface.</p>
+        <div class="features">
+          <article class="card rv"><div class="ico"><svg class="i"><use href="#layers"/></svg></div><h3 data-t="c1t">Multi-track timeline</h3><p data-t="c1d">Text, overlay, main and audio tracks with snapping, zoom, rubber-band selection and ripple editing.</p></article>
+          <article class="card rv" style="--d:.06s"><div class="ico"><svg class="i"><use href="#scissors"/></svg></div><h3 data-t="c2t">Trim &amp; split</h3><p data-t="c2d">Cut at the playhead, trim either side, change speed and match clip length to your music.</p></article>
+          <article class="card rv" style="--d:.12s"><div class="ico"><svg class="i"><use href="#wand"/></svg></div><h3 data-t="c3t">Filters &amp; transitions</h3><p data-t="c3d">Ready-made looks, fades, slides, wipes and zooms — adjust brightness, contrast, blur and more.</p></article>
+          <article class="card rv" style="--d:.18s"><div class="ico"><svg class="i"><use href="#type"/></svg></div><h3 data-t="c4t">Text &amp; overlays</h3><p data-t="c4d">Animated titles and captions, picture-in-picture overlays, fades and transforms on the preview.</p></article>
+          <article class="card rv" style="--d:.24s"><div class="ico"><svg class="i"><use href="#zap"/></svg></div><h3 data-t="c5t">Fast, light export</h3><p data-t="c5d">Hardware-accelerated MP4 up to 4K 60 fps, streamed to disk so memory stays flat on long videos.</p></article>
+          <article class="card rv" style="--d:.3s"><div class="ico"><svg class="i"><use href="#palette"/></svg></div><h3 data-t="c6t">Your look</h3><p data-t="c6d">Light, dark or system theme, Material colors, 10 UI fonts and window-size memory.</p></article>
+          <article class="card rv" style="--d:.36s"><div class="ico"><svg class="i"><use href="#globe"/></svg></div><h3 data-t="c7t">English &amp; Tiếng Việt</h3><p data-t="c7d">The language of your device is detected automatically — switch any time in Settings.</p></article>
+          <article class="card rv" style="--d:.42s"><div class="ico"><svg class="i"><use href="#folder"/></svg></div><h3 data-t="c8t">Project library</h3><p data-t="c8d">Autosave, search, sort, rename and duplicate projects right from the home screen.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="screens" style="background:var(--surface-1)">
+      <div class="wrap">
+        <div class="eyebrow" data-t="s_eyebrow">Screenshots</div>
+        <h2 data-t="s_title">A closer look</h2>
+        <p class="sub" data-t="s_sub">Material Design 3 everywhere — from the project library to export.</p>
+        <div class="gallery">
+          <figure class="rv"><img src="screenshots/image01.png" alt="Project library" width="1280" height="760" /><figcaption data-t="g1">Project library</figcaption></figure>
+          <figure class="rv" style="--d:.08s"><img src="screenshots/image03.png" alt="Context menu" width="1440" height="900" /><figcaption data-t="g2">Context menu &amp; shortcuts</figcaption></figure>
+          <figure class="rv" style="--d:.16s"><img src="screenshots/image04.png" alt="Export dialog" width="1440" height="900" /><figcaption data-t="g3">Export</figcaption></figure>
+          <figure class="rv" style="--d:.24s"><img src="screenshots/image05.png" alt="Settings" width="1440" height="900" /><figcaption data-t="g4">Settings</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="download">
+      <div class="wrap">
+        <div class="dl rv">
+          <h2 data-t="d_title">Get Material Edit</h2>
+          <p data-t="d_sub">Free forever and open source. Download the installer and start editing in a minute.</p>
+          <div class="row">
+            <a class="btn filled lg" href="download/Material-Edit_1.0.0_x64-setup.exe" download><svg class="i"><use href="#dl"/></svg><span data-t="dl">Download for Windows</span></a>
+            <a class="btn ghost lg" href="https://github.com/minhtrong67/material-edit" target="_blank" rel="noopener"><svg class="i"><use href="#gh"/></svg><span>GitHub</span></a>
+          </div>
+          <small data-t="d_note">Installer: download/Material-Edit_1.0.0_x64-setup.exe · Windows 10/11 (64-bit)</small>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 <b>minhtrong67</b> · <span data-t="credit">Built with the help of Claude (Anthropic)</span></span>
+      <span><a href="LICENSE" data-t="lic">MIT License</a></span>
+    </div>
+  </footer>
+
+  <script>
+    const T = {
+      en: { nav_features: 'Features', nav_screens: 'Screenshots', nav_download: 'Download', chip: 'Free · Open source · Tauri 2', h1a: 'A simple video editor,', h1b: 'designed with Material 3',
+        lead: 'Cut, arrange, add text, filters and music on a multi-track timeline, then export a crisp MP4 — fast, light and beautiful on your desktop.',
+        dl: 'Download for Windows', learn: 'Explore features', meta: 'Version 1.0.0 · Windows 10/11 · MIT license',
+        f_eyebrow: 'Features', f_title: 'Everything you need to tell your story', f_sub: 'A focused toolset with smooth motion and a clean, responsive interface.',
+        c1t: 'Multi-track timeline', c1d: 'Text, overlay, main and audio tracks with snapping, zoom, rubber-band selection and ripple editing.',
+        c2t: 'Trim & split', c2d: 'Cut at the playhead, trim either side, change speed and match clip length to your music.',
+        c3t: 'Filters & transitions', c3d: 'Ready-made looks, fades, slides, wipes and zooms — adjust brightness, contrast, blur and more.',
+        c4t: 'Text & overlays', c4d: 'Animated titles and captions, picture-in-picture overlays, fades and transforms on the preview.',
+        c5t: 'Fast, light export', c5d: 'Hardware-accelerated MP4 up to 4K 60 fps, streamed to disk so memory stays flat on long videos.',
+        c6t: 'Your look', c6d: 'Light, dark or system theme, Material colors, 10 UI fonts and window-size memory.',
+        c7t: 'English & Tiếng Việt', c7d: 'The language of your device is detected automatically — switch any time in Settings.',
+        c8t: 'Project library', c8d: 'Autosave, search, sort, rename and duplicate projects right from the home screen.',
+        s_eyebrow: 'Screenshots', s_title: 'A closer look', s_sub: 'Material Design 3 everywhere — from the project library to export.',
+        g1: 'Project library', g2: 'Context menu & shortcuts', g3: 'Export', g4: 'Settings',
+        d_title: 'Get Material Edit', d_sub: 'Free forever and open source. Download the installer and start editing in a minute.',
+        d_note: 'Installer: download/Material-Edit_1.0.0_x64-setup.exe · Windows 10/11 (64-bit)', credit: 'Built with the help of Claude (Anthropic)', lic: 'MIT License' },
+      vi: { nav_features: 'Tính năng', nav_screens: 'Ảnh chụp', nav_download: 'Tải về', chip: 'Miễn phí · Mã nguồn mở · Tauri 2', h1a: 'Trình dựng video đơn giản,', h1b: 'thiết kế theo Material 3',
+        lead: 'Cắt, sắp xếp, thêm chữ, bộ lọc và nhạc trên timeline nhiều lớp rồi xuất MP4 sắc nét — nhanh, nhẹ và đẹp ngay trên máy tính.',
+        dl: 'Tải cho Windows', learn: 'Xem tính năng', meta: 'Phiên bản 1.0.0 · Windows 10/11 · Giấy phép MIT',
+        f_eyebrow: 'Tính năng', f_title: 'Mọi thứ bạn cần để kể câu chuyện của mình', f_sub: 'Bộ công cụ gọn gàng với chuyển động mượt mà và giao diện sạch, đáp ứng mọi kích thước.',
+        c1t: 'Timeline nhiều lớp', c1d: 'Các track chữ, lớp phủ, chính và âm thanh với hút dính, thu phóng, chọn vùng và chỉnh sửa liền mạch.',
+        c2t: 'Cắt & tỉa', c2d: 'Cắt tại đầu phát, tỉa hai đầu, đổi tốc độ và khớp độ dài clip với nhạc nền.',
+        c3t: 'Bộ lọc & chuyển cảnh', c3d: 'Kiểu màu dựng sẵn, mờ dần, trượt, quét, phóng — chỉnh độ sáng, tương phản, làm mờ và hơn nữa.',
+        c4t: 'Văn bản & lớp phủ', c4d: 'Tiêu đề, chú thích có hoạt ảnh, lớp phủ hình trong hình, hiện/tắt dần và biến đổi trực tiếp trên khung xem.',
+        c5t: 'Xuất nhanh, nhẹ', c5d: 'MP4 tăng tốc phần cứng đến 4K 60 fps, ghi thẳng ra ổ đĩa nên bộ nhớ luôn ổn định với video dài.',
+        c6t: 'Phong cách của bạn', c6d: 'Giao diện sáng, tối hoặc theo hệ thống, màu Material, 10 phông chữ và ghi nhớ kích thước cửa sổ.',
+        c7t: 'English & Tiếng Việt', c7d: 'Tự nhận diện ngôn ngữ của thiết bị — đổi bất cứ lúc nào trong Cài đặt.',
+        c8t: 'Thư viện dự án', c8d: 'Tự động lưu, tìm kiếm, sắp xếp, đổi tên và nhân đôi dự án ngay tại màn hình chính.',
+        s_eyebrow: 'Ảnh chụp màn hình', s_title: 'Nhìn kỹ hơn', s_sub: 'Material Design 3 ở mọi nơi — từ thư viện dự án đến xuất video.',
+        g1: 'Thư viện dự án', g2: 'Menu chuột phải & phím tắt', g3: 'Xuất video', g4: 'Cài đặt',
+        d_title: 'Tải Material Edit', d_sub: 'Miễn phí mãi mãi và mã nguồn mở. Tải bộ cài và bắt đầu dựng video chỉ trong một phút.',
+        d_note: 'Bộ cài: download/Material-Edit_1.0.0_x64-setup.exe · Windows 10/11 (64-bit)', credit: 'Xây dựng với sự hỗ trợ của Claude (Anthropic)', lic: 'Giấy phép MIT' },
+    };
+    const meta = {
+      en: { title: 'Material Edit — A simple Material Design 3 video editor', desc: 'Material Edit is a free, open-source desktop video editor with a Material Design 3 look: multi-track timeline, trim & split, filters, transitions, text, music and fast MP4 export.' },
+      vi: { title: 'Material Edit — Trình dựng video đơn giản theo Material Design 3', desc: 'Material Edit là trình dựng video desktop miễn phí, mã nguồn mở, giao diện Material Design 3: timeline nhiều lớp, cắt, bộ lọc, chuyển cảnh, chữ, nhạc và xuất MP4 nhanh.' },
+    };
+    function setLang(l) {
+      if (!T[l]) l = 'en';
+      document.documentElement.lang = l;
+      document.querySelectorAll('[data-t]').forEach((el) => { const v = T[l][el.dataset.t]; if (v != null) el.textContent = v; });
+      document.querySelectorAll('.lang button').forEach((b) => b.classList.toggle('on', b.dataset.l === l));
+      document.title = meta[l].title;
+      document.querySelector('meta[name=description]').content = meta[l].desc;
+      try { localStorage.setItem('me.lang', l); } catch (e) { /* ignore */ }
+    }
+    document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.l)));
+    let saved = null; try { saved = localStorage.getItem('me.lang'); } catch (e) { /* ignore */ }
+    setLang(saved || ((navigator.language || 'en').toLowerCase().startsWith('vi') ? 'vi' : 'en'));
+
+    const bar = document.getElementById('bar');
+    addEventListener('scroll', () => bar.classList.toggle('scrolled', scrollY > 8), { passive: true });
+    const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 }) : null;
+    document.querySelectorAll('.rv').forEach((el) => (io ? io.observe(el) : el.classList.add('in')));
+  </script>
+</body>
+</html>

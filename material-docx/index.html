@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Material Docx – A Word-style word processor with real .docx support</title>
+  <meta name="description" content="Material Docx is a fast, lightweight desktop word processor with a Word-style ribbon, paged print layout and real .docx support, designed with Material Design 3. Free and open source." />
+  <meta name="keywords" content="Material Docx, word processor, docx editor, Tauri, Material Design 3, open source, Windows, ribbon, Vietnamese, trình soạn thảo văn bản" />
+  <meta name="author" content="minhtrong67" />
+  <meta name="robots" content="index, follow" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#f8f9ff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)" />
+  <link rel="canonical" href="https://minhtrong67.github.io/material-docx/" />
+  <link rel="icon" type="image/png" sizes="32x32" href="src-tauri/icons/32x32.png" />
+  <link rel="apple-touch-icon" href="src-tauri/icons/128x128@2x.png" />
+
+  <!-- Open Graph / social sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Material Docx" />
+  <meta property="og:title" content="Material Docx – Word-style editor with Material Design 3" />
+  <meta property="og:description" content="Ribbon, paged print layout, tables, pictures and real .docx support in a fast, lightweight desktop app. Free and open source." />
+  <meta property="og:url" content="https://minhtrong67.github.io/material-docx/" />
+  <meta property="og:image" content="https://minhtrong67.github.io/material-docx/screenshots/image01.png" />
+  <meta property="og:image:width" content="1360" />
+  <meta property="og:image:height" content="860" />
+  <meta property="og:image:alt" content="Material Docx editor window" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="vi_VN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Material Docx – Word-style editor with Material Design 3" />
+  <meta name="twitter:description" content="Ribbon, paged print layout, tables, pictures and real .docx support. Free and open source." />
+  <meta name="twitter:image" content="https://minhtrong67.github.io/material-docx/screenshots/image01.png" />
+  <meta name="twitter:creator" content="@minhtrong67" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Material Docx",
+    "applicationCategory": "ProductivityApplication",
+    "operatingSystem": "Windows, macOS, Linux",
+    "softwareVersion": "2.0.0",
+    "description": "A Word-style word processor with real .docx support, built with Tauri 2 and Material Design 3.",
+    "image": "https://minhtrong67.github.io/material-docx/screenshots/image01.png",
+    "license": "https://opensource.org/licenses/MIT",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "minhtrong67" },
+    "inLanguage": ["en", "vi"]
+  }
+  </script>
+
+  <style>
+    :root {
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --primary: #2b579a; --on-primary: #fff;
+      --primary-container: #d8e2ff; --on-primary-container: #001a41;
+      --secondary-container: #dce2f9; --on-secondary-container: #151b2c;
+      --tertiary-container: #fbd7fc; --on-tertiary-container: #29132d;
+      --surface: #f8f9ff; --on-surface: #191c20; --on-surface-variant: #44474e;
+      --surface-low: #f1f3fa; --surface-container: #ebedf4; --surface-high: #e6e8ef;
+      --outline: #74777f; --outline-variant: #c4c6d0;
+      --e1: 0 1px 2px rgb(0 0 0 / .18), 0 1px 3px 1px rgb(0 0 0 / .1);
+      --e3: 0 4px 8px 3px rgb(0 0 0 / .12), 0 1px 3px rgb(0 0 0 / .2);
+      --ease: cubic-bezier(.2, 0, 0, 1); --ease-out: cubic-bezier(.05, .7, .1, 1);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --primary: #adc6ff; --on-primary: #002e69;
+        --primary-container: #0f448e; --on-primary-container: #d8e2ff;
+        --secondary-container: #3f4759; --on-secondary-container: #dce2f9;
+        --tertiary-container: #573e5c; --on-tertiary-container: #fbd7fc;
+        --surface: #111318; --on-surface: #e2e2e9; --on-surface-variant: #c4c6d0;
+        --surface-low: #191c20; --surface-container: #1d2024; --surface-high: #282a2f;
+        --outline: #8e9099; --outline-variant: #44474e;
+      }
+    }
+    :root[data-theme="dark"] {
+      --primary: #adc6ff; --on-primary: #002e69;
+      --primary-container: #0f448e; --on-primary-container: #d8e2ff;
+      --secondary-container: #3f4759; --on-secondary-container: #dce2f9;
+      --tertiary-container: #573e5c; --on-tertiary-container: #fbd7fc;
+      --surface: #111318; --on-surface: #e2e2e9; --on-surface-variant: #c4c6d0;
+      --surface-low: #191c20; --surface-container: #1d2024; --surface-high: #282a2f;
+      --outline: #8e9099; --outline-variant: #44474e;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; font: 400 16px/1.6 var(--font); background: var(--surface); color: var(--on-surface); overflow-x: hidden; transition: background-color .3s, color .3s; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    .i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+    .wrap { width: min(1120px, 100% - 40px); margin-inline: auto; }
+
+    /* top app bar */
+    header.bar { position: fixed; inset: 0 0 auto; z-index: 50; padding-top: env(safe-area-inset-top, 0); transition: background-color .25s, box-shadow .25s; }
+    header.bar.stuck { background: color-mix(in srgb, var(--surface) 88%, transparent); backdrop-filter: blur(14px); box-shadow: 0 1px 0 var(--outline-variant); }
+    .bar-in { display: flex; align-items: center; gap: 8px; height: 64px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 18px; text-decoration: none; margin-right: auto; }
+    .brand img { width: 36px; height: 36px; border-radius: 10px; }
+    nav.links { display: flex; gap: 4px; }
+    nav.links a { padding: 8px 14px; border-radius: 20px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--on-surface-variant); transition: background-color .2s, color .2s; }
+    nav.links a:hover { background: color-mix(in srgb, var(--on-surface) 8%, transparent); color: var(--on-surface); }
+    .chip-btn, .icon-btn { display: inline-grid; place-items: center; border: 0; cursor: pointer; color: var(--on-surface-variant); background: transparent; transition: background-color .2s, transform .15s; }
+    .icon-btn { width: 40px; height: 40px; border-radius: 50%; }
+    .chip-btn { height: 40px; padding: 0 12px; border-radius: 20px; font: 600 13px var(--font); }
+    .chip-btn:hover, .icon-btn:hover { background: color-mix(in srgb, var(--on-surface) 8%, transparent); }
+    .icon-btn:active, .chip-btn:active { transform: scale(.92); }
+
+    /* buttons */
+    .btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 48px; padding: 0 28px; border: 0; border-radius: 24px; font: 600 15px var(--font); text-decoration: none; cursor: pointer; overflow: hidden; transition: box-shadow .2s, transform .2s var(--ease-out), background-color .2s; }
+    .btn:active { transform: scale(.97); }
+    .btn.filled { background: var(--primary); color: var(--on-primary); box-shadow: var(--e1); }
+    .btn.filled:hover { box-shadow: var(--e3); transform: translateY(-2px); }
+    .btn.tonal { background: var(--secondary-container); color: var(--on-secondary-container); }
+    .btn.tonal:hover { box-shadow: var(--e1); transform: translateY(-2px); }
+    .btn.lg { height: 56px; padding: 0 36px; font-size: 16px; border-radius: 28px; }
+    .ripple { position: absolute; border-radius: 50%; background: currentColor; opacity: .25; transform: scale(0); animation: rp .6s var(--ease-out) forwards; pointer-events: none; }
+    @keyframes rp { to { transform: scale(1); opacity: 0; } }
+
+    /* hero */
+    .hero { position: relative; padding: 150px 0 70px; text-align: center; overflow: hidden; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; z-index: -1; animation: float 14s ease-in-out infinite; }
+    .blob.a { width: 420px; height: 420px; left: -120px; top: -80px; background: var(--primary-container); }
+    .blob.b { width: 360px; height: 360px; right: -100px; top: 120px; background: var(--tertiary-container); animation-delay: -6s; }
+    @keyframes float { 50% { transform: translate(30px, 24px) scale(1.08); } }
+    .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px 6px 12px; border-radius: 16px; background: var(--secondary-container); color: var(--on-secondary-container); font-size: 13px; font-weight: 600; }
+    .badge .i { width: 16px; height: 16px; }
+    h1 { margin: 22px auto 16px; max-width: 16ch; font: 700 clamp(38px, 7vw, 68px)/1.06 var(--font); letter-spacing: -.02em; }
+    h1 em { font-style: normal; color: var(--primary); }
+    .lead { margin: 0 auto 32px; max-width: 60ch; font-size: clamp(16px, 2.2vw, 19px); color: var(--on-surface-variant); }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .meta { margin-top: 16px; font-size: 13px; color: var(--on-surface-variant); }
+    .shot { margin: 56px auto 0; width: min(980px, 100%); border-radius: 20px; overflow: hidden; border: 1px solid var(--outline-variant); background: var(--surface-container); box-shadow: var(--e3); transition: transform .5s var(--ease-out); }
+    .shot:hover { transform: translateY(-6px) scale(1.01); }
+    .shot img { width: 100%; height: auto; aspect-ratio: 1360 / 860; object-fit: cover; }
+
+    /* sections */
+    section { padding: 84px 0; }
+    .sec-h { text-align: center; margin-bottom: 44px; }
+    .sec-h h2 { margin: 0 0 10px; font: 600 clamp(28px, 4.4vw, 40px)/1.2 var(--font); letter-spacing: -.01em; }
+    .sec-h p { margin: 0 auto; max-width: 56ch; color: var(--on-surface-variant); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .card { padding: 26px; border-radius: 24px; background: var(--surface-container); transition: transform .3s var(--ease-out), box-shadow .3s, background-color .3s; }
+    .card:hover { transform: translateY(-6px); box-shadow: var(--e3); background: var(--surface-high); }
+    .card .ic { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 16px; border-radius: 16px; background: var(--primary-container); color: var(--on-primary-container); transition: transform .35s var(--ease-out); }
+    .card:hover .ic { transform: rotate(-8deg) scale(1.1); }
+    .card h3 { margin: 0 0 6px; font: 600 18px/1.3 var(--font); }
+    .card p { margin: 0; font-size: 14.5px; color: var(--on-surface-variant); }
+
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+    .gallery figure { margin: 0; border-radius: 20px; overflow: hidden; background: var(--surface-container); border: 1px solid var(--outline-variant); transition: transform .35s var(--ease-out), box-shadow .3s; }
+    .gallery figure:hover { transform: translateY(-6px); box-shadow: var(--e3); }
+    .gallery img { width: 100%; height: auto; aspect-ratio: 1360 / 860; object-fit: cover; }
+    .gallery figcaption { padding: 12px 18px; font-size: 14px; font-weight: 500; color: var(--on-surface-variant); }
+
+    .band { background: var(--surface-low); }
+    .dl-box { display: flex; flex-wrap: wrap; align-items: center; gap: 28px; justify-content: space-between; padding: clamp(28px, 5vw, 48px); border-radius: 32px; background: var(--primary-container); color: var(--on-primary-container); }
+    .dl-box h2 { margin: 0 0 8px; font: 600 clamp(26px, 4vw, 36px)/1.2 var(--font); }
+    .dl-box p { margin: 0; max-width: 46ch; opacity: .85; }
+    .dl-box .btn.filled { background: var(--on-primary-container); color: var(--primary-container); }
+    .req { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .req span { padding: 4px 12px; border-radius: 12px; background: color-mix(in srgb, var(--on-primary-container) 12%, transparent); font-size: 13px; font-weight: 500; }
+
+    footer { padding: 36px 0 calc(36px + env(safe-area-inset-bottom, 0)); text-align: center; color: var(--on-surface-variant); font-size: 14px; }
+    footer .credit { display: inline-flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-bottom: 10px; padding: 8px 18px; border-radius: 24px; background: var(--surface-container); }
+    footer b.a { padding: 2px 12px; border-radius: 12px; background: var(--primary); color: var(--on-primary); }
+    footer b.c { padding: 2px 12px; border-radius: 12px; background: linear-gradient(135deg, #d97757, #c15f3c); color: #fff; }
+    footer a { text-underline-offset: 3px; }
+
+    /* scroll reveal */
+    .rv { opacity: 0; transform: translateY(28px); transition: opacity .7s var(--ease-out), transform .7s var(--ease-out); transition-delay: var(--d, 0ms); }
+    .rv.in { opacity: 1; transform: none; }
+    .hero .rv { animation: up .8s var(--ease-out) both; animation-delay: var(--d, 0ms); opacity: 1; transform: none; transition: none; }
+    @keyframes up { from { opacity: 0; transform: translateY(26px); } }
+
+    @media (max-width: 760px) {
+      nav.links { display: none; }
+      .hero { padding-top: 112px; }
+      section { padding: 60px 0; }
+      .dl-box { flex-direction: column; align-items: flex-start; }
+      .dl-box .btn { width: 100%; }
+      .btn.lg { width: 100%; max-width: 360px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+      .rv { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 15V3M7 10l5 5 5-5M5 21h14"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4.300 1.400-4.300-2.500-6-3m12 5v-3.500c0-1 .1-1.400-.5-2 2.800-.3 5.500-1.400 5.500-6a4.600 4.600 0 0 0-1.300-3.200 4.200 4.200 0 0 0-.1-3.200s-1.100-.3-3.500 1.300a12.300 12.300 0 0 0-6.200 0C6.500 2.800 5.400 3.100 5.400 3.100a4.200 4.200 0 0 0-.1 3.200A4.600 4.600 0 0 0 4 9.500c0 4.600 2.700 5.700 5.500 6-.6.600-.6 1.200-.5 2V21"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M2 12h2M20 12h2M4.900 19.100l1.400-1.400M17.700 6.300l1.400-1.400"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.800A9 9 0 1 1 11.200 3 7 7 0 0 0 21 12.800z"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h6"/></symbol>
+    <symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></symbol>
+    <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.100-3.100a2 2 0 0 0-2.800 0L6 21"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><circle cx="13.500" cy="6.500" r=".5"/><circle cx="17.500" cy="10.500" r=".5"/><circle cx="8.500" cy="7.500" r=".5"/><circle cx="6.500" cy="12.500" r=".5"/><path d="M12 2C6.500 2 2 6.500 2 12s4.500 10 10 10c.9 0 1.700-.7 1.700-1.700 0-.4-.2-.8-.5-1.100-.3-.3-.4-.7-.4-1.100 0-.9.700-1.700 1.700-1.700H16c3 0 5.500-2.500 5.500-5.500C21.500 6 17.500 2 12 2z"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.900 5.800L20 11l-6.100 2.200L12 19l-1.900-5.800L4 11l6.100-2.200z"/></symbol>
+  </svg>
+
+  <header class="bar" id="bar">
+    <div class="wrap bar-in">
+      <a class="brand" href="#top"><img src="src-tauri/icons/128x128.png" width="36" height="36" alt="" />Material Docx</a>
+      <nav class="links" aria-label="Sections">
+        <a href="#features" data-i="nav.features">Features</a>
+        <a href="#screenshots" data-i="nav.shots">Screenshots</a>
+        <a href="#download" data-i="nav.download">Download</a>
+      </nav>
+      <button class="chip-btn" id="lang" type="button" aria-label="Language">EN</button>
+      <button class="icon-btn" id="theme" type="button" aria-label="Toggle theme"><svg class="i"><use href="#i-moon"/></svg></button>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div class="blob a"></div><div class="blob b"></div>
+      <div class="wrap">
+        <span class="badge rv" style="--d:0ms"><svg class="i"><use href="#i-sparkles"/></svg><span data-i="hero.badge">Free &amp; open source · v2.0.0</span></span>
+        <h1 class="rv" style="--d:80ms"><span data-i="hero.t1">Write like Word,</span> <em data-i="hero.t2">move like Material.</em></h1>
+        <p class="lead rv" style="--d:160ms" data-i="hero.lead">A fast, lightweight desktop word processor with a Word-style ribbon, paged print layout and real .docx support — wrapped in a modern Material Design 3 interface.</p>
+        <div class="cta rv" style="--d:240ms">
+          <a class="btn filled lg" id="dl-main" href="download/Material-Docx-Setup.exe" download><svg class="i"><use href="#i-download"/></svg><span data-i="btn.download">Download for Windows</span></a>
+          <a class="btn tonal lg" href="https://github.com/minhtrong67/material-docx" target="_blank" rel="noopener"><svg class="i"><use href="#i-github"/></svg>GitHub</a>
+        </div>
+        <p class="meta rv" style="--d:300ms" data-i="hero.meta">Windows 10/11 · macOS and Linux builds from source</p>
+        <div class="shot rv" style="--d:380ms"><img src="screenshots/image01.png" width="1360" height="860" alt="Material Docx editor with the ribbon and a paged document" fetchpriority="high" /></div>
+      </div>
+    </div>
+
+    <section id="features">
+      <div class="wrap">
+        <div class="sec-h rv"><h2 data-i="f.h">Everything you expect from a word processor</h2><p data-i="f.p">Familiar tools, a clean look and smooth motion — without the bloat.</p></div>
+        <div class="grid">
+          <article class="card rv"><div class="ic"><svg class="i"><use href="#i-layout"/></svg></div><h3 data-i="f1.t">Word-style ribbon</h3><p data-i="f1.d">Home, Insert, Design, Layout, References, Review and View tabs, plus contextual Table and Picture tabs.</p></article>
+          <article class="card rv" style="--d:70ms"><div class="ic"><svg class="i"><use href="#i-file"/></svg></div><h3 data-i="f2.t">Real .docx support</h3><p data-i="f2.d">Open and save Word files with styles, lists, tables, pictures, headers, footers and page setup preserved.</p></article>
+          <article class="card rv" style="--d:140ms"><div class="ic"><svg class="i"><use href="#i-table"/></svg></div><h3 data-i="f3.t">Pages &amp; tables</h3><p data-i="f3.d">Paginated print layout, 7 paper sizes, table of contents, merge/split cells and 8 table styles.</p></article>
+          <article class="card rv"><div class="ic"><svg class="i"><use href="#i-image"/></svg></div><h3 data-i="f4.t">Pictures</h3><p data-i="f4.d">Insert, paste or drag in images; resize, rotate, flip and wrap text around them.</p></article>
+          <article class="card rv" style="--d:70ms"><div class="ic"><svg class="i"><use href="#i-palette"/></svg></div><h3 data-i="f5.t">Your colors</h3><p data-i="f5.d">Light, dark or system theme with Material colors and a custom accent that recolors the whole app.</p></article>
+          <article class="card rv" style="--d:140ms"><div class="ic"><svg class="i"><use href="#i-globe"/></svg></div><h3 data-i="f6.t">English &amp; Tiếng Việt</h3><p data-i="f6.d">Detects your device language automatically and can be switched at any time.</p></article>
+          <article class="card rv"><div class="ic"><svg class="i"><use href="#i-monitor"/></svg></div><h3 data-i="f7.t">Window options</h3><p data-i="f7.d">Remember the window size you chose, or always open maximized — your call.</p></article>
+          <article class="card rv" style="--d:70ms"><div class="ic"><svg class="i"><use href="#i-shield"/></svg></div><h3 data-i="f8.t">Safe by design</h3><p data-i="f8.d">Auto-recover copy of unsaved work, unsaved-changes prompts and atomic file saving.</p></article>
+          <article class="card rv" style="--d:140ms"><div class="ic"><svg class="i"><use href="#i-zap"/></svg></div><h3 data-i="f9.t">Light &amp; fast</h3><p data-i="f9.d">Built with Tauri 2 and Rust, so it starts quickly and stays small.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="screenshots" class="band">
+      <div class="wrap">
+        <div class="sec-h rv"><h2 data-i="s.h">See it in action</h2><p data-i="s.p">Light and dark themes, tables, settings and the File menu.</p></div>
+        <div class="gallery">
+          <figure class="rv"><img loading="lazy" src="screenshots/image02.png" width="1360" height="860" alt="Table tools" /><figcaption data-i="s1">Table tools</figcaption></figure>
+          <figure class="rv" style="--d:70ms"><img loading="lazy" src="screenshots/image03.png" width="1360" height="860" alt="Settings" /><figcaption data-i="s2">Settings &amp; themes</figcaption></figure>
+          <figure class="rv"><img loading="lazy" src="screenshots/image04.png" width="1360" height="860" alt="Dark theme in Vietnamese" /><figcaption data-i="s3">Dark theme, Vietnamese</figcaption></figure>
+          <figure class="rv" style="--d:70ms"><img loading="lazy" src="screenshots/image05.png" width="1360" height="860" alt="File menu" /><figcaption data-i="s4">File menu</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="download">
+      <div class="wrap">
+        <div class="dl-box rv">
+          <div>
+            <h2 data-i="d.h">Ready to write?</h2>
+            <p data-i="d.p">Download the installer and start in seconds. Free forever, open source under the MIT license.</p>
+            <div class="req"><span>Windows 10/11</span><span>x64</span><span>MIT</span></div>
+          </div>
+          <a class="btn filled lg" href="download/Material-Docx-Setup.exe" download><svg class="i"><use href="#i-download"/></svg><span data-i="btn.download">Download for Windows</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="credit"><span data-i="by">Created by</span><b class="a">minhtrong67</b><span data-i="with">with the help of AI</span><b class="c">Claude</b></div>
+      <div>© 2026 · <a href="https://github.com/minhtrong67/material-docx/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></div>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const D = {
+        en: {
+          'nav.features': 'Features', 'nav.shots': 'Screenshots', 'nav.download': 'Download',
+          'hero.badge': 'Free & open source · v2.0.0', 'hero.t1': 'Write like Word,', 'hero.t2': 'move like Material.',
+          'hero.lead': 'A fast, lightweight desktop word processor with a Word-style ribbon, paged print layout and real .docx support — wrapped in a modern Material Design 3 interface.',
+          'btn.download': 'Download for Windows', 'hero.meta': 'Windows 10/11 · macOS and Linux builds from source',
+          'f.h': 'Everything you expect from a word processor', 'f.p': 'Familiar tools, a clean look and smooth motion — without the bloat.',
+          'f1.t': 'Word-style ribbon', 'f1.d': 'Home, Insert, Design, Layout, References, Review and View tabs, plus contextual Table and Picture tabs.',
+          'f2.t': 'Real .docx support', 'f2.d': 'Open and save Word files with styles, lists, tables, pictures, headers, footers and page setup preserved.',
+          'f3.t': 'Pages & tables', 'f3.d': 'Paginated print layout, 7 paper sizes, table of contents, merge/split cells and 8 table styles.',
+          'f4.t': 'Pictures', 'f4.d': 'Insert, paste or drag in images; resize, rotate, flip and wrap text around them.',
+          'f5.t': 'Your colors', 'f5.d': 'Light, dark or system theme with Material colors and a custom accent that recolors the whole app.',
+          'f6.t': 'English & Tiếng Việt', 'f6.d': 'Detects your device language automatically and can be switched at any time.',
+          'f7.t': 'Window options', 'f7.d': 'Remember the window size you chose, or always open maximized — your call.',
+          'f8.t': 'Safe by design', 'f8.d': 'Auto-recover copy of unsaved work, unsaved-changes prompts and atomic file saving.',
+          'f9.t': 'Light & fast', 'f9.d': 'Built with Tauri 2 and Rust, so it starts quickly and stays small.',
+          's.h': 'See it in action', 's.p': 'Light and dark themes, tables, settings and the File menu.',
+          's1': 'Table tools', 's2': 'Settings & themes', 's3': 'Dark theme, Vietnamese', 's4': 'File menu',
+          'd.h': 'Ready to write?', 'd.p': 'Download the installer and start in seconds. Free forever, open source under the MIT license.',
+          'by': 'Created by', 'with': 'with the help of AI'
+        },
+        vi: {
+          'nav.features': 'Tính năng', 'nav.shots': 'Hình ảnh', 'nav.download': 'Tải về',
+          'hero.badge': 'Miễn phí & mã nguồn mở · v2.0.0', 'hero.t1': 'Soạn thảo như Word,', 'hero.t2': 'mượt mà như Material.',
+          'hero.lead': 'Trình soạn thảo văn bản nhanh, nhẹ với ruy-băng kiểu Word, trang in thật và hỗ trợ .docx — trong giao diện Material Design 3 hiện đại.',
+          'btn.download': 'Tải về cho Windows', 'hero.meta': 'Windows 10/11 · macOS và Linux build từ mã nguồn',
+          'f.h': 'Đầy đủ những gì bạn cần ở một trình soạn thảo', 'f.p': 'Công cụ quen thuộc, giao diện sạch đẹp, chuyển động mượt mà — không rườm rà.',
+          'f1.t': 'Ruy-băng kiểu Word', 'f1.d': 'Các thẻ Trang đầu, Chèn, Thiết kế, Bố cục, Tham chiếu, Xem lại, Xem cùng thẻ Bảng và Hình ảnh theo ngữ cảnh.',
+          'f2.t': 'Hỗ trợ .docx thật', 'f2.d': 'Mở và lưu tệp Word, giữ nguyên kiểu, danh sách, bảng, hình ảnh, đầu/chân trang và thiết lập trang.',
+          'f3.t': 'Trang & bảng', 'f3.d': 'Phân trang như bản in, 7 khổ giấy, mục lục tự động, gộp/tách ô và 8 kiểu bảng.',
+          'f4.t': 'Hình ảnh', 'f4.d': 'Chèn, dán hoặc kéo thả ảnh; đổi cỡ, xoay, lật và bao quanh chữ.',
+          'f5.t': 'Màu của riêng bạn', 'f5.d': 'Giao diện sáng, tối hoặc theo hệ thống với màu Material và màu nhấn tùy chỉnh phủ toàn bộ ứng dụng.',
+          'f6.t': 'English & Tiếng Việt', 'f6.d': 'Tự nhận diện ngôn ngữ thiết bị và có thể đổi bất cứ lúc nào.',
+          'f7.t': 'Tùy chọn cửa sổ', 'f7.d': 'Ghi nhớ kích thước cửa sổ bạn chọn, hoặc luôn mở phóng to tối đa.',
+          'f8.t': 'An toàn', 'f8.d': 'Tự khôi phục bản chưa lưu, nhắc khi có thay đổi chưa lưu và ghi tệp an toàn.',
+          'f9.t': 'Nhẹ & nhanh', 'f9.d': 'Xây dựng bằng Tauri 2 và Rust nên khởi động nhanh và dung lượng nhỏ.',
+          's.h': 'Xem thực tế', 's.p': 'Giao diện sáng và tối, bảng, cài đặt và menu Tệp.',
+          's1': 'Công cụ bảng', 's2': 'Cài đặt & giao diện', 's3': 'Giao diện tối, tiếng Việt', 's4': 'Menu Tệp',
+          'd.h': 'Sẵn sàng soạn thảo?', 'd.p': 'Tải bộ cài và bắt đầu trong vài giây. Miễn phí, mã nguồn mở theo giấy phép MIT.',
+          'by': 'Tác giả', 'with': 'với sự hỗ trợ của AI'
+        }
+      };
+      const root = document.documentElement, $ = (s) => document.querySelector(s);
+      const store = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch { return null; } };
+
+      /* language: saved choice → browser language */
+      const sys = ((navigator.languages && navigator.languages[0]) || navigator.language || 'en').toLowerCase().startsWith('vi') ? 'vi' : 'en';
+      const pref = store('md-lang');
+      let lang = pref === 'en' || pref === 'vi' ? pref : sys;
+      const setLang = (l) => {
+        lang = l; root.lang = l; store('md-lang', l);
+        document.querySelectorAll('[data-i]').forEach((n) => { const v = D[l][n.dataset.i]; if (v) n.textContent = v; });
+        $('#lang').textContent = l.toUpperCase();
+        const ti = { en: 'Material Docx – A Word-style word processor with real .docx support', vi: 'Material Docx – Trình soạn thảo kiểu Word hỗ trợ .docx thật' };
+        document.title = ti[l];
+      };
+      $('#lang').onclick = () => setLang(lang === 'en' ? 'vi' : 'en');
+      setLang(lang);
+
+      /* theme: saved choice → system */
+      const mq = matchMedia('(prefers-color-scheme: dark)');
+      const isDark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : mq.matches);
+      const paintTheme = () => { $('#theme use').setAttribute('href', isDark() ? '#i-sun' : '#i-moon'); };
+      const saved = store('md-theme'); if (saved) root.dataset.theme = saved;
+      paintTheme();
+      mq.addEventListener && mq.addEventListener('change', paintTheme);
+      $('#theme').onclick = () => { const n = isDark() ? 'light' : 'dark'; root.dataset.theme = n; store('md-theme', n); paintTheme(); };
+
+      /* app bar elevation */
+      const bar = $('#bar');
+      const onScroll = () => bar.classList.toggle('stuck', scrollY > 8);
+      addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+      /* scroll reveal */
+      const items = document.querySelectorAll('.rv:not(.hero .rv)');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12, rootMargin: '0px 0px -40px' });
+        items.forEach((n) => io.observe(n));
+      } else items.forEach((n) => n.classList.add('in'));
+
+      /* button ripple */
+      document.addEventListener('pointerdown', (e) => {
+        const b = e.target.closest('.btn'); if (!b) return;
+        const r = b.getBoundingClientRect(), s = Math.max(r.width, r.height) * 2;
+        const d = document.createElement('span'); d.className = 'ripple';
+        d.style.cssText = `width:${s}px;height:${s}px;left:${e.clientX - r.left - s / 2}px;top:${e.clientY - r.top - s / 2}px`;
+        b.append(d); setTimeout(() => d.remove(), 650);
+      });
+    })();
+  </script>
+</body>
+</html>

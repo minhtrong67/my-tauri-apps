@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Material Screenshot",
+  "version": "1.1.0",
+  "identifier": "com.minhtrong67.materialscreenshot",
+  "build": { "frontendDist": "../src" },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      { "label": "main", "title": "Material Screenshot", "width": 1320, "height": 840, "minWidth": 640, "minHeight": 480, "center": true, "decorations": false, "shadow": true, "visible": false }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "publisher": "minhtrong67",
+    "copyright": "Copyright (c) 2026 minhtrong67",
+    "category": "GraphicsAndDesign",
+    "shortDescription": "Make screenshots look great",
+    "longDescription": "Turn plain screenshots into polished images with gradients, window frames, shadows and annotations.",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "installerIcon": "icons/installer.ico",
+        "uninstallerIcon": "icons/uninstaller.ico",
+        "headerImage": "installer/header.bmp",
+        "sidebarImage": "installer/sidebar.bmp",
+        "uninstallerHeaderImage": "installer/uninstaller-header.bmp",
+        "languages": ["Vietnamese", "English"],
+        "displayLanguageSelector": false
+      }
+    }
+  }
+}

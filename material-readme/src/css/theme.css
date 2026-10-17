@@ -1,0 +1,28 @@
+/* Material Design 3 tokens. Colour roles (--md-sys-color-*) are written by js/theme.js
+   from the Material Theme Builder export (src/theme/material-theme.json) or from a custom seed. */
+:root {
+  /* typography */
+  --font: 'Roboto', system-ui, 'Segoe UI', sans-serif;
+  --mono: 'Roboto Mono', 'Cascadia Mono', Consolas, monospace;
+  /* shape */
+  --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 28px; --r-full: 999px;
+  /* motion */
+  --ease: cubic-bezier(.2, 0, 0, 1);
+  --ease-dec: cubic-bezier(.05, .7, .1, 1);
+  --ease-acc: cubic-bezier(.3, 0, .8, .15);
+  --d-s: 120ms; --d-m: 250ms; --d-l: 400ms;
+  /* elevation */
+  --e1: 0 1px 2px rgb(0 0 0 / .30), 0 1px 3px 1px rgb(0 0 0 / .15);
+  --e2: 0 1px 2px rgb(0 0 0 / .30), 0 2px 6px 2px rgb(0 0 0 / .15);
+  --e3: 0 4px 8px 3px rgb(0 0 0 / .15), 0 1px 3px rgb(0 0 0 / .30);
+  --e4: 0 6px 10px 4px rgb(0 0 0 / .15), 0 2px 3px rgb(0 0 0 / .30);
+  /* zoom (scales editor and preview text) */
+  --z: 1;
+  color-scheme: light dark;
+  /* fallbacks until the theme script runs */
+  --md-sys-color-primary: #415F91; --md-sys-color-on-primary: #fff;
+  --md-sys-color-surface: #F9F9FF; --md-sys-color-on-surface: #191C20;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --d-s: 1ms; --d-m: 1ms; --d-l: 1ms; }
+}

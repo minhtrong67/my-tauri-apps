@@ -1,0 +1,137 @@
+@import './fonts.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --md-primary: 54 97 142;
+  --md-on-primary: 255 255 255;
+  --md-primary-container: 209 228 255;
+  --md-on-primary-container: 25 73 117;
+  --md-secondary: 83 95 112;
+  --md-on-secondary: 255 255 255;
+  --md-secondary-container: 215 227 247;
+  --md-on-secondary-container: 59 72 88;
+  --md-tertiary: 107 87 120;
+  --md-on-tertiary: 255 255 255;
+  --md-tertiary-container: 242 218 255;
+  --md-on-tertiary-container: 82 63 95;
+  --md-error: 186 26 26;
+  --md-on-error: 255 255 255;
+  --md-error-container: 255 218 214;
+  --md-on-error-container: 147 0 10;
+  --md-surface: 248 249 255;
+  --md-surface-dim: 216 218 224;
+  --md-surface-bright: 248 249 255;
+  --md-surface-variant: 223 226 235;
+  --md-surface-container-lowest: 255 255 255;
+  --md-surface-container-low: 242 243 250;
+  --md-surface-container: 236 238 244;
+  --md-surface-container-high: 230 232 238;
+  --md-surface-container-highest: 225 226 232;
+  --md-on-surface: 25 28 32;
+  --md-on-surface-variant: 67 71 78;
+  --md-outline: 115 119 127;
+  --md-outline-variant: 195 199 207;
+  --md-inverse-surface: 46 49 53;
+  --md-inverse-on-surface: 239 240 247;
+  --md-inverse-primary: 160 202 253;
+
+  --app-font: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+html, body, #root { height: 100%; }
+html { -webkit-text-size-adjust: 100%; text-rendering: optimizeLegibility; }
+body {
+  margin: 0;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  background: rgb(var(--md-surface));
+  color: rgb(var(--md-on-surface));
+  font-family: var(--app-font);
+  font-size: 14px;
+}
+img { -webkit-user-drag: none; }
+input, textarea { user-select: text; -webkit-user-select: text; }
+
+/* Thanh cuộn */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--md-outline-variant));
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--md-outline)); background-clip: content-box; }
+video::-webkit-media-controls { display: none !important; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Slider Material 3 */
+.m3-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  cursor: pointer;
+  --pct: 0%;
+  outline: none;
+}
+.m3-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, rgb(var(--md-primary)) var(--pct), rgb(var(--md-secondary-container)) var(--pct));
+}
+.m3-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: rgb(var(--md-primary));
+  box-shadow: 0 0 0 0 rgb(var(--md-primary) / 0.16);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.m3-slider:hover::-webkit-slider-thumb,
+.m3-slider:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 8px rgb(var(--md-primary) / 0.16); }
+.m3-slider:active::-webkit-slider-thumb { transform: scale(1.15); }
+
+@keyframes ping-out {
+  0% { opacity: 0.95; transform: scale(0.8); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+.focus-ring:focus-visible { outline: 2px solid rgb(var(--md-primary)); outline-offset: 2px; }
+/* Loading skeleton + staggered entrance */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton {
+  background: linear-gradient(100deg, transparent 20%, rgb(var(--md-on-surface) / 0.09) 50%, transparent 80%) 0 0 / 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+}
+.stagger > * { animation: rise 0.42s cubic-bezier(0.2, 0, 0, 1) both; }
+.stagger > *:nth-child(2) { animation-delay: 50ms; }
+.stagger > *:nth-child(3) { animation-delay: 100ms; }
+.stagger > *:nth-child(4) { animation-delay: 150ms; }
+.stagger > *:nth-child(5) { animation-delay: 200ms; }
+.stagger > *:nth-child(6) { animation-delay: 250ms; }
+.stagger > *:nth-child(n + 7) { animation-delay: 300ms; }
+.scroll-smooth { scroll-behavior: smooth; }
+button { -webkit-tap-highlight-color: transparent; }
+
+@media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+.eq-bar { transform-origin: bottom; animation: eq 0.9s ease-in-out infinite; }
+
+/* Smooth cross-fade of the palette while the user changes color or light/dark mode */
+.theme-anim, .theme-anim *, .theme-anim *::before, .theme-anim *::after {
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, fill 0.4s ease, box-shadow 0.4s ease !important;
+}

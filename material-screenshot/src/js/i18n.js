@@ -1,0 +1,32 @@
+/* Vietnamese + English strings. Language auto-detected from the device. */
+const T={
+vi:{open:'Mở ảnh',paste:'Dán',crop:'Cắt',copy:'Sao chép',save:'Lưu ảnh',undo:'Hoàn tác (Ctrl+Z)',redo:'Làm lại (Ctrl+Y)',settings:'Cài đặt',about:'Giới thiệu',close:'Đóng',minimize:'Thu nhỏ',maximize:'Phóng to',restore:'Khôi phục',
+emptyT:'Làm đẹp ảnh chụp màn hình',emptyH:'Dán ảnh, kéo thả tệp hoặc mở ảnh để bắt đầu. Mẹo: nhấn Win + Shift + S để chụp, rồi dán vào đây.',sample:'Ảnh mẫu',tipPaste:'để dán ảnh',tipDrop:'hoặc kéo thả tệp vào cửa sổ',dropHere:'Thả ảnh vào đây',
+cropHint:'Kéo trên ảnh để chọn vùng cần giữ',cropApply:'Áp dụng',cropReset:'Đặt lại',cropCancel:'Hủy',
+looks:'Kiểu có sẵn',resetStyle:'Đặt lại kiểu',secBg:'Nền',secLayout:'Bố cục và đổ bóng',secFrame:'Khung cửa sổ',secCap:'Chú thích chữ',secAnn:'Vẽ chú thích',secExp:'Xuất ảnh',
+bgGradient:'Gradient',bgSolid:'Màu đặc',bgImage:'Ảnh',bgNone:'Trong suốt',angle:'Góc',color1:'Màu 1',color2:'Màu 2',color3:'Màu 3',use3:'Dùng 3 màu',color:'Màu',pickBg:'Chọn ảnh nền…',blur:'Làm mờ',
+pad:'Khoảng đệm',radius:'Bo góc',ratio:'Tỉ lệ khung',auto:'Tự động',custom:'Tùy chỉnh',width:'Rộng (px)',height:'Cao (px)',border:'Độ dày viền',bdColor:'Màu viền',opacity:'Độ đậm',shadow:'Đổ bóng',shBlur:'Độ nhòe',shY:'Lệch dọc',
+fNone:'Không',fWin:'Windows',fMac:'macOS',fBrowser:'Trình duyệt',fGlass:'Kính',fLight:'Sáng',fDark:'Tối',fTitle:'Tiêu đề khung',capText:'Nội dung chữ',capTop:'Trên',capBottom:'Dưới',size:'Cỡ chữ',
+tNone:'Chọn',tRect:'Khung',tArrow:'Mũi tên',tText:'Chữ',tHl:'Tô sáng',tBlur:'Làm mờ',stroke:'Độ dày nét',pixel:'Cỡ điểm ảnh',annHint:'Chọn công cụ rồi kéo trên ảnh. Chữ: bấm vào ảnh rồi gõ.',clearAnn:'Xóa chú thích',
+fmt:'Định dạng',quality:'Chất lượng',scale:'Tỉ lệ xuất',outSize:'Kích thước ảnh xuất',
+copied:'Đã sao chép ảnh',copyFail:'Không sao chép được ảnh',saved:'Đã lưu ảnh',saveFail:'Không lưu được ảnh',pasteFail:'Không đọc được clipboard. Hãy nhấn Ctrl+V',readFail:'Không đọc được ảnh',noImage:'Chưa có ảnh',limited:'Đã giảm tỉ lệ xuất vì ảnh quá lớn',
+sTheme:'Giao diện',system:'Hệ thống',light:'Sáng',dark:'Tối',sContrast:'Độ tương phản',cStd:'Chuẩn',cMed:'Vừa',cHigh:'Cao',sColor:'Màu chủ đề',customColor:'Màu tùy chỉnh',sLang:'Ngôn ngữ',sWin:'Cửa sổ khi mở ứng dụng',
+winRemember:'Ghi nhớ kích thước cửa sổ',winRememberD:'Lần sau mở lại đúng kích thước bạn đã chỉnh',winMax:'Luôn mở phóng to tối đa',winMaxD:'Mỗi lần mở đều phóng to hết cỡ (không phải toàn màn hình)',
+sSave:'Vị trí lưu ảnh',saveDefault:'Thư mục Downloads (mặc định)',chooseFolder:'Chọn thư mục',resetFolder:'Dùng Downloads',askSave:'Hỏi vị trí mỗi lần lưu',savedTo:'Đã lưu vào',version:'Phiên bản',author:'Tác giả',aiBy:'Hỗ trợ bởi AI',tagline:'Biến ảnh chụp màn hình thành hình ảnh đẹp mắt cho tài liệu, bài viết và mạng xã hội.',license:'Mã nguồn mở · Giấy phép MIT',ok:'Xong',ready:'Sẵn sàng',
+colors:{red:'Đỏ',pink:'Hồng',purple:'Tím',dpurple:'Tím đậm',indigo:'Chàm',blue:'Xanh dương',lblue:'Xanh da trời',cyan:'Lơ',teal:'Xanh mòng két',green:'Xanh lá',lgreen:'Xanh lá nhạt',lime:'Chanh',yellow:'Vàng',amber:'Hổ phách',orange:'Cam',dorange:'Cam đậm',brown:'Nâu',grey:'Xám xanh'}},
+en:{open:'Open image',paste:'Paste',crop:'Crop',copy:'Copy',save:'Save image',undo:'Undo (Ctrl+Z)',redo:'Redo (Ctrl+Y)',settings:'Settings',about:'About',close:'Close',minimize:'Minimize',maximize:'Maximize',restore:'Restore',
+emptyT:'Make your screenshots look great',emptyH:'Paste an image, drop a file or open one to start. Tip: press Win + Shift + S to capture, then paste here.',sample:'Sample image',tipPaste:'to paste an image',tipDrop:'or drop a file onto the window',dropHere:'Drop the image here',
+cropHint:'Drag on the image to select the area to keep',cropApply:'Apply',cropReset:'Reset',cropCancel:'Cancel',
+looks:'Styles',resetStyle:'Reset style',secBg:'Background',secLayout:'Layout and shadow',secFrame:'Window frame',secCap:'Text caption',secAnn:'Annotations',secExp:'Export',
+bgGradient:'Gradient',bgSolid:'Solid',bgImage:'Image',bgNone:'Transparent',angle:'Angle',color1:'Color 1',color2:'Color 2',color3:'Color 3',use3:'Use 3 colors',color:'Color',pickBg:'Choose background image…',blur:'Blur',
+pad:'Padding',radius:'Corner radius',ratio:'Aspect ratio',auto:'Auto',custom:'Custom',width:'Width (px)',height:'Height (px)',border:'Border width',bdColor:'Border color',opacity:'Opacity',shadow:'Shadow',shBlur:'Softness',shY:'Vertical offset',
+fNone:'None',fWin:'Windows',fMac:'macOS',fBrowser:'Browser',fGlass:'Glass',fLight:'Light',fDark:'Dark',fTitle:'Frame title',capText:'Caption text',capTop:'Top',capBottom:'Bottom',size:'Font size',
+tNone:'Select',tRect:'Box',tArrow:'Arrow',tText:'Text',tHl:'Highlight',tBlur:'Pixelate',stroke:'Stroke width',pixel:'Pixel size',annHint:'Pick a tool and drag on the image. Text: click the image and type.',clearAnn:'Clear annotations',
+fmt:'Format',quality:'Quality',scale:'Export scale',outSize:'Output size',
+copied:'Image copied',copyFail:'Could not copy the image',saved:'Image saved',saveFail:'Could not save the image',pasteFail:'Could not read the clipboard. Press Ctrl+V',readFail:'Could not read the image',noImage:'No image yet',limited:'Export scale reduced because the image is large',
+sTheme:'Appearance',system:'System',light:'Light',dark:'Dark',sContrast:'Contrast',cStd:'Standard',cMed:'Medium',cHigh:'High',sColor:'Theme color',customColor:'Custom color',sLang:'Language',sWin:'Window on startup',
+winRemember:'Remember window size',winRememberD:'Reopen at the size you last resized it to',winMax:'Always open maximized',winMaxD:'Start maximized every time (not full screen)',
+sSave:'Save location',saveDefault:'Downloads folder (default)',chooseFolder:'Choose folder',resetFolder:'Use Downloads',askSave:'Ask where to save each time',savedTo:'Saved to',version:'Version',author:'Author',aiBy:'AI assistant',tagline:'Turn plain screenshots into polished images for docs, posts and social media.',license:'Open source · MIT License',ok:'Done',ready:'Ready',
+colors:{red:'Red',pink:'Pink',purple:'Purple',dpurple:'Deep purple',indigo:'Indigo',blue:'Blue',lblue:'Light blue',cyan:'Cyan',teal:'Teal',green:'Green',lgreen:'Light green',lime:'Lime',yellow:'Yellow',amber:'Amber',orange:'Orange',dorange:'Deep orange',brown:'Brown',grey:'Blue grey'}}};
+/* 'auto' follows the device language (any vi-* locale selects Vietnamese). */
+const detectLang=()=>((navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||'en']).some(l=>/^vi\b/i.test(l))?'vi':'en');

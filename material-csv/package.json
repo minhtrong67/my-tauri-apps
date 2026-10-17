@@ -1,0 +1,16 @@
+{
+  "name": "material-csv",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Material CSV: a fast, full featured CSV editor for Windows built with Tauri and Material Design 3",
+  "author": "minhtrong67",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.0"
+  }
+}

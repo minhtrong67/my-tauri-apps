@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="theme-color" content="#F9F9FF">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Material CSV</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/grid.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- Title bar with tabs (Windows 11 style) -->
+  <header id="titlebar">
+    <div class="brand" data-tauri-drag-region><img src="assets/logo.svg" alt="" class="logo"><span class="appname">Material CSV</span></div>
+    <div id="tabs" role="tablist"></div>
+    <button class="tabnew" data-cmd="file.new" aria-label="New"><svg data-ic="plus"></svg></button>
+    <div class="dragfill" data-tauri-drag-region></div>
+    <div class="wc" id="wc">
+      <button id="wMin" tabindex="-1" aria-label="Minimize"><svg data-ic="min"></svg></button>
+      <button id="wMax" tabindex="-1" aria-label="Maximize"><svg data-ic="max"></svg></button>
+      <button id="wClose" tabindex="-1" aria-label="Close"><svg data-ic="close"></svg></button>
+    </div>
+  </header>
+
+  <!-- Command bar -->
+  <section id="cmdbar" class="cmdbar">
+    <div class="grp">
+      <button class="btn" data-cmd="file.new"><svg data-ic="new"></svg><span data-i18n="c.file.new"></span></button>
+      <button class="btn" data-cmd="file.open"><svg data-ic="open"></svg><span data-i18n="c.file.open"></span></button>
+      <button class="btn pri" data-cmd="file.save"><svg data-ic="save"></svg><span data-i18n="c.file.save"></span></button>
+      <button class="btn" data-menu="export"><svg data-ic="export"></svg><span data-i18n="menu.export"></span><svg class="chev" data-ic="down"></svg></button>
+    </div>
+    <i class="sep"></i>
+    <div class="grp">
+      <button class="btn ic" data-cmd="edit.undo"><svg data-ic="undo"></svg></button>
+      <button class="btn ic" data-cmd="edit.redo"><svg data-ic="redo"></svg></button>
+      <button class="btn ic" data-cmd="edit.cut"><svg data-ic="cut"></svg></button>
+      <button class="btn ic" data-cmd="edit.copy"><svg data-ic="copy"></svg></button>
+      <button class="btn ic" data-cmd="edit.paste"><svg data-ic="paste"></svg></button>
+    </div>
+    <i class="sep"></i>
+    <div class="grp">
+      <button class="btn" data-menu="rows"><svg data-ic="rowadd"></svg><span data-i18n="menu.rows"></span><svg class="chev" data-ic="down"></svg></button>
+      <button class="btn" data-menu="cols"><svg data-ic="coladd"></svg><span data-i18n="menu.cols"></span><svg class="chev" data-ic="down"></svg></button>
+    </div>
+    <i class="sep"></i>
+    <div class="grp">
+      <button class="btn" data-menu="sort"><svg data-ic="sort"></svg><span data-i18n="menu.sort"></span><svg class="chev" data-ic="down"></svg></button>
+      <button class="btn" data-menu="filter"><svg data-ic="filter"></svg><span data-i18n="menu.filter"></span><span class="badge" id="fBadge" hidden></span><svg class="chev" data-ic="down"></svg></button>
+      <button class="btn" data-cmd="data.find"><svg data-ic="search"></svg><span data-i18n="menu.find"></span></button>
+      <button class="btn" data-menu="tools"><svg data-ic="tools"></svg><span data-i18n="menu.tools"></span><svg class="chev" data-ic="down"></svg></button>
+    </div>
+    <div class="sp"></div>
+    <div class="seg" id="viewseg" role="group">
+      <button data-cmd="view.table"><svg data-ic="table"></svg><span data-i18n="view.table"></span></button>
+      <button data-cmd="view.cards"><svg data-ic="grid"></svg><span data-i18n="view.cards"></span></button>
+      <button data-cmd="view.list"><svg data-ic="list"></svg><span data-i18n="view.list"></span></button>
+    </div>
+    <button class="btn ic" data-menu="colsvis"><svg data-ic="eye"></svg></button>
+    <button class="btn ic" data-cmd="view.details"><svg data-ic="panel"></svg></button>
+    <i class="sep"></i>
+    <button class="btn ic" data-cmd="app.palette"><svg data-ic="command"></svg></button>
+    <button class="btn ic" data-cmd="app.settings" id="bGear"><svg data-ic="gear"></svg></button>
+  </section>
+
+  <!-- Find & replace -->
+  <section id="findbar" class="panelbar" hidden>
+    <div class="frow2">
+      <div class="field"><svg data-ic="search"></svg><input id="fq" data-i18n-ph="find.ph" autocomplete="off" spellcheck="false">
+        <button class="tg" id="fCase" data-i18n-title="find.case">Aa</button>
+        <button class="tg" id="fWhole" data-i18n-title="find.whole">“ ”</button>
+        <button class="tg" id="fRegex" data-i18n-title="find.regex">.*</button>
+      </div>
+      <span class="count" id="fCount"></span>
+      <button class="btn ic" id="fPrev" data-i18n-title="find.prev"><svg data-ic="up"></svg></button>
+      <button class="btn ic" id="fNext" data-i18n-title="find.next"><svg data-ic="down"></svg></button>
+      <label class="chk"><input type="checkbox" id="fFilter"><span data-i18n="find.filter"></span></label>
+      <div class="sp"></div>
+      <button class="btn ic" id="fClose" data-i18n-title="close"><svg data-ic="x"></svg></button>
+    </div>
+    <div class="frow2" id="repRow">
+      <div class="field"><svg data-ic="replace"></svg><input id="fr" data-i18n-ph="find.replacePh" autocomplete="off" spellcheck="false"></div>
+      <button class="btn" id="fRep"><span data-i18n="find.replace"></span></button>
+      <button class="btn" id="fRepAll"><span data-i18n="find.replaceAll"></span></button>
+      <button class="btn" id="fRepSel"><span data-i18n="find.inSelection"></span></button>
+    </div>
+  </section>
+
+  <!-- Advanced filter -->
+  <section id="advbar" class="panelbar" hidden>
+    <div id="advrows"></div>
+    <div class="advfoot">
+      <button class="btn" id="advAdd"><svg data-ic="plus"></svg><span data-i18n="adv.add"></span></button>
+      <button class="btn" id="advClear"><svg data-ic="clear"></svg><span data-i18n="adv.clear"></span></button>
+      <div class="sp"></div>
+      <button class="btn ic" id="advClose" data-i18n-title="close"><svg data-ic="x"></svg></button>
+    </div>
+  </section>
+
+  <!-- Formula bar -->
+  <div id="fxbar" hidden>
+    <div class="namebox" id="nameBox">—</div>
+    <i class="fxsep"></i>
+    <input id="fx" data-i18n-ph="fx.ph" autocomplete="off" spellcheck="false" disabled>
+  </div>
+
+  <main id="main">
+    <!-- Welcome / empty state -->
+    <section id="welcome">
+      <div class="wcard">
+        <img src="assets/logo.svg" alt="" class="wlogo">
+        <h1>Material CSV</h1>
+        <p class="wsub" data-i18n="welcome.sub"></p>
+        <div class="wbtns">
+          <button class="btn pri big" data-cmd="file.open"><svg data-ic="open"></svg><span data-i18n="c.file.open"></span></button>
+          <button class="btn tonal big" data-cmd="file.new"><svg data-ic="new"></svg><span data-i18n="c.file.new"></span></button>
+          <button class="btn outl big" id="bSample"><svg data-ic="sparkle"></svg><span data-i18n="welcome.sample"></span></button>
+        </div>
+        <p class="whint"><span data-i18n="welcome.drop"></span> · <kbd>Ctrl</kbd> + <kbd>O</kbd></p>
+        <div id="recentBox" hidden>
+          <h3 data-i18n="welcome.recent"></h3>
+          <div id="recent"></div>
+        </div>
+        <p class="credit"><span data-i18n="credit.by"></span> <b class="chip author">minhtrong67</b> <span data-i18n="credit.with"></span> <b class="chip ai">Claude</b></p>
+      </div>
+    </section>
+
+    <!-- Workspace -->
+    <section id="work" hidden>
+      <div id="gridwrap">
+        <div id="scroller" tabindex="0">
+          <div id="ghdr"></div>
+          <div id="gbody">
+            <div id="rows"></div>
+            <div id="selbox" hidden></div>
+            <div id="actbox" hidden></div>
+            <textarea id="editor" hidden spellcheck="false" rows="1"></textarea>
+          </div>
+        </div>
+        <div id="cards" hidden></div>
+        <div id="gempty" hidden></div>
+      </div>
+      <aside id="details">
+        <div class="dhead"><h3 data-i18n="details.title"></h3><button class="btn ic" id="dClose" data-i18n-title="close"><svg data-ic="x"></svg></button></div>
+        <div id="dbody"></div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- Status bar -->
+  <footer id="status">
+    <span id="sInfo"></span>
+    <span id="sSel"></span>
+    <div class="sp"></div>
+    <button class="sbtn" id="sDelim" data-i18n-title="status.delim"></button>
+    <button class="sbtn" id="sEnc" data-i18n-title="status.enc"></button>
+    <button class="sbtn" id="sEol" data-i18n-title="status.eol"></button>
+    <button class="sbtn" id="sHeader" data-cmd="data.header"></button>
+    <div class="zoom">
+      <button class="btn ic sm" data-cmd="view.zoomOut"><svg data-ic="minus"></svg></button>
+      <input type="range" id="zRange" min="60" max="200" step="10" data-i18n-title="status.zoom">
+      <button class="btn ic sm" data-cmd="view.zoomIn"><svg data-ic="plus"></svg></button>
+      <button class="sbtn" id="zVal" data-cmd="view.zoomReset"></button>
+    </div>
+  </footer>
+</div>
+
+<div id="toasts" aria-live="polite"></div>
+<dialog id="settings" class="dlg big"></dialog>
+<dialog id="palette" class="dlg palette"></dialog>
+<input type="file" id="fileInput" accept=".csv,.tsv,.txt,.tab,.xlsx,.xls,.xlsm,.ods" multiple hidden>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+/* Material Design 3 tokens.
+   Default colours come from the project's Material Theme Builder export (seed #769CDF).
+   js/theme.js regenerates every --m-* role at runtime for the chosen seed colour and contrast. */
+:root {
+  color-scheme: light dark;
+  --m-primary: #415F91;
+  --m-on-primary: #FFFFFF;
+  --m-primary-container: #D6E3FF;
+  --m-on-primary-container: #284777;
+  --m-secondary: #565F71;
+  --m-on-secondary: #FFFFFF;
+  --m-secondary-container: #DAE2F9;
+  --m-on-secondary-container: #3E4759;
+  --m-tertiary: #705575;
+  --m-on-tertiary: #FFFFFF;
+  --m-tertiary-container: #FAD8FD;
+  --m-on-tertiary-container: #573E5C;
+  --m-error: #BA1A1A;
+  --m-on-error: #FFFFFF;
+  --m-error-container: #FFDAD6;
+  --m-on-error-container: #93000A;
+  --m-background: #F9F9FF;
+  --m-on-background: #191C20;
+  --m-surface: #F9F9FF;
+  --m-on-surface: #191C20;
+  --m-surface-variant: #E0E2EC;
+  --m-on-surface-variant: #44474E;
+  --m-outline: #74777F;
+  --m-outline-variant: #C4C6D0;
+  --m-shadow: #000000;
+  --m-scrim: #000000;
+  --m-inverse-surface: #2E3036;
+  --m-inverse-on-surface: #F0F0F7;
+  --m-inverse-primary: #AAC7FF;
+  --m-surface-tint: #415F91;
+  --m-surface-dim: #D9D9E0;
+  --m-surface-bright: #F9F9FF;
+  --m-surface-container-lowest: #FFFFFF;
+  --m-surface-container-low: #F3F3FA;
+  --m-surface-container: #EDEDF4;
+  --m-surface-container-high: #E7E8EE;
+  --m-surface-container-highest: #E2E2E9;
+  --m-success: #2E7D32;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --m-primary: #AAC7FF;
+  --m-on-primary: #0A305F;
+  --m-primary-container: #284777;
+  --m-on-primary-container: #D6E3FF;
+  --m-secondary: #BEC6DC;
+  --m-on-secondary: #283141;
+  --m-secondary-container: #3E4759;
+  --m-on-secondary-container: #DAE2F9;
+  --m-tertiary: #DDBCE0;
+  --m-on-tertiary: #3F2844;
+  --m-tertiary-container: #573E5C;
+  --m-on-tertiary-container: #FAD8FD;
+  --m-error: #FFB4AB;
+  --m-on-error: #690005;
+  --m-error-container: #93000A;
+  --m-on-error-container: #FFDAD6;
+  --m-background: #111318;
+  --m-on-background: #E2E2E9;
+  --m-surface: #111318;
+  --m-on-surface: #E2E2E9;
+  --m-surface-variant: #44474E;
+  --m-on-surface-variant: #C4C6D0;
+  --m-outline: #8E9099;
+  --m-outline-variant: #44474E;
+  --m-shadow: #000000;
+  --m-scrim: #000000;
+  --m-inverse-surface: #E2E2E9;
+  --m-inverse-on-surface: #2E3036;
+  --m-inverse-primary: #415F91;
+  --m-surface-tint: #AAC7FF;
+  --m-surface-dim: #111318;
+  --m-surface-bright: #37393E;
+  --m-surface-container-lowest: #0C0E13;
+  --m-surface-container-low: #191C20;
+  --m-surface-container: #1D2024;
+  --m-surface-container-high: #282A2F;
+  --m-surface-container-highest: #33353A;
+  --m-success: #8DD98D;
+  }
+}
+:root[data-theme="dark"] {
+  --m-primary: #AAC7FF;
+  --m-on-primary: #0A305F;
+  --m-primary-container: #284777;
+  --m-on-primary-container: #D6E3FF;
+  --m-secondary: #BEC6DC;
+  --m-on-secondary: #283141;
+  --m-secondary-container: #3E4759;
+  --m-on-secondary-container: #DAE2F9;
+  --m-tertiary: #DDBCE0;
+  --m-on-tertiary: #3F2844;
+  --m-tertiary-container: #573E5C;
+  --m-on-tertiary-container: #FAD8FD;
+  --m-error: #FFB4AB;
+  --m-on-error: #690005;
+  --m-error-container: #93000A;
+  --m-on-error-container: #FFDAD6;
+  --m-background: #111318;
+  --m-on-background: #E2E2E9;
+  --m-surface: #111318;
+  --m-on-surface: #E2E2E9;
+  --m-surface-variant: #44474E;
+  --m-on-surface-variant: #C4C6D0;
+  --m-outline: #8E9099;
+  --m-outline-variant: #44474E;
+  --m-shadow: #000000;
+  --m-scrim: #000000;
+  --m-inverse-surface: #E2E2E9;
+  --m-inverse-on-surface: #2E3036;
+  --m-inverse-primary: #415F91;
+  --m-surface-tint: #AAC7FF;
+  --m-surface-dim: #111318;
+  --m-surface-bright: #37393E;
+  --m-surface-container-lowest: #0C0E13;
+  --m-surface-container-low: #191C20;
+  --m-surface-container: #1D2024;
+  --m-surface-container-high: #282A2F;
+  --m-surface-container-highest: #33353A;
+  --m-success: #8DD98D;
+}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+:root {
+  /* component aliases used across the stylesheets */
+  --brand: var(--m-primary);
+  --onbrand: var(--m-on-primary);
+  --brand-bg: color-mix(in srgb, var(--m-primary) 12%, transparent);
+  --brand-bg2: var(--m-secondary-container);
+  --bg-mica: var(--m-surface-container);
+  --bg-layer: var(--m-surface);
+  --bg-card: var(--m-surface-container-low);
+  --bg-head: var(--m-surface-container);
+  --bg-head-hover: var(--m-surface-container-high);
+  --bg-field: var(--m-surface);
+  --bg-flyout: var(--m-surface-container);
+  --bg-subtle: color-mix(in srgb, var(--m-on-surface) 8%, transparent);
+  --bg-subtle2: color-mix(in srgb, var(--m-on-surface) 12%, transparent);
+  --zebra: color-mix(in srgb, var(--m-on-surface) 3%, transparent);
+  --stroke: var(--m-outline-variant);
+  --stroke-strong: var(--m-outline);
+  --grid: color-mix(in srgb, var(--m-outline-variant) 70%, transparent);
+  --fg: var(--m-on-surface);
+  --fg2: var(--m-on-surface-variant);
+  --fg3: color-mix(in srgb, var(--m-on-surface-variant) 72%, var(--m-surface));
+  --danger: var(--m-error);
+  --success: var(--m-success);
+
+  /* elevation */
+  --shadow2: 0 1px 2px rgba(0,0,0,.3), 0 1px 3px 1px rgba(0,0,0,.15);
+  --shadow8: 0 1px 2px rgba(0,0,0,.3), 0 2px 6px 2px rgba(0,0,0,.15);
+  --shadow16: 0 1px 3px rgba(0,0,0,.3), 0 4px 8px 3px rgba(0,0,0,.15);
+  --shadow64: 0 4px 4px rgba(0,0,0,.3), 0 8px 12px 6px rgba(0,0,0,.15);
+
+  /* shape */
+  --r1: 8px; --r2: 12px; --r3: 16px; --r4: 28px; --pill: 999px;
+
+  /* motion (Material 3 easing) */
+  --ease: cubic-bezier(.2, 0, 0, 1);
+  --ease-out: cubic-bezier(.05, .7, .1, 1);
+  --ease-in: cubic-bezier(.3, 0, .8, .15);
+
+  --rh: 32px; --hh: 38px; --fh: 34px; --rnw: 56px; --gfs: 13px;
+  --font: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}

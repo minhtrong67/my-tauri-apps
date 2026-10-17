@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Case Converter</title>
+  <link rel="stylesheet" href="vendor/roboto.css">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+<div class="app" id="app">
+
+  <header class="topbar" data-tauri-drag-region>
+    <img class="logo" src="assets/logo.svg" alt="" width="28" height="28">
+    <span class="app-title" data-i="appName"></span>
+    <span class="spacer" data-tauri-drag-region></span>
+    <button class="icon-btn rip" id="bSet" data-tt="settings"><i data-ic="gear"></i></button>
+    <button class="icon-btn rip" id="bAbout" data-tt="about"><i data-ic="info"></i></button>
+    <div class="wc" id="wc" hidden>
+      <button class="wc-btn" id="wMin" data-tt="minimize" tabindex="-1"><i data-ic="min"></i></button>
+      <button class="wc-btn" id="wMax" data-tt="maximize" tabindex="-1"><i data-ic="max"></i></button>
+      <button class="wc-btn wc-close" id="wClose" data-tt="close" tabindex="-1"><i data-ic="close"></i></button>
+    </div>
+  </header>
+
+  <div class="body">
+    <nav class="rail" role="tablist" data-tt-label="navLabel">
+      <button class="rail-item" role="tab" data-tab="convert"><span class="pill rip"><i data-ic="convert"></i></span><span class="rl" data-i="tConvert"></span></button>
+      <button class="rail-item" role="tab" data-tab="all"><span class="pill rip"><i data-ic="list"></i></span><span class="rl" data-i="tAll"></span></button>
+      <button class="rail-item" role="tab" data-tab="tools"><span class="pill rip"><i data-ic="tools"></i></span><span class="rl" data-i="tTools"></span></button>
+    </nav>
+
+    <main class="content" id="content">
+      <section class="card" id="cardIn">
+        <div class="card-head">
+          <h2 data-i="source"></h2>
+          <span class="spacer"></span>
+          <button class="icon-btn rip" id="bOpen" data-tt="open"><i data-ic="open"></i></button>
+          <button class="icon-btn rip" id="bPaste" data-tt="paste"><i data-ic="paste"></i></button>
+          <button class="icon-btn rip" id="bClear" data-tt="clear"><i data-ic="clear"></i></button>
+        </div>
+        <div class="field"><textarea id="inp" spellcheck="false" data-ph="inPlaceholder"></textarea></div>
+        <div class="stat" id="stat" aria-live="off"></div>
+      </section>
+
+      <section class="card" id="cardOut">
+        <div class="card-head">
+          <h2 id="oTitle"></h2>
+          <span class="spacer"></span>
+          <span class="actions" id="outActions">
+            <button class="icon-btn rip" id="bSwap" data-tt="swap"><i data-ic="swap"></i></button>
+            <button class="icon-btn rip" id="bSave" data-tt="save"><i data-ic="save"></i></button>
+            <button class="btn tonal rip" id="bCopy"><i data-ic="copy" id="copyIc"></i><span id="copyTx" data-i="copy"></span></button>
+          </span>
+        </div>
+
+        <div class="view" id="vConvert">
+          <div id="chips"></div>
+          <label class="switch-row">
+            <span class="switch-text"><span data-i="smart"></span><small data-i="smartHint"></small></span>
+            <span class="switch"><input type="checkbox" id="smart" role="switch"><span class="track"><span class="thumb"><i data-ic="check"></i></span></span></span>
+          </label>
+        </div>
+        <div class="view" id="vTools" hidden><div class="chips" id="tools" role="radiogroup"></div></div>
+        <div class="list" id="list" hidden></div>
+        <div class="field out" id="outField"><textarea id="out" readonly spellcheck="false" data-ph="emptyResult"></textarea></div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="credit">
+    <span data-i="madeBy"></span>
+    <span class="author-pill"><i data-ic="person"></i>minhtrong67</span>
+    <span data-i="withAi"></span>
+    <span class="ai-pill"><i data-ic="spark"></i>Claude</span>
+  </footer>
+</div>
+
+<div class="drop" id="drop" hidden><div class="drop-box"><i data-ic="open"></i><span data-i="dropHere"></span></div></div>
+<div class="snackbar" id="sb" role="status" aria-live="polite"><span id="sbText"></span><button class="snack-act rip" id="sbAct" hidden></button></div>
+
+<dialog id="dSet" aria-labelledby="dSetTitle">
+  <h2 id="dSetTitle" data-i="settingsTitle"></h2>
+  <div class="dlg-body">
+    <section>
+      <h3><i data-ic="palette"></i><span data-i="secAppearance"></span></h3>
+      <div class="lbl" data-i="sTheme"></div>
+      <div class="seg" id="segTheme" role="radiogroup">
+        <button class="seg-btn rip" data-v="system" role="radio"><span class="si"><i data-ic="system"></i><i data-ic="check"></i></span><span data-i="system"></span></button>
+        <button class="seg-btn rip" data-v="light" role="radio"><span class="si"><i data-ic="light"></i><i data-ic="check"></i></span><span data-i="light"></span></button>
+        <button class="seg-btn rip" data-v="dark" role="radio"><span class="si"><i data-ic="dark"></i><i data-ic="check"></i></span><span data-i="dark"></span></button>
+      </div>
+      <div class="lbl" data-i="sColor"></div>
+      <div class="hint" data-i="sColorHint"></div>
+      <div class="swatches" id="swatches" role="radiogroup"></div>
+    </section>
+    <section>
+      <h3><i data-ic="language"></i><span data-i="secLanguage"></span></h3>
+      <div class="seg" id="segLang" role="radiogroup">
+        <button class="seg-btn rip" data-v="auto" role="radio"><span class="si"><i data-ic="system"></i><i data-ic="check"></i></span><span data-i="langAuto"></span></button>
+        <button class="seg-btn rip" data-v="en" role="radio"><span class="si"><i data-ic="language"></i><i data-ic="check"></i></span><span>English</span></button>
+        <button class="seg-btn rip" data-v="vi" role="radio"><span class="si"><i data-ic="language"></i><i data-ic="check"></i></span><span>Tiếng Việt</span></button>
+      </div>
+      <div class="hint" data-i="langAutoHint"></div>
+    </section>
+    <section id="secWindow" hidden>
+      <h3><i data-ic="window"></i><span data-i="secWindow"></span></h3>
+      <div class="lbl" data-i="sWindow"></div>
+      <div class="seg" id="segWin" role="radiogroup">
+        <button class="seg-btn rip" data-v="remember" role="radio"><span class="si"><i data-ic="window"></i><i data-ic="check"></i></span><span data-i="wRemember"></span></button>
+        <button class="seg-btn rip" data-v="maximized" role="radio"><span class="si"><i data-ic="max"></i><i data-ic="check"></i></span><span data-i="wMaximized"></span></button>
+      </div>
+      <div class="hint" id="winHint"></div>
+    </section>
+  </div>
+  <div class="dlg-actions"><button class="btn text rip" data-close data-i="done"></button></div>
+</dialog>
+
+<dialog id="dAbout" aria-labelledby="aboutName">
+  <div class="about">
+    <img class="about-logo" src="assets/logo.svg" alt="" width="84" height="84">
+    <h2 id="aboutName" data-i="appName"></h2>
+    <div class="ver"><span data-i="version"></span> 1.0.0</div>
+    <div class="credit-card author-card">
+      <span class="avatar"><i data-ic="person"></i></span>
+      <div class="cc-text"><small data-i="author"></small><strong class="shine">minhtrong67</strong><span data-i="authorRole"></span></div>
+    </div>
+    <div class="credit-card ai-card">
+      <span class="avatar ai"><i data-ic="spark"></i></span>
+      <div class="cc-text"><small data-i="builtWith"></small><strong>Claude</strong><span data-i="aiRole"></span></div>
+    </div>
+    <p class="ai-note" data-i="aiNote"></p>
+    <span class="chip-static"><i data-ic="gift"></i><span data-i="license"></span></span>
+  </div>
+  <div class="dlg-actions"><button class="btn text rip" data-close data-i="done"></button></div>
+</dialog>
+
+<input type="file" id="file" accept=".txt,.md,.csv,.log,.json,text/*" hidden>
+</body>
+</html>

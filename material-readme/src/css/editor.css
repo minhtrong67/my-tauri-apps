@@ -1,0 +1,22 @@
+/* CodeMirror 6, restyled with Material 3 roles. */
+#cm { display: flex; flex-direction: column; }
+.cm-editor { flex: 1; min-height: 0; background: transparent; color: var(--md-sys-color-on-surface); font: 400 calc(14px * var(--z)) / 1.75 var(--mono); user-select: text; -webkit-user-select: text; }
+.cm-editor.cm-focused { outline: none; }
+#cm .cm-editor .cm-scroller, #cm .cm-editor .cm-content, #cm .cm-editor .cm-gutters { font-family: var(--mono); line-height: inherit; }
+.cm-scroller { overflow: auto; }
+.cm-content { padding: 16px 0 112px; caret-color: var(--md-sys-color-primary); }
+.cm-line { padding: 0 24px 0 12px; }
+#cm .cm-editor .cm-gutters { background: transparent !important; border: 0 !important; color: var(--md-sys-color-outline) !important; padding-left: 8px; }
+#cm .cm-editor .cm-lineNumbers .cm-gutterElement { color: var(--md-sys-color-outline); padding: 0 8px 0 4px; min-width: 32px; font-size: .85em; }
+#cm .cm-editor .cm-activeLine { background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent) !important; }
+#cm .cm-editor .cm-activeLineGutter { background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent) !important; color: var(--md-sys-color-primary) !important; font-weight: 700; }
+.cm-cursor, .cm-dropCursor { border-left: 2px solid var(--md-sys-color-primary); margin-left: -1px; }
+.cm-selectionBackground, .cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-content ::selection { background: color-mix(in srgb, var(--md-sys-color-primary) 28%, transparent) !important; }
+#cm .cm-editor .cm-selectionMatch { background: color-mix(in srgb, var(--md-sys-color-tertiary) 25%, transparent); border-radius: 2px; }
+#cm .cm-editor .cm-searchMatch { background: color-mix(in srgb, #FFD54F 65%, transparent); border-radius: 3px; }
+#cm .cm-editor .cm-searchMatch.cm-searchMatch-selected { background: #FF9800 !important; color: #000; border-radius: 3px; }
+.cm-matchingBracket { background: color-mix(in srgb, var(--md-sys-color-primary) 22%, transparent); outline: 1px solid var(--md-sys-color-primary); border-radius: 2px; }
+.cm-nonmatchingBracket { color: var(--md-sys-color-error); }
+.cm-panels { display: none; }
+.cm-placeholder { color: var(--md-sys-color-outline); }
+.cm-editor .cm-scroller::-webkit-scrollbar { width: 14px; }

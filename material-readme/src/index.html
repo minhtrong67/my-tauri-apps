@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Material Readme</title>
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/markdown.css">
+<link rel="stylesheet" href="css/editor.css">
+</head>
+<body data-mode="split">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="logo" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="lg-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3A92C9"/>
+      <stop offset="1" stop-color="#0A4A70"/>
+    </linearGradient>
+    <linearGradient id="lg-pg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DDEEFF"/>
+    </linearGradient>
+    <filter id="lg-sh" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0A1E40" flood-opacity=".35"/>
+    </filter>
+  </defs>
+  <!-- Material 3 squircle container -->
+  <rect x="64" y="64" width="896" height="896" rx="224" fill="url(#lg-bg)"/>
+  <!-- page with folded corner -->
+  <g filter="url(#lg-sh)">
+    <path d="M296 196h268l176 176v400a56 56 0 0 1-56 56H296a56 56 0 0 1-56-56V252a56 56 0 0 1 56-56z" fill="url(#lg-pg)"/>
+  </g>
+  <path d="M564 196l176 176H620a56 56 0 0 1-56-56z" fill="#CAE6FF"/>
+  <!-- markdown mark: M with down arrow -->
+  <path d="M312 640V486l66 78 66-78v154" fill="none" stroke="#0A4A70" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M552 486v154m-48-52l48 52 48-52" fill="none" stroke="#0A4A70" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- text lines -->
+  <path d="M312 408h150M312 718h300" stroke="#B7D6EE" stroke-width="28" stroke-linecap="round"/>
+  <!-- edit pencil badge (tertiary container) -->
+  <circle cx="750" cy="760" r="150" fill="#EBDDFF"/>
+  <g transform="translate(750 760) rotate(45)">
+    <rect x="-24" y="-100" width="48" height="140" rx="8" fill="#65587B"/>
+    <path d="M-24 52h48l-24 52z" fill="#4D4162"/>
+    <rect x="-24" y="-100" width="48" height="26" rx="8" fill="#A596BC"/>
+  </g>
+</symbol></svg>
+
+<header class="titlebar" data-tauri-drag-region>
+  <svg class="logo"><use href="#logo"/></svg>
+  <div class="tb-title"><b>Material Readme</b><span id="tbFile"></span></div>
+  <div class="wc">
+    <button id="wMin" class="wbtn" tabindex="-1" data-tk="w_min"><span class="ic" data-icon="minimize"></span></button>
+    <button id="wMax" class="wbtn" tabindex="-1" data-tk="w_max"><span class="ic" data-icon="maximize"></span></button>
+    <button id="wClose" class="wbtn close" tabindex="-1" data-tk="w_close"><span class="ic" data-icon="close"></span></button>
+  </div>
+</header>
+
+<div class="appbar">
+  <div class="grp start">
+    <button class="btn tonal" id="bOpen" data-tk="open" data-sc="Ctrl+O"><span class="ic" data-icon="open"></span><span class="lbl" data-i="open"></span></button>
+    <button class="ibtn" id="bNew" data-tk="new" data-sc="Ctrl+N"><span class="ic" data-icon="add_file"></span></button>
+    <button class="ibtn" id="bSave" data-tk="save" data-sc="Ctrl+S"><span class="ic" data-icon="save"></span></button>
+    <button class="ibtn" id="bRecent" data-tk="recent"><span class="ic" data-icon="history"></span></button>
+    <button class="ibtn" id="bMore" data-tk="more"><span class="ic" data-icon="more"></span></button>
+  </div>
+  <div class="seg" id="modeSeg" role="tablist">
+    <span class="thumb"></span>
+    <button role="tab" data-mode="edit" data-tk="m_edit" data-sc="Ctrl+1"><span class="ic" data-icon="edit"></span><span class="lbl" data-i="m_edit"></span></button>
+    <button role="tab" data-mode="split" data-tk="m_split" data-sc="Ctrl+2"><span class="ic" data-icon="split"></span><span class="lbl" data-i="m_split"></span></button>
+    <button role="tab" data-mode="preview" data-tk="m_preview" data-sc="Ctrl+3"><span class="ic" data-icon="preview"></span><span class="lbl" data-i="m_preview"></span></button>
+  </div>
+  <div class="grp end">
+    <button class="ibtn" id="bFind" data-tk="find" data-sc="Ctrl+F"><span class="ic" data-icon="search"></span></button>
+    <button class="ibtn toggle" id="bNav" data-sc="Ctrl+\"><span class="ic" data-icon="view_sidebar"></span></button>
+    <button class="ibtn" id="bTheme"><span class="ic" data-icon="system"></span></button>
+    <button class="ibtn" id="bSettings" data-tk="settings" data-sc="Ctrl+,"><span class="ic" data-icon="settings"></span></button>
+  </div>
+</div>
+
+<div class="tabs" id="tabs" role="tablist"></div>
+
+<div class="fmt-wrap" id="fmtWrap"><div class="fmt" id="fmt">
+  <button class="ibtn sm" data-cmd="undo" data-tk="c_undo" data-sc="Ctrl+Z"><span class="ic" data-icon="undo"></span></button>
+  <button class="ibtn sm" data-cmd="redo" data-tk="c_redo" data-sc="Ctrl+Y"><span class="ic" data-icon="redo"></span></button>
+  <i class="vsep"></i>
+  <button class="ibtn sm" data-cmd="bold" data-tk="c_bold" data-sc="Ctrl+B"><span class="ic" data-icon="bold"></span></button>
+  <button class="ibtn sm" data-cmd="italic" data-tk="c_italic" data-sc="Ctrl+I"><span class="ic" data-icon="italic"></span></button>
+  <button class="ibtn sm" data-cmd="strike" data-tk="c_strike" data-sc="Ctrl+Shift+X"><span class="ic" data-icon="strike"></span></button>
+  <button class="ibtn sm" data-cmd="heading" data-tk="c_heading"><span class="ic" data-icon="heading"></span></button>
+  <i class="vsep"></i>
+  <button class="ibtn sm" data-cmd="quote" data-tk="c_quote"><span class="ic" data-icon="quote"></span></button>
+  <button class="ibtn sm" data-cmd="code" data-tk="c_code" data-sc="Ctrl+E"><span class="ic" data-icon="code"></span></button>
+  <button class="ibtn sm" data-cmd="codeblock" data-tk="c_codeblock"><span class="ic" data-icon="codeblock"></span></button>
+  <i class="vsep"></i>
+  <button class="ibtn sm" data-cmd="link" data-tk="c_link" data-sc="Ctrl+K"><span class="ic" data-icon="link"></span></button>
+  <button class="ibtn sm" data-cmd="image" data-tk="c_image"><span class="ic" data-icon="image"></span></button>
+  <i class="vsep"></i>
+  <button class="ibtn sm" data-cmd="ul" data-tk="c_ul"><span class="ic" data-icon="ul"></span></button>
+  <button class="ibtn sm" data-cmd="ol" data-tk="c_ol"><span class="ic" data-icon="ol"></span></button>
+  <button class="ibtn sm" data-cmd="task" data-tk="c_task"><span class="ic" data-icon="task"></span></button>
+  <i class="vsep"></i>
+  <button class="ibtn sm" data-cmd="table" data-tk="c_table"><span class="ic" data-icon="table"></span></button>
+  <button class="ibtn sm" data-cmd="hr" data-tk="c_hr"><span class="ic" data-icon="hr"></span></button>
+</div></div>
+
+<main class="shell" id="shell">
+  <div class="scrim" id="drawerScrim"></div>
+  <aside class="drawer" id="drawer" aria-label="Outline">
+    <div class="dr-h"><span class="ic" data-icon="outline"></span><h3 data-i="outline"></h3><button class="ibtn sm" id="drawerClose" data-tk="outline_hide" data-sc="Ctrl+\"><span class="ic" data-icon="view_sidebar_close"></span></button></div>
+    <nav id="toc"></nav>
+  </aside>
+
+  <section class="work" id="work">
+    <div class="findbar" id="findbar" role="search">
+      <div class="fb-row">
+        <label class="fb-field"><span class="ic" data-icon="search"></span><input id="fq" autocomplete="off" spellcheck="false" data-pk="find_ph"></label>
+        <span class="fb-count" id="fqc"></span>
+        <button class="ibtn sm toggle" id="fCase" data-tk="f_case"><b>Aa</b></button>
+        <button class="ibtn sm toggle" id="fRe" data-tk="f_regex"><b>.*</b></button>
+        <button class="ibtn sm" id="fPrev" data-tk="f_prev" data-sc="Shift+Enter"><span class="ic" data-icon="up"></span></button>
+        <button class="ibtn sm" id="fNext" data-tk="f_next" data-sc="Enter"><span class="ic" data-icon="down"></span></button>
+        <button class="ibtn sm toggle" id="fRepToggle" data-tk="f_replace" data-sc="Ctrl+H"><span class="ic" data-icon="replace"></span></button>
+        <button class="ibtn sm" id="fClose" data-tk="close" data-sc="Esc"><span class="ic" data-icon="close"></span></button>
+      </div>
+      <div class="fb-row fb-rep">
+        <label class="fb-field"><span class="ic" data-icon="edit"></span><input id="fr" autocomplete="off" spellcheck="false" data-pk="replace_ph"></label>
+        <button class="btn text sm" id="fRepOne" data-i="replace_one"></button>
+        <button class="btn text sm" id="fRepAll" data-i="replace_all"></button>
+      </div>
+    </div>
+
+    <div class="pane pane-editor" id="paneEditor"><div id="cm"></div></div>
+    <div class="pane pane-preview" id="panePreview"><div id="doc"><article class="md" id="md"></article></div></div>
+
+    <div class="empty" id="empty">
+      <div class="empty-in">
+        <svg class="hero"><use href="#logo"/></svg>
+        <h1 data-i="empty_t"></h1>
+        <p data-i="empty_h"></p>
+        <div class="row">
+          <button class="btn filled" id="eNew"><span class="ic" data-icon="add_file"></span><span data-i="new"></span></button>
+          <button class="btn tonal" id="eOpen"><span class="ic" data-icon="open"></span><span data-i="open"></span></button>
+          <button class="btn outlined" id="eSample"><span class="ic" data-icon="file"></span><span data-i="sample"></span></button>
+        </div>
+        <div class="recent" id="eRecent"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="status">
+  <span id="sPos" class="s-pos"></span>
+  <span id="sStats" class="s-stats"></span>
+  <span class="sp"></span>
+  <button class="s-btn" id="sEol" data-tk="eol"></button>
+  <span class="s-enc">UTF-8</span>
+  <span id="sSave" class="s-save"></span>
+  <span class="zoom">
+    <button class="ibtn xs" id="zOut" data-tk="zoom_out" data-sc="Ctrl+-"><span class="ic" data-icon="remove"></span></button>
+    <button class="s-btn" id="zVal" data-tk="zoom_reset" data-sc="Ctrl+0">100%</button>
+    <button class="ibtn xs" id="zIn" data-tk="zoom_in" data-sc="Ctrl+="><span class="ic" data-icon="add"></span></button>
+  </span>
+</footer>
+
+<dialog class="dlg" id="dlg"></dialog>
+<dialog class="dlg sheet" id="sheet"></dialog>
+<div id="menus"></div>
+<div id="snack" role="status" aria-live="polite"><span id="snackText"></span><button class="btn text sm" id="snackAct"></button></div>
+<div id="tip" role="tooltip"></div>
+<input type="file" id="fileIn" multiple accept=".md,.markdown,.mdown,.mkd,.txt,text/markdown,text/plain" hidden>
+
+<script src="vendor/marked.umd.js"></script>
+<script src="vendor/purify.min.js"></script>
+<script src="vendor/highlight.min.js"></script>
+<script src="vendor/codemirror.js"></script>
+<script src="vendor/mcu.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

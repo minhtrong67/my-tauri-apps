@@ -1,0 +1,29 @@
+{
+  "name": "Material Xlsx",
+  "short_name": "Material Xlsx",
+  "description": "A fast, offline spreadsheet editor in Material Design 3.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7fbf2",
+  "theme_color": "#1b6b3a",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "src-tauri/icons/128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "src-tauri/icons/128x128@2x.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "src-tauri/icons/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

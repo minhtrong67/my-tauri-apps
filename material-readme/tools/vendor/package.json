@@ -1,0 +1,25 @@
+{
+  "name": "material-readme-vendor",
+  "private": true,
+  "description": "Optional tool that rebuilds src/vendor/codemirror.js and src/vendor/mcu.js. Not needed to run the app.",
+  "type": "module",
+  "scripts": { "build": "node build.mjs" },
+  "devDependencies": {
+    "@codemirror/autocomplete": "^6",
+    "@codemirror/commands": "^6",
+    "@codemirror/lang-css": "^6",
+    "@codemirror/lang-html": "^6",
+    "@codemirror/lang-javascript": "^6",
+    "@codemirror/lang-json": "^6",
+    "@codemirror/lang-markdown": "^6",
+    "@codemirror/lang-python": "^6",
+    "@codemirror/language": "^6",
+    "@codemirror/legacy-modes": "^6",
+    "@codemirror/search": "^6",
+    "@codemirror/state": "^6",
+    "@codemirror/view": "^6",
+    "@lezer/highlight": "^1",
+    "@material/material-color-utilities": "^0.4.0",
+    "esbuild": "^0.25.0"
+  }
+}
