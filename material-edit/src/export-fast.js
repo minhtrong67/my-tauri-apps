@@ -4,7 +4,7 @@ import { state, totalDuration, getMedia, allMediaClips } from './store.js';
 import { drawFrame, setFrameResolver, fadeFactor } from './engine.js';
 import { Muxer as Mp4Muxer, StreamTarget as Mp4Target } from './vendor/mp4-muxer.mjs';
 import { Muxer as WebmMuxer, StreamTarget as WebmTarget } from './vendor/webm-muxer.mjs';
-import { RangeReader, parseMp4, parseMp4Audio, parseMp3Audio, SeqDecoder, AudioStream } from './mp4demux.js';
+import { RangeReader, withTimeout, parseMp4, parseMp4Audio, parseMp3Audio, SeqDecoder, AudioStream } from './mp4demux.js';
 import { createFileWriter, deleteExport } from './io.js';
 import { clamp, yieldNow } from './util.js';
 
@@ -35,8 +35,9 @@ function vp9Candidates(w, h, fps) {
 export async function pickVideoConfig(fmt, w, h, fps, bitrate, safe = false) {
   const list = fmt.vcodec === 'avc' ? avcCandidates(w, h, fps) : vp9Candidates(w, h, fps);
   for (const codec of list) {
-    for (const hw of ['no-preference', 'prefer-software']) {
-      const cfg = { codec, width: w, height: h, bitrate, bitrateMode: 'variable', framerate: fps, latencyMode: safe ? 'realtime' : 'quality', hardwareAcceleration: hw };
+    // GPU encoder first (several times faster than the CPU one); 'realtime' latency mode is much faster than 'quality' at these bitrates
+    for (const hw of safe ? ['no-preference', 'prefer-software'] : ['prefer-hardware', 'no-preference', 'prefer-software']) {
+      const cfg = { codec, width: w, height: h, bitrate, bitrateMode: 'variable', framerate: fps, latencyMode: 'realtime', hardwareAcceleration: hw };
       if (fmt.vcodec === 'avc') cfg.avc = { format: 'avc' };
       try { const r = await VideoEncoder.isConfigSupported(cfg); if (r.supported) return r.config; } catch { /* next */ }
     }
@@ -290,7 +291,7 @@ function diagText(st, sources, started) {
   const all = Math.max(1, performance.now() - started);
   const pc = (k) => Math.round((st[k] / all) * 100);
   const modes = [...new Set([...sources.values()].map((s) => s.mode + (s.why && s.mode !== 'hardware' ? ` (${s.why.slice(0, 200)})` : '')))].join(', ') || '–';
-  return `${st.reused ? `reused ${st.reused}/${st.frames} frames · ` : ''}decode ${pc('prep')}% · draw ${pc('draw')}% · encode ${pc('enc') + pc('wait')}% · audio ${pc('audio')}% · decoder: ${modes}`;
+  return `encoder: ${st.hw || '?'} · ${st.reused ? `reused ${st.reused}/${st.frames} frames · ` : ''}decode ${pc('prep')}% · draw ${pc('draw')}% · encode ${pc('enc') + pc('wait')}% · audio ${pc('audio')}% · decoder: ${modes}`;
 }
 
 export async function exportFast(o) {
@@ -340,23 +341,30 @@ export async function exportFast(o) {
   setFrameResolver((c, m) => { const s = sources.get(c.id); return s && s.cur ? s.cur : (c.kind === 'image' ? null : { src: null, w: 0, h: 0, m }); });
 
   const st = o.stats || (o.stats = {});
-  Object.assign(st, { prep: 0, draw: 0, enc: 0, audio: 0, wait: 0, frames: 0 });
+  Object.assign(st, { prep: 0, draw: 0, enc: 0, audio: 0, wait: 0, frames: 0, hw: vcfg.hardwareAcceleration || 'no-preference' });
   const lap = (k, t0) => { st[k] += performance.now() - t0; };
   const total = Math.max(1, Math.ceil(duration * fps));
   const started = performance.now();
   const keyEvery = Math.round(fps * 2);
   let base = null, lastKey = null; // last composited picture (re-used while nothing changes)
   let audioDone = 0; // seconds already encoded
-  const ABLK = 1; // seconds per audio block
+  const ABLK = 4; // seconds per audio block (fewer OfflineAudioContext / AudioDecoder instances over long exports)
 
   const pushAudio = async (upTo) => {
     while (audioDone < upTo - 1e-6 && audioDone < duration) {
       const frames = Math.min(Math.round(ABLK * SR), Math.round((duration - audioDone) * SR));
       if (frames <= 0) break;
-      const ab = await renderAudio(bufs, audioDone, frames);
-      const planar = new Float32Array(frames * 2);
-      planar.set(ab.getChannelData(0), 0);
-      planar.set(ab.getChannelData(1), frames);
+      let ab = null;
+      for (let attempt = 0; attempt < 3 && !ab; attempt++) {
+        try { ab = await withTimeout(renderAudio(bufs, audioDone, frames), 20000, 'audio render'); } catch (e) {
+          if (signal.aborted) throw abortErr();
+          console.warn('audio block failed, retrying', e);
+          for (const a of bufs.values()) if (a.stream) { try { a.stream.close(); } catch { /* ignore */ } } // next window reopens a fresh decoder
+          await sleep(100);
+        }
+      }
+      const planar = new Float32Array(frames * 2); // a block that keeps failing becomes silence instead of freezing the export
+      if (ab) { planar.set(ab.getChannelData(0), 0); planar.set(ab.getChannelData(1), frames); }
       const ad = new AudioData({ format: 'f32-planar', sampleRate: SR, numberOfFrames: frames, numberOfChannels: 2, timestamp: Math.round(audioDone * 1e6), data: planar });
       aenc.encode(ad);
       ad.close();
@@ -406,7 +414,15 @@ export async function exportFast(o) {
       if ((i + 1) % fps === 0 || i === total - 1) { const a0 = performance.now(); await race(pushAudio(i === total - 1 ? duration : (i + 1) / fps)); lap('audio', a0); }
       // back-pressure keeps encoder queues and pending disk writes bounded
       const w0 = performance.now();
-      while (venc.encodeQueueSize > 8 || aenc.encodeQueueSize > 16 || writer.pending > 64e6) { if (fail) throw fail; if (signal.aborted) throw abortErr(); await sleep(4); }
+      let lastQ = venc.encodeQueueSize + aenc.encodeQueueSize + writer.pending, lastMove = w0;
+      while (venc.encodeQueueSize > 24 || aenc.encodeQueueSize > 16 || writer.pending > 64e6) {
+        if (fail) throw fail; if (signal.aborted) throw abortErr();
+        const q = venc.encodeQueueSize + aenc.encodeQueueSize + writer.pending;
+        if (q !== lastQ) { lastQ = q; lastMove = performance.now(); }
+        // encoder / disk made no progress for 45 s → fail loudly so the caller retries in safe mode instead of hanging
+        else if (performance.now() - lastMove > 45000) throw new Error(`encoder stalled (video queue ${venc.encodeQueueSize}, audio queue ${aenc.encodeQueueSize}, pending ${writer.pending})`);
+        await sleep(4);
+      }
       lap('wait', w0);
       if (i % 4 === 0) {
         const el = (performance.now() - started) / 1000;
@@ -416,8 +432,8 @@ export async function exportFast(o) {
       await yieldNow(); // keep the window responsive (Cancel, dragging, repaint)
     }
     if (o.onPhase) o.onPhase('finishing');
-    await race(venc.flush());
-    await race(aenc.flush());
+    await race(withTimeout(venc.flush(), 120000, 'video encoder flush'));
+    await race(withTimeout(aenc.flush(), 60000, 'audio encoder flush'));
     if (fail) throw fail;
     muxer.finalize();
     await race(writer.drain());

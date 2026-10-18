@@ -8,6 +8,13 @@ const hex = (n, w = 2) => n.toString(16).padStart(w, '0');
 const dec = (n) => String(n).padStart(2, '0');
 
 /** Range reader with a small read-ahead window. */
+/** Rejects if `p` does not settle within `ms` (a stuck decoder / flush must never hang the export silently). */
+export function withTimeout(p, ms, what = 'operation') {
+  let tm;
+  const t = new Promise((_, rej) => { tm = setTimeout(() => rej(new Error(`${what} timed out`)), ms); });
+  return Promise.race([Promise.resolve(p), t]).finally(() => clearTimeout(tm));
+}
+
 export class RangeReader {
   constructor(url) { this.url = url; this.size = 0; this.win = null; this.whole = null; }
   async init() {
@@ -31,9 +38,18 @@ export class RangeReader {
     const w = this.win;
     if (w && start >= w.start && start + len <= w.start + w.data.length) return w.data.subarray(start - w.start, start - w.start + len);
     const want = Math.min(this.size - start, Math.max(len, ahead));
-    const r = await fetch(this.url, { headers: { Range: `bytes=${start}-${start + want - 1}` } });
-    if (r.status !== 206 && r.status !== 200) throw new Error('read failed ' + r.status);
-    const data = new Uint8Array(await r.arrayBuffer());
+    // a request that never answers (local media server busy / connection dropped) used to freeze the export forever
+    let data = null, lastErr = null;
+    for (let attempt = 0; attempt < 3 && !data; attempt++) {
+      const ac = new AbortController();
+      const tm = setTimeout(() => ac.abort(), 20000);
+      try {
+        const r = await fetch(this.url, { headers: { Range: `bytes=${start}-${start + want - 1}` }, signal: ac.signal });
+        if (r.status !== 206 && r.status !== 200) throw new Error('read failed ' + r.status);
+        data = new Uint8Array(await r.arrayBuffer());
+      } catch (e) { lastErr = e; await new Promise((res) => setTimeout(res, 300 * (attempt + 1))); } finally { clearTimeout(tm); }
+    }
+    if (!data) throw lastErr || new Error('read failed');
     this.win = { start, data };
     return data.subarray(0, len);
   }
@@ -373,10 +389,10 @@ export class SeqDecoder {
       if (this.error) throw this.error;
       if (performance.now() - Math.max(t0, this.lastOut) > 5000) throw new Error('decoder stalled');
       if (this.next < this.i.n) {
-        if (this.decoder.decodeQueueSize < 6 && this.frames.length < 10) await this._feed();
+        if (this.decoder.decodeQueueSize < 6 && this.frames.length < 10) await withTimeout(this._feed(), 30000, 'decoder feed');
         else await this._wait();
       } else {
-        await this.decoder.flush();
+        await withTimeout(this.decoder.flush(), 10000, 'decoder flush');
         this.flushed = true;
         this._wake();
       }
@@ -514,11 +530,11 @@ export class AudioStream {
     let last = Math.min(i.n - 1, this._index(Math.max(0, b)) + 1);
     this._open();
     for (let s = first; s <= last; s++) {
-      const data = await this.r.read(i.offsets[s], i.sizes[s], 1 << 20);
+      const data = await withTimeout(this.r.read(i.offsets[s], i.sizes[s], 1 << 20), 30000, 'audio read');
       this.dec.decode(new EncodedAudioChunk({ type: 'key', timestamp: Math.round((this.i.dts[s] / this.i.timescale) * 1e6), data }));
       if (this.err) throw this.err;
     }
-    await this.dec.flush();
+    await withTimeout(this.dec.flush(), 10000, 'audio flush');
     if (this.err) throw this.err;
     const outs = this.out; this.out = [];
     if (!outs.length) return null;
