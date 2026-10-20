@@ -4,5 +4,4 @@ dist
 .DS_Store
 src-tauri/gen
 src-tauri/gen
-# installers are uploaded to GitHub Releases / this folder manually
-download/*.exe
+
