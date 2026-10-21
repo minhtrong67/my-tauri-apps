@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8" /><link rel="stylesheet" href="ui.css" />
+<style>
+  body { width: 340px; padding: 14px; }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .state { text-align: center; padding: 18px 12px; margin-bottom: 10px; }
+  .state .big { font-size: 22px; font-weight: 700; letter-spacing: -.02em; } .state .big.ok { color: var(--ok); } .state .big.bad { color: var(--bad); }
+  .state .time { font-size: 38px; font-weight: 700; letter-spacing: -.03em; line-height: 1.1; }
+  .row .btn { flex: 1; }
+</style></head>
+<body>
+  <header>
+    <div class="brand"><img src="icons/48.png" alt="" /><div><b>Claude Tracker Reporter</b><span>Chrome Profile này</span></div></div>
+  </header>
+  <div class="card state" id="state"></div>
+  <div class="card"><dl class="kv" id="info"></dl></div>
+  <p class="hint" id="status" style="margin:10px 2px"></p>
+  <div class="row"><button class="btn primary" id="sync">Đồng bộ ngay</button><button class="btn" id="opts">Cài đặt</button></div>
+  <script src="popup.js"></script>
+</body></html>

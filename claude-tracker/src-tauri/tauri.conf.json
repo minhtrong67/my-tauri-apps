@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Claude Tracker",
+  "version": "0.2.0",
+  "identifier": "com.minhtrong67.claude-tracker",
+  "build": {
+    "beforeDevCommand": "npm run dev:web",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build:web",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Claude Tracker",
+        "width": 1280,
+        "height": 820,
+        "minWidth": 400,
+        "minHeight": 560,
+        "center": true,
+        "visible": false
+      }
+    ],
+    "security": { "csp": null }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "publisher": "minhtrong67",
+    "copyright": "Copyright © 2026 minhtrong67",
+    "category": "Utility",
+    "shortDescription": "Track Claude usage limits across Chrome profiles",
+    "longDescription": "Claude Tracker shows the usage limits and reset times of every Claude account across your Chrome profiles in one dashboard.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/64x64.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/setup.ico",
+        "uninstallerIcon": "icons/uninstall.ico",
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

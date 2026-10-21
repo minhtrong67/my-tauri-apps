@@ -1,0 +1,76 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Lang, LangPref, resolveLang } from "./i18n";
+
+export type ThemePref = "system" | "light" | "dark";
+export type FontPref = "sm" | "md" | "lg" | "xl";
+export type ViewMode = "grid" | "list";
+export interface Prefs {
+  theme: ThemePref;
+  font: FontPref;
+  lang: LangPref;
+  view: ViewMode;
+}
+
+const KEY = "claude-tracker.prefs";
+const DEFAULTS: Prefs = { theme: "system", font: "md", lang: "system", view: "grid" };
+
+export function loadPrefs(): Prefs {
+  try {
+    return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) ?? "{}") };
+  } catch {
+    return DEFAULTS;
+  }
+}
+
+const darkQuery = () => window.matchMedia("(prefers-color-scheme: dark)");
+
+export function usePrefs() {
+  const [prefs, setPrefsState] = useState<Prefs>(loadPrefs);
+  const [sysDark, setSysDark] = useState(() => darkQuery().matches);
+  const [sysLang, setSysLang] = useState(0); // chỉ để buộc render lại khi hệ thống đổi ngôn ngữ
+
+  useEffect(() => {
+    const mq = darkQuery();
+    const on = () => setSysDark(mq.matches);
+    mq.addEventListener("change", on);
+    const onLang = () => setSysLang((n) => n + 1);
+    window.addEventListener("languagechange", onLang);
+    return () => {
+      mq.removeEventListener("change", on);
+      window.removeEventListener("languagechange", onLang);
+    };
+  }, []);
+
+  const setPrefs = useCallback((p: Partial<Prefs>) => {
+    setPrefsState((old) => {
+      const next = { ...old, ...p };
+      try {
+        localStorage.setItem(KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  }, []);
+
+  const theme: "light" | "dark" = prefs.theme === "system" ? (sysDark ? "dark" : "light") : prefs.theme;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const lang: Lang = useMemo(() => resolveLang(prefs.lang), [prefs.lang, sysLang]);
+
+  // Áp dụng lên <html> ngay lập tức (CSS dùng data-theme / data-font)
+  useEffect(() => {
+    const r = document.documentElement;
+    r.dataset.theme = theme;
+    r.dataset.font = prefs.font;
+    r.lang = lang;
+    document.title = "Claude Tracker";
+  }, [theme, prefs.font, lang]);
+
+  // Đồng bộ thanh tiêu đề gốc của Windows với lựa chọn của người dùng
+  useEffect(() => {
+    if (!("__TAURI_INTERNALS__" in window)) return;
+    import("@tauri-apps/api/window")
+      .then((m) => m.getCurrentWindow().setTheme(prefs.theme === "system" ? null : prefs.theme))
+      .catch(() => {});
+  }, [prefs.theme]);
+
+  return { prefs, setPrefs, lang, theme };
+}

@@ -1,0 +1,9 @@
+node_modules
+dist
+src-tauri/target
+src-tauri/gen
+*.log
+.DS_Store
+# Installer binaries are published via Releases / dropped in manually
+downloads/*.exe
+!downloads/.gitkeep

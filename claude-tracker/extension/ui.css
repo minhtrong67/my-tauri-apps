@@ -1,0 +1,22 @@
+:root { --bg:#f7f7f5; --card:#fff; --soft:#f1f1ed; --text:#1b1b19; --muted:#77776f; --line:#e8e8e2; --accent:#d97757; --ok:#2e9e6b; --bad:#d64545; --warn:#c98a0a; }
+@media (prefers-color-scheme: dark) { :root { --bg:#141413; --card:#1c1c1a; --soft:#252522; --text:#ecece7; --muted:#9a9a92; --line:#2c2c29; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 "Segoe UI", system-ui, sans-serif; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand img { width: 32px; height: 32px; border-radius: 8px; }
+.brand b { font-size: 15px; display: block; line-height: 1.2; } .brand span { font-size: 12px; color: var(--muted); }
+.muted { color: var(--muted); } .small { font-size: 12px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; color: var(--c); background: color-mix(in srgb, var(--c) 13%, transparent); }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.pill.ok { --c: var(--ok); } .pill.bad { --c: var(--bad); } .pill.warn { --c: var(--warn); } .pill.idle { --c: var(--muted); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.kv { display: grid; grid-template-columns: 110px 1fr; gap: 6px 10px; font-size: 13px; }
+.kv dt { color: var(--muted); margin: 0; } .kv dd { margin: 0; word-break: break-all; }
+label { display: block; font-weight: 600; font-size: 13px; margin: 14px 0 4px; }
+input { width: 100%; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; outline: none; }
+input:focus { border-color: var(--accent); }
+.hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.btn { font: inherit; font-weight: 600; cursor: pointer; border-radius: 9px; padding: 8px 14px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn:hover { filter: brightness(.97); }
+.row { display: flex; gap: 8px; }

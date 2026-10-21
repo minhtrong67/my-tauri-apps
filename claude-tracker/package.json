@@ -1,0 +1,35 @@
+{
+  "name": "claude-tracker",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Track Claude usage limits across multiple Chrome profiles.",
+  "license": "MIT",
+  "author": "minhtrong67",
+  "type": "module",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "dev:web": "vite",
+    "dev:mock": "vite --mode mock",
+    "build:web": "tsc && vite build",
+    "icons": "python scripts/make_icons.py",
+    "tauri": "tauri",
+    "release:copy": "node scripts/copy-installer.mjs",
+    "screenshots": "node scripts/screenshots.mjs"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.0.0",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.8.0",
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0"
+  }
+}

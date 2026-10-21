@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Claude Tracker — Track Claude usage limits across Chrome profiles</title>
+<meta name="description" content="Claude Tracker is a free, open-source Windows dashboard that shows usage limits and reset times for every Claude account across your Chrome profiles, with live countdowns and desktop notifications.">
+<meta name="keywords" content="Claude, Claude usage, Claude limit, Claude reset time, Chrome profiles, multi account, usage tracker, Tauri, Windows app, open source">
+<meta name="author" content="minhtrong67">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="application-name" content="Claude Tracker">
+<link rel="canonical" href="https://minhtrong67.github.io/claude-tracker/">
+<meta name="theme-color" content="#faf7f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151211" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Claude Tracker">
+<meta property="og:title" content="Claude Tracker — know which Claude account is ready">
+<meta property="og:description" content="A free, open-source Windows dashboard for Claude usage limits and reset times across all your Chrome profiles.">
+<meta property="og:url" content="https://minhtrong67.github.io/claude-tracker/">
+<meta property="og:image" content="https://minhtrong67.github.io/claude-tracker/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Claude Tracker dashboard showing several Claude accounts with reset countdowns">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="vi_VN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Tracker — know which Claude account is ready">
+<meta name="twitter:description" content="A free, open-source Windows dashboard for Claude usage limits and reset times across all your Chrome profiles.">
+<meta name="twitter:image" content="https://minhtrong67.github.io/claude-tracker/assets/og-image.png">
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Claude Tracker","applicationCategory":"UtilitiesApplication","operatingSystem":"Windows 10, Windows 11","description":"Free open-source dashboard that tracks Claude usage limits and reset times across multiple Chrome profiles.","softwareVersion":"0.2.0","license":"https://opensource.org/licenses/MIT","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"minhtrong67"},"image":"https://minhtrong67.github.io/claude-tracker/assets/og-image.png","downloadUrl":"https://minhtrong67.github.io/claude-tracker/downloads/ClaudeTracker-Setup.exe"}
+</script>
+
+<script>
+// Áp dụng giao diện đã lưu trước khi vẽ để không bị nháy
+(function () {
+  try {
+    var t = localStorage.getItem("ct.theme");
+    var dark = t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.classList.add("js");
+  } catch (e) { document.documentElement.classList.add("js"); }
+})();
+</script>
+
+<style>
+:root{
+  --font:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --display:"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  --bg:#faf7f5;--s1:#fff;--s2:#f4efeb;--s3:#ebe4de;--text:#1f1b18;--muted:#6a6059;--line:#e6ded7;
+  --primary:#b5502c;--on-primary:#fff;--pc:#ffdcd0;--on-pc:#3b0d00;--sec:#e9e1c9;--on-sec:#2c2411;--ter:#d5ead9;--on-ter:#10301e;
+  --ok:#1b7a4b;--warn:#8a5a00;--danger:#b3261e;
+  --e1:0 1px 2px rgb(60 30 10/.07),0 2px 10px rgb(60 30 10/.06);--e3:0 8px 24px rgb(60 30 10/.12),0 2px 6px rgb(60 30 10/.08);
+  --ease:cubic-bezier(.2,0,0,1);
+  color-scheme:light;
+}
+html[data-theme=dark]{
+  --bg:#151211;--s1:#1e1a18;--s2:#28231f;--s3:#342d29;--text:#ede0db;--muted:#a89d96;--line:#352e2a;
+  --primary:#f4a583;--on-primary:#4a1a08;--pc:#5e2c18;--on-pc:#ffdcd0;--sec:#3a3322;--on-sec:#ece2c4;--ter:#1d3a29;--on-ter:#cdeed8;
+  --ok:#7ddba3;--warn:#f2c265;--danger:#ffb4ab;
+  --e1:none;--e3:0 12px 32px rgb(0 0 0/.5);color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:5rem;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:400 1rem/1.6 var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,p{margin:0}
+img{max-width:100%;display:block}
+a{color:inherit}
+.ic{width:1.25rem;height:1.25rem;flex:none}
+.wrap{width:min(100% - 2.5rem,72rem);margin-inline:auto}
+:focus-visible{outline:2px solid var(--primary);outline-offset:3px;border-radius:.5rem}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* buttons: M3 state layer */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;min-height:2.75rem;padding:0 1.5rem;border:1px solid transparent;border-radius:999px;background:none;color:inherit;font:600 .95rem/1 var(--font);text-decoration:none;cursor:pointer;overflow:hidden;isolation:isolate;transition:box-shadow .25s var(--ease),transform .15s var(--ease)}
+.btn::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .15s;z-index:-1}
+.btn:hover::after{opacity:.09}.btn:active::after{opacity:.16}.btn:active{transform:scale(.97)}
+.btn.filled{background:var(--primary);color:var(--on-primary);box-shadow:0 2px 12px color-mix(in srgb,var(--primary) 40%,transparent)}
+.btn.filled:hover{box-shadow:0 6px 22px color-mix(in srgb,var(--primary) 50%,transparent)}
+.btn.tonal{background:var(--pc);color:var(--on-pc)}
+.btn.outlined{border-color:color-mix(in srgb,var(--text) 28%,transparent)}
+.btn.lg{min-height:3.5rem;padding:0 2rem;font-size:1.05rem}
+.btn.icon{width:2.75rem;padding:0}
+.btn small{display:block;font:500 .72rem/1 var(--font);opacity:.85;margin-top:.3rem}
+.btn .two{display:flex;flex-direction:column;align-items:flex-start}
+
+/* app bar */
+.bar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);border-bottom:1px solid transparent;transition:border-color .3s,background-color .3s}
+.bar.scrolled{border-color:var(--line);background:color-mix(in srgb,var(--bg) 92%,transparent)}
+.bar .wrap{display:flex;align-items:center;gap:1rem;height:4rem}
+.brand{display:flex;align-items:center;gap:.7rem;white-space:nowrap;font:700 1.15rem/1 var(--display);letter-spacing:-.01em;text-decoration:none}
+.brand img{width:2.1rem;height:2.1rem}
+.nav{display:flex;gap:.25rem;margin-left:1.5rem}
+.nav a{padding:.5rem .9rem;border-radius:999px;color:var(--muted);font-weight:600;font-size:.92rem;text-decoration:none;transition:background-color .2s,color .2s}
+.nav a:hover{background:var(--s2);color:var(--text)}
+.bar-end{margin-left:auto;display:flex;align-items:center;gap:.5rem}
+.lang{display:flex;padding:.2rem;background:var(--s2);border-radius:999px}
+.lang button{border:0;background:none;color:var(--muted);font:700 .78rem/1 var(--font);padding:.45rem .7rem;border-radius:999px;cursor:pointer;transition:background-color .2s,color .2s}
+.lang button[aria-pressed=true]{background:var(--s1);color:var(--text);box-shadow:var(--e1)}
+html[data-theme=dark] .lang button[aria-pressed=true]{background:var(--s3)}
+.theme-ic-moon{display:none}html[data-theme=dark] .theme-ic-sun{display:none}html[data-theme=dark] .theme-ic-moon{display:block}
+.menu-btn{display:none}
+
+/* hero */
+.hero{padding:clamp(2.5rem,7vw,5.5rem) 0 clamp(3rem,7vw,6rem);overflow-x:clip}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(2rem,5vw,4.5rem);align-items:center}
+.chip{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .9rem .4rem .7rem;border-radius:.6rem;background:var(--ter);color:var(--on-ter);font-weight:650;font-size:.85rem}
+h1.title{margin:1.1rem 0 1.25rem;font:750 clamp(2.3rem,5.4vw,4rem)/1.05 var(--display);letter-spacing:-.035em;text-wrap:balance}
+.lead{max-width:34rem;color:var(--muted);font-size:clamp(1.02rem,1.6vw,1.2rem);line-height:1.6}
+.cta{display:flex;flex-wrap:wrap;gap:.85rem;margin-top:2rem}
+.fine{margin-top:1.1rem;color:var(--muted);font-size:.85rem}
+
+/* hero demo (mini dashboard sống) */
+.demo{position:relative;padding:1rem;border-radius:1.75rem;background:var(--s2)}
+.demo::before{content:"";position:absolute;inset:-2rem -1.5rem auto auto;width:14rem;height:14rem;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--primary) 30%,transparent),transparent);filter:blur(10px);z-index:-1}
+.dcard{display:grid;grid-template-columns:auto 1fr auto;gap:.2rem .75rem;align-items:center;padding:1.1rem 1.2rem;background:var(--s1);border:1px solid var(--line);border-radius:1.25rem;box-shadow:var(--e1)}
+.dcard+.dcard{margin-top:.75rem}
+.av{grid-row:span 2;display:grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:50%;font:700 .85rem/1 var(--font);color:hsl(var(--h) 55% 28%);background:hsl(var(--h) 70% 88%)}
+html[data-theme=dark] .av{color:hsl(var(--h) 80% 88%);background:hsl(var(--h) 38% 26%)}
+.dn{font-weight:650;line-height:1.25}.dm{color:var(--muted);font-size:.82rem;grid-column:2/4;overflow-wrap:anywhere}
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:999px;font:650 .72rem/1.4 var(--font);color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);white-space:nowrap}
+.badge .ic{width:.9rem;height:.9rem}.b-ok{--c:var(--ok)}.b-warn{--c:var(--warn)}.b-bad{--c:var(--danger)}
+.dbody{grid-column:1/-1;margin-top:.7rem}
+.klabel{font-size:.8rem;color:var(--muted)}
+.big{font:700 2.9rem/1.05 var(--display);letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.big small{font:500 .95rem var(--font);color:var(--muted);letter-spacing:0;margin-left:.5rem}
+.word-ok{font:700 1.6rem/1.2 var(--display);color:var(--ok)}
+.pbar{height:.4rem;background:var(--s2);border-radius:99px;overflow:hidden;margin-top:.8rem}
+.pbar i{display:block;height:100%;width:100%;border-radius:99px;background:var(--danger);transform-origin:left;transform:scaleX(.5);transition:transform 1s linear}
+.pmeta{display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap;margin-top:.4rem;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}.pmeta b{color:var(--text)}
+
+/* sections */
+section{padding:clamp(3rem,7vw,5.5rem) 0}
+.sec-head{max-width:40rem;margin-bottom:clamp(1.8rem,4vw,3rem)}
+h2.h{font:750 clamp(1.8rem,3.6vw,2.7rem)/1.12 var(--display);letter-spacing:-.03em;text-wrap:balance}
+.sub{margin-top:.8rem;color:var(--muted);font-size:1.08rem}
+
+.bento{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1rem}
+.tile{display:flex;flex-direction:column;gap:.7rem;padding:1.6rem;border-radius:1.75rem;background:var(--s2);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.tile:hover{transform:translateY(-4px);box-shadow:var(--e3)}
+.tile .ico{display:grid;place-items:center;width:3rem;height:3rem;border-radius:1rem;background:var(--s1);color:var(--primary)}
+.tile h3{font:700 1.2rem/1.25 var(--display);letter-spacing:-.015em}
+.tile p{color:var(--muted)}
+.span4{grid-column:span 4}.span2{grid-column:span 2}
+.t-pc{background:var(--pc);color:var(--on-pc)}.t-pc p{color:color-mix(in srgb,var(--on-pc) 78%,transparent)}.t-pc .ico{background:color-mix(in srgb,var(--on-pc) 12%,transparent);color:var(--on-pc)}
+.t-sec{background:var(--sec);color:var(--on-sec)}.t-sec p{color:color-mix(in srgb,var(--on-sec) 76%,transparent)}.t-sec .ico{background:color-mix(in srgb,var(--on-sec) 12%,transparent);color:var(--on-sec)}
+.t-ter{background:var(--ter);color:var(--on-ter)}.t-ter p{color:color-mix(in srgb,var(--on-ter) 76%,transparent)}.t-ter .ico{background:color-mix(in srgb,var(--on-ter) 12%,transparent);color:var(--on-ter)}
+
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;position:relative;padding:1.6rem 1.6rem 1.6rem 1.6rem;border:1px solid var(--line);border-radius:1.75rem;background:var(--s1)}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:2.4rem;height:2.4rem;margin-bottom:1rem;border-radius:50%;background:var(--primary);color:var(--on-primary);font:700 1rem var(--display)}
+.steps h3{font:700 1.15rem/1.3 var(--display);margin-bottom:.4rem}.steps p{color:var(--muted)}
+
+/* gallery */
+.tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.25rem}
+.tabs button{height:2.4rem;padding:0 1.1rem;border:1px solid color-mix(in srgb,var(--text) 25%,transparent);border-radius:.65rem;background:none;color:var(--muted);font:650 .9rem var(--font);cursor:pointer;transition:background-color .2s,color .2s,border-color .2s}
+.tabs button:hover{background:var(--s2)}
+.tabs button[aria-selected=true]{background:var(--pc);color:var(--on-pc);border-color:transparent}
+.frame{border-radius:1.1rem;overflow:hidden;border:1px solid var(--line);background:#151211;box-shadow:var(--e3)}
+.title-bar{display:flex;align-items:center;gap:.6rem;height:2.1rem;padding:0 .8rem;background:#1b1715;color:#d9cdc6;font-size:.78rem}
+.title-bar img{width:1rem;height:1rem}.title-bar span{margin-left:auto;letter-spacing:.4em;opacity:.7}
+.shots{position:relative}
+.shots img{width:100%;height:auto;opacity:0;position:absolute;inset:0;transition:opacity .45s var(--ease)}
+.shots img.on{opacity:1;position:relative}
+
+.band{padding:clamp(2rem,5vw,3.5rem);border-radius:2rem;background:var(--s2);display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:2rem;align-items:center}
+.facts{display:grid;gap:.9rem;list-style:none;margin:0;padding:0}
+.facts li{display:flex;gap:.8rem;align-items:flex-start;color:var(--muted)}.facts .ic{margin-top:.2rem;color:var(--primary)}.facts b{color:var(--text)}
+
+.faq{max-width:48rem}
+details{border-top:1px solid var(--line)}details:last-child{border-bottom:1px solid var(--line)}
+summary{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.15rem .2rem;font:650 1.05rem var(--font);cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary .ic{transform:rotate(45deg);transition:transform .3s var(--ease);color:var(--muted)}
+details[open] summary .ic{transform:none}
+details p{padding:0 .2rem 1.3rem;color:var(--muted);max-width:42rem}
+
+.final{text-align:center;padding:clamp(2.5rem,6vw,4rem) 1.5rem;border-radius:2rem;background:var(--primary);color:var(--on-primary)}
+.final h2{font:750 clamp(1.7rem,3.4vw,2.5rem)/1.12 var(--display);letter-spacing:-.03em;text-wrap:balance}
+.final p{margin:.8rem auto 1.6rem;max-width:32rem;opacity:.9}
+.final .btn{background:var(--on-primary);color:var(--primary)}
+footer{padding:2.5rem 0 3rem;color:var(--muted);font-size:.88rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:1rem 2rem;justify-content:space-between}
+footer a{text-decoration:none;font-weight:600}footer a:hover{color:var(--text)}
+footer .legal{max-width:36rem}
+
+/* chuyển động: một đợt vào cảnh cho hero + hiện dần khi cuộn (chỉ khi có JS) */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+.hero .chip,.hero h1,.hero .lead,.hero .cta,.hero .fine{animation:rise .7s var(--ease) both}
+.hero h1{animation-delay:.08s}.hero .lead{animation-delay:.16s}.hero .cta{animation-delay:.24s}.hero .fine{animation-delay:.32s}
+.dcard{animation:rise .8s var(--ease) both}.dcard:nth-child(1){animation-delay:.2s}.dcard:nth-child(2){animation-delay:.34s}.dcard:nth-child(3){animation-delay:.48s}
+.js .rv{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease);transition-delay:var(--d,0s)}
+.js .rv.in{opacity:1;transform:none}
+@keyframes pulse{70%{box-shadow:0 0 0 .45rem transparent}100%{box-shadow:0 0 0 0 transparent}}
+.dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent);animation:pulse 2.4s infinite}
+
+@media (max-width:60rem){
+  .hero .wrap,.band{grid-template-columns:1fr}
+  .bento{grid-template-columns:repeat(2,minmax(0,1fr))}.span4{grid-column:span 2}.span2{grid-column:span 1}
+  .steps{grid-template-columns:1fr}
+}
+@media (max-width:46rem){
+  .nav{position:fixed;inset:4rem 0 auto 0;flex-direction:column;margin:0;padding:.75rem 1.25rem 1.25rem;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:var(--e3);transform:translateY(-8px);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s var(--ease)}
+  .nav.open{opacity:1;transform:none;pointer-events:auto}.nav a{padding:.9rem 1rem;font-size:1.02rem}
+  .menu-btn{display:inline-flex}.bar-end .dl{display:none}
+  .cta .btn{flex:1 1 100%}
+}
+@media (max-width:34rem){
+  .wrap{width:min(100% - 1.5rem,72rem)}
+  .bar .wrap{gap:.5rem}.brand{font-size:1rem;gap:.5rem}.brand img{width:1.8rem;height:1.8rem}.bar-end{gap:.25rem}.btn.icon{width:2.4rem;min-height:2.4rem}
+  .bento{grid-template-columns:1fr}.span4,.span2{grid-column:span 1}
+  .big{font-size:2.5rem}
+  .tabs{flex-wrap:nowrap;overflow-x:auto;margin-inline:-.75rem;padding-inline:.75rem;scrollbar-width:none}.tabs button{flex:none}
+  .title-bar{font-size:.7rem}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .js .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /> <polyline points="7 10 12 15 17 10" /> <line x1="12" x2="12" y1="15" y2="3" /></symbol><symbol id="i-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /> <path d="M9 18c-4.51 2-5-2-7-2" /></symbol><symbol id="i-layout-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1" /> <rect width="7" height="5" x="14" y="3" rx="1" /> <rect width="7" height="9" x="14" y="12" rx="1" /> <rect width="7" height="5" x="3" y="16" rx="1" /></symbol><symbol id="i-timer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2" /> <line x1="12" x2="15" y1="14" y2="11" /> <circle cx="12" cy="14" r="8" /></symbol><symbol id="i-bell-ring" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0" /> <path d="M22 8c0-2.3-.8-4.3-2-6" /> <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /> <path d="M4 2C2.8 3.7 2 5.7 2 8" /></symbol><symbol id="i-layout-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1" /> <rect width="7" height="7" x="14" y="3" rx="1" /> <rect width="7" height="7" x="14" y="14" rx="1" /> <rect width="7" height="7" x="3" y="14" rx="1" /></symbol><symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h.01" /> <path d="M3 18h.01" /> <path d="M3 6h.01" /> <path d="M8 12h13" /> <path d="M8 18h13" /> <path d="M8 6h13" /></symbol><symbol id="i-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /> <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /></symbol><symbol id="i-languages" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6" /> <path d="m4 14 6-6 2-3" /> <path d="M2 5h12" /> <path d="M7 2h1" /> <path d="m22 22-5-10-5 10" /> <path d="M14 18h6" /></symbol><symbol id="i-maximize" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3" /> <path d="M21 8V5a2 2 0 0 0-2-2h-3" /> <path d="M3 16v3a2 2 0 0 0 2 2h3" /> <path d="M16 21h3a2 2 0 0 0 2-2v-3" /></symbol><symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /></symbol><symbol id="i-chrome" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /> <circle cx="12" cy="12" r="4" /> <line x1="21.17" x2="12" y1="8" y2="8" /> <line x1="3.95" x2="8.54" y1="6.06" y2="14" /> <line x1="10.88" x2="15.46" y1="21.94" y2="14" /></symbol><symbol id="i-plug" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5" /> <path d="M9 8V2" /> <path d="M15 8V2" /> <path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z" /></symbol><symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" /> <path d="M12 2v2" /> <path d="M12 20v2" /> <path d="m4.93 4.93 1.41 1.41" /> <path d="m17.66 17.66 1.41 1.41" /> <path d="M2 12h2" /> <path d="M20 12h2" /> <path d="m6.34 17.66-1.41 1.41" /> <path d="m19.07 4.93-1.41 1.41" /></symbol><symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></symbol><symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12" /> <line x1="4" x2="20" y1="6" y2="6" /> <line x1="4" x2="20" y1="18" y2="18" /></symbol><symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></symbol><symbol id="i-refresh-cw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /> <path d="M21 3v5h-5" /> <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /> <path d="M8 16H3v5" /></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></symbol><symbol id="i-circle-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /> <path d="m9 12 2 2 4-4" /></symbol><symbol id="i-hourglass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14" /> <path d="M5 2h14" /> <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" /> <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" /></symbol><symbol id="i-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2" /> <line x1="8" x2="16" y1="21" y2="21" /> <line x1="12" x2="12" y1="17" y2="21" /></symbol><symbol id="i-type" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7" /> <line x1="9" x2="15" y1="20" y2="20" /> <line x1="12" x2="12" y1="4" y2="20" /></symbol><symbol id="i-puzzle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z" /></symbol><symbol id="i-code-xml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4" /> <path d="m6 8-4 4 4 4" /> <path d="m14.5 4-5 16" /></symbol><symbol id="i-external-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6" /> <path d="M10 14 21 3" /> <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></symbol><symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /> <polyline points="12 6 12 12 16 14" /></symbol><symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /> <path d="m12 5 7 7-7 7" /></symbol><symbol id="i-shield-question" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3" /> <path d="M12 17h.01" /></symbol><symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /> <path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol></defs></svg>
+
+<header class="bar" id="bar">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Claude Tracker"><img src="assets/logo.svg" alt="" width="34" height="34">Claude Tracker</a>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="#features" data-i="nav.f">Features</a>
+      <a href="#how" data-i="nav.h">How it works</a>
+      <a href="#screens" data-i="nav.s">Screenshots</a>
+      <a href="#faq" data-i="nav.q">FAQ</a>
+    </nav>
+    <div class="bar-end">
+      <div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="vi" aria-pressed="false">VI</button></div>
+      <button class="btn icon" id="theme" type="button" aria-label="Toggle theme"><svg class="ic theme-ic-sun"><use href="#i-sun"/></svg><svg class="ic theme-ic-moon"><use href="#i-moon"/></svg></button>
+      <a class="btn filled dl" href="downloads/ClaudeTracker-Setup.exe" download><svg class="ic"><use href="#i-download"/></svg><span data-i="dl">Download</span></a>
+      <button class="btn icon menu-btn" id="menu" type="button" aria-label="Menu" aria-expanded="false"><svg class="ic"><use href="#i-menu"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <span class="chip"><svg class="ic"><use href="#i-code-xml"/></svg><span data-i="chip">Free &amp; open source</span></span>
+        <h1 class="title" data-i="h1">Know which Claude account is ready — before you open Chrome.</h1>
+        <p class="lead" data-i="lead">Claude Tracker is a desktop dashboard that shows usage limits and reset times for every Claude account across your Chrome profiles.</p>
+        <div class="cta">
+          <a class="btn filled lg" href="downloads/ClaudeTracker-Setup.exe" download>
+            <svg class="ic"><use href="#i-download"/></svg>
+            <span class="two"><span data-i="dlw">Download for Windows</span><small data-i="dlm">Version 0.2.0 · 64-bit</small></span>
+          </a>
+          <a class="btn outlined lg" href="https://github.com/minhtrong67/claude-tracker" target="_blank" rel="noopener"><svg class="ic"><use href="#i-github"/></svg><span data-i="src">View source</span></a>
+        </div>
+        <p class="fine" data-i="fine">Windows 10 and 11. Your data stays on your PC.</p>
+      </div>
+
+      <div class="demo" aria-hidden="true">
+        <div class="dcard">
+          <span class="av" style="--h:160">TK</span><span class="dn">Taylor Kim</span><span class="badge b-bad"><svg class="ic"><use href="#i-hourglass"/></svg><span data-i="b.wait">Waiting for reset</span></span>
+          <span class="dm">taylor.backup@example.com</span>
+          <div class="dbody">
+            <div class="klabel" data-i="k.resets">Resets at</div>
+            <div class="big"><span id="dtime">12:43</span><small data-i="today">Today</small></div>
+            <div class="pbar"><i id="dbar"></i></div>
+            <div class="pmeta"><span><span data-i="k.prog">Reset progress</span> <b id="dpct">99%</b></span><span id="dleft">3 minutes 12 seconds left</span></div>
+          </div>
+        </div>
+        <div class="dcard">
+          <span class="av" style="--h:75">AM</span><span class="dn">Alex Morgan</span><span class="badge b-ok"><svg class="ic"><use href="#i-circle-check"/></svg><span data-i="b.ready">Ready</span></span>
+          <span class="dm">alex.work@example.com</span>
+          <div class="dbody"><div class="klabel" data-i="k.status">Status</div><div class="word-ok" data-i="avail">Available</div></div>
+        </div>
+        <div class="dcard">
+          <span class="av" style="--h:350">RP</span><span class="dn">Riley Park</span><span class="badge b-warn"><svg class="ic"><use href="#i-shield-question"/></svg><span data-i="b.unc">Unconfirmed</span></span>
+          <span class="dm">riley.studio@example.com</span>
+          <div class="dbody"><div class="klabel" data-i="k.exp">Expected to reset at</div><div class="big">10:00<small data-i="today2">Today</small></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="sec-head rv"><h2 class="h" data-i="f.h">Everything about your limits, at a glance</h2><p class="sub" data-i="f.s">Built for people who juggle several Claude accounts and are tired of guessing which one has capacity.</p></div>
+      <div class="bento">
+        <article class="tile t-pc span4 rv"><span class="ico"><svg class="ic"><use href="#i-layout-dashboard"/></svg></span><h3 data-i="t1h">One dashboard, every profile</h3><p data-i="t1p">See all accounts side by side, each with the Chrome profile and Google account name behind it. Open the right profile in one click.</p></article>
+        <article class="tile span2 rv" style="--d:.06s"><span class="ico"><svg class="ic"><use href="#i-timer"/></svg></span><h3 data-i="t2h">Live reset countdown</h3><p data-i="t2p">Hours and minutes spelled out in full, with a progress bar toward the reset.</p></article>
+        <article class="tile span2 rv"><span class="ico"><svg class="ic"><use href="#i-bell-ring"/></svg></span><h3 data-i="t3h">Windows notifications</h3><p data-i="t3p">Get nudged at the expected reset time, with a usage threshold you choose.</p></article>
+        <article class="tile t-sec span2 rv" style="--d:.06s"><span class="ico"><svg class="ic"><use href="#i-layout-grid"/></svg></span><h3 data-i="t4h">Grid or list</h3><p data-i="t4p">Switch layouts in one click. Filter by status or search by name, email and profile.</p></article>
+        <article class="tile span2 rv" style="--d:.12s"><span class="ico"><svg class="ic"><use href="#i-palette"/></svg></span><h3 data-i="t5h">Made to fit your eyes</h3><p data-i="t5p">Light, dark or follow Windows, plus four text sizes. Applied instantly.</p></article>
+        <article class="tile t-ter span2 rv"><span class="ico"><svg class="ic"><use href="#i-languages"/></svg></span><h3 data-i="t6h">English &amp; Tiếng Việt</h3><p data-i="t6p">Detects your system language and switches the moment you choose another.</p></article>
+        <article class="tile span2 rv" style="--d:.06s"><span class="ico"><svg class="ic"><use href="#i-maximize"/></svg></span><h3 data-i="t7h">Remembers your window</h3><p data-i="t7p">Reopen at the size you left it, or always start maximized.</p></article>
+        <article class="tile t-pc span2 rv" style="--d:.12s"><span class="ico"><svg class="ic"><use href="#i-shield-check"/></svg></span><h3 data-i="t8h">Private by design</h3><p data-i="t8p">No cloud, no sign-in. The app only listens on 127.0.0.1 with a secret token.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="sec-head rv"><h2 class="h" data-i="h.h">Up and running in three steps</h2></div>
+      <ol class="steps">
+        <li class="rv"><h3 data-i="s1h">Install the app</h3><p data-i="s1p">Download the installer and run it. Claude Tracker lives in your system tray.</p></li>
+        <li class="rv" style="--d:.08s"><h3 data-i="s2h">Add the extension</h3><p data-i="s2p">Load the extension in each Chrome profile, then paste the port and token shown in Settings.</p></li>
+        <li class="rv" style="--d:.16s"><h3 data-i="s3h">Check your accounts</h3><p data-i="s3p">Accounts appear automatically. Pick the one that is ready and open its Chrome profile.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="screens">
+    <div class="wrap">
+      <div class="sec-head rv"><h2 class="h" data-i="g.h">See it in action</h2></div>
+      <div class="tabs rv" role="tablist" aria-label="Screenshots">
+        <button role="tab" aria-selected="true" data-shot="0" data-i="g.1">Grid view</button>
+        <button role="tab" aria-selected="false" data-shot="1" data-i="g.2">List view</button>
+        <button role="tab" aria-selected="false" data-shot="2" data-i="g.3">Light theme</button>
+        <button role="tab" aria-selected="false" data-shot="3" data-i="g.4">Settings</button>
+      </div>
+      <div class="frame rv">
+        <div class="title-bar"><img src="assets/logo.svg" alt="" width="16" height="16">Claude Tracker<span aria-hidden="true">— ▢ ✕</span></div>
+        <div class="shots" id="shots">
+          <img class="on" src="screenshots/image01.png" width="2160" height="1350" alt="Claude Tracker dashboard in grid view, dark theme">
+          <img src="screenshots/image02.png" width="2160" height="1350" alt="Claude Tracker dashboard in list view, dark theme" loading="lazy">
+          <img src="screenshots/image03.png" width="2160" height="1350" alt="Claude Tracker dashboard in light theme" loading="lazy">
+          <img src="screenshots/image04.png" width="2160" height="1860" alt="Claude Tracker settings: appearance, window, notifications" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="band rv">
+        <div><h2 class="h" data-i="o.h">Open source, and it stays on your PC</h2><p class="sub" data-i="o.p">Claude Tracker is released under the MIT license. Read the code, fork it, fix the parser when Claude changes something.</p></div>
+        <ul class="facts">
+          <li><svg class="ic"><use href="#i-lock"/></svg><span data-i="o1"><b>Local only.</b> Data is stored on your computer; nothing is sent to a server.</span></li>
+          <li><svg class="ic"><use href="#i-plug"/></svg><span data-i="o2"><b>Your own session.</b> The extension reuses the claude.ai login already in each profile.</span></li>
+          <li><svg class="ic"><use href="#i-code-xml"/></svg><span data-i="o3"><b>MIT licensed.</b> Free to use, modify and share.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="sec-head rv"><h2 class="h" data-i="q.h">Questions</h2></div>
+      <div class="faq rv">
+        <details><summary><span data-i="q1">Is this an official Anthropic app?</span><svg class="ic"><use href="#i-x"/></svg></summary><p data-i="a1">No. Claude Tracker is an independent open-source project and is not affiliated with or endorsed by Anthropic. It reads the usage status from the claude.ai session already signed in to your own Chrome profiles.</p></details>
+        <details><summary><span data-i="q2">Can it see my password or conversations?</span><svg class="ic"><use href="#i-x"/></svg></summary><p data-i="a2">No. The extension only reads usage limits and the account email, and sends them to 127.0.0.1 on your own computer, protected by a token.</p></details>
+        <details><summary><span data-i="q3">Which systems are supported?</span><svg class="ic"><use href="#i-x"/></svg></summary><p data-i="a3">Windows 10 and 11 (64-bit). It uses WebView2, which is built into Windows.</p></details>
+        <details><summary><span data-i="q4">A usage bar is empty. What now?</span><svg class="ic"><use href="#i-x"/></svg></summary><p data-i="a4">Claude’s internal endpoint can change. Open Settings → Raw data diagnostics to inspect the response, then adjust the parser — the project is open source.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="final rv">
+        <h2 data-i="c.h">Stop guessing. Start tracking.</h2>
+        <p data-i="c.p">Free for Windows, forever open source.</p>
+        <a class="btn lg" href="downloads/ClaudeTracker-Setup.exe" download><svg class="ic"><use href="#i-download"/></svg><span data-i="dlw2">Download for Windows</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="legal"><p>© 2026 minhtrong67 · <span data-i="lic">MIT License</span></p><p data-i="disc" style="margin-top:.4rem">Claude is a trademark of Anthropic. Claude Tracker is an independent project and is not affiliated with or endorsed by Anthropic.</p></div>
+    <div><a href="https://github.com/minhtrong67/claude-tracker" target="_blank" rel="noopener">GitHub</a></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); }, $$ = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
+  var root = document.documentElement, lang = "en";
+
+  /* ---- i18n: nội dung gốc là tiếng Anh, tiếng Việt thay vào khi cần ---- */
+  var VI = {
+    "nav.f":"Tính năng","nav.h":"Cách dùng","nav.s":"Hình ảnh","nav.q":"Hỏi đáp","dl":"Tải về",
+    "chip":"Miễn phí &amp; mã nguồn mở",
+    "h1":"Biết tài khoản Claude nào dùng được — trước khi mở Chrome.",
+    "lead":"Claude Tracker là dashboard desktop hiển thị giới hạn sử dụng và giờ reset của mọi tài khoản Claude trên các Chrome Profile của bạn.",
+    "dlw":"Tải cho Windows","dlm":"Phiên bản 0.2.0 · 64-bit","src":"Xem mã nguồn","fine":"Windows 10 và 11. Dữ liệu luôn ở lại trên máy bạn.",
+    "b.wait":"Đang chờ reset","b.ready":"Sẵn sàng","b.unc":"Chờ xác nhận","k.resets":"Reset xong lúc","today":"Hôm nay","today2":"Hôm nay","k.prog":"Tiến độ reset","k.status":"Trạng thái","avail":"Dùng được","k.exp":"Dự kiến đã reset lúc",
+    "f.h":"Mọi thứ về giới hạn, trong một cái nhìn","f.s":"Dành cho người dùng nhiều tài khoản Claude và không muốn đoán xem tài khoản nào còn lượt.",
+    "t1h":"Một dashboard cho mọi profile","t1p":"Xem mọi tài khoản cạnh nhau, kèm Chrome Profile và tên tài khoản Google tương ứng. Mở đúng profile chỉ với một cú nhấp.",
+    "t2h":"Đếm ngược reset trực tiếp","t2p":"Giờ và phút được viết đầy đủ, kèm thanh tiến độ tới lúc reset.",
+    "t3h":"Thông báo Windows","t3p":"Nhận thông báo đúng giờ dự kiến reset, với ngưỡng mức dùng do bạn chọn.",
+    "t4h":"Dạng lưới hoặc danh sách","t4p":"Đổi bố cục bằng một cú nhấp. Lọc theo trạng thái hoặc tìm theo tên, email, profile.",
+    "t5h":"Vừa mắt bạn","t5p":"Sáng, tối hoặc theo Windows, cùng bốn cỡ chữ. Áp dụng ngay lập tức.",
+    "t6h":"English &amp; Tiếng Việt","t6p":"Tự nhận diện ngôn ngữ hệ thống và đổi ngay khi bạn chọn ngôn ngữ khác.",
+    "t7h":"Nhớ cửa sổ của bạn","t7p":"Mở lại đúng kích thước lần trước, hoặc luôn phóng to tối đa.",
+    "t8h":"Riêng tư từ thiết kế","t8p":"Không đám mây, không đăng nhập. App chỉ lắng nghe 127.0.0.1 với token bí mật.",
+    "h.h":"Sẵn sàng sau ba bước","s1h":"Cài đặt app","s1p":"Tải bộ cài và chạy. Claude Tracker nằm ở khay hệ thống.",
+    "s2h":"Thêm extension","s2p":"Nạp extension vào từng Chrome Profile, rồi dán cổng và token hiện ở tab Cài đặt.",
+    "s3h":"Xem tài khoản của bạn","s3p":"Tài khoản tự xuất hiện. Chọn tài khoản đang sẵn sàng và mở Chrome Profile của nó.",
+    "g.h":"Xem app hoạt động","g.1":"Dạng lưới","g.2":"Dạng danh sách","g.3":"Giao diện sáng","g.4":"Cài đặt",
+    "o.h":"Mã nguồn mở, và ở lại trên máy bạn","o.p":"Claude Tracker phát hành theo giấy phép MIT. Đọc code, fork, hoặc sửa parser khi Claude thay đổi.",
+    "o1":"<b>Chỉ chạy cục bộ.</b> Dữ liệu lưu trên máy bạn; không gửi lên máy chủ nào.","o2":"<b>Phiên của chính bạn.</b> Extension dùng lại phiên đăng nhập claude.ai sẵn có trong từng profile.","o3":"<b>Giấy phép MIT.</b> Tự do sử dụng, chỉnh sửa và chia sẻ.",
+    "q.h":"Câu hỏi thường gặp",
+    "q1":"Đây có phải app chính thức của Anthropic không?","a1":"Không. Claude Tracker là dự án mã nguồn mở độc lập, không liên kết hay được Anthropic bảo trợ. App đọc trạng thái sử dụng từ phiên claude.ai đã đăng nhập sẵn trong các Chrome Profile của chính bạn.",
+    "q2":"App có xem được mật khẩu hay nội dung hội thoại không?","a2":"Không. Extension chỉ đọc giới hạn sử dụng và email tài khoản, rồi gửi tới 127.0.0.1 trên chính máy tính của bạn, được bảo vệ bằng token.",
+    "q3":"Hỗ trợ hệ điều hành nào?","a3":"Windows 10 và 11 (64-bit). App dùng WebView2, đã có sẵn trong Windows.",
+    "q4":"Thanh usage bị trống thì làm sao?","a4":"Endpoint nội bộ của Claude có thể thay đổi. Mở Cài đặt → Chẩn đoán dữ liệu thô để xem phản hồi gốc rồi chỉnh parser — dự án là mã nguồn mở.",
+    "c.h":"Đừng đoán nữa. Hãy theo dõi.","c.p":"Miễn phí cho Windows, mãi mãi mã nguồn mở.","dlw2":"Tải cho Windows","lic":"Giấy phép MIT",
+    "disc":"Claude là nhãn hiệu của Anthropic. Claude Tracker là dự án độc lập, không liên kết hay được Anthropic bảo trợ."
+  };
+  function setLang(l) {
+    lang = l; root.lang = l;
+    $$("[data-i]").forEach(function (el) {
+      if (el.dataset.en === undefined) el.dataset.en = el.innerHTML;
+      el.innerHTML = l === "vi" && VI[el.dataset.i] ? VI[el.dataset.i] : el.dataset.en;
+    });
+    $$(".lang button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.lang === l)); });
+    document.title = l === "vi" ? "Claude Tracker — Theo dõi giới hạn sử dụng Claude trên nhiều Chrome Profile" : "Claude Tracker — Track Claude usage limits across Chrome profiles";
+    try { localStorage.setItem("ct.lang", l); } catch (e) {}
+    tick();
+  }
+  $$(".lang button").forEach(function (b) { b.addEventListener("click", function () { setLang(b.dataset.lang); }); });
+
+  /* ---- theme ---- */
+  $("#theme").addEventListener("click", function () {
+    var d = root.dataset.theme !== "dark"; root.dataset.theme = d ? "dark" : "light";
+    try { localStorage.setItem("ct.theme", d ? "dark" : "light"); } catch (e) {}
+  });
+
+  /* ---- menu mobile + app bar ---- */
+  var nav = $("#nav"), menu = $("#menu");
+  menu.addEventListener("click", function () { var o = nav.classList.toggle("open"); menu.setAttribute("aria-expanded", String(o)); });
+  $$("a", nav).forEach(function (a) { a.addEventListener("click", function () { nav.classList.remove("open"); menu.setAttribute("aria-expanded", "false"); }); });
+  var bar = $("#bar"); var onScroll = function () { bar.classList.toggle("scrolled", scrollY > 8); }; onScroll(); addEventListener("scroll", onScroll, { passive: true });
+
+  /* ---- hiện dần khi cuộn ---- */
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { threshold: .12, rootMargin: "0px 0px -6% 0px" });
+    $$(".rv").forEach(function (el) { io.observe(el); });
+  } else $$(".rv").forEach(function (el) { el.classList.add("in"); });
+
+  /* ---- gallery ---- */
+  var imgs = $$("#shots img");
+  $$("[data-shot]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      $$("[data-shot]").forEach(function (x) { x.setAttribute("aria-selected", String(x === b)); });
+      imgs.forEach(function (im, i) { im.classList.toggle("on", i === +b.dataset.shot); });
+    });
+  });
+
+  /* ---- demo đếm ngược sống ---- */
+  var LEN = 192000, end = Date.now() + LEN;
+  function u(n, w) { var V = lang === "vi"; var m = { m: ["phút", "phút"], s: ["giây", "giây"] }; var en = { m: ["minute", "minutes"], s: ["second", "seconds"] }; return n + " " + (V ? m[w][0] : en[w][n === 1 ? 0 : 1]); }
+  function tick() {
+    var rem = end - Date.now(); if (rem <= 0) { end = Date.now() + LEN; rem = LEN; }
+    var s = Math.ceil(rem / 1000), m = Math.floor(s / 60), c = s % 60;
+    var t = new Date(end), hh = ("0" + t.getHours()).slice(-2), mm = ("0" + t.getMinutes()).slice(-2);
+    $("#dtime").textContent = hh + ":" + mm;
+    var pct = Math.min(99, Math.round((1 - rem / 18000000) * 100));
+    $("#dpct").textContent = pct + "%"; $("#dbar").style.transform = "scaleX(" + pct / 100 + ")";
+    $("#dleft").textContent = (lang === "vi" ? "Còn " + u(m, "m") + " " + u(c, "s") : u(m, "m") + " " + u(c, "s") + " left");
+  }
+  tick(); setInterval(tick, 1000);
+
+  var saved = null; try { saved = localStorage.getItem("ct.lang"); } catch (e) {}
+  var pref = saved || ((navigator.languages && navigator.languages[0]) || navigator.language || "en");
+  if (String(pref).toLowerCase().indexOf("vi") === 0) setLang("vi");
+})();
+</script>
+</body>
+</html>
