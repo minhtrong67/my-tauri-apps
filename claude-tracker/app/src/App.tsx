@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { Clock, Inbox, LayoutDashboard, LayoutGrid, List, RefreshCw, Search, Settings as SettingsIcon, SearchX, X } from "lucide-react";
+import { ChevronDown, Chrome, Clock, Inbox, LayoutDashboard, LayoutGrid, List, RefreshCw, Search, Settings as SettingsIcon, SearchX, SlidersHorizontal, X } from "lucide-react";
 import type { AppData, ChromeProfile, Settings, WindowMode } from "./types";
 import { AccountState, analyze, fmtClock, fmtCountdown, fmtDay, sortViews, tickFor } from "./lib";
 import { I18nProvider, Key, useI18n } from "./i18n";
@@ -15,7 +15,6 @@ const FILTERS: { key: Filter; label: Key }[] = [
   { key: "all", label: "filter.all" },
   { key: "ready", label: "filter.ready" },
   { key: "waiting", label: "filter.waiting" },
-  { key: "expected", label: "filter.expected" },
   { key: "nodata", label: "filter.nodata" },
 ];
 
@@ -60,6 +59,7 @@ function Shell({ prefs, setPrefs, lang }: { prefs: ReturnType<typeof usePrefs>["
   const [q, setQ] = useState("");
   const [toast, setToast] = useState<ToastData | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [confirmAll, setConfirmAll] = useState(false);
   const [removing, setRemoving] = useState<{ id: string; name: string } | null>(null);
   const now = useNow();
   const lastJson = useRef("");
@@ -117,7 +117,7 @@ function Shell({ prefs, setPrefs, lang }: { prefs: ReturnType<typeof usePrefs>["
   }, [all, filter, q, profiles]);
 
   const counts = useMemo(() => {
-    const c: Record<Filter, number> = { all: all.length, ready: 0, waiting: 0, expected: 0, nodata: 0 };
+    const c: Record<Filter, number> = { all: all.length, ready: 0, waiting: 0, nodata: 0 };
     for (const v of all) c[v.state]++;
     return c;
   }, [all]);
@@ -160,6 +160,22 @@ function Shell({ prefs, setPrefs, lang }: { prefs: ReturnType<typeof usePrefs>["
     [notify]
   );
   const askRemove = useCallback((id: string, name: string) => setRemoving({ id, name }), []);
+
+  const openDirs = useMemo(() => [...new Set((data?.accounts ?? []).map((a) => a.profile_dir).filter((d): d is string => !!d))], [data]);
+  const openAll = async () => {
+    setConfirmAll(false);
+    try {
+      await invoke("open_profiles", { profileDirs: openDirs, url: "https://claude.ai/" });
+      notify("info", t("dash.openAll.done", { n: openDirs.length }));
+    } catch (e) {
+      notify("error", String(e));
+    }
+  };
+  const filtersActive = (filter !== "all" ? 1 : 0) + (q.trim() ? 1 : 0);
+  const clearFilters = () => {
+    setFilter("all");
+    setQ("");
+  };
 
   const onSettings = (s: Settings) => {
     setData((d) => (d ? { ...d, settings: s } : d)); // cập nhật ngay, khỏi giật thanh trượt
@@ -209,24 +225,16 @@ function Shell({ prefs, setPrefs, lang }: { prefs: ReturnType<typeof usePrefs>["
         <main className="content" key={tab}>
           {tab === "dashboard" ? (
             <>
-              <div className="toolbar">
-                <div className="chips" role="group">
-                  {FILTERS.map((f) => (
-                    <button key={f.key} className={`fchip ${filter === f.key ? "on" : ""}`} aria-pressed={filter === f.key} onClick={() => setFilter(f.key)}>
-                      {t(f.label)} <span className="n">{counts[f.key]}</span>
-                    </button>
-                  ))}
+              <div className="dash-head">
+                <div>
+                  <h2>{t("dash.title")}</h2>
+                  <p className="muted">{t("dash.count", { n: all.length, ready: counts.ready })}</p>
                 </div>
-                <div className="tools">
-                  <label className="search">
-                    <Search size={17} aria-hidden="true" />
-                    <input placeholder={t("search.placeholder")} value={q} onChange={(e) => setQ(e.target.value)} aria-label={t("search.placeholder")} />
-                    {q && (
-                      <button className="clear" onClick={() => setQ("")} aria-label={t("search.clear")}>
-                        <X size={15} />
-                      </button>
-                    )}
-                  </label>
+                <div className="dash-actions">
+                  <button className="btn tonal" onClick={() => setConfirmAll(true)} disabled={openDirs.length === 0}>
+                    <Chrome size={17} aria-hidden="true" />
+                    {t("dash.openAll")}
+                  </button>
                   <Segmented<ViewMode>
                     iconOnly
                     label={t("view.label")}
@@ -239,6 +247,49 @@ function Shell({ prefs, setPrefs, lang }: { prefs: ReturnType<typeof usePrefs>["
                   />
                 </div>
               </div>
+
+              <section className={`filters ${prefs.filtersOpen ? "open" : ""}`}>
+                <div className="filters-head">
+                  <button className="filters-toggle" aria-expanded={prefs.filtersOpen} aria-controls="filters-body" onClick={() => setPrefs({ filtersOpen: !prefs.filtersOpen })}>
+                    <SlidersHorizontal size={18} aria-hidden="true" />
+                    <span className="ft-title">{t("filters.title")}</span>
+                    {filtersActive > 0 && <span className="count-pill">{filtersActive}</span>}
+                    <span className="ft-sub">{t("filters.showing", { shown: shown.length, total: all.length })}</span>
+                    <ChevronDown size={18} className="chev" aria-hidden="true" />
+                  </button>
+                </div>
+                <div className="filters-body" id="filters-body" aria-hidden={!prefs.filtersOpen}>
+                  <div className="filters-inner">
+                   <div className="f-controls">
+                    <label className="search">
+                      <Search size={17} aria-hidden="true" />
+                      <input placeholder={t("search.placeholder")} value={q} onChange={(e) => setQ(e.target.value)} aria-label={t("filters.search")} tabIndex={prefs.filtersOpen ? 0 : -1} />
+                      {q && (
+                        <button className="clear" onClick={() => setQ("")} aria-label={t("search.clear")}>
+                          <X size={15} />
+                        </button>
+                      )}
+                    </label>
+                    <div className="chips" role="group" aria-label={t("filters.status")}>
+                      {FILTERS.map((f) => (
+                        <button key={f.key} tabIndex={prefs.filtersOpen ? 0 : -1} className={`fchip st-${f.key} ${filter === f.key ? "on" : ""}`} aria-pressed={filter === f.key} onClick={() => setFilter(f.key)}>
+                          {f.key !== "all" && <span className="sd" aria-hidden="true" />}
+                          {t(f.label)} <span className="n">{counts[f.key]}</span>
+                        </button>
+                      ))}
+                    </div>
+                   </div>
+                   {filtersActive > 0 && (
+                     <div className="filters-foot">
+                       <button className="btn text sm" tabIndex={prefs.filtersOpen ? 0 : -1} onClick={clearFilters}>
+                         <X size={15} aria-hidden="true" />
+                         {t("filters.clear")}
+                       </button>
+                     </div>
+                   )}
+                  </div>
+                </div>
+              </section>
 
               {next && next.availableAt && (
                 <div className="next">
@@ -279,6 +330,17 @@ function Shell({ prefs, setPrefs, lang }: { prefs: ReturnType<typeof usePrefs>["
       </div>
 
       <Toast toast={toast} onClose={() => setToast(null)} />
+      {confirmAll && (
+        <ConfirmDialog
+          tone="primary"
+          title={t("dash.openAll.title")}
+          body={t("dash.openAll.body", { n: openDirs.length })}
+          confirm={t("dash.openAll.confirm", { n: openDirs.length })}
+          cancel={t("dialog.cancel")}
+          onCancel={() => setConfirmAll(false)}
+          onConfirm={openAll}
+        />
+      )}
       {removing && (
         <ConfirmDialog
           title={t("dialog.remove.title")}

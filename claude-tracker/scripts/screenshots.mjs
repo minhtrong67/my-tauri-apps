@@ -19,7 +19,7 @@ const shots = [
 const browser = await chromium.launch({ executablePath: CHROME });
 for (const s of shots) {
   const ctx = await browser.newContext({ viewport: { width: s.w, height: s.h }, deviceScaleFactor: 1.5, locale: "en-US" });
-  await ctx.addInitScript((p) => localStorage.setItem("claude-tracker.prefs", JSON.stringify(p)), { theme: s.theme, lang: "en", font: "md", view: s.view });
+  await ctx.addInitScript((p) => localStorage.setItem("claude-tracker.prefs", JSON.stringify(p)), { theme: s.theme, lang: "en", font: "md", view: s.view, accent: "terracotta" });
   const page = await ctx.newPage();
   await page.goto(URL);
   await page.waitForSelector(".top");

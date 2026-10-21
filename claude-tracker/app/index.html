@@ -12,7 +12,8 @@
         var p = JSON.parse(localStorage.getItem("claude-tracker.prefs") || "{}");
         var dark = p.theme === "dark" || ((!p.theme || p.theme === "system") && matchMedia("(prefers-color-scheme: dark)").matches);
         document.documentElement.dataset.theme = dark ? "dark" : "light";
-        document.documentElement.dataset.font = p.font || "md";
+        document.documentElement.dataset.font = p.font === "xl" ? "lg" : p.font || "md";
+        document.documentElement.dataset.accent = p.accent || "terracotta";
       } catch (e) {}
     </script>
   </head>

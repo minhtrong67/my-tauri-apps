@@ -39,9 +39,11 @@ Toàn bộ ảnh dùng dữ liệu demo.
 
 - **Một dashboard cho mọi profile.** Mỗi thẻ hiện tài khoản Claude, Chrome Profile (`Profile 4 · 01 - Work`) và tên tài khoản Google đăng nhập trong profile đó. Không cắt chữ.
 - **Đếm ngược reset trực tiếp.** Thời gian còn lại viết đầy đủ ("2 giờ 31 phút"), kèm thanh tiến độ.
-- **Dạng lưới hoặc danh sách**, lọc theo trạng thái, tìm theo tên, email hoặc profile.
+- **Avatar thật của Chrome profile**, đọc từ ảnh đại diện Chrome đã lưu (không có ảnh thì dùng chữ cái đầu).
+- **Dạng lưới hoặc danh sách**, kèm panel **Bộ lọc** thu gọn được (lọc trạng thái, tìm theo tên, email, profile).
+- **Mở tất cả Chrome** bằng một cú nhấp: mọi profile đang theo dõi mở ở trang chủ claude.ai.
 - **Thông báo Windows** đúng giờ dự kiến reset, ngưỡng mức dùng tuỳ chỉnh.
-- **Giao diện:** sáng, tối hoặc theo hệ thống (áp dụng ngay), bốn cỡ chữ, font hệ thống và icon [Lucide](https://lucide.dev).
+- **Giao diện:** sáng, tối hoặc theo hệ thống (áp dụng ngay), ba cỡ chữ, tám màu chủ đề Material, font hệ thống và icon [Lucide](https://lucide.dev).
 - **Tiếng Việt và English.** Tự nhận diện ngôn ngữ, đổi bất cứ lúc nào.
 - **Cửa sổ:** ghi nhớ kích thước/vị trí lần trước, hoặc luôn mở phóng to tối đa.
 - **Riêng tư.** Không đám mây, không đăng nhập. App chỉ lắng nghe `127.0.0.1` và yêu cầu token bí mật.
@@ -51,12 +53,11 @@ Toàn bộ ảnh dùng dữ liệu demo.
 
 | Trạng thái | Điều kiện |
 | --- | --- |
-| Sẵn sàng | Chưa chạm giới hạn, hoặc đã có dữ liệu mới sau mốc reset |
+| Sẵn sàng | Chưa chạm giới hạn, hoặc đã qua giờ reset: tài khoản tự chuyển sang Sẵn sàng |
 | Đang chờ reset | Đã chạm giới hạn, chưa tới giờ reset: đếm ngược |
-| Chờ xác nhận | Đã qua giờ reset nhưng chưa có dữ liệu mới |
 | Chưa có dữ liệu | Extension chưa gửi usage |
 
-Thông báo chỉ là *dự kiến*: tài khoản chỉ thành **Sẵn sàng** khi extension gửi số liệu mới.
+Khi qua giờ reset, thẻ tự đổi sang **Sẵn sàng / Dùng được** (mức dùng hiện 0%) và ghi giờ đã reset; lần báo tiếp theo của extension sẽ thay bằng số liệu thật.
 
 ## Cài đặt
 

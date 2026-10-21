@@ -50,4 +50,6 @@ export interface ChromeProfile {
   email: string;
   /** Tên người dùng của tài khoản Google (gaia_name) */
   user_name?: string;
+  /** Ảnh đại diện thật của profile (data URL), rỗng nếu không có */
+  avatar?: string;
 }

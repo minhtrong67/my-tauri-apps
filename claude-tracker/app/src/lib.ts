@@ -5,10 +5,10 @@ import { Lang, TFn, locale } from "./i18n";
  * Pha của một giới hạn:
  * - ok:       còn dùng được
  * - counting: đã hết lượt, đang đếm ngược tới giờ reset
- * - expected: đã qua giờ reset dự kiến nhưng CHƯA có dữ liệu mới -> chưa xác nhận
+ * - elapsed:  đã qua giờ reset (chưa có dữ liệu mới) -> tự coi như đã hồi, mức dùng = 0
  * - unknown:  không có số liệu
  */
-export type Phase = "ok" | "counting" | "expected" | "unknown";
+export type Phase = "ok" | "counting" | "elapsed" | "unknown";
 
 export interface LimitView {
   limit: Limit;
@@ -17,7 +17,7 @@ export interface LimitView {
   phase: Phase;
 }
 
-export type AccountState = "ready" | "expected" | "waiting" | "nodata";
+export type AccountState = "ready" | "waiting" | "nodata";
 
 export interface AccountView {
   account: Account;
@@ -25,6 +25,8 @@ export interface AccountView {
   focus: LimitView | null;
   state: AccountState;
   availableAt: number | null;
+  /** Mốc reset gần nhất vừa trôi qua của giới hạn từng chạm 100% (để ghi "Đã reset lúc …") */
+  recoveredAt: number | null;
   stale: boolean;
 }
 
@@ -39,16 +41,16 @@ export function viewLimit(l: Limit, fetchedAt: number | null | undefined, now: n
   const r = Number.isFinite(resetMs) ? resetMs : null;
   let phase: Phase;
   if (util === null && r === null) phase = "unknown";
-  else if (r !== null && r <= now && (fetchedAt ?? 0) < r) phase = "expected";
+  else if (r !== null && r <= now && (fetchedAt ?? 0) < r) phase = "elapsed";
   else if (util !== null && util >= 100 && r !== null && r > now) phase = "counting";
   else phase = "ok";
-  return { limit: l, util, resetMs: r, phase };
+  return { limit: l, util: phase === "elapsed" ? 0 : util, resetMs: r, phase };
 }
 
 export function analyze(a: Account, now: number): AccountView {
   const limits = a.limits.map((l) => viewLimit(l, a.fetched_at, now));
   const counting = limits.filter((l) => l.phase === "counting");
-  const expected = limits.filter((l) => l.phase === "expected" && (l.util ?? 0) >= 100);
+  const recovered = limits.filter((l) => l.phase === "elapsed" && (l.limit.utilization ?? 0) >= 100);
   const latest = (xs: LimitView[]) => xs.reduce((m, x) => ((x.resetMs ?? 0) > (m.resetMs ?? 0) ? x : m));
 
   let state: AccountState;
@@ -59,10 +61,6 @@ export function analyze(a: Account, now: number): AccountView {
     state = "waiting";
     focus = latest(counting);
     availableAt = focus.resetMs;
-  } else if (expected.length) {
-    state = "expected";
-    focus = latest(expected);
-    availableAt = focus.resetMs;
   } else {
     state = "ready";
     focus =
@@ -70,13 +68,14 @@ export function analyze(a: Account, now: number): AccountView {
       limits.find((l) => l.limit.key === "free_window") ??
       limits[0];
   }
+  const recoveredAt = recovered.length ? latest(recovered).resetMs : null;
   const stale = a.fetched_at ? now - a.fetched_at > STALE_MS : true;
-  return { account: a, limits, focus, state, availableAt, stale };
+  return { account: a, limits, focus, state, availableAt, recoveredAt, stale };
 }
 
-const RANK: Record<AccountState, number> = { ready: 0, expected: 1, waiting: 2, nodata: 3 };
+const RANK: Record<AccountState, number> = { ready: 0, waiting: 1, nodata: 2 };
 
-/** Sẵn sàng -> dự kiến đã reset -> đang chờ (reset sớm nhất trước) -> chưa có dữ liệu */
+/** Sẵn sàng -> đang chờ (reset sớm nhất trước) -> chưa có dữ liệu */
 export function sortViews(vs: AccountView[]): AccountView[] {
   return [...vs].sort((a, b) => {
     if (RANK[a.state] !== RANK[b.state]) return RANK[a.state] - RANK[b.state];

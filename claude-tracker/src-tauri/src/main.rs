@@ -625,6 +625,24 @@ struct Prof {
     email: String,
     /// Tên người dùng của tài khoản Google đăng nhập trong profile (gaia_name)
     user_name: String,
+    /// Ảnh đại diện thật của profile dạng data URL (rỗng nếu profile không có ảnh)
+    avatar: String,
+}
+
+/// Đọc ảnh đại diện Google mà Chrome đã lưu trong thư mục profile ("Google Profile Picture.png")
+fn read_avatar(user_data: &std::path::Path, dir: &str, info: &Value) -> String {
+    use base64::{engine::general_purpose::STANDARD, Engine};
+    let file = info
+        .get("gaia_picture_file_name")
+        .and_then(|x| x.as_str())
+        .filter(|x| !x.is_empty() && !x.contains('/') && !x.contains('\\'))
+        .unwrap_or("Google Profile Picture.png");
+    let Ok(bytes) = fs::read(user_data.join(dir).join(file)) else { return String::new() };
+    if bytes.is_empty() || bytes.len() > 600_000 {
+        return String::new();
+    }
+    let mime = if bytes.starts_with(&[0xFF, 0xD8]) { "image/jpeg" } else { "image/png" };
+    format!("data:{mime};base64,{}", STANDARD.encode(bytes))
 }
 
 fn read_profiles() -> Vec<Prof> {
@@ -643,6 +661,7 @@ fn read_profiles() -> Vec<Prof> {
                     .find_map(|k| p.get(*k).and_then(|x| x.as_str()).filter(|x| !x.trim().is_empty()))
                     .unwrap_or("")
                     .to_string(),
+                avatar: read_avatar(&dir, k, p),
             });
         }
     }
@@ -654,7 +673,7 @@ fn read_profiles() -> Vec<Prof> {
 fn list_chrome_profiles() -> Vec<Value> {
     read_profiles()
         .into_iter()
-        .map(|p| json!({ "dir": p.dir, "name": p.name, "email": p.email, "user_name": p.user_name }))
+        .map(|p| json!({ "dir": p.dir, "name": p.name, "email": p.email, "user_name": p.user_name, "avatar": p.avatar }))
         .collect()
 }
 
@@ -667,6 +686,28 @@ fn open_profile(profile_dir: String, url: Option<String>) -> Result<(), String> 
         .spawn()
         .map(|_| ())
         .map_err(|e| e.to_string())
+}
+
+/// Mở nhiều Chrome Profile cùng lúc, mỗi profile một cửa sổ ở trang chủ Claude.
+/// Chạy ở luồng riêng và cách nhau một nhịp ngắn để Chrome kịp nhận từng yêu cầu.
+#[tauri::command]
+fn open_profiles(profile_dirs: Vec<String>, url: Option<String>) -> Result<usize, String> {
+    let chrome = find_chrome().ok_or("Không tìm thấy chrome.exe")?;
+    let url = url.unwrap_or_else(|| "https://claude.ai/".into());
+    let mut dirs: Vec<String> = vec![];
+    for d in profile_dirs {
+        if !d.is_empty() && !dirs.contains(&d) {
+            dirs.push(d);
+        }
+    }
+    let n = dirs.len();
+    thread::spawn(move || {
+        for d in dirs {
+            let _ = Command::new(&chrome).arg(format!("--profile-directory={d}")).arg(&url).spawn();
+            thread::sleep(Duration::from_millis(450));
+        }
+    });
+    Ok(n)
 }
 
 // ---------- Tray / main ----------
@@ -813,7 +854,8 @@ fn main() {
             request_refresh,
             copy_text,
             list_chrome_profiles,
-            open_profile
+            open_profile,
+            open_profiles
         ])
         .run(tauri::generate_context!())
         .expect("không chạy được ứng dụng");

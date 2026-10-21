@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useId, useRef } from "react";
+import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { initials } from "./lib";
 import { useI18n } from "./i18n";
@@ -21,17 +21,16 @@ export function Logo({ size = 40 }: { size?: number }) {
   );
 }
 
-/** Avatar chữ cái đầu, màu ổn định theo tên */
-export function Avatar({ name, size = 44 }: { name: string; size?: number }) {
+/** Avatar: ảnh thật của Chrome profile; không có ảnh (hoặc lỗi) thì dùng chữ cái đầu, màu ổn định theo tên */
+export function Avatar({ name, src, size = 44 }: { name: string; src?: string; size?: number }) {
+  const [bad, setBad] = useState(false);
+  useEffect(() => setBad(false), [src]);
   let h = 0;
   for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 360;
+  const photo = !!src && !bad;
   return (
-    <span
-      className="avatar"
-      aria-hidden="true"
-      style={{ width: size, height: size, ["--h" as string]: h, fontSize: size * 0.36 }}
-    >
-      {initials(name)}
+    <span className={`avatar ${photo ? "photo" : ""}`} aria-hidden="true" style={{ width: size, height: size, ["--h" as string]: h, fontSize: size * 0.36 }}>
+      {photo ? <img src={src} alt="" width={size} height={size} decoding="async" onError={() => setBad(true)} /> : initials(name)}
     </span>
   );
 }
@@ -118,6 +117,7 @@ export function ConfirmDialog({
   cancel,
   onConfirm,
   onCancel,
+  tone = "danger",
 }: {
   title: string;
   body: string;
@@ -125,6 +125,7 @@ export function ConfirmDialog({
   cancel: string;
   onConfirm: () => void;
   onCancel: () => void;
+  tone?: "danger" | "primary";
 }) {
   const ref = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -142,7 +143,7 @@ export function ConfirmDialog({
           <button className="btn text" onClick={onCancel}>
             {cancel}
           </button>
-          <button className="btn danger" ref={ref} onClick={onConfirm}>
+          <button className={`btn ${tone === "danger" ? "danger" : "filled"}`} ref={ref} onClick={onConfirm}>
             {confirm}
           </button>
         </div>

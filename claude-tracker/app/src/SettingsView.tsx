@@ -6,6 +6,7 @@ import {
 import type { AppData, Settings, WindowMode } from "./types";
 import type { AccountView } from "./lib";
 import type { Prefs } from "./prefs";
+import { ACCENTS } from "./accents";
 import { rich, useI18n } from "./i18n";
 import { Logo, Segmented, Switch } from "./ui";
 
@@ -108,6 +109,26 @@ export function SettingsView({
               ]}
             />
           </Field>
+          <Field label={t("set.accent")} hint={t("set.accent.hint")}>
+            <div className="swatches" role="radiogroup" aria-label={t("set.accent")}>
+              {ACCENTS.map((a) => (
+                <button
+                  key={a.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={prefs.accent === a.id}
+                  className={`swatch ${prefs.accent === a.id ? "on" : ""}`}
+                  style={{ ["--sw" as string]: a.seed }}
+                  onClick={() => setPrefs({ accent: a.id })}
+                >
+                  <span className="dot" aria-hidden="true">
+                    <Check size={16} strokeWidth={3} />
+                  </span>
+                  <span className="sw-name">{t(`acc.${a.id}` as never)}</span>
+                </button>
+              ))}
+            </div>
+          </Field>
           <Field label={t("set.font")}>
             <Segmented
               label={t("set.font")}
@@ -117,7 +138,6 @@ export function SettingsView({
                 { value: "sm", label: t("set.font.sm"), icon: <Type size={13} /> },
                 { value: "md", label: t("set.font.md"), icon: <Type size={16} /> },
                 { value: "lg", label: t("set.font.lg"), icon: <Type size={19} /> },
-                { value: "xl", label: t("set.font.xl"), icon: <Type size={22} /> },
               ]}
             />
           </Field>
@@ -135,6 +155,9 @@ export function SettingsView({
           </Field>
         </Panel>
 
+      </div>
+
+      <div className="col">
         <Panel icon={<PanelTop size={20} />} title={t("set.window")} desc={t("set.window.desc")}>
           <div className="choices" role="radiogroup" aria-label={t("set.window")}>
             {(
@@ -154,9 +177,7 @@ export function SettingsView({
             ))}
           </div>
         </Panel>
-      </div>
 
-      <div className="col">
         <Panel icon={<Bell size={20} />} title={t("set.notify")}>
           <div className="row-between">
             <span>{t("set.notify.enable")}</span>
@@ -186,25 +207,6 @@ export function SettingsView({
           </button>
         </Panel>
 
-        <Panel icon={<Info size={20} />} title={t("set.about")}>
-          <div className="about">
-            <Logo size={52} />
-            <div>
-              <div className="about-name">Claude Tracker</div>
-              <p className="hint">{t("set.about.tag")}</p>
-            </div>
-          </div>
-          <dl className="facts">
-            <dt>{t("set.about.author")}</dt>
-            <dd>
-              <b>minhtrong67</b> <span className="muted">· {t("set.about.ai")}</span>
-            </dd>
-            <dt>{t("set.about.license")}</dt>
-            <dd>{t("set.about.license.value")}</dd>
-            <dt>{t("set.about.version")}</dt>
-            <dd>{__APP_VERSION__}</dd>
-          </dl>
-        </Panel>
       </div>
 
       <Panel wide icon={<Plug size={20} />} title={t("set.conn")} desc={t("set.conn.desc")}>
@@ -226,6 +228,26 @@ export function SettingsView({
             <CopyButton text={data.token} />
           </div>
         </div>
+      </Panel>
+
+      <Panel wide icon={<Info size={20} />} title={t("set.about")}>
+          <div className="about-row"><div className="about">
+            <Logo size={52} />
+            <div>
+              <div className="about-name">Claude Tracker</div>
+              <p className="hint">{t("set.about.tag")}</p>
+            </div>
+          </div>
+          <dl className="facts">
+            <dt>{t("set.about.author")}</dt>
+            <dd>
+              <b>minhtrong67</b> <span className="muted">· {t("set.about.ai")}</span>
+            </dd>
+            <dt>{t("set.about.license")}</dt>
+            <dd>{t("set.about.license.value")}</dd>
+            <dt>{t("set.about.version")}</dt>
+            <dd>{__APP_VERSION__}</dd>
+          </dl></div>
       </Panel>
 
       <Panel wide icon={<Stethoscope size={20} />} title={t("set.diag")} desc={t("set.diag.desc")}>

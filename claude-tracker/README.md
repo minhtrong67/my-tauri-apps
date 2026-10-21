@@ -39,9 +39,11 @@ All screenshots use demo data.
 
 - **One dashboard for every profile.** Each card shows the Claude account, the Chrome profile (`Profile 4 · 01 - Work`) and the name of the Google account signed in to that profile. Nothing is truncated.
 - **Live reset countdown.** Time left is spelled out in full ("2 hours 31 minutes"), with a progress bar toward the reset.
-- **Grid or list view**, status filters, and search by name, email or profile.
+- **Real Chrome profile avatars**, read from the profile picture Chrome already stores (falls back to initials).
+- **Grid or list view**, plus a collapsible **Filters** panel (status filters and search by name, email or profile).
+- **Open all Chrome** in one click: every tracked profile opens on the claude.ai home page.
 - **Windows notifications** at the expected reset time, with a configurable usage threshold.
-- **Appearance:** light, dark or follow the system (applied instantly), four text sizes, system UI font and [Lucide](https://lucide.dev) icons.
+- **Appearance:** light, dark or follow the system (applied instantly), three text sizes, eight Material theme colors, system UI font and [Lucide](https://lucide.dev) icons.
 - **English and Tiếng Việt.** The language is detected automatically and can be switched at any time.
 - **Window behavior:** remember the size and position you left, or always open maximized.
 - **Private by design.** No cloud and no sign-in. The app only listens on `127.0.0.1` and requires a secret token.
@@ -51,12 +53,11 @@ All screenshots use demo data.
 
 | State | Condition |
 | --- | --- |
-| Ready | Limit not reached, or fresh data received after the reset time |
+| Ready | Limit not reached, or the reset time has passed: the account switches to Ready automatically |
 | Waiting for reset | Limit reached and the reset time has not passed: live countdown |
-| Unconfirmed | Reset time has passed but no fresh data has arrived yet |
 | No data | The extension has not reported usage yet |
 
-Notifications are only *estimates*: an account becomes **Ready** only after the extension reports fresh numbers.
+When a reset time passes, the card flips to **Ready / Available** on its own (usage shown as 0%) and says when it reset; the next extension report replaces that estimate with real numbers.
 
 ## Installation
 

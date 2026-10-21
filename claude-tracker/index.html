@@ -45,6 +45,7 @@
     var t = localStorage.getItem("ct.theme");
     var dark = t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
     document.documentElement.dataset.theme = dark ? "dark" : "light";
+    document.documentElement.dataset.accent = localStorage.getItem("ct.accent") || "terracotta";
     document.documentElement.classList.add("js");
   } catch (e) { document.documentElement.classList.add("js"); }
 })();
@@ -54,19 +55,37 @@
 :root{
   --font:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
   --display:"Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
-  --bg:#faf7f5;--s1:#fff;--s2:#f4efeb;--s3:#ebe4de;--text:#1f1b18;--muted:#6a6059;--line:#e6ded7;
-  --primary:#b5502c;--on-primary:#fff;--pc:#ffdcd0;--on-pc:#3b0d00;--sec:#e9e1c9;--on-sec:#2c2411;--ter:#d5ead9;--on-ter:#10301e;
+  --seed:#c05534;
+  --bg:color-mix(in srgb,var(--seed) 4%,#fcfcfc);--s1:color-mix(in srgb,var(--seed) 1%,#fff);--s2:color-mix(in srgb,var(--seed) 7%,#f5f5f5);--s3:color-mix(in srgb,var(--seed) 11%,#e9e9e9);
+  --text:color-mix(in srgb,var(--seed) 8%,#1b1b1b);--muted:color-mix(in srgb,var(--seed) 12%,#666);--line:color-mix(in srgb,var(--seed) 10%,#e6e6e6);
+  --primary:#b5502c;--on-primary:#fff;--pc:#ffdcd0;--on-pc:#3b0d00;
+  --sec:color-mix(in srgb,var(--primary) 14%,var(--s2));--on-sec:var(--text);--ter:#d5ead9;--on-ter:#10301e;
   --ok:#1b7a4b;--warn:#8a5a00;--danger:#b3261e;
-  --e1:0 1px 2px rgb(60 30 10/.07),0 2px 10px rgb(60 30 10/.06);--e3:0 8px 24px rgb(60 30 10/.12),0 2px 6px rgb(60 30 10/.08);
+  --e1:0 1px 2px rgb(0 0 0/.07),0 2px 10px rgb(0 0 0/.06);--e3:0 8px 24px rgb(0 0 0/.12),0 2px 6px rgb(0 0 0/.08);
   --ease:cubic-bezier(.2,0,0,1);
   color-scheme:light;
 }
 html[data-theme=dark]{
-  --bg:#151211;--s1:#1e1a18;--s2:#28231f;--s3:#342d29;--text:#ede0db;--muted:#a89d96;--line:#352e2a;
-  --primary:#f4a583;--on-primary:#4a1a08;--pc:#5e2c18;--on-pc:#ffdcd0;--sec:#3a3322;--on-sec:#ece2c4;--ter:#1d3a29;--on-ter:#cdeed8;
-  --ok:#7ddba3;--warn:#f2c265;--danger:#ffb4ab;
+  --bg:color-mix(in srgb,var(--seed) 5%,#131313);--s1:color-mix(in srgb,var(--seed) 7%,#1c1c1c);--s2:color-mix(in srgb,var(--seed) 9%,#262626);--s3:color-mix(in srgb,var(--seed) 12%,#323232);
+  --text:color-mix(in srgb,var(--seed) 6%,#ececec);--muted:color-mix(in srgb,var(--seed) 8%,#a8a8a8);--line:color-mix(in srgb,var(--seed) 12%,#333);
+  --primary:#f4a583;--on-primary:#4a1a08;--pc:#5e2c18;--on-pc:#ffdcd0;
+  --ter:#1d3a29;--on-ter:#cdeed8;--ok:#7ddba3;--warn:#f2c265;--danger:#ffb4ab;
   --e1:none;--e3:0 12px 32px rgb(0 0 0/.5);color-scheme:dark;
 }
+html[data-accent=purple]{--seed:#6750a4;--primary:#6750a4;--on-primary:#fff;--pc:#eaddff;--on-pc:#21005d;}
+html[data-accent=purple][data-theme=dark]{--primary:#d0bcff;--on-primary:#381e72;--pc:#4f378b;--on-pc:#eaddff;}
+html[data-accent=blue]{--seed:#0b57d0;--primary:#0b57d0;--on-primary:#fff;--pc:#d3e3fd;--on-pc:#041e49;}
+html[data-accent=blue][data-theme=dark]{--primary:#a8c7fa;--on-primary:#062e6f;--pc:#0842a0;--on-pc:#d3e3fd;}
+html[data-accent=teal]{--seed:#00897b;--primary:#006a6a;--on-primary:#fff;--pc:#9cf1f0;--on-pc:#002020;}
+html[data-accent=teal][data-theme=dark]{--primary:#80d5d4;--on-primary:#003737;--pc:#004f50;--on-pc:#9cf1f0;}
+html[data-accent=green]{--seed:#2e7d32;--primary:#2c6a35;--on-primary:#fff;--pc:#b0f4b4;--on-pc:#002106;}
+html[data-accent=green][data-theme=dark]{--primary:#94d89a;--on-primary:#00390f;--pc:#0d5220;--on-pc:#b0f4b4;}
+html[data-accent=amber]{--seed:#f29900;--primary:#8c5000;--on-primary:#fff;--pc:#ffdcbd;--on-pc:#2c1600;}
+html[data-accent=amber][data-theme=dark]{--primary:#ffb86e;--on-primary:#4a2800;--pc:#693c00;--on-pc:#ffdcbd;}
+html[data-accent=pink]{--seed:#d6336c;--primary:#a1305e;--on-primary:#fff;--pc:#ffd9e3;--on-pc:#3e001d;}
+html[data-accent=pink][data-theme=dark]{--primary:#ffb1c8;--on-primary:#5e1133;--pc:#7b2949;--on-pc:#ffd9e3;}
+html[data-accent=red]{--seed:#d93025;--primary:#b3261e;--on-primary:#fff;--pc:#ffdad6;--on-pc:#410002;}
+html[data-accent=red][data-theme=dark]{--primary:#ffb4ab;--on-primary:#690005;--pc:#93000a;--on-pc:#ffdad6;}
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:5rem;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--text);font:400 1rem/1.6 var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -107,6 +126,12 @@ a{color:inherit}
 html[data-theme=dark] .lang button[aria-pressed=true]{background:var(--s3)}
 .theme-ic-moon{display:none}html[data-theme=dark] .theme-ic-sun{display:none}html[data-theme=dark] .theme-ic-moon{display:block}
 .menu-btn{display:none}
+.pal{position:relative}
+.pal-pop{position:absolute;right:0;top:calc(100% + .6rem);display:grid;grid-template-columns:repeat(4,2.6rem);gap:.6rem;padding:.9rem;background:var(--s1);border:1px solid var(--line);border-radius:1.25rem;box-shadow:var(--e3);opacity:0;transform:translateY(-6px) scale(.97);transform-origin:top right;pointer-events:none;transition:opacity .2s,transform .25s var(--ease)}
+.pal-pop.open{opacity:1;transform:none;pointer-events:auto}
+.sw{display:grid;place-items:center;width:2.6rem;height:2.6rem;padding:0;border:0;border-radius:50%;background:var(--c);color:#fff;cursor:pointer;box-shadow:inset 0 0 0 1px rgb(0 0 0/.1);transition:transform .2s var(--ease)}
+.sw:hover{transform:scale(1.1)}.sw .ic{transform:scale(0);transition:transform .25s var(--ease)}.sw[aria-checked=true] .ic{transform:scale(1)}
+.sw[aria-checked=true]{outline:2px solid var(--text);outline-offset:2px}
 
 /* hero */
 .hero{padding:clamp(2.5rem,7vw,5.5rem) 0 clamp(3rem,7vw,6rem);overflow-x:clip}
@@ -240,6 +265,7 @@ footer .legal{max-width:36rem}
     </nav>
     <div class="bar-end">
       <div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="vi" aria-pressed="false">VI</button></div>
+      <div class="pal"><button class="btn icon" id="palBtn" type="button" aria-label="Theme color" aria-haspopup="true" aria-expanded="false"><svg class="ic"><use href="#i-palette"/></svg></button><div class="pal-pop" id="pal" role="radiogroup" aria-label="Theme color"><button class="sw" type="button" role="radio" aria-checked="true" data-accent="terracotta" style="--c:#c05534" aria-label="terracotta" title="terracotta"><svg class="ic"><use href="#i-check"/></svg></button><button class="sw" type="button" role="radio" aria-checked="false" data-accent="purple" style="--c:#6750a4" aria-label="purple" title="purple"><svg class="ic"><use href="#i-check"/></svg></button><button class="sw" type="button" role="radio" aria-checked="false" data-accent="blue" style="--c:#0b57d0" aria-label="blue" title="blue"><svg class="ic"><use href="#i-check"/></svg></button><button class="sw" type="button" role="radio" aria-checked="false" data-accent="teal" style="--c:#00897b" aria-label="teal" title="teal"><svg class="ic"><use href="#i-check"/></svg></button><button class="sw" type="button" role="radio" aria-checked="false" data-accent="green" style="--c:#2e7d32" aria-label="green" title="green"><svg class="ic"><use href="#i-check"/></svg></button><button class="sw" type="button" role="radio" aria-checked="false" data-accent="amber" style="--c:#f29900" aria-label="amber" title="amber"><svg class="ic"><use href="#i-check"/></svg></button><button class="sw" type="button" role="radio" aria-checked="false" data-accent="pink" style="--c:#d6336c" aria-label="pink" title="pink"><svg class="ic"><use href="#i-check"/></svg></button><button class="sw" type="button" role="radio" aria-checked="false" data-accent="red" style="--c:#d93025" aria-label="red" title="red"><svg class="ic"><use href="#i-check"/></svg></button></div></div>
       <button class="btn icon" id="theme" type="button" aria-label="Toggle theme"><svg class="ic theme-ic-sun"><use href="#i-sun"/></svg><svg class="ic theme-ic-moon"><use href="#i-moon"/></svg></button>
       <a class="btn filled dl" href="downloads/ClaudeTracker-Setup.exe" download><svg class="ic"><use href="#i-download"/></svg><span data-i="dl">Download</span></a>
       <button class="btn icon menu-btn" id="menu" type="button" aria-label="Menu" aria-expanded="false"><svg class="ic"><use href="#i-menu"/></svg></button>
@@ -281,10 +307,11 @@ footer .legal{max-width:36rem}
           <div class="dbody"><div class="klabel" data-i="k.status">Status</div><div class="word-ok" data-i="avail">Available</div></div>
         </div>
         <div class="dcard">
-          <span class="av" style="--h:350">RP</span><span class="dn">Riley Park</span><span class="badge b-warn"><svg class="ic"><use href="#i-shield-question"/></svg><span data-i="b.unc">Unconfirmed</span></span>
+          <span class="av" style="--h:350">RP</span><span class="dn">Riley Park</span><span class="badge b-ok"><svg class="ic"><use href="#i-circle-check"/></svg><span data-i="b.ready2">Ready</span></span>
           <span class="dm">riley.studio@example.com</span>
-          <div class="dbody"><div class="klabel" data-i="k.exp">Expected to reset at</div><div class="big">10:00<small data-i="today2">Today</small></div></div>
+          <div class="dbody"><div class="klabel" data-i="k.done">Reset at 10:00 — back automatically</div><div class="word-ok" data-i="avail2">Available</div></div>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -297,7 +324,7 @@ footer .legal{max-width:36rem}
         <article class="tile span2 rv" style="--d:.06s"><span class="ico"><svg class="ic"><use href="#i-timer"/></svg></span><h3 data-i="t2h">Live reset countdown</h3><p data-i="t2p">Hours and minutes spelled out in full, with a progress bar toward the reset.</p></article>
         <article class="tile span2 rv"><span class="ico"><svg class="ic"><use href="#i-bell-ring"/></svg></span><h3 data-i="t3h">Windows notifications</h3><p data-i="t3p">Get nudged at the expected reset time, with a usage threshold you choose.</p></article>
         <article class="tile t-sec span2 rv" style="--d:.06s"><span class="ico"><svg class="ic"><use href="#i-layout-grid"/></svg></span><h3 data-i="t4h">Grid or list</h3><p data-i="t4p">Switch layouts in one click. Filter by status or search by name, email and profile.</p></article>
-        <article class="tile span2 rv" style="--d:.12s"><span class="ico"><svg class="ic"><use href="#i-palette"/></svg></span><h3 data-i="t5h">Made to fit your eyes</h3><p data-i="t5p">Light, dark or follow Windows, plus four text sizes. Applied instantly.</p></article>
+        <article class="tile span2 rv" style="--d:.12s"><span class="ico"><svg class="ic"><use href="#i-palette"/></svg></span><h3 data-i="t5h">Made to fit your eyes</h3><p data-i="t5p">Light, dark or follow Windows, three text sizes and Material color themes. Applied instantly.</p></article>
         <article class="tile t-ter span2 rv"><span class="ico"><svg class="ic"><use href="#i-languages"/></svg></span><h3 data-i="t6h">English &amp; Tiếng Việt</h3><p data-i="t6p">Detects your system language and switches the moment you choose another.</p></article>
         <article class="tile span2 rv" style="--d:.06s"><span class="ico"><svg class="ic"><use href="#i-maximize"/></svg></span><h3 data-i="t7h">Remembers your window</h3><p data-i="t7p">Reopen at the size you left it, or always start maximized.</p></article>
         <article class="tile t-pc span2 rv" style="--d:.12s"><span class="ico"><svg class="ic"><use href="#i-shield-check"/></svg></span><h3 data-i="t8h">Private by design</h3><p data-i="t8p">No cloud, no sign-in. The app only listens on 127.0.0.1 with a secret token.</p></article>
@@ -392,13 +419,13 @@ footer .legal{max-width:36rem}
     "h1":"Biết tài khoản Claude nào dùng được — trước khi mở Chrome.",
     "lead":"Claude Tracker là dashboard desktop hiển thị giới hạn sử dụng và giờ reset của mọi tài khoản Claude trên các Chrome Profile của bạn.",
     "dlw":"Tải cho Windows","dlm":"Phiên bản 0.2.0 · 64-bit","src":"Xem mã nguồn","fine":"Windows 10 và 11. Dữ liệu luôn ở lại trên máy bạn.",
-    "b.wait":"Đang chờ reset","b.ready":"Sẵn sàng","b.unc":"Chờ xác nhận","k.resets":"Reset xong lúc","today":"Hôm nay","today2":"Hôm nay","k.prog":"Tiến độ reset","k.status":"Trạng thái","avail":"Dùng được","k.exp":"Dự kiến đã reset lúc",
+    "b.wait":"Đang chờ reset","b.ready":"Sẵn sàng","b.ready2":"Sẵn sàng","k.done":"Đã reset lúc 10:00 — tự chuyển về sẵn sàng","avail2":"Dùng được","k.resets":"Reset xong lúc","today":"Hôm nay","k.prog":"Tiến độ reset","k.status":"Trạng thái","avail":"Dùng được",
     "f.h":"Mọi thứ về giới hạn, trong một cái nhìn","f.s":"Dành cho người dùng nhiều tài khoản Claude và không muốn đoán xem tài khoản nào còn lượt.",
     "t1h":"Một dashboard cho mọi profile","t1p":"Xem mọi tài khoản cạnh nhau, kèm Chrome Profile và tên tài khoản Google tương ứng. Mở đúng profile chỉ với một cú nhấp.",
     "t2h":"Đếm ngược reset trực tiếp","t2p":"Giờ và phút được viết đầy đủ, kèm thanh tiến độ tới lúc reset.",
     "t3h":"Thông báo Windows","t3p":"Nhận thông báo đúng giờ dự kiến reset, với ngưỡng mức dùng do bạn chọn.",
     "t4h":"Dạng lưới hoặc danh sách","t4p":"Đổi bố cục bằng một cú nhấp. Lọc theo trạng thái hoặc tìm theo tên, email, profile.",
-    "t5h":"Vừa mắt bạn","t5p":"Sáng, tối hoặc theo Windows, cùng bốn cỡ chữ. Áp dụng ngay lập tức.",
+    "t5h":"Vừa mắt bạn","t5p":"Sáng, tối hoặc theo Windows, ba cỡ chữ và các màu chủ đề Material. Áp dụng ngay lập tức.",
     "t6h":"English &amp; Tiếng Việt","t6p":"Tự nhận diện ngôn ngữ hệ thống và đổi ngay khi bạn chọn ngôn ngữ khác.",
     "t7h":"Nhớ cửa sổ của bạn","t7p":"Mở lại đúng kích thước lần trước, hoặc luôn phóng to tối đa.",
     "t8h":"Riêng tư từ thiết kế","t8p":"Không đám mây, không đăng nhập. App chỉ lắng nghe 127.0.0.1 với token bí mật.",
@@ -434,6 +461,19 @@ footer .legal{max-width:36rem}
     var d = root.dataset.theme !== "dark"; root.dataset.theme = d ? "dark" : "light";
     try { localStorage.setItem("ct.theme", d ? "dark" : "light"); } catch (e) {}
   });
+
+  /* ---- màu chủ đề (Material) ---- */
+  var pal = $("#pal"), palBtn = $("#palBtn");
+  function setAccent(a) {
+    root.dataset.accent = a;
+    $$(".sw", pal).forEach(function (b) { b.setAttribute("aria-checked", String(b.dataset.accent === a)); });
+    try { localStorage.setItem("ct.accent", a); } catch (e) {}
+  }
+  setAccent(root.dataset.accent || "terracotta");
+  $$(".sw", pal).forEach(function (b) { b.addEventListener("click", function () { setAccent(b.dataset.accent); }); });
+  palBtn.addEventListener("click", function (e) { e.stopPropagation(); var o = pal.classList.toggle("open"); palBtn.setAttribute("aria-expanded", String(o)); });
+  document.addEventListener("click", function (e) { if (!pal.contains(e.target)) { pal.classList.remove("open"); palBtn.setAttribute("aria-expanded", "false"); } });
+  addEventListener("keydown", function (e) { if (e.key === "Escape") { pal.classList.remove("open"); palBtn.setAttribute("aria-expanded", "false"); } });
 
   /* ---- menu mobile + app bar ---- */
   var nav = $("#nav"), menu = $("#menu");

@@ -1,22 +1,27 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Lang, LangPref, resolveLang } from "./i18n";
+import type { AccentId } from "./accents";
 
 export type ThemePref = "system" | "light" | "dark";
-export type FontPref = "sm" | "md" | "lg" | "xl";
+export type FontPref = "sm" | "md" | "lg";
 export type ViewMode = "grid" | "list";
 export interface Prefs {
   theme: ThemePref;
   font: FontPref;
   lang: LangPref;
   view: ViewMode;
+  accent: AccentId;
+  filtersOpen: boolean;
 }
 
 const KEY = "claude-tracker.prefs";
-const DEFAULTS: Prefs = { theme: "system", font: "md", lang: "system", view: "grid" };
+const DEFAULTS: Prefs = { theme: "system", font: "md", lang: "system", view: "grid", accent: "terracotta", filtersOpen: true };
 
 export function loadPrefs(): Prefs {
   try {
-    return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) ?? "{}") };
+    const p = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) ?? "{}") };
+    if ((p.font as string) === "xl") p.font = "lg"; // cỡ "rất lớn" đã bỏ
+    return p;
   } catch {
     return DEFAULTS;
   }
@@ -60,9 +65,10 @@ export function usePrefs() {
     const r = document.documentElement;
     r.dataset.theme = theme;
     r.dataset.font = prefs.font;
+    r.dataset.accent = prefs.accent;
     r.lang = lang;
     document.title = "Claude Tracker";
-  }, [theme, prefs.font, lang]);
+  }, [theme, prefs.font, prefs.accent, lang]);
 
   // Đồng bộ thanh tiêu đề gốc của Windows với lựa chọn của người dùng
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Chrome, CircleCheck, CircleDashed, ExternalLink, Hourglass, Clock, Trash2, TriangleAlert, ShieldQuestion } from "lucide-react";
+import { Chrome, CircleCheck, CircleDashed, ExternalLink, Hourglass, Clock, Trash2, TriangleAlert } from "lucide-react";
 import type { ChromeProfile } from "./types";
 import { AccountView, fmtAgo, fmtClock, fmtCountdown, fmtDay, limitLabel, progressPct } from "./lib";
 import { useI18n } from "./i18n";
@@ -8,7 +8,6 @@ import { Avatar } from "./ui";
 
 const BADGE = {
   ready: { key: "badge.ready", tone: "ok", Icon: CircleCheck },
-  expected: { key: "badge.expected", tone: "warn", Icon: ShieldQuestion },
   waiting: { key: "badge.waiting", tone: "danger", Icon: Hourglass },
   nodata: { key: "badge.nodata", tone: "muted", Icon: CircleDashed },
 } as const;
@@ -36,18 +35,17 @@ function Hero({ view, now }: { view: AccountView; now: number }) {
         <div className="hero-word ok">{t("card.available")}</div>
         <div className="hero-sub">
           {used ? `${used} · ` : ""}
-          {t("card.confirmedAt", { time: a.fetched_at ? fmtClock(a.fetched_at, lang) : "—" })}
+          {view.recoveredAt ? t("card.resetDone", { time: fmtClock(view.recoveredAt, lang) }) : t("card.confirmedAt", { time: a.fetched_at ? fmtClock(a.fetched_at, lang) : "—" })}
         </div>
       </div>
     );
   }
 
   const r = f.resetMs as number;
-  const expected = view.state === "expected";
-  const pct = expected ? 100 : progressPct(f, now);
+  const pct = progressPct(f, now);
   return (
     <div className="hero">
-      <div className="hero-kicker">{expected ? t("card.resetExpected") : t("card.resetAt")}</div>
+      <div className="hero-kicker">{t("card.resetAt")}</div>
       <div className="hero-row">
         <span className="hero-time">{fmtClock(r, lang)}</span>
         <span className="hero-day">{fmtDay(r, lang, t)}</span>
@@ -55,13 +53,13 @@ function Hero({ view, now }: { view: AccountView; now: number }) {
       {pct !== null && (
         <div className="progress">
           <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)}>
-            <div className={`fill ${expected ? "warn" : "danger"}`} style={{ transform: `scaleX(${pct / 100})` }} />
+            <div className="fill danger" style={{ transform: `scaleX(${pct / 100})` }} />
           </div>
           <div className="progress-meta">
             <span>
               {t("card.progress")} <b>{Math.round(pct)}%</b>
             </span>
-            <span>{expected ? t("card.unconfirmed") : t("card.left", { left: fmtCountdown(r - now, t) })}</span>
+            <span>{t("card.left", { left: fmtCountdown(r - now, t) })}</span>
           </div>
         </div>
       )}
@@ -98,7 +96,7 @@ export const AccountCard = memo(function AccountCard({
   return (
     <article className={`card ${view.state}`} style={{ ["--i" as string]: Math.min(index, 12) }}>
       <header className="card-head">
-        <Avatar name={title} />
+        <Avatar name={title} src={prof?.avatar} />
         <div className="ident">
           <h3 className="name">{title}</h3>
           {userName && <div className="mail">{claudeEmail}</div>}
@@ -163,7 +161,7 @@ export const AccountCard = memo(function AccountCard({
           </button>
           <button className="btn tonal" disabled={!a.profile_dir} onClick={() => a.profile_dir && onOpen(a.profile_dir)}>
             <ExternalLink size={16} aria-hidden="true" />
-            {view.state === "expected" ? t("card.openConfirm") : t("card.open")}
+            {t("card.open")}
           </button>
         </div>
       </footer>

@@ -5,13 +5,28 @@ const MIN = 60_000;
 const iso = (offsetMin: number) => new Date(Date.now() + offsetMin * MIN).toISOString();
 const ago = (m: number) => Date.now() - m * MIN;
 
+/** Ảnh chân dung minh hoạ (SVG data URL) để mô phỏng ảnh thật của Chrome profile */
+const portrait = (h1: number, h2: number, skin: string, hair: string) =>
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h1} 60% 70%)"/><stop offset="1" stop-color="hsl(${h2} 55% 45%)"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/><path d="M14 100c2-26 17-36 36-36s34 10 36 36z" fill="hsl(${h2} 35% 25%)"/><circle cx="50" cy="42" r="19" fill="${skin}"/><path d="M30 41c-1-17 10-24 21-24 12 0 21 8 19 24-5-8-10-11-20-11-9 0-16 3-20 11z" fill="${hair}"/></svg>`
+  );
+const AV: Record<string, string> = {
+  "Profile 4": portrait(200, 230, "#e9b48e", "#2b1d16"),
+  "Profile 7": portrait(330, 300, "#f1c7a3", "#4a2a1b"),
+  "Profile 14": portrait(150, 180, "#d79f77", "#171210"),
+  "Profile 10": portrait(25, 10, "#e9b48e", "#2b1d16"),
+  "Profile 9": portrait(260, 280, "#c68e68", "#241a14"),
+  "Profile 11": portrait(95, 130, "#f1c7a3", "#6b4a2b"),
+};
+
 const profiles: ChromeProfile[] = [
-  { dir: "Profile 4", name: "01 - Work", email: "alex.work@example.com", user_name: "Alex Morgan" },
-  { dir: "Profile 7", name: "02 - Personal", email: "jamie.personal@example.com", user_name: "Jamie Lee" },
-  { dir: "Profile 14", name: "03 - Media", email: "morgan.dao.longaddress1411@example.com", user_name: "Morgan Dao Nguyen" },
-  { dir: "Profile 10", name: "04 - Private", email: "alex.private@example.com", user_name: "Alex Morgan" },
-  { dir: "Profile 9", name: "05 - Gaming", email: "sam.gaming@example.com", user_name: "Sam Rivera" },
-  { dir: "Profile 11", name: "06 - Backup", email: "taylor.backup@example.com", user_name: "Taylor Kim" },
+  { avatar: AV["Profile 4"], dir: "Profile 4", name: "01 - Work", email: "alex.work@example.com", user_name: "Alex Morgan" },
+  { avatar: AV["Profile 7"], dir: "Profile 7", name: "02 - Personal", email: "jamie.personal@example.com", user_name: "Jamie Lee" },
+  { avatar: AV["Profile 14"], dir: "Profile 14", name: "03 - Media", email: "morgan.dao.longaddress1411@example.com", user_name: "Morgan Dao Nguyen" },
+  { avatar: AV["Profile 10"], dir: "Profile 10", name: "04 - Private", email: "alex.private@example.com", user_name: "Alex Morgan" },
+  { avatar: AV["Profile 9"], dir: "Profile 9", name: "05 - Gaming", email: "sam.gaming@example.com", user_name: "Sam Rivera" },
+  { avatar: AV["Profile 11"], dir: "Profile 11", name: "06 - Backup", email: "taylor.backup@example.com", user_name: "Taylor Kim" },
   { dir: "Profile 12", name: "07 - Studio", email: "riley.studio@example.com", user_name: "Riley Park" },
 ];
 
@@ -59,6 +74,8 @@ export async function invoke<T = unknown>(cmd: string, args?: Record<string, unk
       };
       return d as T;
     }
+    case "open_profiles":
+      return (args as { profileDirs: string[] }).profileDirs.length as T;
     case "list_chrome_profiles":
       return profiles as T;
     case "request_refresh":
