@@ -1,0 +1,79 @@
+@import "@fontsource/jetbrains-mono/latin-400.css";
+@import "@fontsource/fira-code/latin-400.css";
+@import "@fontsource/source-code-pro/latin-400.css";
+@import "@fontsource/cascadia-code/latin-400.css";
+@import "@fontsource/roboto-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ubuntu-mono/latin-400.css";
+@import "@fontsource/space-mono/latin-400.css";
+@import "@fontsource/inconsolata/latin-400.css";
+@import "@fontsource/dm-mono/latin-400.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --md-primary: 0 97 164; --md-on-primary: 255 255 255;
+  --md-primary-container: 211 228 255; --md-on-primary-container: 0 28 57;
+  --md-secondary: 83 95 112; --md-on-secondary: 255 255 255;
+  --md-secondary-container: 215 227 248; --md-on-secondary-container: 16 28 43;
+  --md-tertiary: 107 87 120; --md-tertiary-container: 243 218 255; --md-on-tertiary-container: 36 21 48;
+  --md-error: 186 26 26; --md-error-container: 255 218 214; --md-on-error-container: 65 0 2;
+  --md-surface: 248 249 255; --md-on-surface: 25 28 32; --md-on-surface-variant: 67 71 78;
+  --md-outline: 115 119 127; --md-outline-variant: 195 198 207;
+  --md-inverse-surface: 46 48 53; --md-inverse-on-surface: 240 240 247;
+  --md-surface-dim: 216 218 224; --md-surface-low: 242 243 250; --md-surface-container: 236 238 244;
+  --md-surface-high: 230 232 239; --md-surface-highest: 225 226 233;
+}
+
+html { font-size: 16px; }
+html[data-fs="small"] { font-size: 14px; }
+html[data-fs="large"] { font-size: 18px; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0; overflow: hidden; -webkit-font-smoothing: antialiased; user-select: none;
+  background: rgb(var(--md-surface)); color: rgb(var(--md-on-surface));
+  transition: background-color .3s ease, color .3s ease;
+}
+textarea, input { user-select: text; }
+* { scrollbar-width: thin; scrollbar-color: rgb(var(--md-outline-variant)) transparent; }
+::selection { background: rgb(var(--md-primary) / .3); }
+:focus-visible { outline: 2px solid rgb(var(--md-primary)); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* Ripple */
+.ripple-dot {
+  position: absolute; border-radius: 9999px; pointer-events: none; background: currentColor; opacity: .16;
+  transform: scale(0); animation: ripple .55s cubic-bezier(.2, 0, 0, 1) forwards;
+}
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+
+/* Checkerboard behind transparent backgrounds */
+.checker {
+  background-color: #fff;
+  background-image: linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),
+    linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);
+  background-size: 20px 20px; background-position: 0 0, 10px 10px;
+}
+
+/* Syntax tokens - colours come from CSS variables set on the code window */
+.ci-code { color: var(--c-fg); }
+.ci-code .hljs-comment, .ci-code .hljs-quote, .ci-code .hljs-doctag { color: var(--c-comment); font-style: italic; }
+.ci-code .hljs-keyword, .ci-code .hljs-doctype, .ci-code .hljs-selector-tag.hljs-keyword { color: var(--c-kw); }
+.ci-code .hljs-string, .ci-code .hljs-regexp, .ci-code .hljs-template-tag, .ci-code .hljs-meta .hljs-string { color: var(--c-str); }
+.ci-code .hljs-number, .ci-code .hljs-literal, .ci-code .hljs-symbol, .ci-code .hljs-bullet { color: var(--c-num); }
+.ci-code .hljs-title, .ci-code .hljs-title.function_, .ci-code .hljs-section { color: var(--c-fn); }
+.ci-code .hljs-type, .ci-code .hljs-title.class_, .ci-code .hljs-class .hljs-title { color: var(--c-type); }
+.ci-code .hljs-variable, .ci-code .hljs-params, .ci-code .hljs-template-variable, .ci-code .hljs-subst { color: var(--c-var); }
+.ci-code .hljs-attr, .ci-code .hljs-attribute, .ci-code .hljs-property, .ci-code .hljs-selector-class, .ci-code .hljs-selector-id { color: var(--c-attr); }
+.ci-code .hljs-tag, .ci-code .hljs-punctuation, .ci-code .hljs-operator { color: var(--c-punct); }
+.ci-code .hljs-name, .ci-code .hljs-selector-tag { color: var(--c-tag); }
+.ci-code .hljs-built_in, .ci-code .hljs-meta, .ci-code .hljs-link { color: var(--c-builtin); }
+.ci-code .hljs-addition { color: var(--c-str); }
+.ci-code .hljs-deletion { color: var(--c-tag); }
+.ci-code .hljs-emphasis { font-style: italic; }
+.ci-code .hljs-strong { font-weight: 700; }

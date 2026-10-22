@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Code Image – Turn code into beautiful images | Free desktop app</title>
+<meta name="description" content="Code Image is a free, open-source desktop app that turns your code into beautiful, shareable PNG images. 14 developer themes, custom backgrounds, ratios, fonts, line numbers and watermark." />
+<meta name="keywords" content="code image, code to image, code screenshot, code snippet image, carbon alternative, syntax highlighting, tauri, desktop app, dracula, tokyo night, one dark, nord, catppuccin" />
+<meta name="author" content="minhtrong67" />
+<meta name="robots" content="index, follow" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#f8f9ff" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#10131a" media="(prefers-color-scheme: dark)" />
+<link rel="canonical" href="https://minhtrong67.github.io/code-image/" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='15'%20fill='%23673AB7'/%3E%3Crect%20x='10'%20y='15'%20width='44'%20height='35'%20rx='6'%20fill='%23fff'/%3E%3Cpath%20d='M10%2021a6%206%200%200%201%206-6h32a6%206%200%200%201%206%206v3H10Z'%20fill='%23E8DEF8'/%3E%3Ccircle%20cx='17'%20cy='19.5'%20r='1.6'%20fill='%23673AB7'/%3E%3Ccircle%20cx='23'%20cy='19.5'%20r='1.6'%20fill='%23673AB7'/%3E%3Ccircle%20cx='29'%20cy='19.5'%20r='1.6'%20fill='%23673AB7'/%3E%3Cpath%20d='M26%2031l-6%206%206%206M38%2031l6%206-6%206'%20fill='none'%20stroke='%23673AB7'%20stroke-width='3.4'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Code Image" />
+<meta property="og:title" content="Code Image – Turn code into beautiful images" />
+<meta property="og:description" content="Free, open-source desktop app: 14 developer themes, custom backgrounds, ratios, fonts and one-click PNG export." />
+<meta property="og:url" content="https://minhtrong67.github.io/code-image/" />
+<meta property="og:image" content="https://minhtrong67.github.io/code-image/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="vi_VN" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Code Image – Turn code into beautiful images" />
+<meta name="twitter:description" content="Free, open-source desktop app that turns code into beautiful, shareable images." />
+<meta name="twitter:image" content="https://minhtrong67.github.io/code-image/og-image.png" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Code Image","operatingSystem":"Windows","applicationCategory":"DeveloperApplication","description":"Free open-source desktop app that turns code into beautiful images.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"minhtrong67"},"license":"https://opensource.org/licenses/MIT","softwareVersion":"1.0.0"}
+</script>
+
+<style>
+:root{
+  --p:#5b4bd6;--onp:#fff;--pc:#e5deff;--onpc:#1a0063;--sc:#e4e0f1;--onsc:#1b1a2c;
+  --bg:#fbf8ff;--s1:#f3effa;--s2:#ece8f4;--on:#1b1b21;--onv:#47464f;--ol:#787680;--olv:#c8c5d0;
+  --code:#1a1b26;--e1:0 1px 3px rgb(0 0 0/.18);--e3:0 8px 24px rgb(40 30 90/.18);
+}
+:root[data-theme="dark"]{
+  --p:#c8bfff;--onp:#2c1d9a;--pc:#4332b8;--onpc:#e5deff;--sc:#46445a;--onsc:#e4e0f1;
+  --bg:#13121a;--s1:#1c1b24;--s2:#23222c;--on:#e5e1e9;--onv:#c9c5d0;--ol:#928f99;--olv:#47464f;
+  --e3:0 8px 24px rgb(0 0 0/.5);
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--on);line-height:1.6;transition:background .3s,color .3s;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--p);outline-offset:3px}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+svg.i{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* top bar */
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s}
+header.scrolled{border-color:var(--olv)}
+.bar{display:flex;align-items:center;gap:12px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:1.15rem}
+.brand img,.brand svg{width:34px;height:34px}
+.nav{margin-left:auto;display:flex;align-items:center;gap:4px}
+.nav a.l{padding:8px 14px;border-radius:99px;color:var(--onv);font-size:.95rem;transition:background .2s}
+.nav a.l:hover{background:color-mix(in srgb,var(--on) 8%,transparent)}
+.ib{display:grid;place-items:center;width:40px;height:40px;border-radius:99px;border:0;background:none;color:var(--onv);cursor:pointer;transition:background .2s,transform .2s}
+.ib:hover{background:color-mix(in srgb,var(--on) 10%,transparent)}.ib:active{transform:scale(.9)}
+.seg{display:flex;border:1px solid var(--ol);border-radius:99px;overflow:hidden}
+.seg button{border:0;background:none;color:var(--on);font:inherit;font-size:.8rem;padding:6px 11px;cursor:pointer;transition:background .2s}
+.seg button+button{border-left:1px solid var(--ol)}
+.seg button[aria-pressed=true]{background:var(--sc);color:var(--onsc);font-weight:600}
+
+.btn{position:relative;display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 28px;border-radius:99px;font-weight:600;font-size:1rem;border:0;cursor:pointer;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.btn:active{transform:scale(.97)}
+.btn.f{background:var(--p);color:var(--onp);box-shadow:var(--e1)}.btn.f:hover{box-shadow:var(--e3);transform:translateY(-2px)}
+.btn.t{background:var(--sc);color:var(--onsc)}.btn.t:hover{transform:translateY(-2px)}
+.ripple{position:absolute;border-radius:50%;background:currentColor;opacity:.2;transform:scale(0);animation:rp .6s ease-out forwards;pointer-events:none}
+@keyframes rp{to{transform:scale(1);opacity:0}}
+
+/* hero */
+.hero{padding:72px 0 56px;display:grid;grid-template-columns:1fr 1.15fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(2.3rem,5.4vw,4rem);line-height:1.06;letter-spacing:-.02em;font-weight:700}
+.hero p.lead{margin:20px 0 32px;font-size:1.15rem;color:var(--onv);max-width:34ch}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.meta{margin-top:18px;font-size:.85rem;color:var(--ol)}
+.demo{position:relative;border-radius:28px;padding:44px 40px;background:linear-gradient(135deg,#4776e6,#8e54e9);box-shadow:var(--e3);transition:background .6s}
+.win{border-radius:14px;overflow:hidden;background:var(--c-bg);color:var(--c-fg);box-shadow:0 30px 60px -15px rgb(0 0 0/.55);transition:background .4s,color .4s,transform .5s cubic-bezier(.2,0,0,1);font-family:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;font-size:clamp(.7rem,1.55vw,.9rem)}
+.demo:hover .win{transform:translateY(-4px) rotate(-.4deg)}
+.wb{display:flex;gap:7px;padding:12px 14px;background:var(--c-bar)}
+.wb i{width:11px;height:11px;border-radius:50%}
+.win pre{padding:14px 18px 18px;line-height:1.7;overflow:hidden;white-space:pre;font:inherit}
+.ln{color:var(--c-cm);margin-right:1.4em;display:inline-block;width:1.2em;text-align:right;opacity:.7}
+.k{color:var(--c-k)}.s{color:var(--c-s)}.n{color:var(--c-n)}.f{color:var(--c-f)}.c{color:var(--c-cm);font-style:italic}
+.caret{display:inline-block;width:.55em;height:1.1em;background:var(--c-fg);vertical-align:-.2em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;justify-content:center}
+.chips button{border:0;border-radius:99px;padding:6px 14px;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;background:rgb(255 255 255/.22);color:#fff;backdrop-filter:blur(6px);transition:transform .2s,background .2s}
+.chips button:hover{transform:translateY(-2px)}.chips button[aria-pressed=true]{background:#fff;color:#2b1d80}
+
+/* sections */
+section{padding:72px 0}
+h2{font-size:clamp(1.7rem,3.4vw,2.5rem);line-height:1.15;letter-spacing:-.01em;margin-bottom:12px}
+.sub{color:var(--onv);max-width:56ch;margin-bottom:40px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--s1);border-radius:24px;padding:26px;transition:transform .3s cubic-bezier(.2,0,0,1),box-shadow .3s,background .3s}
+.card:hover{transform:translateY(-6px);box-shadow:var(--e3);background:var(--s2)}
+.card .ic{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:var(--pc);color:var(--onpc);margin-bottom:16px;font-size:1.1rem;transition:transform .4s}
+.card:hover .ic{transform:rotate(-8deg) scale(1.08)}
+.card h3{font-size:1.1rem;margin-bottom:6px}.card p{color:var(--onv);font-size:.95rem}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
+.steps .card{counter-increment:s;position:relative}
+.steps .card::before{content:counter(s);position:absolute;right:20px;top:14px;font-size:3rem;font-weight:700;color:var(--pc);line-height:1}
+.dl{background:var(--pc);color:var(--onpc);border-radius:36px;padding:56px 32px;text-align:center}
+.dl h2{margin-bottom:10px}.dl p{max-width:48ch;margin:0 auto 28px;opacity:.85}
+.dl .btn.f{background:var(--onpc);color:var(--pc)}
+footer{padding:40px 0 56px;text-align:center;color:var(--onv);font-size:.9rem}
+footer b{color:var(--on)}footer .ai{color:var(--p);font-weight:600}
+
+.rv{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,0,0,1),transform .7s cubic-bezier(.2,0,0,1);transition-delay:var(--d,0s)}
+.rv.in{opacity:1;transform:none}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;padding-top:40px;gap:36px}.hero p.lead{max-width:none}
+  .grid,.steps{grid-template-columns:1fr 1fr}.nav a.l{display:none}
+}
+@media(max-width:600px){
+  .grid,.steps{grid-template-columns:1fr}section{padding:48px 0}
+  .demo{padding:24px 14px;border-radius:22px}.dl{padding:40px 20px;border-radius:28px}
+  .bar{gap:6px}.seg button{padding:6px 8px}.brand span{display:none}.btn{width:100%;justify-content:center}
+}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<header id="top">
+  <div class="wrap bar">
+    <a class="brand" href="#top" aria-label="Code Image">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#673AB7"/><rect x="10" y="15" width="44" height="35" rx="6" fill="#fff"/><path d="M10 21a6 6 0 0 1 6-6h32a6 6 0 0 1 6 6v3H10Z" fill="#E8DEF8"/><circle cx="17" cy="19.5" r="1.6" fill="#673AB7"/><circle cx="23" cy="19.5" r="1.6" fill="#673AB7"/><circle cx="29" cy="19.5" r="1.6" fill="#673AB7"/><path d="M26 31l-6 6 6 6M38 31l6 6-6 6" fill="none" stroke="#673AB7" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Code Image</span>
+    </a>
+    <nav class="nav">
+      <a class="l" href="#features" data-i18n="navFeatures">Features</a>
+      <a class="l" href="#how" data-i18n="navHow">How it works</a>
+      <div class="seg" role="group" aria-label="Language" id="langSeg">
+        <button data-lang="en" aria-pressed="false">EN</button><button data-lang="vi" aria-pressed="false">VI</button>
+      </div>
+      <button class="ib" id="themeBtn" aria-label="Theme"></button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="wrap hero">
+  <div class="rv">
+    <h1 data-i18n="h1">Turn code into beautiful images</h1>
+    <p class="lead" data-i18n="lead">Paste your code, pick a theme, and export a crisp PNG in one click. Free, open source, and made for developers.</p>
+    <div class="cta">
+      <a class="btn f" href="download/Code%20Image_1.0.0_x64-setup.exe" download>
+        <svg class="i" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14"/></svg><span data-i18n="dl">Download for Windows</span>
+      </a>
+      <a class="btn t" href="#features" data-i18n="explore">Explore features</a>
+    </div>
+    <p class="meta" data-i18n="meta">Version 1.0.0 · Windows 10/11 · MIT License</p>
+  </div>
+  <div class="rv" style="--d:.15s">
+    <div class="demo" id="demo">
+      <div class="win" id="win">
+        <div class="wb"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+<pre aria-label="Code sample"><span class="ln">1</span><span class="c">// Share your code beautifully</span>
+<span class="ln">2</span><span class="k">const</span> <span class="f">codeImage</span> = {
+<span class="ln">3</span>  themes: <span class="n">14</span>,
+<span class="ln">4</span>  export: <span class="s">"PNG"</span>,
+<span class="ln">5</span>  free: <span class="k">true</span>,
+<span class="ln">6</span>};<span class="caret"></span></pre>
+      </div>
+      <div class="chips" id="chips" role="group" aria-label="Theme"></div>
+    </div>
+  </div>
+</div>
+
+<section id="features"><div class="wrap">
+  <h2 class="rv" data-i18n="fTitle">Everything you need for a perfect snippet</h2>
+  <p class="sub rv" data-i18n="fSub">Style every detail, then save or copy the result without leaving the app.</p>
+  <div class="grid" id="featureGrid"></div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <h2 class="rv" data-i18n="hTitle">Three steps to a shareable image</h2>
+  <p class="sub rv" data-i18n="hSub">No sign-up, no upload: everything runs on your computer.</p>
+  <div class="steps" id="stepGrid"></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="dl rv">
+    <h2 data-i18n="cTitle">Ready to make your code look great?</h2>
+    <p data-i18n="cSub">Download Code Image for Windows. It is free and open source.</p>
+    <a class="btn f" href="download/Code%20Image_1.0.0_x64-setup.exe" download>
+      <svg class="i" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14"/></svg><span data-i18n="dl">Download for Windows</span>
+    </a>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <p><span data-i18n="author">Author</span>: <b>minhtrong67</b> · <span class="ai" data-i18n="ai">Built with the support of Claude AI</span></p>
+  <p style="margin-top:6px">MIT License · © 2026</p>
+</div></footer>
+
+<script>
+(function(){
+var T={
+en:{navFeatures:"Features",navHow:"How it works",h1:"Turn code into beautiful images",lead:"Paste your code, pick a theme, and export a crisp PNG in one click. Free, open source, and made for developers.",dl:"Download for Windows",explore:"Explore features",meta:"Version 1.0.0 · Windows 10/11 · MIT License",
+fTitle:"Everything you need for a perfect snippet",fSub:"Style every detail, then save or copy the result without leaving the app.",
+hTitle:"Three steps to a shareable image",hSub:"No sign-up, no upload: everything runs on your computer.",
+cTitle:"Ready to make your code look great?",cSub:"Download Code Image for Windows. It is free and open source.",author:"Author",ai:"Built with the support of Claude AI",
+f:[["code","Many languages","JavaScript, TypeScript, Python, HTML, CSS, SQL and more, with automatic detection."],["palette","Developer themes","Dracula, Tokyo Night, One Dark, Nord, Catppuccin and 9 more."],["image","Backgrounds & ratios","Gradients, solid or transparent, in 16:9, 4:3, 1:1, 4:5, 9:16 and more."],["type","Fonts & spacing","Fira Code, JetBrains Mono and 8 more. Tune size, padding and corner radius."],["list","Line numbers & highlight","Show line numbers and spotlight the lines that matter."],["download","PNG, JPG, SVG","Export up to 4× resolution, or copy straight to the clipboard."],["sun","Light, dark, system","Material 3 design with your choice of theme colour."],["lang","English & Tiếng Việt","The interface follows your system language automatically."],["window","Remembers your window","Reopen at your last size, or always start maximized."]],
+s:[["Paste your code","Type, paste, drop a file, or open one from disk."],["Style it","Choose a theme, background, font and window style."],["Save or copy","Download a crisp image or copy it to the clipboard."]]},
+vi:{navFeatures:"Tính năng",navHow:"Cách dùng",h1:"Biến code thành hình ảnh đẹp mắt",lead:"Dán code, chọn theme và xuất ảnh PNG sắc nét chỉ với một cú nhấp. Miễn phí, mã nguồn mở, dành cho lập trình viên.",dl:"Tải về cho Windows",explore:"Khám phá tính năng",meta:"Phiên bản 1.0.0 · Windows 10/11 · Giấy phép MIT",
+fTitle:"Mọi thứ bạn cần cho một đoạn code hoàn hảo",fSub:"Tuỳ chỉnh từng chi tiết, rồi lưu hoặc sao chép ảnh ngay trong ứng dụng.",
+hTitle:"Ba bước để có ảnh chia sẻ",hSub:"Không cần đăng ký, không tải lên: mọi thứ chạy ngay trên máy của bạn.",
+cTitle:"Sẵn sàng làm code của bạn thật đẹp?",cSub:"Tải Code Image cho Windows. Miễn phí và mã nguồn mở.",author:"Tác giả",ai:"Được xây dựng với sự hỗ trợ của Claude AI",
+f:[["code","Đa ngôn ngữ","JavaScript, TypeScript, Python, HTML, CSS, SQL và nhiều hơn nữa, tự động nhận diện."],["palette","Theme cho lập trình viên","Dracula, Tokyo Night, One Dark, Nord, Catppuccin và 9 theme khác."],["image","Nền & tỉ lệ ảnh","Chuyển màu, một màu hoặc trong suốt; tỉ lệ 16:9, 4:3, 1:1, 4:5, 9:16 và hơn thế."],["type","Font chữ & khoảng cách","Fira Code, JetBrains Mono và 8 font khác. Chỉnh cỡ chữ, lề và độ bo góc."],["list","Số dòng & đánh dấu","Bật số dòng và làm nổi bật những dòng quan trọng."],["download","PNG, JPG, SVG","Xuất đến độ phân giải 4×, hoặc sao chép thẳng vào clipboard."],["sun","Sáng, tối, hệ thống","Thiết kế Material 3 với màu chủ đề tuỳ chọn."],["lang","English & Tiếng Việt","Giao diện tự theo ngôn ngữ hệ thống của bạn."],["window","Nhớ cửa sổ của bạn","Mở lại đúng kích thước lần trước, hoặc luôn phóng to tối đa."]],
+s:[["Dán code của bạn","Nhập, dán, thả tệp hoặc mở tệp từ máy."],["Tuỳ chỉnh","Chọn theme, nền, font và kiểu cửa sổ."],["Lưu hoặc sao chép","Tải ảnh sắc nét hoặc sao chép vào clipboard."]]}};
+var ICONS={code:"m16 18 6-6-6-6M8 6l-6 6 6 6",palette:"M12 22a10 10 0 1 1 10-10c0 3-2 4-4 4h-2a2 2 0 0 0-1 3.7c.5.8.2 2.3-3 2.3ZM7.5 11h.01M12 7.5h.01M16.5 11h.01",image:"M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM9 9h.01M21 15l-5-5L5 21",type:"M4 7V4h16v3M9 20h6M12 4v16",list:"M10 6h11M10 12h11M10 18h11M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1",download:"M12 3v12m0 0 5-5m-5 5-5-5M5 21h14",sun:"M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z",lang:"m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6",window:"M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM3 9h18M7 6h.01"};
+var $=function(s,r){return (r||document).querySelector(s)};
+var root=document.documentElement,lang,mode=localStorage.getItem("ci-theme")||"system";
+
+function applyTheme(){
+  var dark=mode==="dark"||(mode==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);
+  root.dataset.theme=dark?"dark":"light";
+  var paths={light:"M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4",dark:"M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z",system:"M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM8 21h8M12 17v4"};
+  $("#themeBtn").innerHTML='<svg class="i" viewBox="0 0 24 24"><path d="'+paths[mode]+'"/></svg>';
+  $("#themeBtn").title=mode;
+}
+$("#themeBtn").onclick=function(){mode={light:"dark",dark:"system",system:"light"}[mode];localStorage.setItem("ci-theme",mode);applyTheme()};
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",applyTheme);
+
+function setLang(l){
+  lang=l;localStorage.setItem("ci-lang",l);root.lang=l;var d=T[l];
+  document.querySelectorAll("[data-i18n]").forEach(function(e){var v=d[e.dataset.i18n];if(v)e.textContent=v});
+  document.querySelectorAll("#langSeg button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.lang===l)});
+  $("#featureGrid").innerHTML=d.f.map(function(x,i){return '<article class="card rv in" style="--d:'+(i%3)*.08+'s"><div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="'+ICONS[x[0]]+'"/></svg></div><h3>'+x[1]+'</h3><p>'+x[2]+'</p></article>'}).join("");
+  $("#stepGrid").innerHTML=d.s.map(function(x,i){return '<article class="card rv in" style="--d:'+i*.1+'s"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></article>'}).join("");
+  document.title=l==="vi"?"Code Image – Biến code thành hình ảnh đẹp mắt | Ứng dụng desktop miễn phí":"Code Image – Turn code into beautiful images | Free desktop app";
+  observe();
+}
+document.querySelectorAll("#langSeg button").forEach(function(b){b.onclick=function(){setLang(b.dataset.lang)}});
+
+// demo theme chips
+var TH=[["Tokyo Night","#1a1b26","#c0caf5","#16161e","#565f89","#bb9af7","#9ece6a","#ff9e64","#7aa2f7","linear-gradient(135deg,#4776e6,#8e54e9)"],
+["Dracula","#282a36","#f8f8f2","#21222c","#6272a4","#ff79c6","#f1fa8c","#bd93f9","#50fa7b","linear-gradient(135deg,#ff512f,#dd2476)"],
+["Nord","#2e3440","#d8dee9","#272c36","#616e88","#81a1c1","#a3be8c","#b48ead","#88c0d0","linear-gradient(135deg,#2193b0,#6dd5ed)"],
+["Catppuccin","#eff1f5","#4c4f69","#e6e9ef","#9ca0b0","#8839ef","#40a02b","#fe640b","#1e66f5","linear-gradient(135deg,#f093fb,#f5576c)"],
+["One Dark","#282c34","#abb2bf","#21252b","#5c6370","#c678dd","#98c379","#d19a66","#61afef","linear-gradient(135deg,#11998e,#38ef7d)"]];
+var names=["--c-bg","--c-fg","--c-bar","--c-cm","--c-k","--c-s","--c-n","--c-f"];
+function theme(i){var t=TH[i];names.forEach(function(n,j){$("#win").style.setProperty(n,t[j+1])});$("#demo").style.background=t[9];
+  document.querySelectorAll("#chips button").forEach(function(b,j){b.setAttribute("aria-pressed",j===i)})}
+$("#chips").innerHTML=TH.map(function(t,i){return '<button aria-pressed="false" data-i="'+i+'">'+t[0]+'</button>'}).join("");
+document.querySelectorAll("#chips button").forEach(function(b){b.onclick=function(){theme(+b.dataset.i)}});
+theme(0);var ti=0;var auto=setInterval(function(){ti=(ti+1)%TH.length;theme(ti)},3500);
+$("#chips").addEventListener("pointerdown",function(){clearInterval(auto)});
+
+// scroll reveal + header + ripple
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}})},{threshold:.15});
+function observe(){document.querySelectorAll(".rv:not(.in)").forEach(function(e){io.observe(e)})}
+addEventListener("scroll",function(){$("header").classList.toggle("scrolled",scrollY>8)},{passive:true});
+document.addEventListener("pointerdown",function(e){var b=e.target.closest(".btn");if(!b)return;var r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,d=document.createElement("span");
+  d.className="ripple";d.style.cssText="width:"+s+"px;height:"+s+"px;left:"+(e.clientX-r.left-s/2)+"px;top:"+(e.clientY-r.top-s/2)+"px";b.appendChild(d);setTimeout(function(){d.remove()},650)});
+
+applyTheme();
+setLang(localStorage.getItem("ci-lang")||((navigator.language||"en").toLowerCase().indexOf("vi")===0?"vi":"en"));
+})();
+</script>
+</body>
+</html>

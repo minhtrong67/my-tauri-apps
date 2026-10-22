@@ -1,0 +1,51 @@
+{
+  "name": "code-image",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Turn your code into beautiful images - Tauri desktop app",
+  "type": "module",
+  "license": "MIT",
+  "author": "minhtrong67",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "web:dev": "vite",
+    "web:build": "tsc --noEmit && vite build",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@fontsource/cascadia-code": "^5.3.0",
+    "@fontsource/dm-mono": "^5.3.0",
+    "@fontsource/fira-code": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/inconsolata": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/roboto-mono": "^5.3.0",
+    "@fontsource/source-code-pro": "^5.3.1",
+    "@fontsource/space-mono": "^5.3.0",
+    "@fontsource/ubuntu-mono": "^5.3.0",
+    "@material/material-color-utilities": "^0.4.0",
+    "@tauri-apps/api": "^2.12.4",
+    "@tauri-apps/plugin-dialog": "^2.8.3",
+    "@tauri-apps/plugin-fs": "^2.7.1",
+    "@tauri-apps/plugin-opener": "^2.7.2",
+    "highlight.js": "^11.12.0",
+    "html-to-image": "^1.11.13",
+    "lucide-react": "^1.61.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^4.5.7"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.4",
+    "@types/node": "^26.6.5",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.31",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.21"
+  }
+}

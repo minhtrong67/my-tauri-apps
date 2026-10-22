@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code Image</title>
+    <script>
+      // Apply the saved light/dark mode before first paint (prevents a white flash).
+      try {
+        var s = JSON.parse(localStorage.getItem("code-image") || "{}").state || {};
+        var dark = s.themeMode === "dark" || ((!s.themeMode || s.themeMode === "system") && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+        document.documentElement.style.background = dark ? "#10131a" : "#f8f9ff";
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/main.tsx"></script>
+  </body>
+</html>
