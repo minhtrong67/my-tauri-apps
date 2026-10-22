@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-fs="medium">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Material JSON</title>
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <script>
+      // Paint the right background before the bundle loads (no white flash in dark mode).
+      try {
+        var s = JSON.parse(localStorage.getItem('material-json:settings') || '{}');
+        var dark = s.theme === 'dark' || ((!s.theme || s.theme === 'system') && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+        document.documentElement.style.background = dark ? '#161412' : '#fffbff';
+      } catch (e) {}
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <div id="splash" aria-hidden="true"><div class="splash-logo"><img src="/icon.png" alt="" /></div><div class="splash-bar"><i></i></div></div>
+
+    <div id="app">
+      <header class="appbar">
+        <div class="brand"><img src="/icon.png" alt="" /><span class="brand-name" data-i18n="appName"></span></div>
+        <div class="grow"></div>
+        <div class="appbar-actions">
+          <button class="icon-btn" id="btn-new" data-i18n-title="act.new"><i data-icon="filePlus"></i></button>
+          <button class="icon-btn" id="btn-open" data-i18n-title="act.open"><i data-icon="open"></i></button>
+          <button class="icon-btn" id="btn-recent" data-i18n-title="act.recent"><i data-icon="history"></i></button>
+          <button class="icon-btn" id="btn-save" data-i18n-title="act.save"><i data-icon="save"></i></button>
+          <button class="icon-btn" id="btn-more" data-i18n-title="act.more"><i data-icon="more"></i></button>
+        </div>
+      </header>
+
+      <div class="tabbar">
+        <div class="tabs" id="tabs" role="tablist"></div>
+        <button class="icon-btn sm" id="btn-newtab" data-i18n-title="tab.new"><i data-icon="plus"></i></button>
+      </div>
+
+      <nav class="rail" id="rail" aria-label="Navigation"></nav>
+
+      <main id="views">
+        <section class="view" id="view-editor" data-view="editor">
+          <div class="toolbar" id="toolbar"></div>
+          <div class="panes" id="panes" data-mode="split">
+            <div class="pane pane-code"><div id="editor-host" class="editor-host"></div></div>
+            <div class="splitter" id="splitter" role="separator" tabindex="0"></div>
+            <div class="pane pane-tree" id="pane-tree"></div>
+          </div>
+        </section>
+        <section class="view" id="view-query" data-view="query"></section>
+        <section class="view" id="view-compare" data-view="compare"></section>
+        <section class="view" id="view-convert" data-view="convert"></section>
+        <section class="view" id="view-schema" data-view="schema"></section>
+        <section class="view" id="view-settings" data-view="settings"></section>
+      </main>
+
+      <footer class="statusbar" id="status"></footer>
+    </div>
+
+    <div id="dropzone"><div class="drop-card"><i data-icon="upload"></i><strong data-i18n="drop.title"></strong><span data-i18n="drop.sub"></span></div></div>
+  </body>
+</html>

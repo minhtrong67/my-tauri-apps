@@ -1,0 +1,22 @@
+[package]
+name = "material-json"
+version = "1.0.0"
+description = "Material JSON - a full-featured JSON editor and toolbox built with Tauri and Material Design 3"
+authors = ["minhtrong67"]
+license = "MIT"
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "material_json_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-single-instance = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
