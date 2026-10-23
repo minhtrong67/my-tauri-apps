@@ -4,125 +4,231 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Material PDF — Fast, beautiful, open-source PDF reader & editor</title>
-<meta name="description" content="Material PDF is a free, open-source desktop PDF reader and editor with Material Design 3. Annotate, search, merge, split and organize pages offline. Light, dark and 18 theme colors." />
-<meta name="keywords" content="PDF reader, PDF editor, Tauri, Material Design, open source, annotate PDF, merge PDF, split PDF, desktop app, minhtrong67" />
+<meta name="description" content="Material PDF is a free, open-source desktop PDF reader and editor with Material Design 3. Annotate, search, merge, split and organize pages offline. Light, dark, 18 theme colors, 5 fonts, English & Vietnamese." />
+<meta name="keywords" content="PDF reader, PDF editor, annotate PDF, merge PDF, split PDF, Tauri, Material Design 3, open source, desktop app, minhtrong67" />
 <meta name="author" content="minhtrong67" />
 <meta name="robots" content="index, follow" />
 <meta name="theme-color" content="#fffbff" />
 <link rel="canonical" href="https://example.com/material-pdf/" />
 <link rel="icon" type="image/svg+xml" href="app/public/icon.svg" />
 <link rel="apple-touch-icon" href="src-tauri/icons/128x128@2x.png" />
-<meta property="og:type" content="website" />
-<meta property="og:site_name" content="Material PDF" />
+<meta property="og:type" content="website" /><meta property="og:site_name" content="Material PDF" />
 <meta property="og:title" content="Material PDF — Read and edit PDFs beautifully" />
 <meta property="og:description" content="Free & open-source desktop PDF reader and editor with Material Design 3. Fully offline." />
-<meta property="og:image" content="screenshots/image02.png" />
-<meta property="og:locale" content="en_US" />
-<meta property="og:locale:alternate" content="vi_VN" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Material PDF — Read and edit PDFs beautifully" />
-<meta name="twitter:description" content="Free & open-source desktop PDF reader and editor with Material Design 3." />
-<meta name="twitter:image" content="screenshots/image02.png" />
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material PDF","operatingSystem":"Windows","applicationCategory":"ProductivityApplication","softwareVersion":"1.0.0","license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"minhtrong67"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
-</script>
+<meta property="og:image" content="screenshots/image02.png" /><meta property="og:locale" content="en_US" /><meta property="og:locale:alternate" content="vi_VN" />
+<meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="Material PDF — Read and edit PDFs beautifully" />
+<meta name="twitter:description" content="Free & open-source desktop PDF reader and editor with Material Design 3." /><meta name="twitter:image" content="screenshots/image02.png" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material PDF","operatingSystem":"Windows","applicationCategory":"ProductivityApplication","softwareVersion":"1.0.0","license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"minhtrong67"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <style>
-:root{--ease:cubic-bezier(.2,0,0,1);--p:#b3261e;--op:#fff;--pc:#ffdad5;--opc:#410002;--s:#fffbff;--os:#201a19;--sc:#f8ebe9;--sch:#f2e0dd;--ov:#534341;--ol:#d8c2bf;--sec:#ffdad5;--osec:#2c1512;--elev:0 2px 6px rgba(0,0,0,.15),0 1px 2px rgba(0,0,0,.25);--elev3:0 12px 32px rgba(0,0,0,.18)}
-:root[data-theme=dark]{--p:#ffb4a9;--op:#690005;--pc:#930009;--opc:#ffdad5;--s:#201a19;--os:#ede0dd;--sc:#2d2423;--sch:#382e2d;--ov:#d8c2bf;--ol:#534341;--sec:#5d3f3a;--osec:#ffdad5;--elev:0 2px 6px rgba(0,0,0,.5);--elev3:0 12px 32px rgba(0,0,0,.5)}
-*{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:clip}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--s);color:var(--os);line-height:1.6;transition:background .4s,color .4s;overflow-x:hidden}
-a{color:inherit;text-decoration:none}img{max-width:100%;display:block}
-.wrap{width:min(1120px,100% - 40px);margin:0 auto}
-header{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:color-mix(in srgb,var(--s) 80%,transparent);border-bottom:1px solid transparent;transition:border-color .3s}
-header.scrolled{border-color:var(--ol)}
-nav{display:flex;align-items:center;gap:8px;height:64px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:1.1rem;margin-right:auto}.brand img{width:34px;height:34px}
-nav .links{display:flex;gap:4px}nav .links a{padding:8px 14px;border-radius:20px;font-size:.92rem;transition:background .2s}nav .links a:hover{background:var(--sch)}
-.ib{width:42px;height:42px;border-radius:50%;border:0;background:none;color:var(--ov);display:grid;place-items:center;cursor:pointer;transition:background .2s,transform .2s var(--ease)}.ib:hover{background:var(--sch)}.ib:active{transform:scale(.9)}
-.lang{display:flex;border:1px solid var(--ol);border-radius:18px;overflow:hidden}.lang button{border:0;background:none;color:inherit;font:inherit;font-size:.8rem;font-weight:600;padding:6px 11px;cursor:pointer}.lang button.on{background:var(--sec);color:var(--osec)}
-.btn{display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 28px;border-radius:26px;font-weight:600;font-size:1rem;border:0;cursor:pointer;transition:transform .25s var(--ease),box-shadow .25s,filter .2s;font-family:inherit}
-.btn.f{background:var(--p);color:var(--op);box-shadow:var(--elev)}.btn.f:hover{transform:translateY(-3px);box-shadow:var(--elev3);filter:brightness(1.06)}
-.btn.t{background:var(--sec);color:var(--osec)}.btn.t:hover{transform:translateY(-3px)}
-.hero{overflow-x:clip;position:relative;padding:72px 0 40px;text-align:center;isolation:isolate}
-.blob{position:absolute;border-radius:50%;z-index:-1;opacity:.6;animation:fl 14s ease-in-out infinite alternate}
-.b1{width:520px;height:520px;left:-80px;top:-100px;background:radial-gradient(circle,var(--pc),transparent 68%)}.b2{width:460px;height:460px;right:-60px;top:60px;background:radial-gradient(circle,var(--sec),transparent 68%);animation-delay:-5s}
-.hero .logo{width:112px;margin:0 auto 18px;filter:drop-shadow(0 14px 26px color-mix(in srgb,var(--p) 40%,transparent));animation:bob 4s ease-in-out infinite}
-h1{font-size:clamp(2rem,5.5vw,3.6rem);line-height:1.1;margin:0 0 16px;letter-spacing:-.02em}h1 span{color:var(--p)}
-.lead{max-width:640px;margin:0 auto 28px;color:var(--ov);font-size:1.15rem}
-.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.meta{margin-top:14px;font-size:.85rem;color:var(--ov)}
-.shot{margin:48px auto 0;width:min(980px,100%);border-radius:18px;overflow:hidden;box-shadow:var(--elev3);border:1px solid var(--ol);background:var(--sc);transform:perspective(1400px) rotateX(5deg);transition:transform .8s var(--ease)}.shot:hover{transform:none}
-section{padding:72px 0}h2{font-size:clamp(1.6rem,3.5vw,2.3rem);margin:0 0 8px;text-align:center}.sub{text-align:center;color:var(--ov);max-width:600px;margin:0 auto 40px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
-.card{padding:24px;border-radius:24px;background:var(--sc);transition:transform .3s var(--ease),box-shadow .3s,background .3s}.card:hover{transform:translateY(-6px);box-shadow:var(--elev3);background:var(--sch)}
-.card i{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:var(--pc);color:var(--opc);margin-bottom:14px;font-style:normal;font-size:1.4rem}.card h3{margin:0 0 6px;font-size:1.1rem}.card p{margin:0;color:var(--ov);font-size:.93rem}
-.gal{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px 4px 20px}.gal img{flex:0 0 min(720px,86%);scroll-snap-align:center;border-radius:16px;border:1px solid var(--ol);box-shadow:var(--elev)}
-.dl{text-align:center;background:var(--sc);border-radius:32px;padding:56px 24px}
-footer{padding:32px 0 48px;text-align:center;color:var(--ov);font-size:.9rem}footer b{color:var(--os)}
-.rv{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease)}.rv.in{opacity:1;transform:none}
-@keyframes fl{to{transform:translate(40px,30px) scale(1.12)}}@keyframes bob{50%{transform:translateY(-8px)}}
-@media(max-width:760px){nav .links{display:none}.shot{transform:none}.hero{padding-top:48px}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+:root{--ease:cubic-bezier(.2,0,0,1);--p:#bb1614;--op:#fff;--pc:#ffdad5;--opc:#410001;--sec:#ffdad5;--osec:#2c1512;--tc:#fcdfa6;--s:#fffbff;--os:#201a19;--ov:#534341;--ol:#d8c2be;--sc:#f8ebe9;--sch:#f3e5e3;--sh:0 1px 3px rgba(0,0,0,.18),0 4px 12px rgba(0,0,0,.08);--sh3:0 24px 60px -12px rgba(0,0,0,.3)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:clip;scroll-padding-top:76px}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--s);color:var(--os);line-height:1.6;transition:background .4s,color .4s;overflow-x:clip;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}img{max-width:100%;display:block}button{font:inherit;color:inherit}
+.wrap{width:min(1180px,100% - 40px);margin:0 auto}
+#bar{position:fixed;top:0;left:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--p),var(--tc));z-index:60}
+header{position:sticky;top:0;z-index:50;backdrop-filter:blur(16px) saturate(1.4);background:color-mix(in srgb,var(--s) 78%,transparent);border-bottom:1px solid transparent;transition:border-color .3s}header.sc{border-color:var(--ol)}
+nav{display:flex;align-items:center;gap:6px;height:66px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.12rem;margin-right:auto;letter-spacing:-.01em}.brand img{width:34px;height:34px;transition:transform .5s var(--ease)}.brand:hover img{transform:rotate(-12deg) scale(1.1)}
+.links{display:flex;gap:2px;margin-right:10px}.links a{padding:8px 14px;border-radius:20px;font-size:.92rem;font-weight:500;color:var(--ov);transition:background .2s,color .2s}.links a:hover{background:var(--sc);color:var(--os)}
+.ib{width:42px;height:42px;border-radius:50%;border:0;background:none;color:var(--ov);display:grid;place-items:center;cursor:pointer;position:relative;transition:background .2s,transform .25s var(--ease)}.ib:hover{background:var(--sc)}.ib:active{transform:scale(.88)}
+.lang{display:flex;border:1px solid var(--ol);border-radius:18px;overflow:hidden;margin:0 4px}.lang button{border:0;background:none;font-size:.78rem;font-weight:700;padding:6px 11px;cursor:pointer;transition:background .2s}.lang button.on{background:var(--sec);color:var(--osec)}
+.dot{width:22px;height:22px;border-radius:50%;background:var(--p);box-shadow:0 0 0 3px var(--s),0 0 0 4.5px var(--ol)}
+.pop{position:absolute;top:calc(100% + 10px);right:0;width:260px;padding:16px;border-radius:20px;background:var(--sch);box-shadow:var(--sh3);opacity:0;transform:translateY(-8px) scale(.94);transform-origin:top right;pointer-events:none;transition:.22s var(--ease);z-index:5}.pop.on{opacity:1;transform:none;pointer-events:auto}
+.pop h4{margin:0 0 10px;font-size:.85rem;color:var(--ov);font-weight:600}.sw{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.sw button{aspect-ratio:1;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15);transition:transform .2s var(--ease)}.sw button:hover{transform:scale(1.18)}.sw button.on{box-shadow:0 0 0 2px var(--sch),0 0 0 4px var(--p)}.sw button.on::after{content:"✓";color:#fff;font-size:.8rem;font-weight:800;text-shadow:0 0 2px rgba(0,0,0,.5)}
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:10px;height:54px;padding:0 30px;border-radius:27px;font-weight:700;font-size:1rem;border:0;cursor:pointer;isolation:isolate;transition:transform .3s var(--ease),box-shadow .3s,background .3s}
+.btn.f{background:var(--p);color:var(--op);box-shadow:0 6px 18px -4px color-mix(in srgb,var(--p) 60%,transparent)}.btn.f:hover{box-shadow:0 14px 30px -6px color-mix(in srgb,var(--p) 70%,transparent)}
+.btn.f::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-120%);animation:sweep 3.6s 1s infinite;z-index:-1}
+.btn.t{background:var(--sec);color:var(--osec)}.btn:active{transform:scale(.96)}
+.rp{position:absolute;border-radius:50%;background:currentColor;opacity:.2;transform:scale(0);animation:rp .6s var(--ease) forwards;pointer-events:none}
+.hero{position:relative;padding:64px 0 56px;isolation:isolate;overflow-x:clip}
+.mesh{position:absolute;inset:-10% -5% 0;z-index:-2;pointer-events:none}.mesh i{position:absolute;border-radius:50%;opacity:.7;will-change:transform;transition:transform .4s ease-out}
+.mesh i:nth-child(1){width:640px;height:640px;left:-6%;top:-12%;background:radial-gradient(circle,var(--pc),transparent 68%)}
+.mesh i:nth-child(2){width:560px;height:560px;right:-4%;top:0;background:radial-gradient(circle,var(--tc),transparent 68%);opacity:.45}
+.mesh i:nth-child(3){width:500px;height:500px;left:36%;bottom:-20%;background:radial-gradient(circle,var(--sec),transparent 68%)}
+.grid-bg{position:absolute;inset:0;z-index:-1;background-image:linear-gradient(var(--ol) 1px,transparent 1px),linear-gradient(90deg,var(--ol) 1px,transparent 1px);background-size:56px 56px;opacity:.25;-webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 10%,transparent 70%);mask-image:radial-gradient(ellipse at 50% 30%,#000 10%,transparent 70%)}
+.fl{position:absolute;z-index:-1;width:64px;height:84px;border-radius:8px;background:var(--s);border:1px solid var(--ol);box-shadow:var(--sh);animation:drift 16s ease-in-out infinite alternate}
+.fl::before{content:"";position:absolute;left:10px;right:10px;top:14px;height:4px;border-radius:2px;background:var(--pc);box-shadow:0 10px 0 var(--pc),0 20px 0 var(--pc),0 30px 0 var(--pc)}
+.hg{display:grid;grid-template-columns:1.02fr 1fr;gap:48px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 8px;border-radius:20px;background:var(--sec);color:var(--osec);font-size:.82rem;font-weight:600;margin-bottom:20px}.badge b{background:var(--p);color:var(--op);border-radius:12px;padding:1px 9px;font-size:.72rem}
+h1{font-size:clamp(2.3rem,5.4vw,4.1rem);line-height:1.04;margin:0 0 20px;letter-spacing:-.035em;font-weight:800}
+.rot{color:var(--p);display:inline-block;position:relative;white-space:nowrap}.rot::after{content:"";display:inline-block;width:3px;height:.9em;background:var(--p);margin-left:4px;vertical-align:-.1em;animation:blink 1s steps(1) infinite}
+.lead{font-size:1.18rem;color:var(--ov);max-width:560px;margin:0 0 30px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px}.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;background:var(--sc);font-size:.8rem;font-weight:500;color:var(--ov)}
+.stage{position:relative;perspective:1600px}
+.win{border-radius:16px;overflow:hidden;background:var(--sc);border:1px solid var(--ol);box-shadow:var(--sh3);transform:rotateY(-9deg) rotateX(5deg);transition:transform .25s ease-out;will-change:transform}
+.win .tb{display:flex;align-items:center;gap:7px;padding:11px 14px;background:var(--sch)}.win .tb i{width:11px;height:11px;border-radius:50%;background:var(--ol)}.win .tb i:first-child{background:#ff5f57}.win .tb i:nth-child(2){background:#febc2e}.win .tb i:nth-child(3){background:#28c840}.win .tb span{margin:0 auto;font-size:.74rem;color:var(--ov);padding-right:40px}
+.win img{width:100%}
+.fc{position:absolute;display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:16px;background:var(--sch);box-shadow:var(--sh3);font-size:.82rem;font-weight:600;animation:bob 5s ease-in-out infinite;border:1px solid var(--ol)}.fc em{font-style:normal;display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:var(--pc);color:var(--opc)}
+.fc.a{left:-34px;top:16%}.fc.b{right:-22px;top:46%;animation-delay:-1.6s}.fc.c{left:8%;bottom:-18px;animation-delay:-3s}
+.strip{overflow:hidden;border-block:1px solid var(--ol);background:var(--sc);padding:16px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.tr{display:flex;gap:14px;width:max-content;animation:mq 38s linear infinite}.strip:hover .tr{animation-play-state:paused}.tr span{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:20px;background:var(--s);border:1px solid var(--ol);font-weight:600;font-size:.9rem;white-space:nowrap}
+section{padding:92px 0}h2{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.1;margin:0 0 12px;letter-spacing:-.025em;text-align:center;font-weight:800}.sub{text-align:center;color:var(--ov);max-width:620px;margin:0 auto 52px;font-size:1.05rem}
+.eyebrow{display:block;text-align:center;font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--p);margin-bottom:10px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:-1px}.st{text-align:center;padding:30px 12px}.st b{display:block;font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;color:var(--p);line-height:1;letter-spacing:-.03em}.st span{color:var(--ov);font-size:.92rem}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}.cd{position:relative;grid-column:span 2;padding:28px;border-radius:28px;background:var(--sc);overflow:hidden;transition:transform .35s var(--ease),box-shadow .35s;transform-style:preserve-3d}
+.cd.rv{transition:opacity .8s var(--ease),transform .3s var(--ease),box-shadow .35s;transition-delay:0s}.cd.w{grid-column:span 3}.cd::before{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--p) 18%,transparent),transparent 60%);opacity:0;transition:opacity .3s}.cd:hover::before{opacity:1}.cd:hover{box-shadow:var(--sh3)}
+.cd i{display:grid;place-items:center;width:52px;height:52px;border-radius:18px;background:var(--pc);color:var(--opc);margin-bottom:18px;font-style:normal;font-size:1.5rem;transition:transform .5s var(--ease)}.cd:hover i{transform:rotate(-10deg) scale(1.12)}
+.cd h3{margin:0 0 8px;font-size:1.2rem}.cd p{margin:0;color:var(--ov);font-size:.95rem}
+.lab{display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:center;padding:44px;border-radius:36px;background:var(--sc)}
+.lab h3{font-size:1.7rem;margin:0 0 10px;letter-spacing:-.02em}.lab p{color:var(--ov);margin:0 0 22px}.lab .row{margin:18px 0 8px;font-size:.82rem;font-weight:700;color:var(--ov);text-transform:uppercase;letter-spacing:.08em}
+.seg{display:inline-flex;border:1px solid var(--ol);border-radius:20px;overflow:hidden}.seg button{border:0;background:none;padding:8px 18px;font-weight:600;font-size:.88rem;cursor:pointer;transition:background .2s}.seg button.on{background:var(--sec);color:var(--osec)}
+.lab .sw{grid-template-columns:repeat(9,1fr);max-width:420px}
+.mini{border-radius:18px;overflow:hidden;background:var(--s);border:1px solid var(--ol);box-shadow:var(--sh3);transition:background .4s}
+.mini .mt{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--sch)}.mini .mt i{width:26px;height:26px;border-radius:50%;background:color-mix(in srgb,var(--ov) 22%,transparent)}.mini .mt i.on{background:var(--sec)}.mini .mt b{margin-left:auto;font-size:.72rem;padding:5px 12px;border-radius:14px;background:var(--p);color:var(--op)}
+.mini .bd{display:grid;grid-template-columns:70px 1fr;min-height:300px}.mini .sd{background:var(--sc);padding:12px 10px;display:flex;flex-direction:column;gap:9px}.mini .sd i{height:62px;border-radius:5px;background:#fff;box-shadow:var(--sh)}.mini .sd i:first-child{outline:2px solid var(--p)}
+.mini .pg{padding:18px;background:color-mix(in srgb,var(--ov) 12%,var(--s));display:grid;place-items:center}.sheet{position:relative;width:min(100%,300px);aspect-ratio:3/4;background:#fff;border-radius:3px;box-shadow:var(--sh);padding:22px 20px}.sheet .hd{height:14px;width:60%;border-radius:3px;background:var(--p);margin-bottom:16px}.sheet u{display:block;height:6px;border-radius:3px;background:#d9d9d9;margin-bottom:9px}.sheet u:nth-child(3n){width:84%}.sheet u:nth-child(4n){width:62%}
+.hl{position:absolute;left:20px;top:78px;height:14px;width:0;background:color-mix(in srgb,#ffeb3b 75%,transparent);border-radius:2px;mix-blend-mode:multiply;animation:hl 6s ease-in-out infinite}
+.sheet svg{position:absolute;left:0;top:0;width:100%;height:100%}.sheet path{fill:none;stroke:var(--p);stroke-width:3;stroke-linecap:round;stroke-dasharray:420;stroke-dashoffset:420;animation:pen 6s ease-in-out infinite}
+.gal{max-width:1020px;margin:0 auto}.tabs{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:26px}.tabs button{position:relative;overflow:hidden;border:0;cursor:pointer;padding:10px 20px;border-radius:22px;background:var(--sc);font-weight:600;font-size:.9rem;transition:background .25s,color .25s}.tabs button.on{background:var(--p);color:var(--op)}
+.tabs button.on::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;background:rgba(255,255,255,.6);transform-origin:0 50%;animation:prog 5.5s linear}
+.frame{position:relative;border-radius:18px;overflow:hidden;border:1px solid var(--ol);box-shadow:var(--sh3);background:var(--sc);aspect-ratio:1360/840}.frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.03);transition:opacity .6s var(--ease),transform .9s var(--ease)}.frame img.on{opacity:1;transform:none}
+.faq{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:10px}details{border-radius:22px;background:var(--sc);padding:0 24px;transition:background .3s}details[open]{background:var(--sch)}summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;font-weight:700}summary::-webkit-details-marker{display:none}summary::after{content:"+";font-size:1.5rem;line-height:1;color:var(--p);transition:transform .35s var(--ease)}details[open] summary::after{transform:rotate(135deg)}details p{margin:0 0 20px;color:var(--ov)}
+.dl{position:relative;overflow:hidden;text-align:center;border-radius:40px;padding:80px 24px;background:linear-gradient(135deg,var(--p),color-mix(in srgb,var(--p) 55%,#000));color:var(--op);isolation:isolate}
+.dl::before,.dl::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.12);z-index:-1;animation:drift 12s ease-in-out infinite alternate}.dl::before{width:420px;height:420px;left:-120px;top:-160px}.dl::after{width:320px;height:320px;right:-80px;bottom:-140px;animation-delay:-5s}
+.dl h2{color:inherit}.dl .sub{color:color-mix(in srgb,var(--op) 85%,transparent)}.dl .btn{background:var(--op);color:var(--p);height:60px;padding:0 38px;font-size:1.08rem}.dl .btn::before{display:none}
+.dl small{display:block;margin-top:18px;opacity:.85}
+footer{padding:40px 0 56px;text-align:center;color:var(--ov);font-size:.92rem}footer b{color:var(--os)}footer .fb{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:12px;font-weight:700;color:var(--os)}footer img{width:28px}
+.rv{opacity:0;transform:translateY(34px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:var(--d,0s)}.rv.in{opacity:1;transform:none}
+@keyframes sweep{to{transform:translateX(120%)}}@keyframes rp{to{transform:scale(1);opacity:0}}@keyframes blink{50%{opacity:0}}@keyframes bob{50%{transform:translateY(-10px)}}@keyframes drift{to{transform:translate(50px,40px) rotate(8deg)}}@keyframes mq{to{transform:translateX(-50%)}}
+@keyframes hl{0%,12%{width:0}40%,85%{width:236px}100%{width:0}}@keyframes pen{0%,35%{stroke-dashoffset:420}65%,90%{stroke-dashoffset:0}100%{stroke-dashoffset:420}}@keyframes prog{from{transform:scaleX(0)}}
+@media(max-width:980px){.hg{grid-template-columns:1fr;text-align:center}.lead,.cta,.chips{margin-inline:auto;justify-content:center}.win{transform:none}.fc.a{left:0}.fc.b{right:0}.bento{grid-template-columns:repeat(2,1fr)}.cd,.cd.w{grid-column:span 1}.lab{grid-template-columns:1fr;padding:28px}.stats{grid-template-columns:repeat(2,1fr)}.links{display:none}}
+@media(max-width:560px){.bento{grid-template-columns:1fr}.fc{display:none}section{padding:64px 0}.lang{margin:0}.ib{width:38px;height:38px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.btn.f::before{display:none}}
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}::view-transition-new(root){z-index:2}
 </style>
 </head>
 <body>
+<div id="bar"></div>
 <header id="hd"><div class="wrap"><nav>
-  <a class="brand" href="#top"><img src="app/public/icon.svg" alt="" /> Material PDF</a>
-  <div class="links"><a href="#features" data-i="nav_f">Features</a><a href="#gallery" data-i="nav_g">Screenshots</a><a href="#download" data-i="nav_d">Download</a></div>
+  <a class="brand" href="#top"><img src="app/public/icon.svg" alt="" />Material PDF</a>
+  <div class="links"><a href="#features" data-i="nf">Features</a><a href="#lab" data-i="nl">Personalize</a><a href="#gallery" data-i="ng">Screenshots</a><a href="#faq" data-i="nq">FAQ</a></div>
+  <div style="position:relative"><button class="ib" id="pb" aria-label="Theme color"><span class="dot"></span></button>
+    <div class="pop" id="pp"><h4 data-i="tc">Theme color</h4><div class="sw" id="sw1"></div></div></div>
   <div class="lang" role="group" aria-label="Language"><button data-l="en">EN</button><button data-l="vi">VI</button></div>
-  <button class="ib" id="theme" aria-label="Theme"></button>
+  <button class="ib" id="tm" aria-label="Theme"></button>
 </nav></div></header>
 
 <main id="top">
-<div class="hero"><div class="blob b1"></div><div class="blob b2"></div><div class="wrap">
-  <img class="logo" src="app/public/icon.svg" alt="Material PDF logo" />
-  <h1><span data-i="h1a">Read and edit PDFs</span> <span style="color:inherit" data-i="h1b">beautifully</span></h1>
-  <p class="lead" data-i="lead">A fast, free and open-source desktop PDF reader & editor with Material Design 3. Annotate, search, merge, split and organize pages — all offline.</p>
-  <div class="cta">
-    <a class="btn f" href="download/Material-PDF_1.0.0_x64-setup.exe" download><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 10l5 5 5-5M5 21h14"/></svg><span data-i="dl">Download for Windows</span></a>
-    <a class="btn t" href="#features" data-i="more">Explore features</a>
+<div class="hero"><div class="mesh"><i></i><i></i><i></i></div><div class="grid-bg"></div>
+  <div class="fl" style="left:47%;top:5%;transform:scale(.75)"></div><div class="fl" style="right:6%;top:8%;animation-delay:-4s;transform:scale(.8)"></div><div class="fl" style="left:46%;bottom:6%;animation-delay:-8s;transform:scale(.7)"></div>
+<div class="wrap hg">
+  <div>
+    <span class="badge rv"><b>v1.0</b><span data-i="bd">Free & open source · MIT</span></span>
+    <h1 class="rv" style="--d:.08s"><span data-i="h1a">Read, annotate &amp; organize</span> <span class="rot" id="rot">PDFs</span></h1>
+    <p class="lead rv" style="--d:.16s" data-i="lead">A fast, beautiful desktop PDF reader and editor with Material Design 3 — highlight, search, merge, split and reorder pages, all offline.</p>
+    <div class="cta rv" style="--d:.24s">
+      <a class="btn f" id="mag" href="download/Material-PDF_1.0.0_x64-setup.exe" download><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 10l5 5 5-5M5 21h14"/></svg><span data-i="dl">Download for Windows</span></a>
+      <a class="btn t" href="#gallery" data-i="see">See it in action</a>
+    </div>
+    <div class="chips rv" style="--d:.32s"><span class="chip">🪟 Windows 10/11</span><span class="chip">🎨 18 <span data-i="colors">theme colors</span></span><span class="chip">🌐 EN · VI</span><span class="chip">🔒 <span data-i="off">100% offline</span></span></div>
   </div>
-  <div class="meta" data-i="meta">Version 1.0.0 · Windows 10/11 · Free & open source (MIT)</div>
-  <div class="shot rv"><img src="screenshots/image02.png" alt="Material PDF reading a document" loading="eager" /></div>
+  <div class="stage rv" style="--d:.2s" id="stage">
+    <div class="win" id="win"><div class="tb"><i></i><i></i><i></i><span>sample.pdf — Material PDF</span></div><img src="screenshots/image02.png" alt="Material PDF reading a document" /></div>
+    <div class="fc a"><em>✍️</em><span data-i="c1">Highlight &amp; draw</span></div>
+    <div class="fc b"><em>🌙</em><span data-i="c2">Dark mode</span></div>
+    <div class="fc c"><em>⚡</em><span data-i="c3">Smooth &amp; fast</span></div>
+  </div>
+</div></div>
+
+<div class="strip" aria-hidden="true"><div class="tr" id="tr"></div></div>
+
+<div class="wrap"><div class="stats">
+  <div class="st rv"><b data-n="18">0</b><span data-i="s1">Material theme colors</span></div>
+  <div class="st rv" style="--d:.08s"><b data-n="5">0</b><span data-i="s2">Fonts to choose from</span></div>
+  <div class="st rv" style="--d:.16s"><b data-n="10" data-suf="+">0</b><span data-i="s3">PDF tools built in</span></div>
+  <div class="st rv" style="--d:.24s"><b data-n="100" data-suf="%">0</b><span data-i="s4">Offline &amp; private</span></div>
 </div></div>
 
 <section id="features"><div class="wrap">
-  <h2 data-i="ft">Everything you need for PDFs</h2><p class="sub" data-i="fs">Powerful tools wrapped in a clean, smooth Material interface.</p>
-  <div class="grid" id="fgrid"></div>
+  <span class="eyebrow rv" data-i="fe">Features</span><h2 class="rv" data-i="ft">Everything you need for PDFs</h2><p class="sub rv" data-i="fs">Powerful tools wrapped in a clean, smooth Material interface.</p>
+  <div class="bento" id="bento"></div>
 </div></section>
+
+<section id="lab" style="padding-top:20px"><div class="wrap"><div class="lab rv">
+  <div>
+    <span class="eyebrow" style="text-align:left" data-i="le">Make it yours</span>
+    <h3 data-i="lt">Your PDF reader, your colors</h3><p data-i="ls">Pick a Material color and switch light or dark — the whole app (and this page) adapts instantly.</p>
+    <div class="row" data-i="tc">Theme color</div><div class="sw" id="sw2"></div>
+    <div class="row" data-i="tmode">Mode</div>
+    <div class="seg" id="seg"><button data-m="light" data-i="ml">Light</button><button data-m="dark" data-i="md">Dark</button><button data-m="system" data-i="ms">System</button></div>
+  </div>
+  <div class="mini"><div class="mt"><i class="on"></i><i></i><i></i><b>Save</b></div>
+    <div class="bd"><div class="sd"><i></i><i></i><i></i></div><div class="pg"><div class="sheet"><div class="hd"></div><u></u><u></u><u></u><u></u><u></u><u></u><u></u><u></u><div class="hl"></div>
+      <svg viewBox="0 0 300 400" preserveAspectRatio="none"><path d="M30 300 C70 260 90 340 130 300 S190 260 230 300 S270 330 275 290"/></svg></div></div></div></div>
+</div></div></section>
 
 <section id="gallery"><div class="wrap">
-  <h2 data-i="gt">See it in action</h2><p class="sub" data-i="gs">Light, dark and 18 theme colors — in English or Vietnamese.</p>
-  <div class="gal rv"><img src="screenshots/image03.png" alt="Annotations" loading="lazy"/><img src="screenshots/image04.png" alt="Search" loading="lazy"/><img src="screenshots/image05.png" alt="Organize pages" loading="lazy"/><img src="screenshots/image07.png" alt="Settings" loading="lazy"/><img src="screenshots/image08.png" alt="Dark theme" loading="lazy"/></div>
+  <span class="eyebrow rv" data-i="ge">Screenshots</span><h2 class="rv" data-i="gt">See it in action</h2><p class="sub rv" data-i="gs">Reading, annotating, searching and organizing — in light, dark and your favorite color.</p>
+  <div class="gal rv"><div class="tabs" id="tabs"></div><div class="frame" id="frame"></div></div>
 </div></section>
 
-<section id="download"><div class="wrap"><div class="dl rv">
+<section id="faq" style="padding-top:20px"><div class="wrap">
+  <span class="eyebrow rv" data-i="qe">FAQ</span><h2 class="rv" data-i="qt">Questions, answered</h2><p class="sub rv" data-i="qs">Everything you might want to know before installing.</p>
+  <div class="faq rv" id="faq-l"></div>
+</div></section>
+
+<section style="padding-top:20px" id="download"><div class="wrap"><div class="dl rv">
   <h2 data-i="dt">Get Material PDF</h2><p class="sub" data-i="ds">Free forever. No ads, no tracking, no account.</p>
-  <a class="btn f" href="download/Material-PDF_1.0.0_x64-setup.exe" download><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 10l5 5 5-5M5 21h14"/></svg><span data-i="dl">Download for Windows</span></a>
+  <a class="btn" href="download/Material-PDF_1.0.0_x64-setup.exe" download><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 10l5 5 5-5M5 21h14"/></svg><span data-i="dl">Download for Windows</span></a>
+  <small data-i="dm">Version 1.0.0 · Windows 10/11 · x64 · MIT License</small>
 </div></div></section>
 </main>
 
-<footer><div class="wrap"><p><span data-i="by">Made by</span> <b>minhtrong67</b> <span data-i="ai">with the support of AI</span> <b>Claude</b> · MIT License</p></div></footer>
+<footer><div class="wrap"><div class="fb"><img src="app/public/icon.svg" alt="" />Material PDF</div><p><span data-i="by">Made by</span> <b>minhtrong67</b> <span data-i="ai">with the support of AI</span> <b>Claude</b> · MIT License</p></div></footer>
 
 <script>
-const T={en:{nav_f:"Features",nav_g:"Screenshots",nav_d:"Download",h1a:"Read and edit PDFs",h1b:"beautifully",lead:"A fast, free and open-source desktop PDF reader & editor with Material Design 3. Annotate, search, merge, split and organize pages — all offline.",dl:"Download for Windows",more:"Explore features",meta:"Version 1.0.0 · Windows 10/11 · Free & open source (MIT)",ft:"Everything you need for PDFs",fs:"Powerful tools wrapped in a clean, smooth Material interface.",gt:"See it in action",gs:"Light, dark and 18 theme colors — in English or Vietnamese.",dt:"Get Material PDF",ds:"Free forever. No ads, no tracking, no account.",by:"Made by",ai:"with the support of AI",
- f:[["📖","Smooth reading","Continuous or single page, zoom, thumbnails, outline, night mode and presentation."],["🔎","Instant search","Full-text search with highlighted matches and a results list."],["✍️","Annotate","Highlight, draw, add text notes and shapes — embedded when you save."],["🧩","Merge & split","Combine files, extract page ranges or split into single pages."],["🗂️","Organize pages","Drag to reorder, rotate and delete pages visually."],["🎨","Your style","Light/dark/system, 18 Material colors, 3 font sizes, EN & VI."]]},
-vi:{nav_f:"Tính năng",nav_g:"Ảnh chụp",nav_d:"Tải về",h1a:"Đọc và chỉnh sửa PDF",h1b:"thật đẹp",lead:"Trình đọc & chỉnh sửa PDF cho máy tính nhanh, miễn phí, mã nguồn mở với Material Design 3. Chú thích, tìm kiếm, gộp, tách và sắp xếp trang — hoàn toàn ngoại tuyến.",dl:"Tải về cho Windows",more:"Khám phá tính năng",meta:"Phiên bản 1.0.0 · Windows 10/11 · Miễn phí & mã nguồn mở (MIT)",ft:"Mọi thứ bạn cần cho PDF",fs:"Công cụ mạnh mẽ trong giao diện Material gọn gàng, mượt mà.",gt:"Xem ứng dụng hoạt động",gs:"Sáng, tối và 18 màu chủ đề — tiếng Anh hoặc tiếng Việt.",dt:"Tải Material PDF",ds:"Miễn phí mãi mãi. Không quảng cáo, không theo dõi, không cần tài khoản.",by:"Thực hiện bởi",ai:"với sự hỗ trợ của AI",
- f:[["📖","Đọc mượt mà","Cuộn liên tục hoặc từng trang, zoom, thumbnails, mục lục, chế độ đêm và trình chiếu."],["🔎","Tìm kiếm tức thì","Tìm toàn văn với tô sáng kết quả và danh sách kết quả."],["✍️","Chú thích","Tô sáng, vẽ, thêm ghi chú và hình — được ghi vào file khi lưu."],["🧩","Gộp & tách","Ghép file, trích xuất khoảng trang hoặc tách từng trang."],["🗂️","Sắp xếp trang","Kéo thả để đổi thứ tự, xoay và xóa trang trực quan."],["🎨","Phong cách của bạn","Sáng/tối/hệ thống, 18 màu Material, 3 cỡ chữ, tiếng Anh & Việt."]]}};
-const $=s=>document.querySelector(s),root=document.documentElement,mq=matchMedia("(prefers-color-scheme: dark)");
-let mode=localStorage.getItem("mp.theme")||"system",lang=localStorage.getItem("mp.lang")||(/^vi/i.test(navigator.language)?"vi":"en");
-const ico={light:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',dark:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',system:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>'};
-function applyTheme(){const d=mode==="system"?mq.matches:mode==="dark";root.dataset.theme=d?"dark":"light";root.style.colorScheme=d?"dark":"light";$("#theme").innerHTML=ico[mode];$("#theme").title=mode;document.querySelector('meta[name=theme-color]').content=d?"#201a19":"#fffbff"}
-function applyLang(){root.lang=lang;const t=T[lang];document.querySelectorAll("[data-i]").forEach(e=>{if(t[e.dataset.i])e.textContent=t[e.dataset.i]});
- $("#fgrid").innerHTML=t.f.map(f=>`<div class="card rv in"><i>${f[0]}</i><h3>${f[1]}</h3><p>${f[2]}</p></div>`).join("");
- document.querySelectorAll(".lang button").forEach(b=>b.classList.toggle("on",b.dataset.l===lang))}
-$("#theme").onclick=e=>{mode={light:"dark",dark:"system",system:"light"}[mode];localStorage.setItem("mp.theme",mode);
- if(document.startViewTransition&&!matchMedia("(prefers-reduced-motion: reduce)").matches){const x=e.clientX,y=e.clientY,r=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));document.startViewTransition(applyTheme).ready.then(()=>root.animate({clipPath:[`circle(0 at ${x}px ${y}px)`,`circle(${r}px at ${x}px ${y}px)`]},{duration:520,easing:"cubic-bezier(.2,0,0,1)",pseudoElement:"::view-transition-new(root)"}))}else applyTheme()};
-mq.addEventListener("change",()=>mode==="system"&&applyTheme());
-document.querySelectorAll(".lang button").forEach(b=>b.onclick=()=>{lang=b.dataset.l;localStorage.setItem("mp.lang",lang);applyLang()});
-addEventListener("scroll",()=>$("#hd").classList.toggle("scrolled",scrollY>8),{passive:true});
-const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&(e.target.classList.add("in"),io.unobserve(e.target))),{threshold:.15});
-applyTheme();applyLang();document.querySelectorAll(".rv:not(.in)").forEach(e=>io.observe(e));
+const PAL={"red":["F44336","bb1614,ffffff,ffdad5,410001,ffdad5,2c1512,fcdfa6,fffbff,201a19,534341,d8c2be,f8ebe9,f3e5e3","ffb4a9,690002,930005,ffdad5,5d3f3b,ffdad5,574419,201a19,ede0de,d8c2be,534341,251e1d,2f2827"],"pink":["E91E63","bc004b,ffffff,ffd9de,400014,ffd9de,2c1519,ffddba,fffbff,201a1b,524345,d6c2c3,f8ebeb,f2e5e6","ffb2be,660025,900038,ffd9de,5c3f43,ffd9de,5f411c,201a1b,ece0e0,d6c2c3,524345,241e1f,2f2829"],"purple":["9C27B0","9a25ae,ffffff,ffd6fe,35003f,f4dbf1,251626,ffdad4,fffbff,1e1a1d,4d444c,d0c3cc,f4ecf0,eee6ea","f9abff,570066,7b008f,ffd6fe,534153,f4dbf1,673b34,1e1a1d,e9e0e4,d0c3cc,4d444c,221e22,2d292c"],"deepPurple":["673AB7","6f43c0,ffffff,ebddff,250059,e9def8,1f182b,ffd9e1,fffbff,1d1b1e,49454e,cbc4cf,f2ecf1,ece6eb","d3bbff,3f008d,5727a6,ebddff,4b4358,e9def8,643b46,1d1b1e,e6e1e6,cbc4cf,49454e,211f22,2b292d"],"indigo":["3F51B5","4355b9,ffffff,dee0ff,00105c,e0e1f9,181a2c,ffd7f1,fefbff,1b1b1f,46464f,c7c5d0,f0edf1,eae7ec","bac3ff,08218a,293ca0,dee0ff,434659,e0e1f9,5d3c55,1b1b1f,e4e1e6,c7c5d0,46464f,1f1f23,2a2a2d"],"blue":["2196F3","0061a4,ffffff,d1e4ff,001d36,d7e3f7,101c2b,f2daff,fdfcff,1a1c1e,43474e,c3c7cf,eeedf1,e8e8eb","9ecaff,003258,00497d,d1e4ff,3b4858,d7e3f7,523f5f,1a1c1e,e2e2e6,c3c7cf,43474e,1e2022,282a2d"],"lightBlue":["03A9F4","006493,ffffff,cae6ff,001e30,d3e5f5,0c1d29,ebddff,fcfcff,1a1c1e,41474d,c1c7ce,edeef1,e8e8eb","8dcdff,00344f,004b70,cae6ff,384956,d3e5f5,4d4162,1a1c1e,e2e2e5,c1c7ce,41474d,1e2022,282a2d"],"cyan":["00BCD4","006876,ffffff,a1efff,001f25,cde7ed,051f23,dbe1ff,fbfcfd,191c1d,3f484a,bfc8ca,eceeef,e6e8e9","44d8f1,00363e,004e59,a1efff,334a50,cde7ed,3c4665,191c1d,e1e3e3,bfc8ca,3f484a,1d2021,272b2b"],"teal":["009688","006a60,ffffff,74f8e5,00201c,cce8e2,05201c,cce5ff,fafdfb,191c1b,3f4947,bec9c6,eceeec,e6e9e7","53dbc9,003731,005048,74f8e5,334b47,cce8e2,2d4961,191c1b,e0e3e1,bec9c6,3f4947,1d201f,272b2a"],"green":["4CAF50","006e1c,ffffff,94f990,002204,d5e8cf,111f0f,bcebf0,fcfdf6,1a1c19,424940,c2c9bd,eeeee8,e8e9e2","78dc77,00390a,005313,94f990,3b4b38,d5e8cf,1f4d52,1a1c19,e2e3dd,c2c9bd,424940,1e201d,282b27"],"lightGreen":["8BC34A","3e6a00,ffffff,b9f474,0f2000,dbe7c8,151e0b,bbece8,fdfcf5,1b1c18,44483d,c5c8ba,efeee7,e9e8e1","9ed75b,1e3700,2e4f00,b9f474,404a33,dbe7c8,1f4e4b,1b1c18,e3e3db,c5c8ba,44483d,1f201c,292a26"],"lime":["CDDC39","5b6300,ffffff,dded49,1a1d00,e4e5c1,1b1d07,beecdc,fefcf8,1c1c17,47483b,c8c7b7,f1eee5,ebe8df","c1d02c,2f3300,444b00,dded49,46492e,e4e5c1,234e43,1c1c17,e5e2da,c8c7b7,47483b,20201b,2a2a25"],"yellow":["FFEB3B","695f00,ffffff,f9e534,201c00,ebe3bd,1f1c05,c2ecd3,fffbff,1d1c16,4a473a,cbc6b5,f2ede4,ece8df","dbc90a,363100,4f4800,f9e534,4b472b,ebe3bd,294e3b,1d1c16,e7e2d9,cbc6b5,4a473a,21201a,2b2a24"],"amber":["FFC107","785900,ffffff,ffdf9e,261a00,f5e0bb,241a04,ccebc4,fffbff,1e1b16,4d4639,d0c5b4,f5ede4,efe7de","fabd00,3f2e00,5b4300,ffdf9e,52452a,f5e0bb,334d31,1e1b16,e9e1d8,d0c5b4,4d4639,221f1a,2d2924"],"orange":["FF9800","8b5000,ffffff,ffdcbe,2c1600,ffdcbe,291806,dce8b4,fffbff,201b16,51453a,d5c3b5,f7ece4,f1e6df","ffb870,4a2800,693c00,ffdcbe,59422c,ffdcbe,414b24,201b16,ebe0d9,d5c3b5,51453a,241f1a,2e2924"],"deepOrange":["FF5722","b02f00,ffffff,ffdbd1,3b0900,ffdbd1,2c150f,f5e1a7,fffbff,201a18,53433f,d8c2bc,f8ebe8,f3e5e2","ffb5a0,5f1500,862200,ffdbd1,5d4037,ffdbd1,534619,201a18,ede0dc,d8c2bc,53433f,251e1c,2f2827"],"brown":["795548","9a4522,ffffff,ffdbcf,380d00,ffdbcf,2c160d,f2e2a8,fffbff,201a18,53433e,d8c2bb,f8ebe7,f3e5e2","ffb59a,5b1b00,7b2e0d,ffdbcf,5d4035,ffdbcf,50471a,201a18,ede0dc,d8c2bb,53433e,251e1c,2f2826"],"blueGrey":["607D8B","006783,ffffff,bde9ff,001f2a,d0e6f2,081e27,e3dfff,fbfcfe,191c1e,40484c,c0c8cd,edeef0,e7e8ea","65d3ff,003546,004d64,bde9ff,354a53,d0e6f2,454364,191c1e,e1e2e4,c0c8cd,40484c,1d2022,272a2c"]};
+const T={en:{nf:"Features",nl:"Personalize",ng:"Screenshots",nq:"FAQ",tc:"Theme color",bd:"Free & open source · MIT",h1a:"Read, annotate & organize",lead:"A fast, beautiful desktop PDF reader and editor with Material Design 3 — highlight, search, merge, split and reorder pages, all offline.",dl:"Download for Windows",see:"See it in action",colors:"theme colors",off:"100% offline",c1:"Highlight & draw",c2:"Dark mode",c3:"Smooth & fast",s1:"Material theme colors",s2:"Fonts to choose from",s3:"PDF tools built in",s4:"Offline & private",fe:"Features",ft:"Everything you need for PDFs",fs:"Powerful tools wrapped in a clean, smooth Material interface.",le:"Make it yours",lt:"Your PDF reader, your colors",ls:"Pick a Material color and switch light or dark — the whole app (and this page) adapts instantly.",tmode:"Mode",ml:"Light",md:"Dark",ms:"System",ge:"Screenshots",gt:"See it in action",gs:"Reading, annotating, searching and organizing — in light, dark and your favorite color.",qe:"FAQ",qt:"Questions, answered",qs:"Everything you might want to know before installing.",dt:"Get Material PDF",ds:"Free forever. No ads, no tracking, no account.",dm:"Version 1.0.0 · Windows 10/11 · x64 · MIT License",by:"Made by",ai:"with the support of AI",
+ rot:["PDFs","contracts","reports","ebooks","notes"],
+ f:[["📖","Smooth reading","Continuous or single page, zoom, thumbnails, outline, night mode and presentation — without flicker.",1],["🔎","Instant search","Full-text search with highlighted matches and a clickable results list.",0],["✍️","Annotate","Highlight text, draw, add notes and shapes. Everything is embedded when you save.",0],["🧩","Merge & split","Combine files, extract page ranges or split into single pages.",1],["🗂️","Organize pages","Drag to reorder, rotate and delete pages visually.",0],["🎨","Your style","Light/dark/system, 18 Material colors, 5 fonts, 3 text sizes, EN & VI.",0]],
+ shots:["Reading","Annotate","Search","Organize","Personalize","Dark & Vietnamese"],
+ faq:[["Is Material PDF really free?","Yes. It is open source under the MIT license — free for personal and commercial use."],["Are my files uploaded anywhere?","Never. Everything happens on your device and the app works fully offline."],["Which platforms are supported?","A Windows 10/11 installer is provided. Because it is built with Tauri, you can also build it for macOS and Linux from source."],["Can I edit the text inside a PDF?","Material PDF focuses on reading, annotating and page-level editing: merge, split, reorder, rotate, delete, and edit document properties."],["Does it open password-protected PDFs?","Yes — you will be asked for the password when you open the file."]]},
+vi:{nf:"Tính năng",nl:"Tùy biến",ng:"Ảnh chụp",nq:"Hỏi đáp",tc:"Màu chủ đề",bd:"Miễn phí & mã nguồn mở · MIT",h1a:"Đọc, chú thích & sắp xếp",lead:"Trình đọc và chỉnh sửa PDF cho máy tính nhanh, đẹp với Material Design 3 — tô sáng, tìm kiếm, gộp, tách và sắp xếp trang, hoàn toàn ngoại tuyến.",dl:"Tải về cho Windows",see:"Xem ứng dụng hoạt động",colors:"màu chủ đề",off:"100% ngoại tuyến",c1:"Tô sáng & vẽ",c2:"Chế độ tối",c3:"Mượt & nhanh",s1:"Màu chủ đề Material",s2:"Phông chữ để chọn",s3:"Công cụ PDF tích hợp",s4:"Ngoại tuyến & riêng tư",fe:"Tính năng",ft:"Mọi thứ bạn cần cho PDF",fs:"Công cụ mạnh mẽ trong giao diện Material gọn gàng, mượt mà.",le:"Của riêng bạn",lt:"Trình đọc PDF, màu sắc của bạn",ls:"Chọn màu Material và chuyển sáng/tối — toàn bộ ứng dụng (và trang này) đổi theo tức thì.",tmode:"Chế độ",ml:"Sáng",md:"Tối",ms:"Hệ thống",ge:"Ảnh chụp",gt:"Xem ứng dụng hoạt động",gs:"Đọc, chú thích, tìm kiếm và sắp xếp — sáng, tối và màu bạn thích.",qe:"Hỏi đáp",qt:"Giải đáp thắc mắc",qs:"Mọi điều bạn có thể muốn biết trước khi cài đặt.",dt:"Tải Material PDF",ds:"Miễn phí mãi mãi. Không quảng cáo, không theo dõi, không cần tài khoản.",dm:"Phiên bản 1.0.0 · Windows 10/11 · x64 · Giấy phép MIT",by:"Thực hiện bởi",ai:"với sự hỗ trợ của AI",
+ rot:["tài liệu PDF","hợp đồng","báo cáo","ebook","ghi chú"],
+ f:[["📖","Đọc mượt mà","Cuộn liên tục hoặc từng trang, zoom, thumbnails, mục lục, chế độ đêm và trình chiếu — không chớp giật.",1],["🔎","Tìm kiếm tức thì","Tìm toàn văn, tô sáng kết quả và danh sách kết quả bấm được.",0],["✍️","Chú thích","Tô sáng, vẽ, thêm ghi chú và hình. Tất cả được ghi vào file khi lưu.",0],["🧩","Gộp & tách","Ghép file, trích xuất khoảng trang hoặc tách từng trang.",1],["🗂️","Sắp xếp trang","Kéo thả để đổi thứ tự, xoay và xóa trang trực quan.",0],["🎨","Phong cách của bạn","Sáng/tối/hệ thống, 18 màu Material, 5 phông chữ, 3 cỡ chữ, tiếng Anh & Việt.",0]],
+ shots:["Đọc","Chú thích","Tìm kiếm","Sắp xếp","Tùy biến","Tối & tiếng Việt"],
+ faq:[["Material PDF có thật sự miễn phí?","Có. Ứng dụng mã nguồn mở theo giấy phép MIT — dùng miễn phí cho cá nhân và thương mại."],["File của tôi có bị tải lên đâu không?","Không bao giờ. Mọi thứ xử lý ngay trên máy và ứng dụng hoạt động hoàn toàn ngoại tuyến."],["Hỗ trợ những nền tảng nào?","Có bộ cài cho Windows 10/11. Vì xây dựng bằng Tauri nên bạn cũng có thể tự build cho macOS và Linux từ mã nguồn."],["Có sửa được chữ bên trong PDF không?","Material PDF tập trung vào đọc, chú thích và chỉnh sửa theo trang: gộp, tách, sắp xếp, xoay, xóa trang và sửa thuộc tính tài liệu."],["Có mở được PDF có mật khẩu không?","Có — ứng dụng sẽ hỏi mật khẩu khi bạn mở file."]]}};
+const SHOTS=["image02","image04","image05","image06","image07","image09"];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],root=document.documentElement,mq=matchMedia("(prefers-color-scheme: dark)"),reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let mode=localStorage.getItem("mp.mode")||"system",seed=localStorage.getItem("mp.seed")||"red",lang=localStorage.getItem("mp.lang")||(/^vi/i.test(navigator.language)?"vi":"en");
+const ic={light:'<path d="M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',dark:'<path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/>',system:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>'};
+const KEYS=["p","op","pc","opc","sec","osec","tc","s","os","ov","ol","sc","sch"];
+function paint(){const d=mode==="system"?mq.matches:mode==="dark";const v=PAL[seed][d?2:1].split(",");KEYS.forEach((k,i)=>root.style.setProperty("--"+k,"#"+v[i]));
+ root.style.colorScheme=d?"dark":"light";document.querySelector('meta[name=theme-color]').content="#"+v[7];
+ $("#tm").innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ic[mode]+'</svg>';
+ $$(".sw button").forEach(b=>b.classList.toggle("on",b.dataset.c===seed));$$("#seg button").forEach(b=>b.classList.toggle("on",b.dataset.m===mode))}
+function vt(fn,e){if(document.startViewTransition&&!reduce){const x=e?.clientX??innerWidth-60,y=e?.clientY??40,r=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));document.startViewTransition(fn).ready.then(()=>root.animate({clipPath:[`circle(0 at ${x}px ${y}px)`,`circle(${r}px at ${x}px ${y}px)`]},{duration:560,easing:"cubic-bezier(.2,0,0,1)",pseudoElement:"::view-transition-new(root)"}))}else fn()}
+const setSeed=(c,e)=>vt(()=>{seed=c;localStorage.setItem("mp.seed",c);paint()},e),setMode=(m,e)=>vt(()=>{mode=m;localStorage.setItem("mp.mode",m);paint()},e);
+function swatches(){$$(".sw").forEach(h=>{h.innerHTML=Object.entries(PAL).map(([k,v])=>`<button data-c="${k}" style="background:#${v[0]}" aria-label="${k}"></button>`).join("");h.onclick=e=>{const b=e.target.closest("button");b&&setSeed(b.dataset.c,e)}})}
+let rotI=0,typing;function typeRot(){clearTimeout(typing);const w=T[lang].rot,el=$("#rot");let word=w[rotI%w.length],i=0,del=false;
+ if(reduce){el.textContent=w[0];return}
+ (function step(){el.textContent=word.slice(0,i);if(!del&&i<word.length){i++;typing=setTimeout(step,85)}else if(!del){del=true;typing=setTimeout(step,1700)}else if(i>0){i--;typing=setTimeout(step,45)}else{rotI++;word=w[rotI%w.length];del=false;typing=setTimeout(step,250)}})()}
+function lng(){const t=T[lang];root.lang=lang;$$("[data-i]").forEach(e=>{if(t[e.dataset.i]!=null)e.textContent=t[e.dataset.i]});
+ $("#bento").innerHTML=t.f.map((f,i)=>`<div class="cd tilt ${f[3]?"w":""} rv in" style="--d:${i*.06}s"><i>${f[0]}</i><h3>${f[1]}</h3><p>${f[2]}</p></div>`).join("");
+ $("#tabs").innerHTML=t.shots.map((s,i)=>`<button data-k="${i}">${s}</button>`).join("");
+ $("#faq-l").innerHTML=t.faq.map(q=>`<details><summary>${q[0]}</summary><p>${q[1]}</p></details>`).join("");
+ $("#tr").innerHTML=[0,1].map(()=>["📖 "+t.f[0][1],"🔎 "+t.f[1][1],"✍️ "+t.f[2][1],"🧩 "+t.f[3][1],"🗂️ "+t.f[4][1],"🎨 "+t.f[5][1],"🌙 "+t.md,"🔒 "+t.off].map(x=>`<span>${x}</span>`).join("")).join("");
+ $$(".lang button").forEach(b=>b.classList.toggle("on",b.dataset.l===lang));tabsInit();typeRot();tilt()}
+// gallery
+let gi=0,gt;function tabsInit(){$("#frame").innerHTML=SHOTS.map((s,i)=>`<img src="screenshots/${s}.png" alt="Material PDF screenshot ${i+1}" loading="lazy" class="${i===gi?"on":""}">`).join("");
+ $$("#tabs button").forEach(b=>{b.classList.toggle("on",+b.dataset.k===gi);b.onclick=()=>show(+b.dataset.k)})}
+function show(i){gi=i;$$("#frame img").forEach((m,k)=>m.classList.toggle("on",k===i));$$("#tabs button").forEach(b=>{const on=+b.dataset.k===i;b.classList.remove("on");void b.offsetWidth;b.classList.toggle("on",on)});clearTimeout(gt);if(!reduce)gt=setTimeout(()=>show((i+1)%SHOTS.length),5500)}
+// effects
+function tilt(){$$(".cd").forEach(c=>{c.onpointermove=e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;c.style.setProperty("--mx",x*100+"%");c.style.setProperty("--my",y*100+"%");if(!reduce)c.style.transform=`perspective(900px) rotateX(${(.5-y)*7}deg) rotateY(${(x-.5)*9}deg) translateY(-4px)`};c.onpointerleave=()=>c.style.transform=""})}
+const win=$("#win");$("#stage").addEventListener("pointermove",e=>{if(reduce||innerWidth<980)return;const r=e.currentTarget.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;win.style.transform=`rotateY(${-9+x*10}deg) rotateX(${5-y*8}deg)`});$("#stage").addEventListener("pointerleave",()=>win.style.transform="");
+addEventListener("pointermove",e=>{if(reduce)return;const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;$$(".mesh i").forEach((m,i)=>m.style.transform=`translate(${x*(30+i*24)}px,${y*(24+i*18)}px)`)},{passive:true});
+const mag=$("#mag");mag.addEventListener("pointermove",e=>{if(reduce)return;const r=mag.getBoundingClientRect();mag.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.18}px,${(e.clientY-r.top-r.height/2)*.28}px)`});mag.addEventListener("pointerleave",()=>mag.style.transform="");
+document.addEventListener("pointerdown",e=>{const b=e.target.closest(".btn");if(!b)return;const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,d=document.createElement("span");d.className="rp";d.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;b.appendChild(d);d.onanimationend=()=>d.remove()});
+addEventListener("scroll",()=>{$("#hd").classList.toggle("sc",scrollY>8);$("#bar").style.transform=`scaleX(${scrollY/(document.body.scrollHeight-innerHeight||1)})`},{passive:true});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add("in");io.unobserve(e.target);const n=e.target.querySelector("[data-n]");if(n)count(n)}),{threshold:.15});
+function count(n){const to=+n.dataset.n,suf=n.dataset.suf||"";if(reduce){n.textContent=to+suf;return}const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/1400);n.textContent=Math.round(to*(1-Math.pow(1-k,3)))+suf;if(k<1)requestAnimationFrame(f)})(t0)}
+$("#tm").onclick=e=>setMode({light:"dark",dark:"system",system:"light"}[mode],e);
+$$("#seg button").forEach(b=>b.onclick=e=>setMode(b.dataset.m,e));
+$("#pb").onclick=e=>{e.stopPropagation();$("#pp").classList.toggle("on")};addEventListener("click",e=>{if(!e.target.closest("#pp"))$("#pp").classList.remove("on")});
+$$(".lang button").forEach(b=>b.onclick=()=>{lang=b.dataset.l;localStorage.setItem("mp.lang",lang);lng();$$(".rv:not(.in)").forEach(e=>io.observe(e))});
+mq.addEventListener("change",()=>mode==="system"&&paint());
+swatches();paint();lng();show(0);$$(".rv:not(.in)").forEach(e=>io.observe(e));
 </script>
-<style>::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}::view-transition-new(root){z-index:2}</style>
 </body>
 </html>

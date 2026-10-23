@@ -58,6 +58,11 @@ const en = {
   encryptedEdit: "Encrypted documents cannot be edited.", metaSaved: "Properties updated", pagesApplied: "Pages updated",
   copied: "Copied", keepOne: "A document needs at least one page.", unsupportedBrowser: "Not supported here.",
   drop: "Drop to open",
+  zoom: "Zoom level", tabAppearance: "Appearance", tabText: "Text & language", tabWindow: "Window",
+  themeDesc: "Choose light, dark or follow your system.", themeColorDesc: "Pick the Material color used across the app.",
+  fontFamily: "Font", fontFamilyDesc: "Typeface used in the interface.", fontSizeDesc: "Scale all text in the app.",
+  languageDesc: "Interface language.", fontSystem: "System default", startupDesc: "How the window opens next time.",
+  defaultZoomDesc: "Zoom applied when a document opens.", fontPreview: "Aa Việt",
 };
 export type Key = keyof typeof en;
 const vi: Record<Key, string> = {
@@ -111,6 +116,11 @@ const vi: Record<Key, string> = {
   encryptedEdit: "Không thể chỉnh sửa tài liệu đã mã hóa.", metaSaved: "Đã cập nhật thuộc tính", pagesApplied: "Đã cập nhật các trang",
   copied: "Đã sao chép", keepOne: "Tài liệu cần ít nhất một trang.", unsupportedBrowser: "Không hỗ trợ ở đây.",
   drop: "Thả để mở",
+  zoom: "Mức thu phóng", tabAppearance: "Giao diện", tabText: "Chữ & ngôn ngữ", tabWindow: "Cửa sổ",
+  themeDesc: "Chọn sáng, tối hoặc theo hệ thống.", themeColorDesc: "Chọn màu Material dùng trong toàn bộ ứng dụng.",
+  fontFamily: "Phông chữ", fontFamilyDesc: "Kiểu chữ dùng trong giao diện.", fontSizeDesc: "Phóng to/thu nhỏ toàn bộ chữ.",
+  languageDesc: "Ngôn ngữ giao diện.", fontSystem: "Mặc định hệ thống", startupDesc: "Cách cửa sổ mở ra ở lần sau.",
+  defaultZoomDesc: "Mức thu phóng khi mở tài liệu.", fontPreview: "Aa Việt",
 };
 export const dict = { en, vi };
 export type Lang = "en" | "vi";

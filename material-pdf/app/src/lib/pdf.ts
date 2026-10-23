@@ -41,7 +41,7 @@ const hexRgb = (hex: string) => {
 };
 
 async function textToPng(text: string, size: number, color: string) {
-  const k = 3, font = `${size * k}px system-ui, "Segoe UI", Roboto, sans-serif`;
+  const k = 3, fam = getComputedStyle(document.documentElement).getPropertyValue("--font").trim() || "system-ui, sans-serif", font = `${size * k}px ${fam}`;
   const lines = text.split("\n");
   const c = document.createElement("canvas");
   const ctx = c.getContext("2d")!;

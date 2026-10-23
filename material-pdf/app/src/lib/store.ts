@@ -3,18 +3,19 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import { DEFAULT_SEED, type ThemeMode } from "./theme";
 import { detectLang, translate, type Key, type Lang } from "./i18n";
 
+import type { FontId } from "./fonts";
 export type FontSize = "small" | "medium" | "large";
 export type Tool = "none" | "highlight" | "pen" | "text" | "rect" | "eraser";
 export type Fit = "width" | "page" | "custom";
 export type SideTab = "thumbs" | "outline" | "search";
 
 export interface Settings {
-  themeMode: ThemeMode; seed: string; fontSize: FontSize; lang: Lang | "auto";
+  themeMode: ThemeMode; seed: string; fontSize: FontSize; font: FontId; lang: Lang | "auto";
   startup: "remember" | "maximize"; defaultFit: "width" | "page" | "100"; nightPages: boolean; animations: boolean;
   layout: "continuous" | "single";
 }
 export const DEFAULT_SETTINGS: Settings = {
-  themeMode: "system", seed: DEFAULT_SEED, fontSize: "medium", lang: "auto", startup: "remember",
+  themeMode: "system", seed: DEFAULT_SEED, fontSize: "medium", font: "system", lang: "auto", startup: "remember",
   defaultFit: "width", nightPages: false, animations: true, layout: "continuous",
 };
 

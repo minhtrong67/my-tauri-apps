@@ -77,7 +77,7 @@ export function Toolbar({ doc }: { doc: Doc | null }) {
           <IconButton icon={<ChevronRight size={22} />} label={t("nextPage")} onClick={() => gotoPage(d.page + 1)} disabled={d.page >= d.numPages - 1} />
           <span className="tb-sep" />
           <IconButton icon={<Minus size={20} />} label={`${t("zoomOut")} (Ctrl -)`} onClick={() => setZoom(d.scale / 1.2)} />
-          <Menu align="left" items={zoomItems} trigger={(toggle) => <button className="zoom-pill ripple" onClick={toggle} title={t("fitWidth")}>{Math.round(d.scale * 100)}%</button>} />
+          <Menu align="left" items={zoomItems} trigger={(toggle) => <button className="zoom-pill ripple" onClick={toggle} data-tip={t("zoom")}>{Math.round(d.scale * 100)}%</button>} />
           <IconButton icon={<Plus size={20} />} label={`${t("zoomIn")} (Ctrl +)`} onClick={() => setZoom(d.scale * 1.2)} />
         </div>
       )}

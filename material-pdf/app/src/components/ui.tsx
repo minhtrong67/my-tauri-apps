@@ -6,7 +6,7 @@ export function IconButton({ icon, label, onClick, active, disabled, className =
   icon: ReactNode; label: string; onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void; active?: boolean; disabled?: boolean; className?: string; size?: "sm" | "";
 }) {
   return (
-    <button className={`icon-btn ripple ${active ? "active" : ""} ${size} ${className}`} title={label} aria-label={label} onClick={onClick} disabled={disabled}>
+    <button className={`icon-btn ripple ${active ? "active" : ""} ${size} ${className}`} data-tip={label} aria-label={label} onClick={onClick} disabled={disabled}>
       {icon}
     </button>
   );
@@ -32,12 +32,12 @@ export function Switch({ checked, onChange, label }: { checked: boolean; onChang
 }
 
 export function Segmented<T extends string>({ value, options, onChange }: {
-  value: T; options: { value: T; label: string; icon?: ReactNode }[]; onChange: (v: T) => void;
+  value: T; options: { value: T; label: string; icon?: ReactNode }[]; onChange: (v: T, e: React.MouseEvent) => void;
 }) {
   return (
     <div className="segmented" role="radiogroup">
       {options.map((o) => (
-        <button key={o.value} role="radio" aria-checked={value === o.value} className={`seg ripple ${value === o.value ? "on" : ""}`} onClick={() => onChange(o.value)}>
+        <button key={o.value} role="radio" aria-checked={value === o.value} className={`seg ripple ${value === o.value ? "on" : ""}`} onClick={(e) => onChange(o.value, e)}>
           {o.icon}<span>{o.label}</span>
         </button>
       ))}

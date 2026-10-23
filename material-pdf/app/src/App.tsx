@@ -5,6 +5,7 @@ import { activeDoc, closeDoc, gotoPage, openBytes, openPicker, printDoc, redoAnn
 import { launchFile, openPath, isTauri } from "./lib/native";
 import { stepHit } from "./lib/search";
 import { useDoc, useLang, useStore, useT } from "./lib/store";
+import { fontStack } from "./lib/fonts";
 import { applyScheme, resolveDark, watchSystemTheme } from "./lib/theme";
 import { initWindow, onCloseRequest, setFullscreen, setWindowTitle } from "./lib/window";
 import { AnnotBar, Toolbar, startPresent } from "./components/Toolbar";
@@ -13,6 +14,7 @@ import { Sidebar } from "./components/Sidebar";
 import { Viewer } from "./components/Viewer";
 import { Welcome } from "./components/Welcome";
 import { DialogHost } from "./components/Dialogs";
+import { TooltipHost } from "./components/Tooltip";
 
 const FONT_PX = { small: 14, medium: 16, large: 18 } as const;
 
@@ -29,6 +31,7 @@ export default function App() {
     return settings.themeMode === "system" ? watchSystemTheme(apply) : undefined;
   }, [settings.themeMode, settings.seed]);
   useEffect(() => { document.documentElement.style.fontSize = FONT_PX[settings.fontSize] + "px"; }, [settings.fontSize]);
+  useEffect(() => { document.documentElement.style.setProperty("--font", fontStack(settings.font)); }, [settings.font]);
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   useEffect(() => { document.documentElement.dataset.anim = settings.animations ? "on" : "off"; }, [settings.animations]);
   useEffect(() => { setWindowTitle(doc ? `${doc.dirty ? "• " : ""}${doc.name} — Material PDF` : "Material PDF"); }, [doc?.name, doc?.dirty]);
@@ -115,6 +118,7 @@ export default function App() {
         ) : <Welcome />}
       </div>
       <DialogHost />
+      <TooltipHost />
       {toast && <div className="snackbar" key={toast.id} role="status"><span>{toast.msg}</span><button aria-label={t("close")} onClick={() => useStore.setState({ toast: null })}><X size={16} /></button></div>}
       {dragging && <div className="drop-overlay"><div><FolderOpen size={48} /><b>{t("drop")}</b></div></div>}
     </div>

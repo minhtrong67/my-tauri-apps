@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import { pdfjs, uid } from "../lib/pdf";
+import { peek, request } from "../lib/render";
 import { addAnnots, gotoPage, removeAnnot, setZoom } from "../lib/actions";
 import { useStore, type Annot, type Doc, type Tool } from "../lib/store";
 import { useT } from "../lib/store";
@@ -10,7 +11,7 @@ const EMPTY: Annot[] = [];
 
 interface PVProps {
   pdf: PDFDocumentProxy; index: number; scale: number; w: number; h: number; top: number; left: number;
-  q: string; cur: number; jump: number; annots: Annot[]; tool: Tool; color: string; strokeW: number; textSize: number;
+  q: string; cur: number; jump: number; warm: boolean; annots: Annot[]; tool: Tool; color: string; strokeW: number; textSize: number;
 }
 
 const PageView = memo(function PageView(p: PVProps) {
@@ -21,21 +22,26 @@ const PageView = memo(function PageView(p: PVProps) {
   const [textTick, setTextTick] = useState(0);
   const first = useRef(true);
 
-  useEffect(() => {
-    let dead = false, task: { cancel(): void } | null = null, tl: { cancel(): void } | null = null;
+  useLayoutEffect(() => {
+    let dead = false, tl: { cancel(): void } | null = null, req: ReturnType<typeof request> | null = null;
+    const show = (c: HTMLCanvasElement) => {
+      c.style.cssText = "width:100%;height:100%";
+      canvasHost.current?.replaceChildren(c);
+      setReady(true);
+    };
+    const cached = peek(pdf, index, scale);
+    if (cached) show(cached); // synchronous: no blank frame when a page re-mounts
     const timer = setTimeout(async () => {
       try {
+        if (!cached) {
+          req = request(pdf, index, scale);
+          const c = await req.promise;
+          if (dead || !c) return;
+          show(c);
+        }
         const page = await pdf.getPage(index + 1);
-        const vp = page.getViewport({ scale });
-        const out = Math.min(Math.min(devicePixelRatio || 1, 2.5), Math.sqrt(16e6 / (vp.width * vp.height)));
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.floor(vp.width * out); canvas.height = Math.floor(vp.height * out);
-        const rt = page.render({ canvasContext: canvas.getContext("2d")!, viewport: page.getViewport({ scale: scale * out }), background: "#ffffff" });
-        task = rt;
-        await rt.promise;
         if (dead) return;
-        canvasHost.current?.replaceChildren(canvas);
-        setReady(true);
+        const vp = page.getViewport({ scale });
         const div = document.createElement("div");
         div.className = "textLayer";
         const t = new pdfjs.TextLayer({ textContentSource: page.streamTextContent(), container: div, viewport: vp });
@@ -44,12 +50,16 @@ const PageView = memo(function PageView(p: PVProps) {
         if (dead) return;
         textHost.current?.replaceChildren(div);
         setTextTick((n) => n + 1);
+        for (const n of p.warm ? [index + 1, index - 1] : []) { // warm the cache for page flipping
+          if (n < 0 || n >= pdf.numPages || peek(pdf, n, scale)) continue;
+          const r = request(pdf, n, scale); r.promise.finally(r.release);
+        }
       } catch (e: any) {
-        if (e?.name !== "RenderingCancelledException" && !String(e?.message).includes("cancel")) console.warn(e);
+        if (!String(e?.message).toLowerCase().includes("cancel")) console.warn(e);
       }
-    }, first.current ? 0 : 110);
+    }, cached || first.current ? 0 : 110);
     first.current = false;
-    return () => { dead = true; clearTimeout(timer); task?.cancel(); tl?.cancel(); };
+    return () => { dead = true; clearTimeout(timer); req?.release(); tl?.cancel(); };
   }, [pdf, index, scale]);
 
   // search highlights
@@ -99,12 +109,16 @@ function AnnotLayer({ index, scale, w, h, annots, tool, color, strokeW, textSize
     if ((e.target as Element).closest("[data-annot]") && tool === "eraser") return;
     if (e.button !== 0) return;
     const [x, y] = pt(e);
-    if (tool === "text") { e.preventDefault(); setEditor({ x, y }); setText(""); return; }
     if (!drawing) return;
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
     setDraft(tool === "pen"
       ? { id: uid(), type: "pen", page: index, pts: [[x, y]], color, width: strokeW }
       : { id: uid(), type: "rect", page: index, x, y, w: 0, h: 0, color, width: strokeW });
+  };
+  const place = (e: React.MouseEvent) => {
+    if (tool !== "text" || (e.target as Element).closest("textarea")) return;
+    const r = svg.current!.getBoundingClientRect();
+    setEditor({ x: (e.clientX - r.left) / scale, y: (e.clientY - r.top) / scale }); setText("");
   };
   const move = (e: React.PointerEvent) => {
     if (!draft) return;
@@ -142,7 +156,7 @@ function AnnotLayer({ index, scale, w, h, annots, tool, color, strokeW, textSize
   return (
     <>
       <svg ref={svg} className={`annot-layer tool-${tool}`} viewBox={`0 0 ${W} ${H}`} style={{ pointerEvents: active ? "auto" : "none" }}
-        onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
+        onPointerDown={down} onClick={place} onMouseDown={(e) => tool === "text" && e.preventDefault()} onPointerMove={move} onPointerUp={up} onPointerCancel={up}>
         {annots.map((a) => render(a))}
         {draft && render(draft, "draft")}
       </svg>
@@ -167,9 +181,10 @@ export function Viewer({ doc }: { doc: Doc }) {
 
   useLayoutEffect(() => {
     const el = box.current!;
-    const ro = new ResizeObserver(() => setSize({ w: el.clientWidth, h: el.clientHeight }));
+    let t = 0;
+    const ro = new ResizeObserver(() => { clearTimeout(t); t = window.setTimeout(() => setSize({ w: el.clientWidth, h: el.clientHeight }), 90); });
     ro.observe(el); setSize({ w: el.clientWidth, h: el.clientHeight });
-    return () => ro.disconnect();
+    return () => { ro.disconnect(); clearTimeout(t); };
   }, []);
 
   const maxW = useMemo(() => Math.max(...doc.sizes.map((s) => s.w)), [doc.sizes]);
@@ -283,7 +298,7 @@ export function Viewer({ doc }: { doc: Doc }) {
                     const curHit = search.cur >= 0 ? search.hits[search.cur] : null;
           const curIdx = curHit && curHit.page === it.i ? curHit.idx : -1;
           return (
-            <PageView key={`${doc.rev}-${it.i}`} pdf={doc.pdf} index={it.i} scale={scale} w={it.w} h={it.h} top={it.top} left={it.left}
+            <PageView key={`${doc.rev}-${it.i}`} warm={layout === "single"} pdf={doc.pdf} index={it.i} scale={scale} w={it.w} h={it.h} top={it.top} left={it.left}
               q={hitPages.has(it.i) ? search.q : ""} cur={curIdx} jump={curIdx >= 0 ? search.jump : 0}
               annots={byPage.get(it.i) ?? EMPTY} tool={tool} color={color} strokeW={strokeW} textSize={textSize} />
           );

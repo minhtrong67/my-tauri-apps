@@ -23,7 +23,7 @@ export function Welcome() {
           <ul>
             {recent.map((r, i) => (
               <li key={r.path} style={{ animationDelay: `${i * 40}ms` }}>
-                <button className="recent-card ripple" onClick={() => openRecent(r.path)} title={r.path}>
+                <button className="recent-card ripple" onClick={() => openRecent(r.path)} data-tip={r.name}>
                   <span className="rc-ico"><FileText size={22} /></span>
                   <span className="rc-text"><b>{r.name}</b><small>{r.path}</small></span>
                 </button>

@@ -11,7 +11,7 @@ export function Tabs() {
     <div className="tabs" role="tablist">
       {docs.map((d) => (
         <div key={d.id} role="tab" aria-selected={d.id === activeId} className={`tab ripple ${d.id === activeId ? "on" : ""}`} onClick={() => setActive(d.id)}
-          onAuxClick={(e) => e.button === 1 && closeDoc(d.id)} title={d.path ?? d.name}>
+          onAuxClick={(e) => e.button === 1 && closeDoc(d.id)} data-tip={d.name}>
           <FileText size={16} />
           <span className="tab-name">{d.name}</span>
           {d.dirty && <i className="dot" />}

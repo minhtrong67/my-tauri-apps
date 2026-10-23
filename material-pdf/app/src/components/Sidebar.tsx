@@ -101,7 +101,7 @@ export function Sidebar({ doc }: { doc: Doc }) {
       <div className="side-inner">
         <nav className="side-tabs">
           {tabs.map((x) => (
-            <button key={x.id} className={`side-tab ripple ${sideTab === x.id ? "on" : ""}`} title={x.label} aria-label={x.label} onClick={() => setSidebar(true, x.id)}>{x.icon}</button>
+            <button key={x.id} className={`side-tab ripple ${sideTab === x.id ? "on" : ""}`} data-tip={x.label} aria-label={x.label} onClick={() => setSidebar(true, x.id)}>{x.icon}</button>
           ))}
         </nav>
         <div className="side-content" key={sideTab}>

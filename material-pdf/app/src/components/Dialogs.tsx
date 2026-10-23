@@ -11,59 +11,94 @@ import { setStartupMode, destroyWindow } from "../lib/window";
 import { toast, useDoc, useStore, useT, type Doc, type Settings } from "../lib/store";
 import { Button, Dialog, Field, fmtSize, IconButton, Segmented, Switch } from "./ui";
 import { Thumb } from "./Thumb";
+import { FONTS } from "../lib/fonts";
 import { Logo } from "./Logo";
 
 export const APP_VERSION = "1.0.0";
 
 /* ---------------- Settings ---------------- */
+function Row({ title, desc, children, stack }: { title: string; desc?: string; children: React.ReactNode; stack?: boolean }) {
+  return (
+    <div className={`srow ${stack ? "stack" : ""}`}>
+      <div className="srow-text"><b>{title}</b>{desc && <small>{desc}</small>}</div>
+      <div className="srow-ctl">{children}</div>
+    </div>
+  );
+}
+
 function SettingsDialog() {
   const t = useT();
   const { settings: s, setSettings, resetSettings, closeDialog } = useStore();
+  const [tab, setTab] = useState<"look" | "text" | "win">("look");
   const set = (p: Partial<Settings>, e?: React.MouseEvent) =>
     p.themeMode || p.seed ? withThemeTransition(() => setSettings(p), e && { x: e.clientX, y: e.clientY }, s.animations) : setSettings(p);
+  const tabs = [
+    { id: "look" as const, icon: <Palette size={20} />, label: t("tabAppearance") },
+    { id: "text" as const, icon: <TypeIcon size={20} />, label: t("tabText") },
+    { id: "win" as const, icon: <Maximize2 size={20} />, label: t("tabWindow") },
+  ];
   return (
     <Dialog title={t("settings")} icon={<Gear size={24} />} onClose={closeDialog} wide
       actions={<><Button variant="text" icon={<RotateCcw size={18} />} onClick={() => { resetSettings(); setStartupMode("remember"); }}>{t("resetSettings")}</Button><Button variant="filled" icon={<Check size={18} />} onClick={closeDialog}>{t("done")}</Button></>}>
-      <section className="set-sec">
-        <h3><Palette size={18} />{t("appearance")}</h3>
-        <div className="set-row"><span>{t("theme")}</span>
-          <div onClick={(e) => { const b = (e.target as HTMLElement).closest("button"); if (b) (window as any).__pt = { x: e.clientX, y: e.clientY }; }}>
-            <Segmented value={s.themeMode} onChange={(v) => set({ themeMode: v }, { clientX: (window as any).__pt?.x, clientY: (window as any).__pt?.y } as any)}
-              options={[{ value: "light", label: t("light"), icon: <Sun size={16} /> }, { value: "dark", label: t("dark"), icon: <Moon size={16} /> }, { value: "system", label: t("system"), icon: <Monitor size={16} /> }]} />
-          </div>
-        </div>
-        <div className="set-col"><span>{t("themeColor")}</span>
-          <div className="palette">
-            {PALETTE.map((c) => (
-              <button key={c.id} className={`pal ripple ${s.seed === c.hex ? "on" : ""}`} style={{ background: c.hex }} aria-label={c.id} title={c.id} onClick={(e) => set({ seed: c.hex }, e)}>
-                {s.seed === c.hex && <Check size={16} color="#fff" strokeWidth={3} />}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="set-row"><span><TypeIcon size={16} /> {t("fontSize")}</span>
-          <Segmented value={s.fontSize} onChange={(v) => set({ fontSize: v })} options={[{ value: "small", label: t("small") }, { value: "medium", label: t("medium") }, { value: "large", label: t("large") }]} /></div>
-        <div className="set-row"><span><Languages size={16} /> {t("language")}</span>
-          <Segmented value={s.lang} onChange={(v) => set({ lang: v })} options={[{ value: "auto", label: t("auto") }, { value: "en", label: t("english") }, { value: "vi", label: t("vietnamese") }]} /></div>
-        <div className="set-row"><div><span>{t("animations")}</span><small>{t("animationsDesc")}</small></div><Switch checked={s.animations} onChange={(v) => set({ animations: v })} label={t("animations")} /></div>
-      </section>
-      <section className="set-sec">
-        <h3><Maximize2 size={18} />{t("window")}</h3>
-        <p className="set-sub">{t("startup")}</p>
-        <div className="radio-cards">
-          {([["remember", t("startupRemember"), t("startupRememberDesc")], ["maximize", t("startupMax"), t("startupMaxDesc")]] as const).map(([v, a, b]) => (
-            <button key={v} className={`radio-card ripple ${s.startup === v ? "on" : ""}`} role="radio" aria-checked={s.startup === v} onClick={() => { set({ startup: v }); setStartupMode(v); }}>
-              <span className="rd" /><span><b>{a}</b><small>{b}</small></span>
-            </button>
+      <div className="set-layout">
+        <nav className="set-nav" role="tablist">
+          {tabs.map((x) => (
+            <button key={x.id} role="tab" aria-selected={tab === x.id} className={`set-tab ripple ${tab === x.id ? "on" : ""}`} onClick={() => setTab(x.id)}>{x.icon}<span>{x.label}</span></button>
           ))}
+        </nav>
+        <div className="set-panel" key={tab}>
+          {tab === "look" && <>
+            <Row title={t("theme")} desc={t("themeDesc")}>
+              <Segmented value={s.themeMode} onChange={(v, e) => set({ themeMode: v }, e)}
+                options={[{ value: "light", label: t("light"), icon: <Sun size={16} /> }, { value: "dark", label: t("dark"), icon: <Moon size={16} /> }, { value: "system", label: t("system"), icon: <Monitor size={16} /> }]} />
+            </Row>
+            <Row title={t("themeColor")} desc={t("themeColorDesc")} stack>
+              <div className="palette">
+                {PALETTE.map((c) => (
+                  <button key={c.id} className={`pal ripple ${s.seed === c.hex ? "on" : ""}`} style={{ background: c.hex }} aria-label={c.id} data-tip={c.id} onClick={(e) => set({ seed: c.hex }, e)}>
+                    {s.seed === c.hex && <Check size={16} color="#fff" strokeWidth={3} />}
+                  </button>
+                ))}
+              </div>
+            </Row>
+            <Row title={t("animations")} desc={t("animationsDesc")}><Switch checked={s.animations} onChange={(v) => set({ animations: v })} label={t("animations")} /></Row>
+          </>}
+          {tab === "text" && <>
+            <Row title={t("fontFamily")} desc={t("fontFamilyDesc")} stack>
+              <div className="font-grid" role="radiogroup">
+                {FONTS.map((f) => (
+                  <button key={f.id} role="radio" aria-checked={s.font === f.id} className={`font-card ripple ${s.font === f.id ? "on" : ""}`} onClick={() => set({ font: f.id })}>
+                    <span className="font-aa" style={{ fontFamily: f.stack }}>{t("fontPreview")}</span>
+                    <b style={{ fontFamily: f.stack }}>{f.id === "system" ? t("fontSystem") : f.label}</b>
+                    {s.font === f.id && <Check size={16} className="font-check" />}
+                  </button>
+                ))}
+              </div>
+            </Row>
+            <Row title={t("fontSize")} desc={t("fontSizeDesc")}>
+              <Segmented value={s.fontSize} onChange={(v) => set({ fontSize: v })} options={[{ value: "small", label: t("small") }, { value: "medium", label: t("medium") }, { value: "large", label: t("large") }]} />
+            </Row>
+            <Row title={t("language")} desc={t("languageDesc")}>
+              <Segmented value={s.lang} onChange={(v) => set({ lang: v })} options={[{ value: "auto", label: t("auto") }, { value: "en", label: t("english") }, { value: "vi", label: t("vietnamese") }]} />
+            </Row>
+          </>}
+          {tab === "win" && <>
+            <Row title={t("startup")} desc={t("startupDesc")} stack>
+              <div className="radio-cards">
+                {([["remember", t("startupRemember"), t("startupRememberDesc")], ["maximize", t("startupMax"), t("startupMaxDesc")]] as const).map(([v, a, b]) => (
+                  <button key={v} className={`radio-card ripple ${s.startup === v ? "on" : ""}`} role="radio" aria-checked={s.startup === v} onClick={() => { set({ startup: v }); setStartupMode(v); }}>
+                    <span className="rd" /><span><b>{a}</b><small>{b}</small></span>
+                  </button>
+                ))}
+              </div>
+            </Row>
+            <Row title={t("defaultZoom")} desc={t("defaultZoomDesc")}>
+              <Segmented value={s.defaultFit} onChange={(v) => set({ defaultFit: v })} options={[{ value: "width", label: t("zoomFitWidth") }, { value: "page", label: t("zoomFitPage") }, { value: "100", label: t("zoom100") }]} />
+            </Row>
+            <Row title={t("nightDefault")} desc={t("nightDefaultDesc")}><Switch checked={s.nightPages} onChange={(v) => set({ nightPages: v })} label={t("nightDefault")} /></Row>
+          </>}
         </div>
-      </section>
-      <section className="set-sec">
-        <h3><FileText size={18} />{t("viewing")}</h3>
-        <div className="set-row"><span>{t("defaultZoom")}</span>
-          <Segmented value={s.defaultFit} onChange={(v) => set({ defaultFit: v })} options={[{ value: "width", label: t("zoomFitWidth") }, { value: "page", label: t("zoomFitPage") }, { value: "100", label: t("zoom100") }]} /></div>
-        <div className="set-row"><div><span>{t("nightDefault")}</span><small>{t("nightDefaultDesc")}</small></div><Switch checked={s.nightPages} onChange={(v) => set({ nightPages: v })} label={t("nightDefault")} /></div>
-      </section>
+      </div>
     </Dialog>
   );
 }

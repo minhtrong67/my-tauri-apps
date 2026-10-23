@@ -23,10 +23,10 @@ Material PDF lets you read, search, annotate and reorganize PDF files completely
 | | |
 |---|---|
 | ![Welcome](screenshots/image01.png) | ![Viewer](screenshots/image02.png) |
-| ![Annotations](screenshots/image03.png) | ![Search](screenshots/image04.png) |
-| ![Organize pages](screenshots/image05.png) | ![Properties](screenshots/image06.png) |
-| ![Settings](screenshots/image07.png) | ![Dark theme](screenshots/image08.png) |
-| ![About](screenshots/image09.png) | |
+| ![Custom tooltips](screenshots/image03.png) | ![Annotations](screenshots/image04.png) |
+| ![Search](screenshots/image05.png) | ![Organize pages](screenshots/image06.png) |
+| ![Settings - appearance](screenshots/image07.png) | ![Settings - fonts](screenshots/image08.png) |
+| ![Dark theme, Vietnamese](screenshots/image09.png) | ![About](screenshots/image10.png) |
 
 ## Features
 
@@ -35,7 +35,8 @@ Material PDF lets you read, search, annotate and reorganize PDF files completely
 - **Annotate** — highlight selected text, pen, rectangle, text notes (Unicode / Vietnamese supported), eraser, undo/redo. Annotations are embedded into the PDF on save.
 - **Edit** — merge PDFs, split / extract by ranges, organize pages (drag to reorder, rotate, delete), images → PDF, export pages as PNG, edit document properties.
 - **Security** — opens password-protected documents.
-- **Personalization** — light / dark / system theme, 18 Material theme colors, 3 font sizes, English & Vietnamese (auto-detected), window startup: remember size or always maximized.
+- **Personalization** — light / dark / system theme, 18 Material theme colors, 5 fonts (System, Roboto, Inter, Open Sans, Noto Sans — bundled, offline), 3 font sizes, English & Vietnamese (auto-detected), window startup: remember size or always maximized.
+- **Smooth** — rendered pages are cached, so scrolling, zooming and presentation page-flips never flash blank; custom animated tooltips with shortcut hints.
 - **Convenience** — drag & drop, recent files, "Open with" file association, keyboard shortcuts (Ctrl+O/S/P/F/W, Ctrl +/−/0, arrows).
 
 ## Installation
