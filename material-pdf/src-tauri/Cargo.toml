@@ -1,0 +1,19 @@
+[package]
+name = "material-pdf"
+version = "1.0.0"
+description = "Material PDF - a fast, beautiful PDF reader and editor"
+authors = ["minhtrong67"]
+license = "MIT"
+edition = "2021"
+
+# NOTE: [profile.*] lives in the workspace Cargo.toml, not here.
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+urlencoding = "2"

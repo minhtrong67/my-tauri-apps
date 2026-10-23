@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Material PDF",
+  "version": "1.0.0",
+  "identifier": "com.minhtrong67.materialpdf",
+  "build": {
+    "beforeDevCommand": "npm run web:dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run web:build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Material PDF",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 820,
+        "minHeight": 560,
+        "center": true,
+        "visible": false,
+        "backgroundColor": "#1c1b1f"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; connect-src 'self' ipc: http://ipc.localhost blob: data:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "category": "Productivity",
+    "shortDescription": "Fast, beautiful PDF reader and editor",
+    "longDescription": "Material PDF is an open-source PDF reader and editor with a Material Design 3 interface.",
+    "copyright": "Copyright (c) 2026 minhtrong67",
+    "license": "../LICENSE",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+    "fileAssociations": [
+      { "ext": ["pdf"], "name": "PDF Document", "description": "PDF Document", "mimeType": "application/pdf", "role": "Editor" }
+    ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/setup.ico",
+        "installMode": "currentUser",
+        "languages": ["English", "Vietnamese"],
+        "displayLanguageSelector": true,
+        "compression": "lzma"
+      }
+    }
+  }
+}
