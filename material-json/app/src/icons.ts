@@ -4,11 +4,11 @@ import {
   FoldVertical, UnfoldVertical, CircleCheck, CircleAlert, Info, Undo2, Redo2, ClipboardPaste, Languages, Palette, Type,
   Monitor, Sun, Moon, AppWindow, Trash2, Pencil, Quote, Eraser, Columns2, Code, Check, Keyboard, FileCode, Wrench, Play,
   SquareCode, ChartNoAxesColumn, ArrowUpDown, FilePlus, Upload, Sparkles, Heart, ScrollText, RotateCcw, SaveAll, TextCursorInput, Ellipsis,
-  FileText, ListFilter, ChevronsUpDown, ChevronsDownUp, Target, Link, Github, Plug, Layers,
+  TriangleAlert, FileText, ListFilter, ChevronsUpDown, ChevronsDownUp, Target, Link, Github, Plug, Layers,
 } from 'lucide';
 
 const MAP = {
-  settings: Settings, file: FileJson, open: FolderOpen, save: Save, plus: Plus, close: X, search: Search, replace: Replace,
+  warn: TriangleAlert, settings: Settings, file: FileJson, open: FolderOpen, save: Save, plus: Plus, close: X, search: Search, replace: Replace,
   compare: GitCompareArrows, convert: ArrowRightLeft, schema: ShieldCheck, wrap: WrapText, wand: Wand2, sortAsc: ArrowDownAZ,
   sortDesc: ArrowUpAZ, tree: ListTree, copy: Copy, chevron: ChevronRight, history: History, download: Download, braces: Braces,
   minify: Minimize2, expand: Maximize2, fold: FoldVertical, unfold: UnfoldVertical, ok: CircleCheck, error: CircleAlert, info: Info,

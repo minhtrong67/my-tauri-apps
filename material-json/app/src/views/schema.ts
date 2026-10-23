@@ -10,9 +10,9 @@ import { ed } from '../editor';
 import { icon } from '../icons';
 import { t } from '../i18n';
 import { currentView, setView } from '../nav';
-import { esc } from '../ui';
+import { esc, Select } from '../ui';
 
-let el: HTMLElement, body: HTMLElement, sel: HTMLSelectElement;
+let el: HTMLElement, body: HTMLElement, sel: Select;
 let schemaId = '';
 let errors: { path: PathSeg[] }[] = [];
 
@@ -23,14 +23,13 @@ export function mountSchema(host: HTMLElement) {
       <h1 class="page-title" id="sc-title"></h1>
       <div class="card">
         <div class="field-row wrap">
-          <div class="field grow"><label id="sc-l"></label><select class="select" id="sc-sel"></select></div>
+          <div class="field grow"><label id="sc-l"></label><div id="sc-sel" class="select-host"></div></div>
           <button class="btn tonal" id="sc-gen">${icon('sparkles')}<span id="sc-gen-l"></span></button>
         </div>
       </div>
       <div id="sc-body"></div>
     </div>`;
-  body = el.querySelector('#sc-body')!; sel = el.querySelector('#sc-sel')!;
-  sel.addEventListener('change', () => { schemaId = sel.value; render(); });
+  body = el.querySelector('#sc-body')!; sel = new Select(el.querySelector('#sc-sel')!, (v) => { schemaId = v; render(); });
   el.querySelector('#sc-gen')!.addEventListener('click', () => {
     const r = analyze(ed.text());
     if (!r.ok || !r.node) return void render();
@@ -67,8 +66,7 @@ function render() {
   const cur = active();
   const others = docs.filter((d) => d.id !== cur.id);
   if (!others.find((d) => d.id === schemaId)) schemaId = others[0]?.id ?? '';
-  sel.innerHTML = others.length ? others.map((d) => `<option value="${d.id}" ${d.id === schemaId ? 'selected' : ''}>${esc(displayName(d))}</option>`).join('') : `<option>${esc(t('sc.pick'))}</option>`;
-  sel.disabled = !others.length;
+  sel.set(others.map((d) => ({ value: d.id, label: displayName(d) })), schemaId, !others.length);
   errors = [];
   const box = (ic: Parameters<typeof icon>[0], title: string, cls = '', sub = '') => `<div class="card"><div class="empty ${cls}">${icon(ic)}<strong>${esc(title)}</strong>${sub ? `<span>${esc(sub)}</span>` : ''}</div></div>`;
   if (!others.length) { body.innerHTML = box('schema', t('sc.noSchema')); return; }

@@ -65,7 +65,7 @@ export function unescapeSel() {
 export async function copyDoc() {
   const s = ed.selection();
   const text = s.empty ? ed.text() : ed.state.sliceDoc(s.from, s.to);
-  if (!text) return toast(t('toast.nothingToCopy'));
+  if (!text) return toast(t('toast.nothingToCopy'), 'warning');
   toast(t((await copyText(text)) ? 'toast.copied' : 'toast.pasteFail'), 'success');
 }
 export async function pasteDoc() {
@@ -74,5 +74,5 @@ export async function pasteDoc() {
     if (!text) return;
     ed.view.dispatch(ed.view.state.replaceSelection(text));
     ed.focus();
-  } catch { toast(t('toast.pasteFail'), 'error'); }
+  } catch { toast(t('toast.pasteFail'), 'warning'); }
 }

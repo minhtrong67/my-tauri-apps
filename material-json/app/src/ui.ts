@@ -29,10 +29,11 @@ export function initRipple() {
 
 /* ───────────── snackbar ───────────── */
 let toastTimer = 0;
-export function toast(msg: string, kind: 'info' | 'error' | 'success' = 'info') {
+export type ToastKind = 'info' | 'success' | 'warning' | 'error';
+export function toast(msg: string, kind: ToastKind = 'info') {
   let host = document.getElementById('snackbar');
   if (!host) { host = document.createElement('div'); host.id = 'snackbar'; host.setAttribute('role', 'status'); host.setAttribute('aria-live', 'polite'); document.body.appendChild(host); }
-  const ic: IconName = kind === 'error' ? 'error' : kind === 'success' ? 'ok' : 'info';
+  const ic: IconName = kind === 'error' ? 'error' : kind === 'success' ? 'ok' : kind === 'warning' ? 'warn' : 'info';
   host.className = `snackbar ${kind}`;
   host.innerHTML = `${icon(ic)}<span>${esc(msg)}</span>`;
   host.classList.remove('show'); void host.offsetWidth; host.classList.add('show');
@@ -83,12 +84,13 @@ export function dialog(opts: { title: string; body?: string; content?: HTMLEleme
 /* ───────────── menu ───────────── */
 export interface MenuItem { label?: string; icon?: IconName; onClick?: () => void; divider?: boolean; disabled?: boolean; hint?: string; checked?: boolean; header?: boolean }
 let closeMenu: (() => void) | null = null;
-export function menu(anchor: HTMLElement, items: MenuItem[], align: 'start' | 'end' = 'start') {
+export function menu(anchor: HTMLElement, items: MenuItem[], align: 'start' | 'end' = 'start', width?: number) {
   closeMenu?.();
   const el = h(`<div class="menu" role="menu">${items.map((it, i) =>
     it.divider ? '<div class="menu-div"></div>'
       : it.header ? `<div class="menu-head">${esc(it.label ?? '')}</div>`
-      : `<button class="menu-item" role="menuitem" data-i="${i}" ${it.disabled ? 'disabled' : ''}>${it.icon ? icon(it.icon) : '<span class="ic"></span>'}<span class="menu-label">${esc(it.label ?? '')}</span>${it.checked ? icon('check', 'menu-check') : it.hint ? `<kbd>${esc(it.hint)}</kbd>` : ''}</button>`).join('')}</div>`);
+      : `<button class="menu-item" role="menuitem" data-i="${i}" ${it.disabled ? 'disabled' : ''} ${it.checked ? 'data-checked="1"' : ''}>${it.icon ? icon(it.icon) : '<span class="ic"></span>'}<span class="menu-label">${esc(it.label ?? '')}</span>${it.checked ? icon('check', 'menu-check') : it.hint ? `<kbd>${esc(it.hint)}</kbd>` : ''}</button>`).join('')}</div>`);
+  if (width) el.style.minWidth = width + 'px';
   document.body.appendChild(el);
   const r = anchor.getBoundingClientRect();
   const mw = el.offsetWidth, mh = el.offsetHeight;
@@ -120,7 +122,9 @@ export function menu(anchor: HTMLElement, items: MenuItem[], align: 'start' | 'e
   document.addEventListener('pointerdown', onDown, true);
   document.addEventListener('keydown', onKey, true);
   closeMenu = close;
-  el.querySelector<HTMLElement>('.menu-item:not([disabled])')?.focus({ preventScroll: true });
+  const first = el.querySelector<HTMLElement>('.menu-item[data-checked]') ?? el.querySelector<HTMLElement>('.menu-item:not([disabled])');
+  first?.focus({ preventScroll: true });
+  first?.scrollIntoView({ block: 'nearest' });
 }
 
 export function copyText(s: string): Promise<boolean> {
@@ -134,3 +138,36 @@ function fallbackCopy(s: string) {
 }
 
 export function basename(p: string) { return p.replace(/^.*[\\/]/, ''); }
+
+/* ───────────── custom select (themed, scrollable) ───────────── */
+export interface SelectOption { value: string; label: string }
+export class Select {
+  readonly el: HTMLButtonElement;
+  value = '';
+  private options: SelectOption[] = [];
+  constructor(host: HTMLElement, private onChange: (v: string) => void) {
+    this.el = document.createElement('button');
+    this.el.type = 'button';
+    this.el.className = 'select-btn';
+    this.el.setAttribute('role', 'combobox');
+    this.el.setAttribute('aria-haspopup', 'listbox');
+    host.replaceChildren(this.el);
+    this.el.addEventListener('click', () => this.open());
+    this.el.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); this.open(); } });
+  }
+  set(options: SelectOption[], value: string, disabled = false) {
+    this.options = options; this.value = options.some((o) => o.value === value) ? value : options[0]?.value ?? '';
+    this.el.disabled = disabled || !options.length;
+    this.paint();
+  }
+  private paint() {
+    const cur = this.options.find((o) => o.value === this.value);
+    this.el.innerHTML = `<span class="select-label">${esc(cur?.label ?? '')}</span>${icon('chevron', 'select-caret')}`;
+  }
+  private open() {
+    this.el.setAttribute('aria-expanded', 'true');
+    menu(this.el, this.options.map((o) => ({ label: o.label, checked: o.value === this.value, onClick: () => { this.value = o.value; this.paint(); this.onChange(o.value); } })), 'start', this.el.offsetWidth);
+    const off = () => this.el.setAttribute('aria-expanded', 'false');
+    setTimeout(() => document.addEventListener('pointerdown', off, { once: true, capture: true }), 0);
+  }
+}

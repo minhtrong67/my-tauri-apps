@@ -8,6 +8,7 @@ import { captureWindow, isTauri } from '../tauri';
 import { esc, toast } from '../ui';
 
 let el: HTMLElement;
+const FONTS: [Settings['font'], string][] = [['system', 'System'], ['roboto', 'Roboto'], ['inter', 'Inter'], ['open-sans', 'Open Sans'], ['noto-sans', 'Noto Sans']];
 const SHORTCUTS: [Parameters<typeof t>[0], string][] = [
   ['sc.k.new', 'Ctrl+N'], ['sc.k.open', 'Ctrl+O'], ['sc.k.save', 'Ctrl+S'], ['sc.k.saveAs', 'Ctrl+Shift+S'], ['sc.k.close', 'Ctrl+W'],
   ['sc.k.next', 'Ctrl+Tab'], ['sc.k.format', 'Alt+Shift+F'], ['sc.k.minify', 'Alt+Shift+M'], ['sc.k.find', 'Ctrl+F'],
@@ -43,6 +44,8 @@ function render() {
         <div class="swatches" role="radiogroup">${PALETTE.map((p) => `<button class="swatch" role="radio" aria-checked="${p.hex.toLowerCase() === settings.color.toLowerCase()}" style="--c:${p.hex}" data-color="${p.hex}" title="${p.name}" aria-label="${p.name}">${icon('check')}</button>`).join('')}
           <label class="swatch custom" aria-checked="${custom}" role="radio" title="${esc(t('set.custom'))}" style="--c:${custom ? settings.color : 'transparent'}">${custom ? icon('check') : icon('plus')}<input type="color" id="set-color" value="${custom ? settings.color : '#6750a4'}"></label>
         </div></div>
+      <div class="set-row col"><div class="set-text"><strong>${esc(t('set.font'))}</strong></div>
+        <div class="fonts" role="radiogroup">${FONTS.map(([id, name]) => `<button class="font-card" role="radio" data-font="${id}" aria-checked="${settings.font === id}" style="font-family:${id === 'system' ? 'system-ui, sans-serif' : `'${name}'${id === 'roboto' ? '' : ' Variable'}, sans-serif`}"><span class="aa">Aa</span><span class="fn">${esc(id === 'system' ? t('set.fontSystem') : name)}</span></button>`).join('')}</div></div>
       ${row(t('set.fontSize'), '', seg('fontSize', settings.fontSize, [['small', t('set.small')], ['medium', t('set.medium')], ['large', t('set.large')]]))}
       ${row(t('set.language'), '', seg('lang', settings.lang, [['auto', t('set.auto')], ['en', 'English'], ['vi', 'Tiếng Việt']]))}
       ${row(t('set.motion'), t('set.motionDesc'), sw('set-motion', settings.motion))}
@@ -101,6 +104,8 @@ function onClick(e: Event) {
     if (name === 'lang') setLang(v as Settings['lang']);
     return;
   }
+  const fc = tg.closest<HTMLElement>('[data-font]');
+  if (fc) { update({ font: fc.dataset.font as Settings['font'] }); applyTheme(); return; }
   const sw = tg.closest<HTMLElement>('.swatch[data-color]');
   if (sw) { update({ color: sw.dataset.color! }); applyTheme(origin(e)); return; }
   const win = tg.closest<HTMLElement>('[data-win]');

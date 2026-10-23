@@ -158,6 +158,17 @@ footer a{text-decoration:none;color:var(--primary);font-weight:600}footer a:hove
 @media(max-width:520px){.bar .wrap{gap:8px}.logo span{display:none}.btn.lg{width:100%}.cta{flex-direction:column}.code pre{font-size:.76rem;min-height:300px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none}}
 ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+
+.popwrap{position:relative}
+.pop{position:absolute;right:0;top:calc(100% + 8px);width:268px;padding:14px;border-radius:var(--r-lg);background:var(--sc-high);border:1px solid var(--outline-variant);box-shadow:0 14px 40px rgb(0 0 0/.22);opacity:0;transform:translateY(-6px) scale(.96);transform-origin:top right;pointer-events:none;transition:opacity .2s,transform .25s var(--ease)}
+.pop.open{opacity:1;transform:none;pointer-events:auto}
+.sw{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.sw button{position:relative;aspect-ratio:1;border-radius:50%;border:0;background:var(--c);cursor:pointer;transition:transform .2s cubic-bezier(.3,0,0,1.4),box-shadow .2s}
+.sw button:hover{transform:scale(1.15)}
+.sw button[aria-checked=true]{box-shadow:0 0 0 2px var(--sc-high),0 0 0 4px var(--c)}
+.sw button[aria-checked=true]::after{content:'';position:absolute;inset:30%;border-bottom:2.5px solid #fff;border-right:2.5px solid #fff;transform:translate(0,-8%) rotate(40deg) scale(.55,1);width:30%;height:48%;margin:auto;inset:0;filter:drop-shadow(0 1px 1px rgb(0 0 0/.5))}
+.cust{display:flex;align-items:center;justify-content:space-between;margin-top:12px;font-size:.85rem;color:var(--on-surface-variant)}
+.cust input{width:44px;height:30px;border:0;padding:0;background:none;cursor:pointer}
 </style>
 </head>
 <body>
@@ -186,6 +197,7 @@ footer a{text-decoration:none;color:var(--primary);font-weight:600}footer a:hove
   <nav class="links" aria-label="Sections"><a href="#features" data-i18n="nav.features">Features</a><a href="#screens" data-i18n="nav.screens">Screenshots</a><a href="#how" data-i18n="nav.how">Get started</a><a href="#download" data-i18n="nav.download">Download</a></nav>
   <span class="sp"></span>
   <div class="seg" id="langSeg" role="group" aria-label="Language"><button data-l="en" aria-pressed="true">EN</button><button data-l="vi" aria-pressed="false">VI</button></div>
+  <div class="popwrap"><button class="icon-btn" id="colorBtn" aria-label="Theme colour" aria-haspopup="true" aria-expanded="false"><svg class="ic"><use href="#i-pal"/></svg></button><div class="pop" id="colorPop" role="dialog" aria-label="Theme colour"><div class="sw" id="sw"></div><label class="cust"><span data-i18n="col.custom">Custom colour</span><input type="color" id="colorIn" value="#ff9800"></label></div></div>
   <button class="icon-btn" id="themeBtn" aria-label="Theme"><svg class="ic"><use href="#i-auto"/></svg></button>
 </div></header>
 
@@ -249,7 +261,7 @@ footer a{text-decoration:none;color:var(--primary);font-weight:600}footer a:hove
 <script>
 (function(){
 var D={en:{
-'nav.features':'Features','nav.screens':'Screenshots','nav.how':'Get started','nav.download':'Download',
+'col.custom':'Custom colour','nav.features':'Features','nav.screens':'Screenshots','nav.how':'Get started','nav.download':'Download',
 'hero.badge':'Free & open source · MIT','hero.title1':'Your JSON,','hero.title2':'beautifully handled.',
 'hero.lead':'A fast desktop editor with tree view, JSONPath queries, diff, schema validation and format converters — wrapped in a calm Material Design 3 interface.',
 'cta.download':'Download for Windows','cta.source':'View source','meta.os':'Windows 10 / 11','meta.light':'Lightweight · Tauri','meta.offline':'Works offline','demo.format':'Format',
@@ -264,14 +276,14 @@ var D={en:{
 'f8t':'Make it yours','f8d':'Light, dark or system theme, all Material colours, three font sizes, English and Vietnamese.',
 'f9t':'Remembers you','f9d':'Restores tabs and unsaved work, and reopens at your last window size — or always maximized.',
 's.title':'See it in action','s.sub':'Light, dark and any Material colour you like.',
-'sh1':'Editor','sh2':'Tree search','sh3':'JSONPath','sh4':'Compare','sh5':'Convert','sh6':'Schema','sh7':'Settings','sh8':'Mobile',
-'c1':'Edit JSON with live validation next to an explorable tree.','c2':'Dark theme with a custom accent colour and instant tree search.','c3':'Query your data with JSONPath filters.','c4':'See exactly what was added, removed or changed.','c5':'Turn JSON into TypeScript, YAML, CSV, XML or JSON Schema.','c6':'Validate documents and jump straight to the failing value.','c7':'Theme, colours, font size, language and window behaviour.','c8':'Fully responsive down to narrow windows.',
+'sh1':'Editor','sh2':'Dark & tree','sh3':'Compare','sh4':'Settings',
+'c1':'Edit JSON with live validation next to an explorable tree.','c2':'Dark theme with a custom accent colour and instant tree search.','c3':'See exactly what was added, removed or changed.','c4':'Theme, colours, fonts, font size, language and window behaviour.',
 'h.title':'Up and running in a minute','h.1t':'Download','h.1d':'Grab the installer and run it. No account, no telemetry.','h.2t':'Open or paste','h.2d':'Drop a .json file, paste text or open several tabs at once.','h.3t':'Explore & fix','h.3d':'Format, repair, query, compare and validate — instantly.','h.4t':'Make it yours','h.4d':'Pick a theme colour, font size, language and window behaviour.',
 'd.title':'Get Material JSON','d.sub':'Free forever. Open source under the MIT licence.','d.note':'Windows 10 / 11 · 64-bit installer',
 'ft.made':'Made by','ft.with':'with support from','ft.lic':'MIT License',
 'title':'Material JSON — Modern JSON editor for Windows','desc':'Material JSON is a free, open-source JSON editor for desktop: tree view, JSONPath queries, diff, schema validation and YAML/CSV/XML converters in a Material Design 3 interface.'},
 vi:{
-'nav.features':'Tính năng','nav.screens':'Ảnh chụp','nav.how':'Bắt đầu','nav.download':'Tải về',
+'col.custom':'Màu tùy chỉnh','nav.features':'Tính năng','nav.screens':'Ảnh chụp','nav.how':'Bắt đầu','nav.download':'Tải về',
 'hero.badge':'Miễn phí & mã nguồn mở · MIT','hero.title1':'JSON của bạn,','hero.title2':'được chăm chút đẹp đẽ.',
 'hero.lead':'Trình soạn thảo desktop nhanh với dạng cây, truy vấn JSONPath, so sánh, kiểm tra schema và chuyển đổi định dạng — trong giao diện Material Design 3 dễ chịu.',
 'cta.download':'Tải về cho Windows','cta.source':'Xem mã nguồn','meta.os':'Windows 10 / 11','meta.light':'Nhẹ · Tauri','meta.offline':'Dùng ngoại tuyến','demo.format':'Định dạng',
@@ -286,14 +298,14 @@ vi:{
 'f8t':'Đậm chất của bạn','f8d':'Giao diện sáng, tối hoặc theo hệ thống, mọi màu Material, ba cỡ chữ, tiếng Anh và tiếng Việt.',
 'f9t':'Luôn nhớ bạn','f9d':'Khôi phục các tab và nội dung chưa lưu, mở lại đúng kích thước cửa sổ — hoặc luôn phóng to tối đa.',
 's.title':'Xem ứng dụng hoạt động','s.sub':'Sáng, tối và bất kỳ màu Material nào bạn thích.',
-'sh1':'Soạn thảo','sh2':'Tìm trên cây','sh3':'JSONPath','sh4':'So sánh','sh5':'Chuyển đổi','sh6':'Schema','sh7':'Cài đặt','sh8':'Di động',
-'c1':'Chỉnh sửa JSON với kiểm tra tức thì bên cạnh dạng cây.','c2':'Giao diện tối với màu nhấn tùy chỉnh và tìm kiếm nhanh trên cây.','c3':'Truy vấn dữ liệu bằng bộ lọc JSONPath.','c4':'Thấy rõ phần nào được thêm, xóa hay thay đổi.','c5':'Biến JSON thành TypeScript, YAML, CSV, XML hoặc JSON Schema.','c6':'Kiểm tra tài liệu và nhảy thẳng tới giá trị bị lỗi.','c7':'Chủ đề, màu sắc, cỡ chữ, ngôn ngữ và hành vi cửa sổ.','c8':'Responsive hoàn toàn, cả khi cửa sổ hẹp.',
+'sh1':'Soạn thảo','sh2':'Tối & dạng cây','sh3':'So sánh','sh4':'Cài đặt',
+'c1':'Chỉnh sửa JSON với kiểm tra tức thì bên cạnh dạng cây.','c2':'Giao diện tối với màu nhấn tùy chỉnh và tìm kiếm nhanh trên cây.','c3':'Thấy rõ phần nào được thêm, xóa hay thay đổi.','c4':'Chủ đề, màu sắc, phông chữ, cỡ chữ, ngôn ngữ và hành vi cửa sổ.',
 'h.title':'Sẵn sàng chỉ trong một phút','h.1t':'Tải về','h.1d':'Tải bộ cài và chạy. Không cần tài khoản, không theo dõi.','h.2t':'Mở hoặc dán','h.2d':'Thả tệp .json, dán văn bản hoặc mở nhiều tab cùng lúc.','h.3t':'Khám phá & sửa','h.3d':'Định dạng, sửa lỗi, truy vấn, so sánh và kiểm tra — tức thì.','h.4t':'Tùy biến theo ý bạn','h.4d':'Chọn màu chủ đề, cỡ chữ, ngôn ngữ và hành vi cửa sổ.',
 'd.title':'Tải Material JSON','d.sub':'Miễn phí mãi mãi. Mã nguồn mở theo giấy phép MIT.','d.note':'Windows 10 / 11 · bộ cài 64-bit',
 'ft.made':'Tạo bởi','ft.with':'với sự hỗ trợ của','ft.lic':'Giấy phép MIT',
 'title':'Material JSON — Trình soạn thảo JSON hiện đại cho Windows','desc':'Material JSON là trình soạn thảo JSON miễn phí, mã nguồn mở cho desktop: dạng cây, truy vấn JSONPath, so sánh, kiểm tra schema và chuyển đổi YAML/CSV/XML với giao diện Material Design 3.'}};
 var FEATS=[['i-q','f1'],['i-tree','f2'],['i-wand','f3'],['i-q','f4'],['i-diff','f5'],['i-shield','f6'],['i-conv','f7'],['i-pal','f8'],['i-win','f9']];
-var SHOTS=8, lang='en', theme=localStorage.getItem('mj-theme')||'system', shot=1;
+var SHOTS=4, lang='en', theme=localStorage.getItem('mj-theme')||'system', shot=1;
 var $=function(s,r){return(r||document).querySelector(s)};
 var html=document.documentElement;
 
@@ -309,9 +321,38 @@ function apply(){
   $('#featGrid').innerHTML=FEATS.map(function(f,i){return '<article class="card reveal in" style="--d:'+(i%3*.06)+'s"><div class="fi"><svg class="ic"><use href="#'+f[0]+'"/></svg></div><h3>'+t(f[1]+'t')+'</h3><p>'+t(f[1]+'d')+'</p></article>'}).join('');
   paintShots();revealAll();
 }
+var COLORS=['#F44336','#E91E63','#9C27B0','#673AB7','#3F51B5','#2196F3','#03A9F4','#00BCD4','#009688','#4CAF50','#8BC34A','#CDDC39','#FFEB3B','#FFC107','#FF9800','#FF5722','#795548','#607D8B'];
+var color=localStorage.getItem('mj-color')||'#FF9800';
+function hue(hex){var n=parseInt(hex.slice(1),16),r=(n>>16)/255,g=(n>>8&255)/255,b=(n&255)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,h=0;if(d){h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h=Math.round(h*60);if(h<0)h+=360}return {h:h,s:d?Math.round(d/(1-Math.abs(mx+mn-1))*100):0}}
+function paintColor(dark){
+  var st=html.style,names=['primary','on-primary','primary-container','on-primary-container','secondary-container','on-secondary-container','tertiary','bg','surface','on-surface','on-surface-variant','outline','outline-variant','sc-low','sc','sc-high','sc-highest','brand'];
+  if(color.toUpperCase()==='#FF9800'){names.forEach(function(n){st.removeProperty('--'+n)});return}
+  var c=hue(color),h=c.h,S=function(a,b,l){return 'hsl('+h+','+a+'%,'+l+'%)'},v={};
+  if(dark){v={'primary':S(100,100,72),'on-primary':S(90,90,15),'primary-container':S(80,80,22),'on-primary-container':S(100,100,90),'secondary-container':S(30,30,26),'on-secondary-container':S(100,100,90),'tertiary':S(60,60,70),'bg':S(12,12,8),'surface':S(12,12,8),'on-surface':S(15,15,90),'on-surface-variant':S(15,15,80),'outline':S(10,10,60),'outline-variant':S(12,12,30),'sc-low':S(12,12,11),'sc':S(12,12,13),'sc-high':S(10,10,17),'sc-highest':S(10,10,21),'brand':color}}
+  else{v={'primary':S(75,75,32),'on-primary':'#fff','primary-container':S(100,100,90),'on-primary-container':S(90,90,12),'secondary-container':S(60,60,88),'on-secondary-container':S(50,50,14),'tertiary':S(60,60,28),'bg':S(100,100,99),'surface':S(100,100,99),'on-surface':S(20,20,10),'on-surface-variant':S(15,15,28),'outline':S(10,10,48),'outline-variant':S(25,25,82),'sc-low':S(70,70,96),'sc':S(50,50,94),'sc-high':S(40,40,92),'sc-highest':S(35,35,89),'brand':color}}
+  for(var k in v)st.setProperty('--'+k,v[k]);
+}
+function paintSwatches(){
+  $('#sw').innerHTML=COLORS.map(function(c){return '<button style="--c:'+c+'" role="radio" aria-label="'+c+'" aria-checked="'+(c.toUpperCase()===color.toUpperCase())+'" data-c="'+c+'"></button>'}).join('');
+  $('#colorIn').value=color.toLowerCase();
+}
+function setColor(c,e){
+  color=c;localStorage.setItem('mj-color',c);
+  var go=function(){paintTheme();paintSwatches()};
+  if(e&&document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var x=e.clientX,y=e.clientY,r=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
+    document.startViewTransition(go).ready.then(function(){html.animate({clipPath:['circle(0 at '+x+'px '+y+'px)','circle('+r+'px at '+x+'px '+y+'px)']},{duration:600,easing:'cubic-bezier(.2,0,0,1)',pseudoElement:'::view-transition-new(root)'})}).catch(function(){});
+  }else go();
+}
+$('#colorBtn').addEventListener('click',function(e){e.stopPropagation();var o=$('#colorPop').classList.toggle('open');this.setAttribute('aria-expanded',String(o))});
+document.addEventListener('click',function(e){if(!e.target.closest('.popwrap')){$('#colorPop').classList.remove('open');$('#colorBtn').setAttribute('aria-expanded','false')}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')$('#colorPop').classList.remove('open')});
+$('#sw').addEventListener('click',function(e){var b=e.target.closest('button');if(b)setColor(b.dataset.c,e)});
+$('#colorIn').addEventListener('change',function(e){setColor(this.value,null)});
 function paintTheme(){
   var dark=theme==='dark'||(theme==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);
   html.dataset.theme=dark?'dark':'light';
+  paintColor(dark);
   $('#themeBtn use').setAttribute('href',theme==='system'?'#i-auto':dark?'#i-moon':'#i-sun');
   $('#themeBtn').setAttribute('aria-label','Theme: '+theme);
   $('#themeBtn').title='Theme: '+theme;
@@ -367,7 +408,7 @@ $('#toTop').onclick=function(){scrollTo({top:0,behavior:'smooth'})};
 
 var sl=localStorage.getItem('mj-lang');
 lang=sl==='vi'||sl==='en'?sl:((navigator.languages&&navigator.languages[0])||navigator.language||'en').toLowerCase().indexOf('vi')===0?'vi':'en';
-paintTheme();apply();cycle();
+paintTheme();paintSwatches();apply();cycle();
 })();
 </script>
 </body>

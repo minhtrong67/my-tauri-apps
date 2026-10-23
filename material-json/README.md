@@ -27,10 +27,8 @@ A landing page lives in [`index.html`](index.html) (open it in a browser) and li
 
 | | |
 |---|---|
-| ![Editor](screenshots/image01.png)<br><sub>Editor with live validation and tree view (light)</sub> | ![Tree search](screenshots/image02.png)<br><sub>Dark theme, custom accent colour, tree search</sub> |
-| ![JSONPath](screenshots/image03.png)<br><sub>JSONPath queries</sub> | ![Compare](screenshots/image04.png)<br><sub>Compare documents</sub> |
-| ![Convert](screenshots/image05.png)<br><sub>Convert to TypeScript, YAML, CSV, XML, JSON Schema</sub> | ![Schema](screenshots/image06.png)<br><sub>JSON Schema validation</sub> |
-| ![Settings](screenshots/image07.png)<br><sub>Settings</sub> | ![Mobile](screenshots/image08.png)<br><sub>Responsive layout (Vietnamese UI)</sub> |
+| ![Editor](screenshots/image01.png)<br><sub>Editor with live validation and tree view (light)</sub> | ![Dark theme](screenshots/image02.png)<br><sub>Dark theme, custom accent colour, tree search</sub> |
+| ![Compare](screenshots/image03.png)<br><sub>Compare documents with a themed dropdown</sub> | ![Settings](screenshots/image04.png)<br><sub>Settings: colours, fonts, font size, language, window</sub> |
 
 > Screenshots are captured from the web build (`npm run vite:dev`), so the native window frame is not shown.
 
@@ -54,7 +52,8 @@ A landing page lives in [`index.html`](index.html) (open it in a browser) and li
 **Personalisation**
 - Light / Dark / System theme with a circular reveal animation
 - Material theme colours (18 swatches + custom colour) generated with `@material/material-color-utilities`
-- 3 font sizes (small / medium / large)
+- 5 bundled fonts (System default, **Roboto**, Inter, Open Sans, Noto Sans — all work offline) and 3 font sizes (small / medium / large)
+- Custom themed dropdowns and toasts (info / success / warning / error) that follow light and dark mode
 - English and Vietnamese (auto-detected, switchable)
 - Window behaviour: **remember size & position** or **always start maximized**
 - Smooth animations (ripples, view transitions, tab motion, format "shimmer") that can be switched off — `prefers-reduced-motion` is respected
@@ -123,7 +122,7 @@ The Windows installer is created in the workspace `target/release/bundle/nsis/` 
 material-json/
 ├── index.html              # landing page (single file, EN/VI, light/dark/system)
 ├── download/               # put Material-JSON-Setup.exe here
-├── screenshots/            # image01.png … image08.png used by this README
+├── screenshots/            # image01.png … image04.png used by this README
 ├── scripts/
 │   └── generate-icons.py   # builds app / installer / uninstaller icons & NSIS banners
 ├── app/                    # frontend (Vite root)
@@ -142,7 +141,7 @@ material-json/
 │       ├── i18n.ts         # English + Vietnamese strings
 │       ├── tauri.ts        # native bridge (dialogs, window size, drag & drop)
 │       ├── views/          # tree, query, compare, convert, schema, settings
-│       └── styles/         # base.css, app.css, views.css
+│       └── styles/         # fonts.css, base.css, app.css, views.css
 ├── src-tauri/              # Rust backend
 │   ├── src/{main,lib}.rs
 │   ├── capabilities/default.json

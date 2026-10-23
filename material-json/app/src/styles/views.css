@@ -176,3 +176,10 @@
 .set-row.col { flex-wrap: nowrap; }
 .view > .page { flex: none; width: min(860px, 100%); }
 .view > .page.wide { width: min(1180px, 100%); }
+
+.fonts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; padding: 4px 0 6px; }
+.font-card { display: grid; justify-items: center; gap: 2px; padding: 12px 8px; border-radius: var(--r-md); border: 1px solid var(--md-outline-variant); transition: border-color .2s, background-color .2s, transform .2s var(--ease); }
+.font-card .aa { font-size: 1.75rem; line-height: 1.1; color: var(--md-primary); } .font-card .fn { font-size: .75rem; color: var(--md-on-surface-variant); }
+.font-card:hover { border-color: var(--md-outline); transform: translateY(-2px); }
+.font-card[aria-checked='true'] { border-color: var(--md-primary); background: var(--md-primary-container); box-shadow: inset 0 0 0 1px var(--md-primary); }
+.font-card[aria-checked='true'] .fn { color: var(--md-on-primary-container); }

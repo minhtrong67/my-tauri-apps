@@ -5,10 +5,10 @@ import { active, docs, displayName, textOf, openLoaded, switchTo } from '../docs
 import { icon } from '../icons';
 import { t } from '../i18n';
 import { currentView } from '../nav';
-import { esc } from '../ui';
+import { esc, Select } from '../ui';
 import { pickFiles } from '../tauri';
 
-let el: HTMLElement, body: HTMLElement, sel: HTMLSelectElement, ignore: HTMLInputElement;
+let el: HTMLElement, body: HTMLElement, sel: Select, ignore: HTMLInputElement;
 let otherId = '';
 let swapped = false;
 let tab: 'changes' | 'text' = 'changes';
@@ -20,7 +20,7 @@ export function mountCompare(host: HTMLElement) {
       <h1 class="page-title" id="cmp-title"></h1>
       <div class="card">
         <div class="field-row wrap">
-          <div class="field grow"><label id="cmp-lbl-with"></label><select id="cmp-sel" class="select"></select></div>
+          <div class="field grow"><label id="cmp-lbl-with"></label><div id="cmp-sel" class="select-host"></div></div>
           <button class="btn tonal" id="cmp-swap">${icon('updown')}<span id="cmp-swap-l"></span></button>
           <button class="btn outlined" id="cmp-open">${icon('open')}<span id="cmp-open-l"></span></button>
         </div>
@@ -28,8 +28,7 @@ export function mountCompare(host: HTMLElement) {
       </div>
       <div id="cmp-body"></div>
     </div>`;
-  body = el.querySelector('#cmp-body')!; sel = el.querySelector('#cmp-sel')!; ignore = el.querySelector('#cmp-ignore')!;
-  sel.addEventListener('change', () => { otherId = sel.value; render(); });
+  body = el.querySelector('#cmp-body')!; sel = new Select(el.querySelector('#cmp-sel')!, (v) => { otherId = v; render(); }); ignore = el.querySelector('#cmp-ignore')!;
   ignore.addEventListener('change', render);
   el.querySelector('#cmp-swap')!.addEventListener('click', () => { swapped = !swapped; render(); });
   el.querySelector('#cmp-open')!.addEventListener('click', async () => {
@@ -66,8 +65,7 @@ function render() {
   const cur = active();
   const others = docs.filter((d) => d.id !== cur.id);
   if (!others.find((d) => d.id === otherId)) otherId = others[0]?.id ?? '';
-  sel.innerHTML = others.length ? others.map((d) => `<option value="${d.id}" ${d.id === otherId ? 'selected' : ''}>${esc(displayName(d))}</option>`).join('') : `<option>${esc(t('cmp.pick'))}</option>`;
-  sel.disabled = !others.length;
+  sel.set(others.map((d) => ({ value: d.id, label: displayName(d) })), otherId, !others.length);
   if (!others.length) { body.innerHTML = `<div class="card"><div class="empty">${icon('compare')}<strong>${esc(t('cmp.noOther'))}</strong></div></div>`; return; }
 
   const leftId = swapped ? otherId : cur.id, rightId = swapped ? cur.id : otherId;

@@ -6,6 +6,7 @@ export interface Settings {
   theme: 'light' | 'dark' | 'system';
   color: string;
   fontSize: 'small' | 'medium' | 'large';
+  font: 'system' | 'roboto' | 'inter' | 'open-sans' | 'noto-sans';
   lang: LangSetting;
   windowMode: 'remember' | 'maximized';
   window?: WindowState;
@@ -19,7 +20,7 @@ export interface Settings {
 }
 
 export const DEFAULTS: Settings = {
-  theme: 'system', color: '#FF9800', fontSize: 'medium', lang: 'auto', windowMode: 'remember',
+  theme: 'system', color: '#FF9800', fontSize: 'medium', font: 'system', lang: 'auto', windowMode: 'remember',
   indent: 2, wrap: false, restore: true, motion: true, viewMode: 'split', splitRatio: 0.55, treeSync: true,
 };
 

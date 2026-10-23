@@ -7,7 +7,7 @@ import { icon } from '../icons';
 import { t, type Key } from '../i18n';
 import { currentView, setView } from '../nav';
 import { settings } from '../settings';
-import { copyText, esc, toast } from '../ui';
+import { copyText, esc, Select, toast } from '../ui';
 import { pickFiles, saveTextAs } from '../tauri';
 
 type Out = 'yaml' | 'csv' | 'xml' | 'ts' | 'schema';
@@ -27,6 +27,7 @@ let infer = true;
 let root = 'root';
 let inputEl: HTMLTextAreaElement, outputEl: HTMLTextAreaElement, errEl: HTMLElement, optsEl: HTMLElement;
 let outExt = 'yaml';
+let fmtSel: Select;
 
 export function mountConvert(host: HTMLElement) {
   el = host;
@@ -36,7 +37,7 @@ export function mountConvert(host: HTMLElement) {
       <div class="card">
         <div class="field-row wrap">
           <div class="seg" id="cv-dir"><button data-d="from"></button><button data-d="to"></button></div>
-          <div class="field"><label id="cv-fmt-l"></label><select class="select" id="cv-fmt"></select></div>
+          <div class="field"><label id="cv-fmt-l"></label><div id="cv-fmt" class="select-host"></div></div>
           <div id="cv-opts" class="field-row wrap"></div>
         </div>
       </div>
@@ -54,11 +55,7 @@ export function mountConvert(host: HTMLElement) {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-d]');
     if (b) { dir = b.dataset.d as typeof dir; delim = dir === 'to' ? 'auto' : ','; chrome(); sync(); convert(); }
   });
-  el.querySelector('#cv-fmt')!.addEventListener('change', (e) => {
-    const v = (e.target as HTMLSelectElement).value;
-    if (dir === 'from') outFmt = v as Out; else inFmt = v as In;
-    chrome(); convert();
-  });
+  fmtSel = new Select(el.querySelector('#cv-fmt')!, (v) => { if (dir === 'from') outFmt = v as Out; else inFmt = v as In; chrome(); convert(); });
   el.querySelector('#cv-copy')!.addEventListener('click', async () => { if (outputEl.value) { await copyText(outputEl.value); toast(t('toast.copied'), 'success'); } else toast(t('toast.nothingToCopy')); });
   el.querySelector('#cv-save')!.addEventListener('click', async () => {
     if (!outputEl.value) return toast(t('toast.nothingToCopy'));
@@ -100,21 +97,21 @@ function chrome() {
   q('#cv-fmt-l').textContent = t('cv.format');
   const list = dir === 'from' ? OUT : IN;
   const cur = dir === 'from' ? outFmt : inFmt;
-  q<HTMLSelectElement>('#cv-fmt').innerHTML = list.map((f) => `<option value="${f.id}" ${f.id === cur ? 'selected' : ''}>${f.label}</option>`).join('');
+  fmtSel.set(list.map((f) => ({ value: f.id, label: f.label })), cur);
   q('#cv-in-l').textContent = dir === 'from' ? t('cv.fromTab') : t('cv.input');
   q('#cv-out-l').textContent = t('cv.output');
   q('#cv-copy span').textContent = t('cv.copy'); q('#cv-save span').textContent = t('cv.save'); q('#cv-tab span').textContent = t('cv.openTab');
   q('#cv-in-act').innerHTML = dir === 'to' ? `<button class="btn text" id="cv-load">${icon('open')}${esc(t('cv.openFile'))}</button>` : '';
   inputEl.placeholder = dir === 'to' ? t('cv.paste', { fmt: IN.find((f) => f.id === inFmt)!.label }) : '';
   let opts = '';
-  const dsel = (withAuto: boolean) => `<div class="field"><label>${esc(t('cv.delimiter'))}</label><select class="select" id="cv-delim">${[
-    ...(withAuto ? [['auto', t('cv.auto')]] : []), [',', t('cv.comma')], [';', t('cv.semicolon')], ['\t', t('cv.tab')], ['|', t('cv.pipe')],
-  ].map(([v, l]) => `<option value="${v}" ${v === delim ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></div>`;
+  const dsel = (withAuto: boolean) => `<div class="field"><label>${esc(t('cv.delimiter'))}</label><div id="cv-delim" class="select-host"></div></div>`;
+  const delimOptions = (withAuto: boolean) => [...(withAuto ? [['auto', t('cv.auto')]] : []), [',', t('cv.comma')], [';', t('cv.semicolon')], ['\t', t('cv.tab')], ['|', t('cv.pipe')]].map(([value, label]) => ({ value, label }));
   if (dir === 'from' && outFmt === 'csv') opts = dsel(false);
   if (dir === 'from' && outFmt === 'xml') opts = `<div class="field"><label>${esc(t('cv.rootName'))}</label><input class="input" id="cv-root" value="${esc(root)}"></div>`;
   if (dir === 'to' && inFmt === 'csv') opts = dsel(true) + `<label class="switch-row inline"><span>${esc(t('cv.infer'))}</span><span class="switch"><input type="checkbox" id="cv-infer" ${infer ? 'checked' : ''}><i></i></span></label>`;
   optsEl.innerHTML = opts;
-  optsEl.querySelector('#cv-delim')?.addEventListener('change', (e) => { delim = (e.target as HTMLSelectElement).value; convert(); });
+  const dh = optsEl.querySelector<HTMLElement>('#cv-delim');
+  if (dh) new Select(dh, (v) => { delim = v; convert(); }).set(delimOptions(dir === 'to'), delim);
   optsEl.querySelector('#cv-infer')?.addEventListener('change', (e) => { infer = (e.target as HTMLInputElement).checked; convert(); });
   optsEl.querySelector('#cv-root')?.addEventListener('input', (e) => { root = (e.target as HTMLInputElement).value || 'root'; convert(); });
   if (dir === 'from' && delim === 'auto') delim = ',';

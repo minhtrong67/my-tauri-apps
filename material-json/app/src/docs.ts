@@ -71,7 +71,7 @@ export function openLoaded(files: LoadedFile[]) {
   let n = 0;
   for (const f of files) {
     const dupe = f.path && docs.find((d) => d.path === f.path);
-    if (dupe) { switchTo(dupe.id); toast(t('toast.alreadyOpen')); continue; }
+    if (dupe) { switchTo(dupe.id); toast(t('toast.alreadyOpen'), 'warning'); continue; }
     const cur = active();
     if (cur && !cur.path && !cur.dirty && !textOf(cur).trim() && docs.length === 1) {
       cur.path = f.path; cur.name = f.path ? null : f.name; cur.untitled = 0; cur.saved = f.text;
