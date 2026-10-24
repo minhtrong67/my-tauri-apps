@@ -55,3 +55,15 @@ export const setStartMode = (mode: 'remember' | 'maximized') => invoke<void>('se
 /** Tell the backend the first frame is painted so it can reveal the (initially hidden) window */
 export const appReady = () => invoke<void>('app_ready').catch(() => undefined);
 export const setTrayLabels = (labels: string[]) => invoke<void>('set_tray_labels', { labels }).catch(() => undefined);
+
+/** Allow the asset protocol to serve these folders / files (it serves nothing by default) */
+export const allowPaths = (paths: string[]) => invoke<void>('allow_paths', { paths }).catch(() => undefined);
+export const setMediaKeys = (enabled: boolean) => invoke<void>('set_media_keys', { enabled }).catch(() => undefined);
+export const watchFolders = (paths: string[], enabled: boolean) => invoke<void>('watch_folders', { paths, enabled }).catch(() => undefined);
+
+export interface TagEdit { title: string; artist: string; album: string; albumArtist: string; genre: string; year: number; trackNo: number }
+export const writeTags = (path: string, edit: TagEdit) => invoke<Track>('write_tags', { path, edit });
+
+export interface OnlineLyrics { synced: string; plain: string }
+export const fetchLyricsOnline = (title: string, artist: string, album: string, duration: number) =>
+  invoke<OnlineLyrics | null>('fetch_lyrics_online', { title, artist, album, duration });

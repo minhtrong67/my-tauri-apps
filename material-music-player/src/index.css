@@ -161,7 +161,30 @@ button { -webkit-tap-highlight-color: transparent; }
 .nav-active .lucide { animation: nav-bounce 0.45s cubic-bezier(0.2, 0, 0, 1); }
 
 /* Smooth theme switch: cross-fade the whole window (View Transitions) */
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.45s; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+/* the circular reveal itself is driven from themeTransition.ts; here the default cross-fade is switched off */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
+html.theme-vt * { transition: none !important; }
+/* fallback for webviews without View Transitions: fade the colours */
+html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
+  transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, fill 0.5s ease, stroke 0.5s ease, box-shadow 0.5s ease !important;
+}
+/* Cover entrance when the song changes: zoom + un-blur with a little overshoot */
+@keyframes cover-in { 0% { opacity: 0; transform: scale(0.82) rotate(-2deg); filter: blur(10px); } 60% { opacity: 1; transform: scale(1.03) rotate(0.4deg); filter: blur(0); } 100% { transform: scale(1) rotate(0); } }
+.cover-in { animation: cover-in 0.65s cubic-bezier(0.2, 0, 0, 1) both; }
+/* The line being sung glows softly */
+.lyric-glow { text-shadow: 0 0 22px rgb(var(--md-primary) / 0.55); }
+/* Soft light sweep across primary buttons on hover */
+.btn-sheen { position: relative; overflow: hidden; }
+.btn-sheen::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.28) 50%, transparent 65%); transform: translateX(-120%); transition: transform 0.7s cubic-bezier(0.2, 0, 0, 1); pointer-events: none; }
+.btn-sheen:hover::after { transform: translateX(120%); }
+/* Play button: expanding halo while music plays */
+@keyframes halo { 0% { box-shadow: 0 0 0 0 rgb(var(--md-primary) / 0.45); } 100% { box-shadow: 0 0 0 18px rgb(var(--md-primary) / 0); } }
+.halo { animation: halo 1.8s ease-out infinite; }
+/* Screens slide + fade in */
+@keyframes view-in { from { opacity: 0; transform: translateY(14px) scale(0.99); } to { opacity: 1; transform: none; } }
+.view-in { animation: view-in 0.4s cubic-bezier(0.2, 0, 0, 1) both; }
 
 /* Title text slides in when the song changes */
 @keyframes title-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

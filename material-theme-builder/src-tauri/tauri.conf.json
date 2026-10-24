@@ -1,0 +1,76 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Material Theme Builder",
+  "version": "1.0.0",
+  "identifier": "com.minhtrong67.materialthemebuilder",
+  "build": {
+    "beforeDevCommand": "npm run dev:web",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build:web",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Material Theme Builder",
+        "width": 1280,
+        "height": 820,
+        "minWidth": 860,
+        "minHeight": 600,
+        "center": true,
+        "visible": false,
+        "decorations": true,
+        "backgroundColor": "#1D1B20"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "minhtrong67",
+    "copyright": "Copyright (c) 2026 minhtrong67",
+    "category": "DeveloperTool",
+    "shortDescription": "Design, preview and export Material Design 3 themes",
+    "longDescription": "Material Theme Builder is an open-source desktop app to generate Material Design 3 color schemes, preview them on live components, check accessibility and export to CSS, Tailwind, Compose, Flutter and more.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": {
+      "icons/uninstall.ico": "uninstall.ico"
+    },
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/setup.ico",
+        "installMode": "both",
+        "installerHooks": "windows/hooks.nsh",
+        "compression": "lzma",
+        "headerImage": "windows/header.bmp",
+        "sidebarImage": "windows/sidebar.bmp",
+        "displayLanguageSelector": true,
+        "languages": [
+          "English",
+          "Vietnamese"
+        ]
+      },
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      }
+    },
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    },
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    }
+  }
+}

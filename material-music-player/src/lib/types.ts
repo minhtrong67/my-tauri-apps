@@ -20,6 +20,13 @@ export interface Track {
   modified?: number;
   /** Đường dẫn ảnh bìa đã trích xuất; chuỗi rỗng = không có ảnh bìa */
   cover?: string;
+  /** ReplayGain tags (dB / peak) */
+  rgTrack?: number | null;
+  rgAlbum?: number | null;
+  rgTrackPeak?: number | null;
+  rgAlbumPeak?: number | null;
+  /** 1 = the file was read by a build that knows ReplayGain (older entries are re-read once) */
+  rgv?: number;
 }
 
 export interface Playlist {
@@ -69,6 +76,12 @@ export interface Settings {
   restoreSession: boolean;
   autoScanMusic: boolean;
   musicSeeded: boolean;
+  replayGain: 'off' | 'track' | 'album';
+  gapless: boolean;
+  /** Crossfade length in seconds (0 = off) */
+  crossfade: number;
+  globalMediaKeys: boolean;
+  watchFolders: boolean;
 }
 
 export const defaultSettings: Settings = {
@@ -90,7 +103,14 @@ export const defaultSettings: Settings = {
   restoreSession: true,
   autoScanMusic: true,
   musicSeeded: false,
+  replayGain: 'track',
+  gapless: true,
+  crossfade: 0,
+  globalMediaKeys: true,
+  watchFolders: true,
 };
+
+export type SmartId = 'top' | 'new' | 'unplayed' | 'lossless';
 
 export type View =
   | { name: 'home' }
@@ -103,6 +123,7 @@ export type View =
   | { name: 'playlist'; id: string }
   | { name: 'liked' }
   | { name: 'recent' }
+  | { name: 'smart'; id: SmartId }
   | { name: 'settings' };
 
 export interface MenuItem {
@@ -134,4 +155,5 @@ export type Dialog =
   | { type: 'addToPlaylist'; ids: string[] }
   | { type: 'sleep' }
   | { type: 'audio' }
-  | { type: 'shortcuts' };
+  | { type: 'shortcuts' }
+  | { type: 'editTags'; id: string };

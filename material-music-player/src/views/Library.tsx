@@ -10,7 +10,9 @@ import { Button, Icon, openMenuBelow } from '../components/ui';
 import { Cover } from '../components/Cover';
 import { searchLibrary, sortTracksNatural, useDerived, useStore, useTrackList, useViewMode } from '../lib/store';
 import { greeting, natural } from '../lib/utils';
-import type { Album, Track } from '../lib/types';
+import { SMART_ICON, SMART_IDS, smartTracks } from '../lib/smart';
+import type { Album, SmartId, Track } from '../lib/types';
+import type { Key } from '../lib/i18n';
 
 const albumSub = (a: Album) => `${a.artist}${a.year ? ` • ${a.year}` : ''}`;
 
@@ -178,16 +180,43 @@ export function RecentView() {
   return <Collection viewKey="recent" title={tr('recentTitle')} kind={tr('kindList')} tracks={tracks} icon="history" emptyText={tr('recentEmpty')} />;
 }
 
+const SMART_TEXT: Record<SmartId, { title: Key; desc: Key }> = {
+  top: { title: 'smartTop', desc: 'smartTopDesc' },
+  new: { title: 'smartNew', desc: 'smartNewDesc' },
+  unplayed: { title: 'smartUnplayed', desc: 'smartUnplayedDesc' },
+  lossless: { title: 'smartLossless', desc: 'smartLosslessDesc' },
+};
+
+export function SmartView({ id }: { id: SmartId }) {
+  const byId = useStore((s) => s.byId);
+  const plays = useStore((s) => s.plays);
+  const tracks = useMemo(() => smartTracks(id, byId, plays), [id, byId, plays]);
+  return <Collection viewKey={`smart-${id}`} title={tr(SMART_TEXT[id].title)} kind={tr('smartKind')} subtitle={`${tr(SMART_TEXT[id].desc)} • ${tr('smartHint')}`} tracks={tracks} icon={SMART_ICON[id]} emptyText={tr('smartEmpty')} />;
+}
+
 export function PlaylistsView() {
   const playlists = useStore((s) => s.playlists);
   const byId = useStore((s) => s.byId);
+  const plays = useStore((s) => s.plays);
   const [mode, setMode] = useViewMode('playlists');
   const { nav, playTracks, createPlaylist, openDialog, importPlaylistFile, importFolder } = useStore.getState();
-  const items: Entity[] = playlists.map((p) => ({
+  const smart: Entity[] = useMemo(
+    () =>
+      SMART_IDS.map((id) => {
+        const list = smartTracks(id, byId, plays);
+        return {
+          key: `smart:${id}`, track: list[0], title: tr(SMART_TEXT[id].title), subtitle: `${tr('nSongs', { n: list.length })} • ${tr('smartTag')}`,
+          meta: tr('smartTag'), icon: SMART_ICON[id],
+          onOpen: () => nav({ name: 'smart', id }), onPlay: list.length ? () => playTracks(list.map((t) => t.id), 0) : undefined,
+        };
+      }),
+    [byId, plays], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const items: Entity[] = [...smart, ...playlists.map((p) => ({
     key: p.id, track: byId[p.trackIds[0]], title: p.name, subtitle: `${tr('nSongs', { n: p.trackIds.length })}${p.folder ? ` • ${tr('folderTag')}` : ''}`,
     meta: p.folder ? tr('fromFolder') : tr('playlist'), icon: p.folder ? 'folder' : 'queue_music',
     onOpen: () => nav({ name: 'playlist', id: p.id }), onPlay: () => playTracks(p.trackIds, 0),
-  }));
+  }))];
   return (
     <div className="h-full flex flex-col">
       <PageHeader title={tr('playlists')} subtitle={`${playlists.length} ${tr('playlists').toLowerCase()}`}>

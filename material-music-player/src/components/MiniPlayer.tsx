@@ -12,7 +12,7 @@ export function MiniPlayer() {
   return (
     <div className="h-full flex flex-col bg-surface-container">
       <div data-tauri-drag-region className="h-9 shrink-0 flex items-center justify-between pl-3 pr-1">
-        <span className="text-label-md text-on-surface-variant pointer-events-none">Material Music Player</span>
+        <span className="text-label-md text-on-surface-variant pointer-events-none">Material Music</span>
         <div className="flex items-center">
           <IconButton icon="open_in_full" size="sm" title={tr('backToFull')} onClick={() => st.set({ miniMode: false })} />
           <WindowControls showMaximize={false} />

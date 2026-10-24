@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="src-tauri/icons/icon.png" width="112" alt="Biểu tượng Material Music Player" />
+<img src="src-tauri/icons/icon.png" width="112" alt="Biểu tượng Material Music" />
 
-# Material Music Player
+# Material Music
 
 **Trình phát nhạc local đẹp mắt cho Windows, giao diện Material Design 3.**
 
@@ -39,7 +39,7 @@
 
 ## Giới thiệu
 
-**Material Music Player** phát nhạc lưu trên máy tính của bạn. Ứng dụng xây dựng bằng [Tauri](https://tauri.app), React và Rust nên nhỏ, nhanh, ít tốn bộ nhớ, và mang giao diện **Material Design 3** hiện đại:
+**Material Music** phát nhạc lưu trên máy tính của bạn. Ứng dụng xây dựng bằng [Tauri](https://tauri.app), React và Rust nên nhỏ, nhanh, ít tốn bộ nhớ, và mang giao diện **Material Design 3** hiện đại:
 
 - **Hệ màu Material You** sinh từ một màu chủ đề bạn chọn – hoặc từ ảnh bìa bài đang phát – ở chế độ **sáng**, **tối** hoặc **theo hệ thống**.
 - Giao diện **Tiếng Việt và English**, đổi bất cứ lúc nào.
@@ -76,19 +76,38 @@
 - Duyệt theo Bài hát, Album, Nghệ sĩ, Playlist, Yêu thích, Gần đây – mọi tab đều có **dạng danh sách / dạng ô**, tìm kiếm không dấu (`Ctrl+F`) và sắp xếp.
 - Danh sách ảo hoá: mượt với hàng chục nghìn bài.
 - Sao lưu / khôi phục thư viện (JSON), xóa tệp bị thiếu.
+- **Theo dõi thư mục:** bài bạn thêm, đổi tên hoặc xóa trong các thư mục thư viện tự được cập nhật (có thể tắt).
+- **Sửa thẻ bài hát:** chuột phải vào bài → *Sửa thẻ bài hát* để ghi lại tên, nghệ sĩ, album, nghệ sĩ album, thể loại, năm và số thứ tự thẳng vào tệp.
+- **Playlist thông minh** tự đầy: *Nghe nhiều nhất*, *Mới trong tháng*, *Chưa nghe bao giờ* và *Chất lượng không mất dữ liệu* (FLAC / WAV).
+
+#### Định dạng âm thanh được hỗ trợ
+
+| Định dạng | Đuôi tệp | Thẻ nhạc & ảnh bìa | Ghi chú |
+|---|---|---|---|
+| MP3 | `.mp3` | ID3v1 / ID3v2 | Định dạng nén phổ biến nhất |
+| FLAC | `.flac` | Vorbis comments, khối ảnh | Không mất dữ liệu |
+| WAV | `.wav` | RIFF INFO / ID3 | Không nén |
+| Ogg Vorbis | `.ogg`, `.oga` | Vorbis comments | Nén có mất dữ liệu |
+| Opus | `.opus` | Thẻ Opus | Nén có mất dữ liệu, rất hiệu quả |
+| M4A / AAC | `.m4a`, `.aac` | MP4 atoms / ADTS | Nén có mất dữ liệu (AAC) |
+
+App phát nhạc bằng bộ giải mã media của Microsoft Edge WebView2, nên tệp nào WebView2 giải mã được thì phát được. Danh sách đuôi tệp nằm ở `AUDIO_EXTS` (xem [Development](#development)).
 
 ### Phát nhạc
 - Phát / tạm dừng, bài trước / sau, tua, âm lượng, ngẫu nhiên, lặp (tắt / tất cả / một bài).
 - Hàng chờ: phát tiếp theo, thêm vào hàng chờ, kéo thả sắp xếp.
+- **Phát liền mạch (gapless)** và **crossfade** tùy chọn (3 / 6 / 10 giây): bài kế tiếp được nạp sẵn trên bộ phát thứ hai rồi nối vào không có khoảng trống.
+- **ReplayGain** (theo bài hoặc theo album) cân bằng độ lớn giữa các bài, có giới hạn theo đỉnh (peak) nên không bị rè.
 - Playlist: tạo, đổi tên, xóa, sắp xếp, nhập / xuất **M3U / M3U8**.
 - **Equalizer 10 băng tần** có preset và preamp, tốc độ phát 0.5× – 2×.
-- **Lời bài hát đồng bộ** (tệp `.lrc` cạnh bài hoặc nhúng trong thẻ) – bấm vào dòng để tua.
+- **Lời bài hát đồng bộ** (tệp `.lrc` cạnh bài hoặc nhúng trong thẻ) – bấm vào dòng để tua. Chưa có lời? **Tìm trên mạng** (LRCLIB, chỉ khi bạn bấm nút) rồi lưu thành tệp `.lrc` cạnh bài hát.
 - Visualizer phổ âm thanh, màn hình *Đang phát* toàn khung và **trình phát mini** luôn ở trên cùng.
-- Hẹn giờ tắt (15 – 120 phút hoặc hết bài hiện tại), phím media của Windows, khôi phục phiên trước.
+- Hẹn giờ tắt (15 – 120 phút hoặc hết bài hiện tại), **phím media toàn cục** (Phát/Tạm dừng, Bài kế, Bài trước, Dừng – hoạt động khi chạy nền và từ khay hệ thống; lớp phủ media của Windows hiển thị ảnh bìa và tiến trình), khôi phục phiên trước.
 
 ### Giao diện & ngôn ngữ
 - Chủ đề sáng, tối hoặc theo hệ thống; màu có sẵn + màu tùy chọn; **màu động theo ảnh bìa**.
 - Giao diện Tiếng Việt / English, mặc định tự theo hệ thống.
+- **Hiệu ứng đổi giao diện:** khi chuyển sáng / tối / màu chủ đề, giao diện mới lan ra dạng vòng tròn từ chỗ bạn bấm (View Transitions, có phương án mờ dần dự phòng). Lời bài hát mờ và nhòe dần ra xa dòng đang hát, ảnh bìa phóng vào mỗi khi đổi bài.
 - Chuyển động mượt kiểu Material: thẻ xuất hiện lần lượt, nhấc lên khi rê chuột, nút chuyển trượt, phản hồi khi bấm và chuyển màn hình (tự giảm khi tắt hiệu ứng động của Windows).
 
 ### Hiệu năng
@@ -100,6 +119,11 @@
 - **Cửa sổ khi mở app** (*Cài đặt → Hệ thống*): chọn **Ghi nhớ kích thước** – mở lại đúng kích thước, vị trí và trạng thái cửa sổ lần trước – hoặc **Luôn phóng to tối đa** – luôn mở ở trạng thái phóng to (phóng to bình thường, không phải toàn màn hình `F11`; thu nhỏ lại sẽ về đúng kích thước lần trước). Chế độ toàn màn hình và mini không bao giờ bị lưu; nếu màn hình đã rút khỏi máy, cửa sổ tự về giữa màn hình.
 - Khay hệ thống có phát / tạm dừng / trước / sau, tùy chọn *đóng xuống khay*, luôn ở trên cùng, chỉ chạy một cửa sổ.
 - Thanh tiêu đề Material tự vẽ.
+
+### Bảo mật
+- Giao thức asset bắt đầu **rỗng**: web view chỉ đọc được thư mục cache ảnh bìa và các thư mục chứa thư viện của bạn (bỏ ký tự đại diện `**`).
+- Các lệnh về tệp chỉ nhận đường dẫn tuyệt đối tới tệp `.m3u`, `.m3u8`, `.lrc`, `.json`, không ghi vào thư mục dữ liệu của app và giới hạn dung lượng khi đọc.
+- Content-Security-Policy có `object-src 'none'`, `base-uri 'none'`, `frame-ancestors 'none'`; lời bài hát trên mạng do phía Rust tải, nên web view vẫn không có quyền truy cập mạng.
 
 ### Phím tắt
 
@@ -121,7 +145,7 @@ Tải bộ cài mới nhất ở trang **Releases** của repository này:
 
 | Tệp | Mô tả |
 |---|---|
-| `Material Music Player_1.0.0_x64-setup.exe` | Bộ cài cho Windows 10 / 11 (64-bit) – khuyên dùng |
+| `Material Music_1.1.0_x64-setup.exe` | Bộ cài cho Windows 10 / 11 (64-bit) – khuyên dùng |
 
 | Yêu cầu hệ thống | |
 |---|---|
@@ -132,12 +156,12 @@ Tải bộ cài mới nhất ở trang **Releases** của repository này:
 
 ### Cài đặt
 
-1. Chạy **`Material Music Player_1.0.0_x64-setup.exe`**. Bộ cài cài theo từng người dùng nên **không cần quyền quản trị**.
+1. Chạy **`Material Music_1.1.0_x64-setup.exe`**. Bộ cài cài theo từng người dùng nên **không cần quyền quản trị**.
 2. Nếu Windows SmartScreen hiện *"Windows protected your PC"* (bộ cài chưa ký số), bấm **More info → Run anyway**.
-3. Làm theo trình cài đặt rồi mở **Material Music Player** từ Start menu.
+3. Làm theo trình cài đặt rồi mở **Material Music** từ Start menu.
 4. Ứng dụng tự quét thư mục **Music**; thêm thư mục khác bằng *Thêm thư mục* hoặc kéo thả vào cửa sổ.
 
-**Gỡ cài đặt** – *Settings → Apps → Installed apps → Material Music Player → Uninstall* (hoặc chạy `uninstall.exe` trong thư mục cài đặt). Dữ liệu nằm ở `%APPDATA%\com.minhtrong67.material-music-player`, bộ nhớ đệm ảnh bìa ở `%LOCALAPPDATA%\com.minhtrong67.material-music-player`; xóa hai thư mục này nếu muốn gỡ sạch hoàn toàn.
+**Gỡ cài đặt** – *Settings → Apps → Installed apps → Material Music → Uninstall* (hoặc chạy `uninstall.exe` trong thư mục cài đặt). Dữ liệu nằm ở `%APPDATA%\com.minhtrong67.material-music-player`, bộ nhớ đệm ảnh bìa ở `%LOCALAPPDATA%\com.minhtrong67.material-music-player`; xóa hai thư mục này nếu muốn gỡ sạch hoàn toàn.
 
 **Nâng cấp từ "Melodia"** – lần mở đầu tiên app tự nhập thư viện đã lưu của bản Melodia cũ.
 
@@ -158,7 +182,7 @@ Tải bộ cài mới nhất ở trang **Releases** của repository này:
 | Design system | Material Design 3 – [`@material/material-color-utilities`](https://github.com/material-foundation/material-color-utilities), icon [Lucide](https://lucide.dev), font `system-ui` (+ Roboto / Inter / Open Sans đóng gói sẵn, giấy phép SIL OFL) |
 | State | [Zustand](https://zustand-demo.pmnd.rs) |
 | Âm thanh | HTML5 `<audio>` + Web Audio API (equalizer, visualizer) trên Microsoft Edge WebView2 |
-| Rust crates | `tauri`, `tauri-plugin-dialog`, `tauri-plugin-single-instance`, `lofty` (thẻ nhạc & ảnh bìa), `walkdir`, `base64`, `serde` |
+| Rust crates | `tauri`, `tauri-plugin-dialog`, `tauri-plugin-single-instance`, `tauri-plugin-global-shortcut` (phím media), `lofty` (đọc / ghi thẻ, ảnh bìa, ReplayGain), `rayon` (quét song song), `notify` (theo dõi thư mục), `ureq` (lời bài hát trên mạng), `walkdir`, `base64`, `serde` |
 | Bộ cài | NSIS (qua Tauri bundler) |
 
 ## Development
@@ -211,7 +235,7 @@ npm run build
 
 | Sản phẩm | Đường dẫn (project nằm trong Cargo workspace → `target` ở gốc workspace) |
 |---|---|
-| Bộ cài | `target/release/bundle/nsis/Material Music Player_1.0.0_x64-setup.exe` |
+| Bộ cài | `target/release/bundle/nsis/Material Music_1.1.0_x64-setup.exe` |
 | File chạy trực tiếp | `target/release/material-music-player.exe` |
 
 - Lần build đầu tải công cụ NSIS nên cần có internet.
@@ -230,7 +254,7 @@ npm run build
 
 Muốn dùng hình khác, thay `src-tauri/icons/icon.png` (vuông, ≥ 512 px), chạy `npx tauri icon src-tauri/icons/icon.png`, rồi chỉnh `scripts/generate-icons.py` nếu muốn tạo lại icon setup / uninstall tương ứng.
 
-**Landing page** – `index.html` ở thư mục gốc là trang giới thiệu một tệp HTML theo phong cách Material Design (responsive, đủ thẻ meta SEO và chia sẻ mạng xã hội, song ngữ EN/VI). Nút Download trỏ tới `download/Material-Music-Player_1.0.0_x64-setup.exe`; hãy chép bộ cài đã build vào thư mục [`download`](download) với đúng tên này. Mở bằng cách nhấp đúp, hoặc host thư mục gốc (ví dụ GitHub Pages).
+**Landing page** – `index.html` ở thư mục gốc là trang giới thiệu một tệp HTML theo phong cách Material Design (responsive, đủ thẻ meta SEO và chia sẻ mạng xã hội, song ngữ EN/VI). Nút Download trỏ tới `download/Material-Music_1.1.0_x64-setup.exe`; hãy chép bộ cài đã build vào thư mục [`download`](download) với đúng tên này. Mở bằng cách nhấp đúp, hoặc host thư mục gốc (ví dụ GitHub Pages).
 
 ## Cấu trúc project
 
@@ -245,8 +269,13 @@ material-music-player/
 │  ├─ main.tsx, App.tsx       điểm vào, bố cục, phím tắt toàn cục, kéo thả, chủ đề
 │  ├─ index.css               token Material 3, chuyển động, slider
 │  ├─ lib/
-│  │  ├─ store.ts             trạng thái ứng dụng (zustand): thư viện, hàng chờ, phát, cài đặt
-│  │  ├─ audio.ts             bộ máy <audio>, equalizer, phổ âm thanh
+│  │  ├─ store/               trạng thái ứng dụng (các slice zustand)
+│  │  │  ├─ index.ts          ghép các slice thành `useStore`
+│  │  │  ├─ core.ts           hàm dùng chung giữa các slice (quét, gộp, lưu, đồng bộ bài kế tiếp)
+│  │  │  ├─ library.ts · player.ts · playlists.ts · ui.ts · app.ts
+│  │  │  └─ derived.ts        hook album / nghệ sĩ / tìm kiếm
+│  │  ├─ audio.ts             bộ máy hai deck: gapless, crossfade, ReplayGain, equalizer, phổ âm thanh
+│  │  ├─ smart.ts             playlist thông minh
 │  │  ├─ i18n.ts              từ điển English / Tiếng Việt
 │  │  ├─ theme.ts             sinh bảng màu Material 3 từ màu chủ đề
 │  │  ├─ cover.ts, lrc.ts, m3u.ts, menus.ts
@@ -257,7 +286,7 @@ material-music-player/
 ├─ scripts/
 │  └─ generate-icons.py       tạo toàn bộ icon (app, setup, uninstall) màu #E91E63
 ├─ src-tauri/                 backend Rust
-│  ├─ src/lib.rs              lệnh: quét, thẻ nhạc & ảnh bìa, lời bài hát, trạng thái, khay, nhớ cửa sổ
+│  ├─ src/lib.rs              lệnh: quét song song, thẻ nhạc (đọc / ghi) & ảnh bìa, lời bài hát (cục bộ / trên mạng), trạng thái, khay, phím media, theo dõi thư mục, nhớ cửa sổ
 │  ├─ src/main.rs
 │  ├─ capabilities/           quyền của Tauri
 │  ├─ icons/                  icon ứng dụng, setup và uninstall

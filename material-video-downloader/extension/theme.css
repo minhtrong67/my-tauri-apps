@@ -1,0 +1,20 @@
+/* Material 3 tokens (seed #769CDF, from the project's Material Theme Builder export). */
+:root {
+  --primary: #415f91; --on-primary: #fff; --primary-container: #d6e3ff; --on-primary-container: #284777;
+  --secondary-container: #dae2f9; --on-secondary-container: #3e4759;
+  --error: #ba1a1a; --on-error: #fff; --error-container: #ffdad6; --on-error-container: #93000a;
+  --surface: #f9f9ff; --on-surface: #191c20; --on-surface-variant: #44474e; --outline: #74777f; --outline-variant: #c4c6d0;
+  --surface-low: #f3f3fa; --surface-container: #ededf4; --surface-high: #e7e8ee; --surface-highest: #e2e2e9;
+  --inverse-surface: #2e3036; --inverse-on-surface: #f0f0f7;
+  --ease: cubic-bezier(.2, 0, 0, 1); --spring: cubic-bezier(.34, 1.56, .64, 1);
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --primary: #aac7ff; --on-primary: #0a305f; --primary-container: #284777; --on-primary-container: #d6e3ff;
+  --secondary-container: #3e4759; --on-secondary-container: #dae2f9;
+  --error: #ffb4ab; --on-error: #690005; --error-container: #93000a; --on-error-container: #ffdad6;
+  --surface: #111318; --on-surface: #e2e2e9; --on-surface-variant: #c4c6d0; --outline: #8e9099; --outline-variant: #44474e;
+  --surface-low: #191c20; --surface-container: #1d2024; --surface-high: #282a2f; --surface-highest: #33353a;
+  --inverse-surface: #e2e2e9; --inverse-on-surface: #2e3036;
+  color-scheme: dark;
+}

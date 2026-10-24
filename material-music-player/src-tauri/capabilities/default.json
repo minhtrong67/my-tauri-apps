@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Permissions for the Material Music Player main window",
+  "description": "Permissions for the Material Music main window",
   "windows": ["main"],
   "permissions": [
     "core:default",

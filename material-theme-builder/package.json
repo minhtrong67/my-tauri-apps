@@ -1,0 +1,44 @@
+{
+  "name": "material-theme-builder",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Desktop app to design, preview and export Material Design 3 color themes.",
+  "author": "minhtrong67 (built with Claude by Anthropic)",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "dev:web": "vite",
+    "build:web": "tsc --noEmit && vite build",
+    "preview:web": "vite preview",
+    "icons": "node scripts/make-icons.mjs",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@fontsource/be-vietnam-pro": "^5.3.0",
+    "@fontsource/inter": "^5.2.5",
+    "@fontsource/nunito": "^5.2.5",
+    "@fontsource/roboto": "^5.2.5",
+    "@material/material-color-utilities": "^0.3.0",
+    "@tauri-apps/api": "^2.5.0",
+    "@tauri-apps/plugin-dialog": "^2.2.0",
+    "@tauri-apps/plugin-fs": "^2.3.0",
+    "lucide-react": "^0.511.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "@tauri-apps/cli": "^2.5.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.5.0",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.34.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.0"
+  }
+}

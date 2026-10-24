@@ -1,0 +1,40 @@
+{
+  "name": "material-video-downloader",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A Material Design 3 desktop video downloader with a companion Chrome extension.",
+  "author": "minhtrong67",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "dev:web": "vite",
+    "build:web": "tsc -b && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "icons": "python3 scripts/generate-icons.py",
+    "pack:extension": "node scripts/pack-extension.mjs"
+  },
+  "dependencies": {
+    "@material/material-color-utilities": "^0.3.0",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-clipboard-manager": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "lucide-react": "^1.61.0",
+    "react": "^19",
+    "react-dom": "^19",
+    "zustand": "^5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4",
+    "@tauri-apps/cli": "^2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6",
+    "tailwindcss": "^4",
+    "typescript": "^5.9",
+    "vite": "^8"
+  }
+}

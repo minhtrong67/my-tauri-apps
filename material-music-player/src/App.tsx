@@ -1,22 +1,26 @@
-import { useEffect, useRef } from 'react';
+import { Suspense, lazy, useEffect, useRef } from 'react';
 import { tr, resolveLang } from './lib/i18n';
 import { setWindowTracking } from './lib/tauri';
 import { listen } from '@tauri-apps/api/event';
+import { convertFileSrc } from '@tauri-apps/api/core';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { TitleBar } from './components/TitleBar';
 import { NavDrawer } from './components/NavDrawer';
 import { PlayerBar } from './components/PlayerBar';
 import { QueuePanel } from './components/QueuePanel';
-import { NowPlaying } from './components/NowPlaying';
 import { MiniPlayer } from './components/MiniPlayer';
-import { Dialogs } from './components/Dialogs';
 import { ContextMenu, Icon, Logo, Snackbar } from './components/ui';
-import { AlbumView, AlbumsView, ArtistView, ArtistsView, HomeView, LikedView, PlaylistView, PlaylistsView, RecentView, SearchView, SongsView } from './views/Library';
-import { SettingsView } from './views/Settings';
+import { AlbumView, AlbumsView, ArtistView, ArtistsView, HomeView, LikedView, PlaylistView, PlaylistsView, RecentView, SearchView, SmartView, SongsView } from './views/Library';
+
+// heavy screens are loaded on demand so the app opens faster
+const SettingsView = lazy(() => import('./views/Settings').then((m) => ({ default: m.SettingsView })));
+const NowPlaying = lazy(() => import('./components/NowPlaying').then((m) => ({ default: m.NowPlaying })));
+const Dialogs = lazy(() => import('./components/Dialogs').then((m) => ({ default: m.Dialogs })));
 import { useCurrent, useStore } from './lib/store';
 import { engine } from './lib/audio';
 import { applyFont, applyTheme } from './lib/theme';
+import { runThemeTransition } from './lib/themeTransition';
 import { seedFromCover } from './lib/cover';
 import { launchArgs, setCloseToTray } from './lib/tauri';
 import { enterMini, exitMini, win } from './lib/window';
@@ -38,7 +42,8 @@ function CurrentView() {
     case 'playlist': return <PlaylistView id={view.id} />;
     case 'liked': return <LikedView />;
     case 'recent': return <RecentView />;
-    case 'settings': return <SettingsView />;
+    case 'smart': return <SmartView id={view.id} />;
+    case 'settings': return <Suspense fallback={null}><SettingsView /></Suspense>;
   }
 }
 
@@ -55,10 +60,13 @@ export default function App() {
   const lang = resolveLang(useStore((s) => s.settings.language));
   const scanning = useStore((s) => s.scanning);
   const dragOver = useStore((s) => s.dragOver);
+  const hasDialog = useStore((s) => !!s.dialog);
+  const isPlaying = useStore((s) => s.isPlaying);
+  const duration = useStore((s) => s.duration);
   const current = useCurrent();
   // the window title (taskbar / Alt+Tab) shows what is playing
   useEffect(() => {
-    win().setTitle(current ? `${current.title} — ${current.artist}` : 'Material Music Player').catch(() => undefined);
+    win().setTitle(current ? `${current.title} — ${current.artist}` : 'Material Music').catch(() => undefined);
   }, [current?.id]);
 
   // Khởi tạo (chỉ một lần, kể cả khi React StrictMode chạy effect hai lần ở chế độ dev)
@@ -79,10 +87,7 @@ export default function App() {
   useEffect(() => {
     let alive = true;
     const apply = (seed: string, animate = false) => {
-      const run = () => applyTheme(seed, settings.themeMode);
-      const vt = (document as Document & { startViewTransition?: (cb: () => void) => unknown }).startViewTransition;
-      if (animate && themeApplied.current && vt && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) vt.call(document, run);
-      else run();
+      runThemeTransition(() => applyTheme(seed, settings.themeMode), animate && themeApplied.current);
       themeApplied.current = true;
     };
     try { localStorage.setItem('app-theme', JSON.stringify({ seed: settings.seedColor, mode: settings.themeMode, font: settings.fontFamily })); } catch { /* ignore */ }
@@ -140,7 +145,10 @@ export default function App() {
       if (e.payload === 'toggle') st.togglePlay();
       else if (e.payload === 'next') st.next(false);
       else if (e.payload === 'prev') st.prev();
+      else if (e.payload === 'stop') { engine.pause(); st.seek(0); }
     }));
+    // files added / removed / renamed inside the watched library folders
+    unsubs.push(listen('library-changed', () => { void useStore.getState().syncLibrary(true); }));
     unsubs.push(listen<{ done: number; total: number }>('scan-progress', (e) => {
       if (useStore.getState().scanning) st.set({ scanning: e.payload });
     }));
@@ -173,11 +181,29 @@ export default function App() {
     ms.setActionHandler('previoustrack', () => st.prev());
     ms.setActionHandler('nexttrack', () => st.next(false));
     ms.setActionHandler('seekto', (d) => d.seekTime != null && st.seek(d.seekTime));
+    ms.setActionHandler('stop', () => { engine.pause(); st.seek(0); });
+    ms.setActionHandler('seekbackward', (d) => st.seek(Math.max(0, engine.audio.currentTime - (d.seekOffset ?? 10))));
+    ms.setActionHandler('seekforward', (d) => st.seek(Math.min(engine.audio.duration || 0, engine.audio.currentTime + (d.seekOffset ?? 10))));
   }, []);
   useEffect(() => {
     if (!('mediaSession' in navigator) || !current) return;
-    navigator.mediaSession.metadata = new MediaMetadata({ title: current.title, artist: current.artist, album: current.album });
-  }, [current?.id]);
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: current.title, artist: current.artist, album: current.album,
+      artwork: current.cover ? [{ src: convertFileSrc(current.cover), sizes: '512x512' }] : [],
+    });
+  }, [current?.id, current?.cover]);
+  // the Windows media overlay / lock screen follows the play state and shows the progress bar
+  useEffect(() => {
+    if (!('mediaSession' in navigator)) return;
+    navigator.mediaSession.playbackState = current ? (isPlaying ? 'playing' : 'paused') : 'none';
+    if (current && isFinite(duration) && duration > 0) {
+      try {
+        navigator.mediaSession.setPositionState({ duration, position: Math.min(duration, engine.audio.currentTime || 0), playbackRate: engine.audio.playbackRate || 1 });
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [current?.id, isPlaying, duration]);
 
   // Phím tắt
   useEffect(() => {
@@ -229,13 +255,13 @@ export default function App() {
       <div className="flex-1 min-h-0 flex">
         <NavDrawer />
         <main className="flex-1 min-w-0 mr-3 rounded-3xl bg-surface-container-low overflow-hidden relative">
-          <div key={`${viewName}-${hasQuery ? 1 : 0}`} className="h-full animate-rise"><CurrentView /></div>
+          <div key={`${viewName}-${hasQuery ? 1 : 0}`} className="h-full view-in"><CurrentView /></div>
         </main>
         {showQueue && <QueuePanel />}
       </div>
       <PlayerBar />
-      {showNow && current && <NowPlaying />}
-      <Dialogs />
+      {showNow && current && <Suspense fallback={null}><NowPlaying /></Suspense>}
+      {hasDialog && <Suspense fallback={null}><Dialogs /></Suspense>}
       <ContextMenu />
       <Snackbar />
       {scanning && (

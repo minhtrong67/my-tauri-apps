@@ -37,7 +37,7 @@ export default {
       transitionTimingFunction: { emphasized: 'cubic-bezier(0.2, 0, 0, 1)' },
       keyframes: {
         'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
-        'scale-in': { from: { opacity: '0', transform: 'scale(0.92)' }, to: { opacity: '1', transform: 'scale(1)' } },
+        'scale-in': { '0%': { opacity: '0', transform: 'scale(0.9) translateY(8px)' }, '65%': { opacity: '1', transform: 'scale(1.02) translateY(0)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
         'slide-up': { from: { opacity: '0', transform: 'translateY(24px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
         'slide-left': { from: { transform: 'translateX(24px)', opacity: '0' }, to: { transform: 'translateX(0)', opacity: '1' } },
         eq: { '0%,100%': { transform: 'scaleY(0.3)' }, '50%': { transform: 'scaleY(1)' } },
@@ -47,7 +47,7 @@ export default {
       },
       animation: {
         'fade-in': 'fade-in .2s ease-out',
-        'scale-in': 'scale-in .22s cubic-bezier(0.2,0,0,1)',
+        'scale-in': 'scale-in .34s cubic-bezier(0.2,0,0,1)',
         'slide-up': 'slide-up .3s cubic-bezier(0.2,0,0,1)',
         'slide-left': 'slide-left .28s cubic-bezier(0.2,0,0,1)',
         rise: 'rise .38s cubic-bezier(0.2,0,0,1) both',

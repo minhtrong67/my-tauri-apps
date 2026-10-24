@@ -2,7 +2,7 @@ use base64::{engine::general_purpose::STANDARD, Engine as _};
 use lofty::picture::PictureType;
 use lofty::prelude::*;
 use lofty::tag::ItemKey;
-use lofty::config::{ParseOptions, ParsingMode};
+use lofty::config::{ParseOptions, ParsingMode, WriteOptions};
 use lofty::file::TaggedFile;
 use lofty::probe::Probe;
 use lofty::tag::Tag;
@@ -10,12 +10,15 @@ use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Component, Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
+use notify::{RecommendedWatcher, RecursiveMode, Watcher};
+use rayon::prelude::*;
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Mutex;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Emitter, Manager, State, Window};
+use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Shortcut, ShortcutState};
 use walkdir::WalkDir;
 
 const AUDIO_EXTS: [&str; 8] = ["mp3", "flac", "wav", "ogg", "oga", "opus", "m4a", "aac"];
@@ -46,6 +49,12 @@ struct TrackInfo {
     has_cover: bool,
     modified: u64,
     cover: String,
+    /// ReplayGain (dB) and peak read from the tags; `rgv` = 1 once the file has been read by a build that knows ReplayGain
+    rg_track: Option<f32>,
+    rg_album: Option<f32>,
+    rg_track_peak: Option<f32>,
+    rg_album_peak: Option<f32>,
+    rgv: u8,
 }
 
 #[derive(Serialize)]
@@ -211,6 +220,16 @@ fn save_cover(dir: &Path, bytes: &[u8]) -> Option<String> {
     Some(file.to_string_lossy().to_string())
 }
 
+/// "-6.48 dB" / "0.988" -> number
+fn parse_float(s: &str) -> Option<f32> {
+    let t = s.trim().trim_end_matches("dB").trim_end_matches("db").trim().replace(',', ".");
+    t.parse::<f32>().ok().filter(|v| v.is_finite())
+}
+
+fn tag_float(tags: &[Tag], key: &ItemKey) -> Option<f32> {
+    tags.iter().find_map(|t| t.get_string(key).and_then(parse_float))
+}
+
 fn read_track(path: &Path, path_str: String, id: String, size: u64, modified: u64, cover_dir: &Path) -> Option<TrackInfo> {
     let stem = path
         .file_stem()
@@ -245,6 +264,11 @@ fn read_track(path: &Path, path_str: String, id: String, size: u64, modified: u6
         has_cover: false,
         modified,
         cover: String::new(),
+        rg_track: None,
+        rg_album: None,
+        rg_track_peak: None,
+        rg_album_peak: None,
+        rgv: 1,
     };
 
     if let Some(tagged) = open_tagged(path) {
@@ -264,6 +288,10 @@ fn read_track(path: &Path, path_str: String, id: String, size: u64, modified: u6
             info.year = tag.year().unwrap_or(0);
             info.track_no = tag.track().unwrap_or(0);
         }
+        info.rg_track = tag_float(tagged.tags(), &ItemKey::ReplayGainTrackGain);
+        info.rg_album = tag_float(tagged.tags(), &ItemKey::ReplayGainAlbumGain);
+        info.rg_track_peak = tag_float(tagged.tags(), &ItemKey::ReplayGainTrackPeak);
+        info.rg_album_peak = tag_float(tagged.tags(), &ItemKey::ReplayGainAlbumPeak);
         if let Some(bytes) = cover_bytes(tagged.tags(), path) {
             if let Some(f) = save_cover(cover_dir, &bytes) {
                 info.cover = f;
@@ -335,28 +363,62 @@ async fn scan_paths(app: AppHandle, paths: Vec<String>, known: Option<Vec<Known>
             }
         }
 
-        let total = files.len();
-        let mut tracks = Vec::new();
-        let mut found = Vec::with_capacity(total);
-        for (i, f) in files.iter().enumerate() {
-            let path_str = f.to_string_lossy().to_string();
-            let id = track_id(&path_str);
-            if let Ok(m) = fs::metadata(f) {
-                found.push(Found { id: id.clone(), path: path_str.clone() });
-                let modified = mtime(&m);
-                let unchanged = modified > 0
-                    && known_map
-                        .get(&norm_key(&path_str))
-                        .map(|(sz, md)| *sz == m.len() && *md == modified)
-                        .unwrap_or(false);
-                if !unchanged {
-                    if let Some(t) = read_track(f, path_str, id, m.len(), modified, &cover_dir) {
-                        tracks.push(t);
-                    }
+        // the asset protocol scope starts empty: allow exactly the folders that hold the scanned songs
+        let scope = app.asset_protocol_scope();
+        let mut allowed: HashSet<String> = HashSet::new();
+        for f in &files {
+            if let Some(d) = f.parent() {
+                if allowed.insert(norm_key(&d.to_string_lossy())) {
+                    let _ = scope.allow_directory(d, false);
                 }
             }
-            if i % 10 == 0 || i + 1 == total {
-                let _ = app.emit("scan-progress", serde_json::json!({ "done": i + 1, "total": total }));
+        }
+
+        let total = files.len();
+        let done = AtomicUsize::new(0);
+        let threads = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(2).clamp(2, 8);
+        let work = || -> Vec<(Found, Option<TrackInfo>)> {
+            files
+                .par_iter()
+                .filter_map(|f| {
+                    let path_str = f.to_string_lossy().to_string();
+                    let id = track_id(&path_str);
+                    let out = match fs::metadata(f) {
+                        Ok(m) => {
+                            let modified = mtime(&m);
+                            let unchanged = modified > 0
+                                && known_map
+                                    .get(&norm_key(&path_str))
+                                    .map(|(sz, md)| *sz == m.len() && *md == modified)
+                                    .unwrap_or(false);
+                            let track = if unchanged {
+                                None
+                            } else {
+                                read_track(f, path_str.clone(), id.clone(), m.len(), modified, &cover_dir)
+                            };
+                            Some((Found { id, path: path_str }, track))
+                        }
+                        Err(_) => None,
+                    };
+                    let n = done.fetch_add(1, Ordering::Relaxed) + 1;
+                    if n % 10 == 0 || n == total {
+                        let _ = app.emit("scan-progress", serde_json::json!({ "done": n, "total": total }));
+                    }
+                    out
+                })
+                .collect()
+        };
+        // tags are read in parallel (ordered result), on a small dedicated pool so the UI stays responsive
+        let results = match rayon::ThreadPoolBuilder::new().num_threads(threads).build() {
+            Ok(pool) => pool.install(work),
+            Err(_) => work(),
+        };
+        let mut tracks = Vec::new();
+        let mut found = Vec::with_capacity(total);
+        for (f, t) in results {
+            found.push(f);
+            if let Some(t) = t {
+                tracks.push(t);
             }
         }
         ScanResult { tracks, found }
@@ -681,19 +743,51 @@ fn is_dir(path: String) -> bool {
     Path::new(&path).is_dir()
 }
 
-#[tauri::command]
-fn write_text_file(path: String, content: String) -> Result<(), String> {
-    fs::write(path, content).map_err(|e| e.to_string())
+const TEXT_EXTS: [&str; 4] = ["m3u", "m3u8", "lrc", "json"];
+const MAX_TEXT_BYTES: u64 = 128 * 1024 * 1024;
+
+/// Only absolute paths to playlist / lyrics / backup files are accepted, never anything inside the app's own data folder
+fn check_text_path(app: &AppHandle, path: &str, write: bool) -> Result<PathBuf, String> {
+    let p = PathBuf::from(path);
+    if !p.is_absolute() || p.components().any(|c| matches!(c, Component::ParentDir)) {
+        return Err("Invalid path".to_string());
+    }
+    let ext = p.extension().map(|e| e.to_string_lossy().to_lowercase()).unwrap_or_default();
+    if !TEXT_EXTS.contains(&ext.as_str()) {
+        return Err(format!("File type .{} is not allowed", ext));
+    }
+    if write {
+        if let Ok(dir) = app.path().app_data_dir() {
+            if norm_key(&p.to_string_lossy()).starts_with(&norm_key(&dir.to_string_lossy())) {
+                return Err("Invalid path".to_string());
+            }
+        }
+    }
+    Ok(p)
 }
 
 #[tauri::command]
-fn read_text_file(path: String) -> Result<String, String> {
-    let b = fs::read(path).map_err(|e| e.to_string())?;
+fn write_text_file(app: AppHandle, path: String, content: String) -> Result<(), String> {
+    let p = check_text_path(&app, &path, true)?;
+    fs::write(p, content).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn read_text_file(app: AppHandle, path: String) -> Result<String, String> {
+    let p = check_text_path(&app, &path, false)?;
+    let len = fs::metadata(&p).map_err(|e| e.to_string())?.len();
+    if len > MAX_TEXT_BYTES {
+        return Err("File is too large".to_string());
+    }
+    let b = fs::read(p).map_err(|e| e.to_string())?;
     Ok(String::from_utf8_lossy(&b).trim_start_matches('\u{feff}').to_string())
 }
 
 #[tauri::command]
 fn reveal_in_explorer(path: String) -> Result<(), String> {
+    if path.contains('"') || !Path::new(&path).exists() {
+        return Err("Invalid path".to_string());
+    }
     #[cfg(target_os = "windows")]
     {
         use std::os::windows::process::CommandExt;
@@ -723,6 +817,204 @@ fn set_close_to_tray(flags: State<AppFlags>, enabled: bool) {
     flags.close_to_tray.store(enabled, Ordering::Relaxed);
 }
 
+// ---------- asset scope, media keys, tags, online lyrics, folder watcher ----------
+
+/// The asset protocol only serves folders that were explicitly allowed (library folders + the cover cache)
+#[tauri::command]
+fn allow_paths(app: AppHandle, paths: Vec<String>) {
+    let scope = app.asset_protocol_scope();
+    let mut seen: HashSet<String> = HashSet::new();
+    for p in paths {
+        let pb = PathBuf::from(&p);
+        let dir = if pb.is_dir() {
+            pb
+        } else {
+            match pb.parent() {
+                Some(d) => d.to_path_buf(),
+                None => continue,
+            }
+        };
+        if seen.insert(norm_key(&dir.to_string_lossy())) {
+            let _ = scope.allow_directory(&dir, false);
+        }
+    }
+}
+
+const MEDIA_KEYS: [Code; 4] = [Code::MediaPlayPause, Code::MediaTrackNext, Code::MediaTrackPrevious, Code::MediaStop];
+
+/// Global media keys (work while the window is hidden / in the tray)
+#[tauri::command]
+fn set_media_keys(app: AppHandle, enabled: bool) {
+    let gs = app.global_shortcut();
+    for code in MEDIA_KEYS {
+        if enabled {
+            if !gs.is_registered(Shortcut::new(None, code)) {
+                let _ = gs.register(Shortcut::new(None, code));
+            }
+        } else {
+            let _ = gs.unregister(Shortcut::new(None, code));
+        }
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct TagEdit {
+    title: String,
+    artist: String,
+    album: String,
+    album_artist: String,
+    genre: String,
+    year: u32,
+    track_no: u32,
+}
+
+/// Write title / artist / album / ... into the audio file and return the refreshed track
+#[tauri::command]
+async fn write_tags(app: AppHandle, path: String, edit: TagEdit) -> Result<TrackInfo, String> {
+    let cover_dir = app.path().app_cache_dir().map_err(|e| e.to_string())?.join("covers");
+    tauri::async_runtime::spawn_blocking(move || -> Result<TrackInfo, String> {
+        let p = PathBuf::from(&path);
+        if !p.is_file() || !is_audio(&p) {
+            return Err("Not an audio file".to_string());
+        }
+        let mut tagged = lofty::read_from_path(&p).map_err(|e| e.to_string())?;
+        if tagged.primary_tag().is_none() && tagged.first_tag().is_none() {
+            let tt = tagged.file_type().primary_tag_type();
+            tagged.insert_tag(Tag::new(tt));
+        }
+        {
+            let tag = tagged
+                .primary_tag_mut()
+                .ok_or_else(|| "This file does not support tags".to_string())?;
+            let text = |v: &str| v.trim().to_string();
+            if text(&edit.title).is_empty() { tag.remove_title(); } else { tag.set_title(text(&edit.title)); }
+            if text(&edit.artist).is_empty() { tag.remove_artist(); } else { tag.set_artist(text(&edit.artist)); }
+            if text(&edit.album).is_empty() { tag.remove_album(); } else { tag.set_album(text(&edit.album)); }
+            if text(&edit.genre).is_empty() { tag.remove_genre(); } else { tag.set_genre(text(&edit.genre)); }
+            if text(&edit.album_artist).is_empty() {
+                tag.remove_key(&ItemKey::AlbumArtist);
+            } else {
+                tag.insert_text(ItemKey::AlbumArtist, text(&edit.album_artist));
+            }
+            if edit.year == 0 { tag.remove_year(); } else { tag.set_year(edit.year); }
+            if edit.track_no == 0 { tag.remove_track(); } else { tag.set_track(edit.track_no); }
+        }
+        tagged
+            .save_to_path(&p, WriteOptions::default())
+            .map_err(|e| e.to_string())?;
+        let m = fs::metadata(&p).map_err(|e| e.to_string())?;
+        let path_str = p.to_string_lossy().to_string();
+        let id = track_id(&path_str);
+        read_track(&p, path_str, id, m.len(), mtime(&m), &cover_dir).ok_or_else(|| "Could not read the file again".to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+#[derive(Serialize)]
+struct OnlineLyrics {
+    synced: String,
+    plain: String,
+}
+
+fn lrclib_pick(v: &serde_json::Value) -> Option<OnlineLyrics> {
+    let synced = v.get("syncedLyrics").and_then(|x| x.as_str()).unwrap_or("").to_string();
+    let plain = v.get("plainLyrics").and_then(|x| x.as_str()).unwrap_or("").to_string();
+    if synced.trim().is_empty() && plain.trim().is_empty() {
+        None
+    } else {
+        Some(OnlineLyrics { synced, plain })
+    }
+}
+
+/// Look the lyrics up on LRCLIB (free, no key). Only called when the user asks for it.
+#[tauri::command]
+async fn fetch_lyrics_online(title: String, artist: String, album: String, duration: f64) -> Result<Option<OnlineLyrics>, String> {
+    tauri::async_runtime::spawn_blocking(move || -> Result<Option<OnlineLyrics>, String> {
+        let agent = ureq::AgentBuilder::new()
+            .timeout(Duration::from_secs(10))
+            .user_agent("Material Music/1.1 (https://github.com/minhtrong67)")
+            .build();
+        let mut req = agent
+            .get("https://lrclib.net/api/get")
+            .query("track_name", &title)
+            .query("artist_name", &artist);
+        if !album.trim().is_empty() {
+            req = req.query("album_name", &album);
+        }
+        if duration > 0.0 {
+            req = req.query("duration", &format!("{}", duration.round() as u64));
+        }
+        match req.call() {
+            Ok(resp) => {
+                let v: serde_json::Value = resp.into_json().map_err(|e| e.to_string())?;
+                if let Some(l) = lrclib_pick(&v) {
+                    return Ok(Some(l));
+                }
+            }
+            Err(ureq::Error::Status(404, _)) => {}
+            Err(e) => return Err(e.to_string()),
+        }
+        // fall back to a fuzzy search and take the first result that has lyrics
+        let q = format!("{} {}", artist, title);
+        let resp = agent
+            .get("https://lrclib.net/api/search")
+            .query("q", q.trim())
+            .call()
+            .map_err(|e| e.to_string())?;
+        let v: serde_json::Value = resp.into_json().map_err(|e| e.to_string())?;
+        Ok(v.as_array().and_then(|a| a.iter().find_map(lrclib_pick)))
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+struct FolderWatcher(Mutex<Option<RecommendedWatcher>>);
+
+/// Watch the library folders; any change in them (after a quiet moment) emits `library-changed`
+#[tauri::command]
+fn watch_folders(app: AppHandle, state: State<FolderWatcher>, paths: Vec<String>, enabled: bool) {
+    let Ok(mut guard) = state.0.lock() else { return };
+    *guard = None; // dropping the old watcher also stops its debounce thread
+    if !enabled || paths.is_empty() {
+        return;
+    }
+    let (tx, rx) = std::sync::mpsc::channel::<()>();
+    let watcher = notify::recommended_watcher(move |res: notify::Result<notify::Event>| {
+        let Ok(ev) = res else { return };
+        let relevant = matches!(
+            ev.kind,
+            notify::EventKind::Create(_)
+                | notify::EventKind::Remove(_)
+                | notify::EventKind::Modify(notify::event::ModifyKind::Name(_))
+                | notify::EventKind::Modify(notify::event::ModifyKind::Data(_))
+        );
+        if relevant && ev.paths.iter().any(|p| is_audio(p) || p.extension().is_none()) {
+            let _ = tx.send(());
+        }
+    });
+    let Ok(mut watcher) = watcher else { return };
+    let mut any = false;
+    for p in &paths {
+        let pb = Path::new(p);
+        if pb.is_dir() && watcher.watch(pb, RecursiveMode::Recursive).is_ok() {
+            any = true;
+        }
+    }
+    if !any {
+        return;
+    }
+    let handle = app.clone();
+    std::thread::spawn(move || {
+        while rx.recv().is_ok() {
+            while rx.recv_timeout(Duration::from_millis(2500)).is_ok() {}
+            let _ = handle.emit("library-changed", ());
+        }
+    });
+    *guard = Some(watcher);
+}
+
 // ---------- khởi chạy ----------
 
 pub fn run() {
@@ -739,6 +1031,24 @@ pub fn run() {
             }
         }))
         .plugin(tauri_plugin_dialog::init())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(|app, shortcut, event| {
+                    if event.state() != ShortcutState::Pressed {
+                        return;
+                    }
+                    let action = match shortcut.key {
+                        Code::MediaPlayPause => "toggle",
+                        Code::MediaTrackNext => "next",
+                        Code::MediaTrackPrevious => "prev",
+                        Code::MediaStop => "stop",
+                        _ => return,
+                    };
+                    let _ = app.emit("tray-action", action.to_string());
+                })
+                .build(),
+        )
+        .manage(FolderWatcher(Mutex::new(None)))
         .manage(AppFlags {
             close_to_tray: AtomicBool::new(false),
         })
@@ -750,6 +1060,12 @@ pub fn run() {
         })
         .setup(|app| {
             let handle = app.handle();
+            // the asset protocol serves nothing by default: only the cover cache here, library folders as they are scanned / loaded
+            if let Ok(dir) = app.path().app_cache_dir() {
+                let covers = dir.join("covers");
+                let _ = fs::create_dir_all(&covers);
+                let _ = app.asset_protocol_scope().allow_directory(&covers, true);
+            }
             let show = MenuItem::with_id(handle, "show", "Show window", true, None::<&str>)?;
             let toggle = MenuItem::with_id(handle, "toggle", "Play / Pause", true, None::<&str>)?;
             let prev = MenuItem::with_id(handle, "prev", "Previous", true, None::<&str>)?;
@@ -761,7 +1077,7 @@ pub fn run() {
             )?;
 
             let mut builder = TrayIconBuilder::new()
-                .tooltip("Material Music Player")
+                .tooltip("Material Music")
                 .menu(&menu)
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| match event.id.as_ref() {
@@ -842,8 +1158,13 @@ pub fn run() {
             set_window_tracking,
             set_start_mode,
             app_ready,
-            set_tray_labels
+            set_tray_labels,
+            allow_paths,
+            set_media_keys,
+            write_tags,
+            fetch_lyrics_online,
+            watch_folders
         ])
         .run(tauri::generate_context!())
-        .expect("failed to start Material Music Player");
+        .expect("failed to start Material Music");
 }

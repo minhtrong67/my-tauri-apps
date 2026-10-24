@@ -47,7 +47,7 @@ export function TitleBar() {
   return (
     <div data-tauri-drag-region className="h-14 shrink-0 flex items-center gap-2 pl-3 pr-2 select-none">
       <IconButton icon="menu" title={tr('toggleNav')} onClick={() => toggleNav({ navCollapsed: !collapsed })} />
-      <div className="flex items-center gap-2 pointer-events-none"><Logo size={26} /><span className="text-title-md hidden sm:block">Material Music Player</span></div>
+      <div className="flex items-center gap-2 pointer-events-none"><Logo size={26} /><span className="text-title-md hidden sm:block">Material Music</span></div>
       <IconButton icon="arrow_back" title={tr('back')} disabled={!canBack} onClick={back} />
       <div data-tauri-drag-region className="flex-1 flex justify-center">
         <div className="relative w-full max-w-xl">

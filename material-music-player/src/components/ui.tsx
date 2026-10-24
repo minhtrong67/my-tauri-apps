@@ -54,7 +54,7 @@ export function Button({
 }) {
   const v =
     variant === 'filled'
-      ? danger ? 'bg-error text-on-error hover:brightness-110' : 'bg-primary text-on-primary hover:shadow-md hover:brightness-110'
+      ? danger ? 'btn-sheen bg-error text-on-error hover:brightness-110' : 'btn-sheen bg-primary text-on-primary hover:shadow-md hover:brightness-110'
       : variant === 'tonal'
         ? 'bg-secondary-container text-on-secondary-container hover:brightness-95'
         : variant === 'outlined'

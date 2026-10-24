@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Material Video Downloader – Fast video downloader for Windows, macOS &amp; Linux</title>
+<meta name="description" content="Material Video Downloader is a free, open-source desktop app with a Chrome extension. Segmented IDM-style downloads, HLS streams and 1000+ sites via yt-dlp, wrapped in Material Design 3." />
+<meta name="keywords" content="video downloader, download manager, IDM alternative, Cốc Cốc video download, HLS downloader, m3u8, yt-dlp, Tauri, Material Design, Chrome extension, tải video" />
+<meta name="author" content="minhtrong67" />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#F9F9FF" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)" />
+<link rel="canonical" href="https://minhtrong67.github.io/material-video-downloader/" />
+<link rel="icon" type="image/png" href="public/favicon.png" />
+<link rel="apple-touch-icon" href="public/app-icon.png" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Material Video Downloader" />
+<meta property="og:title" content="Material Video Downloader – Download videos fast, in Material style" />
+<meta property="og:description" content="Free, open-source video downloader with segmented downloads, HLS support, 1000+ sites and a Chrome extension." />
+<meta property="og:url" content="https://minhtrong67.github.io/material-video-downloader/" />
+<meta property="og:image" content="https://minhtrong67.github.io/material-video-downloader/screenshots/image01.png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="800" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="vi_VN" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Material Video Downloader" />
+<meta name="twitter:description" content="Free, open-source video downloader with a Chrome extension. Material Design 3." />
+<meta name="twitter:image" content="https://minhtrong67.github.io/material-video-downloader/screenshots/image01.png" />
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material Video Downloader","operatingSystem":"Windows, macOS, Linux","applicationCategory":"MultimediaApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"minhtrong67"},"license":"https://opensource.org/licenses/MIT","description":"Open-source desktop video downloader with a companion Chrome extension."}
+</script>
+
+<script>
+/* Apply theme before first paint */
+(function () {
+  try {
+    var t = localStorage.getItem("mvd.landing.theme") || "system";
+    var dark = t === "dark" || (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+  } catch (e) {}
+})();
+</script>
+
+<style>
+:root {
+  --primary:#415f91; --on-primary:#fff; --primary-container:#d6e3ff; --on-primary-container:#284777;
+  --secondary:#565f71; --secondary-container:#dae2f9; --on-secondary-container:#3e4759;
+  --tertiary:#705575; --tertiary-container:#fad8fd; --on-tertiary-container:#573e5c;
+  --surface:#f9f9ff; --on-surface:#191c20; --on-surface-variant:#44474e; --outline:#74777f; --outline-variant:#c4c6d0;
+  --surface-low:#f3f3fa; --surface-container:#ededf4; --surface-high:#e7e8ee; --surface-highest:#e2e2e9;
+  --inverse-surface:#2e3036; --inverse-on-surface:#f0f0f7;
+  --glow-1:#c4d6ff; --glow-2:#f3cff8;
+  --ease:cubic-bezier(.2,0,0,1); --spring:cubic-bezier(.34,1.56,.64,1);
+  --shadow:0 1px 3px rgb(0 0 0/.1),0 8px 24px rgb(40 71 119/.12);
+  color-scheme:light;
+}
+:root[data-theme="dark"] {
+  --primary:#aac7ff; --on-primary:#0a305f; --primary-container:#284777; --on-primary-container:#d6e3ff;
+  --secondary:#bec6dc; --secondary-container:#3e4759; --on-secondary-container:#dae2f9;
+  --tertiary:#ddbce0; --tertiary-container:#573e5c; --on-tertiary-container:#fad8fd;
+  --surface:#111318; --on-surface:#e2e2e9; --on-surface-variant:#c4c6d0; --outline:#8e9099; --outline-variant:#44474e;
+  --surface-low:#191c20; --surface-container:#1d2024; --surface-high:#282a2f; --surface-highest:#33353a;
+  --inverse-surface:#e2e2e9; --inverse-on-surface:#2e3036;
+  --glow-1:#1d3a6a; --glow-2:#3d2347;
+  --shadow:0 1px 3px rgb(0 0 0/.4),0 12px 32px rgb(0 0 0/.45);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--surface);color:var(--on-surface);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background .4s,color .4s}
+img{max-width:100%;display:block}
+a{color:inherit}
+svg{display:block;flex-shrink:0}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+h1,h2,h3{font-weight:400;line-height:1.15;margin:0;letter-spacing:-.01em}
+.ico{display:inline-flex}
+
+/* buttons */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 26px;border:0;border-radius:999px;font:500 16px/1 inherit;font-family:inherit;text-decoration:none;cursor:pointer;background:var(--primary);color:var(--on-primary);transition:transform .25s var(--spring),box-shadow .25s,filter .2s}
+.btn:hover{box-shadow:0 6px 20px rgb(65 95 145/.4);filter:brightness(1.07);transform:translateY(-2px)}
+.btn:active{transform:scale(.96)}
+.btn.tonal{background:var(--secondary-container);color:var(--on-secondary-container)}
+.btn.tonal:hover{box-shadow:var(--shadow)}
+.btn.sm{height:40px;padding:0 20px;font-size:14px}
+.icon-btn{position:relative;overflow:hidden;width:44px;height:44px;border:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:transparent;color:var(--on-surface-variant);cursor:pointer;transition:background .2s,transform .25s var(--spring)}
+.icon-btn:hover{background:color-mix(in srgb,var(--on-surface) 8%,transparent)}
+.icon-btn:active{transform:scale(.88)}
+.ripple{position:absolute;border-radius:50%;pointer-events:none;background:currentColor;opacity:.2;transform:scale(0);animation:ripple .6s var(--ease) forwards}
+@keyframes ripple{to{transform:scale(1);opacity:0}}
+
+/* nav */
+header.nav{position:fixed;inset:0 0 auto 0;z-index:50;transition:background .3s,box-shadow .3s,backdrop-filter .3s}
+header.nav.scrolled{background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(14px) saturate(1.4);box-shadow:0 1px 0 var(--outline-variant)}
+.nav-in{display:flex;align-items:center;gap:8px;height:68px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:500;text-decoration:none;margin-right:auto}
+.brand img{width:36px;height:36px}
+.links{display:flex;gap:4px}
+.links a{padding:8px 14px;border-radius:999px;text-decoration:none;font-size:14.5px;color:var(--on-surface-variant);transition:background .2s,color .2s}
+.links a:hover{background:color-mix(in srgb,var(--on-surface) 8%,transparent);color:var(--on-surface)}
+.seg{display:inline-flex;border:1px solid var(--outline);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--on-surface);height:36px;padding:0 12px;font:500 13px inherit;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:background .2s}
+.seg button+button{border-left:1px solid var(--outline)}
+.seg button[aria-pressed="true"]{background:var(--secondary-container);color:var(--on-secondary-container)}
+.menu-btn{display:none}
+
+/* hero */
+.hero{position:relative;padding:150px 0 70px;overflow:hidden}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.75;z-index:-1;animation:drift 16s ease-in-out infinite alternate}
+.hero::before{width:520px;height:520px;background:var(--glow-1);top:-120px;left:-120px}
+.hero::after{width:460px;height:460px;background:var(--glow-2);top:60px;right:-140px;animation-delay:-6s}
+@keyframes drift{to{transform:translate(60px,40px) scale(1.12)}}
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 10px;border-radius:999px;background:var(--tertiary-container);color:var(--on-tertiary-container);font-size:13.5px;font-weight:500}
+h1.title{font-size:clamp(2.4rem,5.4vw,4rem);margin:18px 0 18px;font-weight:300}
+h1.title b{font-weight:500;color:var(--primary)}
+.lead{font-size:1.15rem;color:var(--on-surface-variant);max-width:34em}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.meta{margin-top:18px;display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--on-surface-variant);font-size:13.5px}
+.meta span{display:inline-flex;align-items:center;gap:6px}
+.shot{position:relative;border-radius:22px;background:var(--surface-container);box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--outline-variant);transform:perspective(1400px) rotateY(-7deg) rotateX(3deg);transition:transform .6s var(--ease)}
+.shot:hover{transform:perspective(1400px) rotateY(0) rotateX(0)}
+.shot-bar{height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;background:var(--surface-high)}
+.shot-bar i{width:11px;height:11px;border-radius:50%;background:var(--outline-variant)}
+.float-chip{position:absolute;display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:16px;background:var(--surface-high);box-shadow:var(--shadow);font-size:14px;font-weight:500;animation:bob 5s ease-in-out infinite}
+.float-chip.a{left:-18px;bottom:46px}
+.float-chip.b{right:-14px;top:72px;animation-delay:-2.5s}
+.float-chip svg{color:var(--primary)}
+@keyframes bob{50%{transform:translateY(-10px)}}
+
+/* sections */
+section{padding:84px 0}
+.sec-head{text-align:center;max-width:680px;margin:0 auto 48px}
+.sec-head h2{font-size:clamp(1.8rem,3.6vw,2.6rem)}
+.sec-head p{color:var(--on-surface-variant);margin:14px 0 0}
+.chip-label{display:inline-block;margin-bottom:12px;padding:4px 12px;border-radius:8px;background:var(--secondary-container);color:var(--on-secondary-container);font-size:13px;font-weight:500}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{position:relative;padding:26px;border-radius:26px;background:var(--surface-low);transition:transform .35s var(--ease),background .3s,box-shadow .35s}
+.card:hover{transform:translateY(-6px);background:var(--surface-container);box-shadow:var(--shadow)}
+.card .badge{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--primary-container);color:var(--on-primary-container);margin-bottom:18px;transition:transform .4s var(--spring),border-radius .4s}
+.card:hover .badge{transform:rotate(-8deg) scale(1.08);border-radius:50%}
+.card h3{font-size:1.2rem;font-weight:500;margin-bottom:8px}
+.card p{margin:0;color:var(--on-surface-variant);font-size:.97rem}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
+.step{padding:28px;border-radius:26px;background:var(--surface-container);position:relative;overflow:hidden}
+.step::before{counter-increment:s;content:counter(s);position:absolute;right:18px;top:-6px;font-size:6.5rem;font-weight:700;color:var(--primary);opacity:.09}
+.step h3{font-size:1.15rem;font-weight:500;margin:14px 0 6px}
+.step p{margin:0;color:var(--on-surface-variant)}
+.ext{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;padding:44px;border-radius:36px;background:var(--primary-container);color:var(--on-primary-container)}
+.ext h2{font-size:clamp(1.7rem,3.2vw,2.4rem);margin-bottom:12px}
+.ext p{margin:0 0 20px;opacity:.88}
+.ext ul{list-style:none;padding:0;margin:0 0 26px;display:grid;gap:10px}
+.ext li{display:flex;gap:10px;align-items:flex-start}
+.ext .btn{background:var(--on-primary-container);color:var(--primary-container)}
+.pop{background:var(--surface);color:var(--on-surface);border-radius:22px;padding:14px;box-shadow:var(--shadow);max-width:360px;margin-inline:auto}
+.pop .row{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;background:var(--surface-low);margin-top:8px}
+.pop .row .t{flex:1;min-width:0}
+.pop .row b{display:block;font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pop .row small{color:var(--on-surface-variant)}
+.pop .ok{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:var(--surface-container);font-size:12.5px;color:var(--on-surface-variant)}
+.pop .ok i{width:8px;height:8px;border-radius:50%;background:#2e9e5b;animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgb(46 158 91/.5)}100%{box-shadow:0 0 0 9px transparent}}
+.mini-btn{width:34px;height:34px;border-radius:50%;background:var(--secondary-container);color:var(--on-secondary-container);display:flex;align-items:center;justify-content:center}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.gallery figure{margin:0;border-radius:22px;overflow:hidden;background:var(--surface-container);border:1px solid var(--outline-variant);transition:transform .4s var(--ease),box-shadow .4s}
+.gallery figure:hover{transform:translateY(-6px) scale(1.01);box-shadow:var(--shadow)}
+.gallery figure.wide{grid-column:span 2}
+.gallery img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10}
+.gallery figure.tall img{aspect-ratio:auto}
+details{border-radius:20px;background:var(--surface-low);padding:4px 22px;margin-bottom:10px;transition:background .25s}
+details[open]{background:var(--surface-container)}
+summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;font-weight:500}
+summary::-webkit-details-marker{display:none}
+summary svg{transition:transform .3s var(--ease)}
+details[open] summary svg{transform:rotate(180deg)}
+details p{margin:0 0 18px;color:var(--on-surface-variant)}
+.final{text-align:center;padding:56px 24px;border-radius:40px;background:linear-gradient(135deg,var(--primary-container),var(--tertiary-container));color:var(--on-primary-container)}
+.final h2{font-size:clamp(1.8rem,3.6vw,2.6rem);margin-bottom:10px}
+.final p{margin:0 auto 26px;max-width:32em;opacity:.85}
+footer{padding:44px 0 56px;color:var(--on-surface-variant);font-size:14px}
+.foot{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid var(--outline-variant)}
+.foot .who{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* reveal on scroll */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease);transition-delay:var(--d,0s)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .hero-grid,.ext{grid-template-columns:1fr}
+  .hero{padding-top:120px}
+  .features,.steps{grid-template-columns:1fr 1fr}
+  .shot{transform:none}
+  .float-chip{display:none}
+  .links{display:none}
+  .links.open{display:flex;position:absolute;top:68px;left:12px;right:12px;flex-direction:column;padding:10px;border-radius:24px;background:var(--surface-high);box-shadow:var(--shadow)}
+  .menu-btn{display:inline-flex}
+  .gallery{grid-template-columns:1fr 1fr}
+  .gallery figure.wide{grid-column:span 2}
+}
+@media (max-width:600px){
+  section{padding:56px 0}
+  .features,.steps,.gallery{grid-template-columns:1fr}
+  .gallery figure.wide{grid-column:auto}
+  .ext{padding:26px}
+  .btn{width:100%}
+  .seg button span.t{display:none}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top"><img src="public/favicon.png" alt="" width="36" height="36" /><span>Material Video Downloader</span></a>
+    <nav class="links" id="links" aria-label="Sections">
+      <a href="#features" data-i18n="nav_features">Features</a>
+      <a href="#how" data-i18n="nav_how">How it works</a>
+      <a href="#extension" data-i18n="nav_ext">Extension</a>
+      <a href="#screens" data-i18n="nav_shots">Screenshots</a>
+      <a href="#faq" data-i18n="nav_faq">FAQ</a>
+    </nav>
+    <div class="seg" role="group" aria-label="Theme" id="themeSeg">
+      <button data-theme="system" aria-label="System theme"><i data-i="monitor" data-s="16"></i></button>
+      <button data-theme="light" aria-label="Light theme"><i data-i="sun" data-s="16"></i></button>
+      <button data-theme="dark" aria-label="Dark theme"><i data-i="moon" data-s="16"></i></button>
+    </div>
+    <div class="seg" role="group" aria-label="Language" id="langSeg">
+      <button data-lang="system" aria-label="Auto"><i data-i="globe" data-s="16"></i></button>
+      <button data-lang="en">EN</button>
+      <button data-lang="vi">VI</button>
+    </div>
+    <button class="icon-btn menu-btn" id="menuBtn" aria-label="Menu"><i data-i="menu" data-s="22"></i></button>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow rv"><i data-i="zap" data-s="16"></i><span data-i18n="eyebrow">Free &amp; open source</span></span>
+      <h1 class="title rv" style="--d:.05s"><span data-i18n="h1a">Download any video,</span> <b data-i18n="h1b">beautifully fast.</b></h1>
+      <p class="lead rv" style="--d:.1s" data-i18n="lead">A Material Design 3 desktop app with IDM-style segmented downloads, HLS streams and 1000+ sites. Pair it with the Chrome extension to catch videos while you browse.</p>
+      <div class="cta rv" style="--d:.15s">
+        <a class="btn" id="dl" href="download/Material-Video-Downloader-Setup.exe" download><i data-i="download" data-s="20"></i><span data-i18n="cta_dl">Download for Windows</span></a>
+        <a class="btn tonal" href="download/material-video-downloader-extension.zip" download><i data-i="puzzle" data-s="20"></i><span data-i18n="cta_ext">Get the extension</span></a>
+      </div>
+      <div class="meta rv" style="--d:.2s">
+        <span><i data-i="check" data-s="16"></i><span data-i18n="m1">No ads, no tracking</span></span>
+        <span><i data-i="check" data-s="16"></i><span data-i18n="m2">Windows · macOS · Linux</span></span>
+        <span><i data-i="check" data-s="16"></i><span data-i18n="m3">MIT license</span></span>
+      </div>
+    </div>
+    <div class="rv" style="--d:.15s;position:relative">
+      <div class="shot">
+        <div class="shot-bar"><i></i><i></i><i></i></div>
+        <img src="screenshots/image01.png" alt="Material Video Downloader main window" width="1280" height="800" />
+      </div>
+      <div class="float-chip a"><i data-i="gauge" data-s="20"></i><span data-i18n="chip1">8 connections per file</span></div>
+      <div class="float-chip b"><i data-i="radio" data-s="20"></i><span data-i18n="chip2">HLS · m3u8 ready</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head rv"><span class="chip-label" data-i18n="f_label">Features</span><h2 data-i18n="f_title">Everything a download manager should do</h2><p data-i18n="f_sub">Fast where it counts, calm everywhere else.</p></div>
+    <div class="features">
+      <article class="card rv"><div class="badge"><i data-i="gauge" data-s="26"></i></div><h3 data-i18n="f1t">Segmented downloads</h3><p data-i18n="f1p">Splits files into up to 16 parallel connections, with pause, resume and a speed limiter.</p></article>
+      <article class="card rv" style="--d:.06s"><div class="badge"><i data-i="radio" data-s="26"></i></div><h3 data-i18n="f2t">HLS &amp; encrypted streams</h3><p data-i18n="f2p">Grabs .m3u8 playlists, decrypts AES-128 segments and merges them into one MP4.</p></article>
+      <article class="card rv" style="--d:.12s"><div class="badge"><i data-i="film" data-s="26"></i></div><h3 data-i18n="f3t">1000+ sites</h3><p data-i18n="f3p">Powered by yt-dlp for video platforms and social networks, with quality and MP3 choices.</p></article>
+      <article class="card rv"><div class="badge"><i data-i="puzzle" data-s="26"></i></div><h3 data-i18n="f4t">Browser extension</h3><p data-i18n="f4p">Detects videos on any page and sends them to the app with one click, cookies included.</p></article>
+      <article class="card rv" style="--d:.06s"><div class="badge"><i data-i="palette" data-s="26"></i></div><h3 data-i18n="f5t">Your theme, your size</h3><p data-i18n="f5p">Light, dark or system, 17 Material colors, a custom color picker and three text sizes.</p></article>
+      <article class="card rv" style="--d:.12s"><div class="badge"><i data-i="languages" data-s="26"></i></div><h3 data-i18n="f6t">English &amp; Tiếng Việt</h3><p data-i18n="f6p">The interface follows your system language and can be switched any time.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="how" style="padding-top:20px">
+  <div class="wrap">
+    <div class="sec-head rv"><span class="chip-label" data-i18n="h_label">How it works</span><h2 data-i18n="h_title">From link to file in three steps</h2></div>
+    <div class="steps">
+      <div class="step rv"><i data-i="clipboard" data-s="30"></i><h3 data-i18n="s1t">Paste or catch</h3><p data-i18n="s1p">Paste a link, drop it on the window, or let the extension detect the video for you.</p></div>
+      <div class="step rv" style="--d:.08s"><i data-i="layers" data-s="30"></i><h3 data-i18n="s2t">Pick a quality</h3><p data-i18n="s2p">See every resolution and audio option with estimated sizes before you start.</p></div>
+      <div class="step rv" style="--d:.16s"><i data-i="download" data-s="30"></i><h3 data-i18n="s3t">Download</h3><p data-i18n="s3p">Watch the wavy progress bar, pause any time, and get a notification when it’s done.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="extension">
+  <div class="wrap">
+    <div class="ext rv">
+      <div>
+        <h2 data-i18n="e_title">Catch videos while you browse</h2>
+        <p data-i18n="e_p">The Chrome extension watches network requests, shows a badge with what it found and adds a download button over videos — then hands everything to the desktop app.</p>
+        <ul>
+          <li><i data-i="check" data-s="20"></i><span data-i18n="e1">Detects MP4, WebM, MP3 and HLS streams</span></li>
+          <li><i data-i="check" data-s="20"></i><span data-i18n="e2">Right-click any link to download it</span></li>
+          <li><i data-i="check" data-s="20"></i><span data-i18n="e3">Talks only to your computer (127.0.0.1)</span></li>
+        </ul>
+        <a class="btn" href="download/material-video-downloader-extension.zip" download><i data-i="download" data-s="20"></i><span data-i18n="e_btn">Download extension (.zip)</span></a>
+      </div>
+      <div class="pop" aria-hidden="true">
+        <div class="ok"><i></i><span data-i18n="e_conn">Connected to the desktop app</span></div>
+        <div class="row"><div class="mini-btn"><i data-i="film" data-s="18"></i></div><div class="t"><b>keynote-2026-1080p.mp4</b><small>MP4 · 612 MB</small></div><div class="mini-btn" style="background:var(--primary);color:var(--on-primary)"><i data-i="download" data-s="16"></i></div></div>
+        <div class="row"><div class="mini-btn"><i data-i="radio" data-s="18"></i></div><div class="t"><b>master.m3u8</b><small>HLS stream</small></div><div class="mini-btn" style="background:var(--primary);color:var(--on-primary)"><i data-i="download" data-s="16"></i></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="screens">
+  <div class="wrap">
+    <div class="sec-head rv"><span class="chip-label" data-i18n="g_label">Screenshots</span><h2 data-i18n="g_title">Material You, all the way down</h2></div>
+    <div class="gallery">
+      <figure class="wide rv"><img src="screenshots/image03.png" alt="Dark theme with purple accent" loading="lazy" /></figure>
+      <figure class="tall rv" style="--d:.06s"><img src="screenshots/image06.png" alt="Responsive mobile layout" loading="lazy" /></figure>
+      <figure class="rv"><img src="screenshots/image02.png" alt="Quality picker dialog" loading="lazy" /></figure>
+      <figure class="rv" style="--d:.06s"><img src="screenshots/image04.png" alt="Appearance settings" loading="lazy" /></figure>
+      <figure class="rv" style="--d:.12s"><img src="screenshots/image05.png" alt="Vietnamese interface" loading="lazy" /></figure>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:20px">
+  <div class="wrap" style="max-width:780px">
+    <div class="sec-head rv"><span class="chip-label">FAQ</span><h2 data-i18n="q_title">Good to know</h2></div>
+    <details class="rv"><summary><span data-i18n="q1">Is it really free?</span><i data-i="chevron-down" data-s="20"></i></summary><p data-i18n="a1">Yes. It is open source under the MIT license, with no ads and no tracking.</p></details>
+    <details class="rv"><summary><span data-i18n="q2">Which sites are supported?</span><i data-i="chevron-down" data-s="20"></i></summary><p data-i18n="a2">Direct video files and HLS streams work out of the box. For video platforms and social networks the app installs yt-dlp for you with one click.</p></details>
+    <details class="rv"><summary><span data-i18n="q3">Do I need ffmpeg?</span><i data-i="chevron-down" data-s="20"></i></summary><p data-i18n="a3">It is optional but recommended: it merges separate video and audio tracks (for the highest qualities) and converts to MP3. On Windows the app can install it for you.</p></details>
+    <details class="rv"><summary><span data-i18n="q4">Is downloading videos legal?</span><i data-i="chevron-down" data-s="20"></i></summary><p data-i18n="a4">Only download content you own or have permission to save, and respect each website’s terms of service. You are responsible for how you use the app.</p></details>
+    <details class="rv"><summary><span data-i18n="q5">How do I install the extension?</span><i data-i="chevron-down" data-s="20"></i></summary><p data-i18n="a5">Unzip the file, open chrome://extensions, enable Developer mode, choose “Load unpacked” and select the folder. Keep the desktop app running.</p></details>
+  </div>
+</section>
+
+<section style="padding-top:20px">
+  <div class="wrap">
+    <div class="final rv">
+      <h2 data-i18n="z_title">Ready to download faster?</h2>
+      <p data-i18n="z_p">Grab the installer and the extension, and your next video is a paste away.</p>
+      <a class="btn" href="download/Material-Video-Downloader-Setup.exe" download style="background:var(--on-primary-container);color:var(--primary-container)"><i data-i="download" data-s="20"></i><span data-i18n="cta_dl">Download for Windows</span></a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="who"><img src="public/favicon.png" alt="" width="28" height="28" /><span>Material Video Downloader</span></div>
+      <div class="who"><span data-i18n="foot_by">By</span> <b>minhtrong67</b> <span>·</span> <i data-i="heart" data-s="14"></i> <span data-i18n="foot_ai">built with the help of Claude (Anthropic)</span></div>
+      <div>MIT License © 2026</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const ICONS = {"download": "<path d=\"M12 15V3\"/><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><path d=\"m7 10 5 5 5-5\"/>", "settings": "<path d=\"M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>", "film": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M7 3v18\"/><path d=\"M3 7.5h4\"/><path d=\"M3 12h18\"/><path d=\"M3 16.5h4\"/><path d=\"M17 3v18\"/><path d=\"M17 7.5h4\"/><path d=\"M17 16.5h4\"/>", "radio": "<path d=\"M16.247 7.761a6 6 0 0 1 0 8.478\"/><path d=\"M19.075 4.933a10 10 0 0 1 0 14.134\"/><path d=\"M4.925 19.067a10 10 0 0 1 0-14.134\"/><path d=\"M7.753 16.239a6 6 0 0 1 0-8.478\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/>", "check": "<path d=\"M20 6 9 17l-5-5\"/>", "trash": "<path d=\"M10 11v6\"/><path d=\"M14 11v6\"/><path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6\"/><path d=\"M3 6h18\"/><path d=\"M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"/>", "monitor": "<rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\"/><line x1=\"8\" x2=\"16\" y1=\"21\" y2=\"21\"/><line x1=\"12\" x2=\"12\" y1=\"17\" y2=\"21\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2\"/><path d=\"M12 20v2\"/><path d=\"m4.93 4.93 1.41 1.41\"/><path d=\"m17.66 17.66 1.41 1.41\"/><path d=\"M2 12h2\"/><path d=\"M20 12h2\"/><path d=\"m6.34 17.66-1.41 1.41\"/><path d=\"m19.07 4.93-1.41 1.41\"/>", "moon": "<path d=\"M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401\"/>", "link-2": "<path d=\"M9 17H7A5 5 0 0 1 7 7h2\"/><path d=\"M15 7h2a5 5 0 1 1 0 10h-2\"/><line x1=\"8\" x2=\"16\" y1=\"12\" y2=\"12\"/>", "play": "<path d=\"M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z\"/>", "plug-zap": "<path d=\"M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z\"/><path d=\"m2 22 3-3\"/><path d=\"M7.5 13.5 10 11\"/><path d=\"M10.5 16.5 13 14\"/><path d=\"m18 3-4 4h6l-4 4\"/>", "circle-alert": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\"/><line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\"/>", "globe": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\"/><path d=\"M2 12h20\"/>", "x": "<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>", "wifi-off": "<path d=\"M12 20h.01\"/><path d=\"M8.5 16.429a5 5 0 0 1 7 0\"/><path d=\"M5 12.859a10 10 0 0 1 5.17-2.69\"/><path d=\"M19 12.859a10 10 0 0 0-2.007-1.523\"/><path d=\"M2 8.82a15 15 0 0 1 4.177-2.643\"/><path d=\"M22 8.82a15 15 0 0 0-11.288-3.764\"/><path d=\"m2 2 20 20\"/>", "list-video": "<path d=\"M21 5H3\"/><path d=\"M10 12H3\"/><path d=\"M10 19H3\"/><path d=\"M15 12.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997a1 1 0 0 1-1.517-.86z\"/>", "zap": "<path d=\"M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z\"/>", "layers": "<path d=\"M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z\"/><path d=\"M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12\"/><path d=\"M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17\"/>", "palette": "<path d=\"M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z\"/><circle cx=\"13.5\" cy=\"6.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/>", "languages": "<path d=\"m5 8 6 6\"/><path d=\"m4 14 6-6 2-3\"/><path d=\"M2 5h12\"/><path d=\"M7 2h1\"/><path d=\"m22 22-5-10-5 10\"/><path d=\"M14 18h6\"/>", "puzzle": "<path d=\"M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z\"/>", "shield-check": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"m9 12 2 2 4-4\"/>", "chevron-down": "<path d=\"m6 9 6 6 6-6\"/>", "menu": "<path d=\"M4 5h16\"/><path d=\"M4 12h16\"/><path d=\"M4 19h16\"/>", "gauge": "<path d=\"m12 14 4-4\"/><path d=\"M3.34 19a10 10 0 1 1 17.32 0\"/>", "pause": "<rect x=\"14\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/><rect x=\"5\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/>", "clipboard": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"/>", "heart": "<path d=\"M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5\"/>"};
+const I18N = {
+  en: {
+    nav_features:"Features",nav_how:"How it works",nav_ext:"Extension",nav_shots:"Screenshots",nav_faq:"FAQ",
+    eyebrow:"Free & open source",h1a:"Download any video,",h1b:"beautifully fast.",
+    lead:"A Material Design 3 desktop app with IDM-style segmented downloads, HLS streams and 1000+ sites. Pair it with the Chrome extension to catch videos while you browse.",
+    cta_dl:"Download for Windows",cta_ext:"Get the extension",m1:"No ads, no tracking",m2:"Windows · macOS · Linux",m3:"MIT license",
+    chip1:"8 connections per file",chip2:"HLS · m3u8 ready",
+    f_label:"Features",f_title:"Everything a download manager should do",f_sub:"Fast where it counts, calm everywhere else.",
+    f1t:"Segmented downloads",f1p:"Splits files into up to 16 parallel connections, with pause, resume and a speed limiter.",
+    f2t:"HLS & encrypted streams",f2p:"Grabs .m3u8 playlists, decrypts AES-128 segments and merges them into one MP4.",
+    f3t:"1000+ sites",f3p:"Powered by yt-dlp for video platforms and social networks, with quality and MP3 choices.",
+    f4t:"Browser extension",f4p:"Detects videos on any page and sends them to the app with one click, cookies included.",
+    f5t:"Your theme, your size",f5p:"Light, dark or system, 17 Material colors, a custom color picker and three text sizes.",
+    f6t:"English & Tiếng Việt",f6p:"The interface follows your system language and can be switched any time.",
+    h_label:"How it works",h_title:"From link to file in three steps",
+    s1t:"Paste or catch",s1p:"Paste a link, drop it on the window, or let the extension detect the video for you.",
+    s2t:"Pick a quality",s2p:"See every resolution and audio option with estimated sizes before you start.",
+    s3t:"Download",s3p:"Watch the wavy progress bar, pause any time, and get a notification when it’s done.",
+    e_title:"Catch videos while you browse",e_p:"The Chrome extension watches network requests, shows a badge with what it found and adds a download button over videos — then hands everything to the desktop app.",
+    e1:"Detects MP4, WebM, MP3 and HLS streams",e2:"Right-click any link to download it",e3:"Talks only to your computer (127.0.0.1)",e_btn:"Download extension (.zip)",e_conn:"Connected to the desktop app",
+    g_label:"Screenshots",g_title:"Material You, all the way down",
+    q_title:"Good to know",q1:"Is it really free?",a1:"Yes. It is open source under the MIT license, with no ads and no tracking.",
+    q2:"Which sites are supported?",a2:"Direct video files and HLS streams work out of the box. For video platforms and social networks the app installs yt-dlp for you with one click.",
+    q3:"Do I need ffmpeg?",a3:"It is optional but recommended: it merges separate video and audio tracks (for the highest qualities) and converts to MP3. On Windows the app can install it for you.",
+    q4:"Is downloading videos legal?",a4:"Only download content you own or have permission to save, and respect each website’s terms of service. You are responsible for how you use the app.",
+    q5:"How do I install the extension?",a5:"Unzip the file, open chrome://extensions, enable Developer mode, choose “Load unpacked” and select the folder. Keep the desktop app running.",
+    z_title:"Ready to download faster?",z_p:"Grab the installer and the extension, and your next video is a paste away.",
+    foot_by:"By",foot_ai:"built with the help of Claude (Anthropic)",
+    title:"Material Video Downloader – Fast video downloader for Windows, macOS & Linux"
+  },
+  vi: {
+    nav_features:"Tính năng",nav_how:"Cách hoạt động",nav_ext:"Tiện ích",nav_shots:"Ảnh chụp",nav_faq:"Hỏi đáp",
+    eyebrow:"Miễn phí & mã nguồn mở",h1a:"Tải mọi video,",h1b:"nhanh và đẹp mắt.",
+    lead:"Ứng dụng máy tính theo Material Design 3 với tải đa luồng kiểu IDM, luồng HLS và hơn 1000 website. Kết hợp với tiện ích Chrome để bắt video khi bạn duyệt web.",
+    cta_dl:"Tải cho Windows",cta_ext:"Lấy tiện ích",m1:"Không quảng cáo, không theo dõi",m2:"Windows · macOS · Linux",m3:"Giấy phép MIT",
+    chip1:"8 kết nối mỗi tệp",chip2:"Hỗ trợ HLS · m3u8",
+    f_label:"Tính năng",f_title:"Mọi thứ một trình quản lý tải cần có",f_sub:"Nhanh ở nơi cần nhanh, êm dịu ở mọi nơi còn lại.",
+    f1t:"Tải đa luồng",f1p:"Chia tệp thành tối đa 16 kết nối song song, có tạm dừng, tiếp tục và giới hạn tốc độ.",
+    f2t:"HLS & luồng mã hóa",f2p:"Tải playlist .m3u8, giải mã phân đoạn AES-128 và ghép thành một tệp MP4.",
+    f3t:"Hơn 1000 website",f3p:"Dùng yt-dlp cho các nền tảng video và mạng xã hội, có lựa chọn chất lượng và MP3.",
+    f4t:"Tiện ích trình duyệt",f4p:"Phát hiện video trên mọi trang và gửi sang ứng dụng chỉ với một cú nhấp, kèm cả cookie.",
+    f5t:"Giao diện theo ý bạn",f5p:"Sáng, tối hoặc theo hệ thống, 17 màu Material, bộ chọn màu tùy ý và ba cỡ chữ.",
+    f6t:"English & Tiếng Việt",f6p:"Giao diện theo ngôn ngữ hệ thống và có thể đổi bất cứ lúc nào.",
+    h_label:"Cách hoạt động",h_title:"Từ liên kết đến tệp chỉ trong ba bước",
+    s1t:"Dán hoặc bắt video",s1p:"Dán liên kết, thả vào cửa sổ, hoặc để tiện ích tự phát hiện video cho bạn.",
+    s2t:"Chọn chất lượng",s2p:"Xem mọi độ phân giải và tùy chọn âm thanh kèm dung lượng ước tính trước khi tải.",
+    s3t:"Tải xuống",s3p:"Theo dõi thanh tiến trình dạng sóng, tạm dừng bất cứ lúc nào và nhận thông báo khi xong.",
+    e_title:"Bắt video khi bạn duyệt web",e_p:"Tiện ích Chrome theo dõi các yêu cầu mạng, hiện huy hiệu số video tìm thấy và thêm nút tải trên video — rồi chuyển tất cả sang ứng dụng máy tính.",
+    e1:"Phát hiện MP4, WebM, MP3 và luồng HLS",e2:"Nhấp chuột phải vào liên kết để tải",e3:"Chỉ giao tiếp với máy của bạn (127.0.0.1)",e_btn:"Tải tiện ích (.zip)",e_conn:"Đã kết nối với ứng dụng máy tính",
+    g_label:"Ảnh chụp màn hình",g_title:"Material You từ trong ra ngoài",
+    q_title:"Cần biết",q1:"Có thực sự miễn phí không?",a1:"Có. Ứng dụng là mã nguồn mở theo giấy phép MIT, không quảng cáo và không theo dõi.",
+    q2:"Hỗ trợ những website nào?",a2:"Tệp video trực tiếp và luồng HLS dùng được ngay. Với nền tảng video và mạng xã hội, ứng dụng cài yt-dlp cho bạn chỉ với một cú nhấp.",
+    q3:"Tôi có cần ffmpeg không?",a3:"Không bắt buộc nhưng nên có: nó ghép video với âm thanh riêng (cho chất lượng cao nhất) và chuyển sang MP3. Trên Windows ứng dụng có thể cài giúp bạn.",
+    q4:"Tải video có hợp pháp không?",a4:"Chỉ tải nội dung của bạn hoặc nội dung bạn được phép lưu, và tôn trọng điều khoản của từng website. Bạn chịu trách nhiệm về cách sử dụng ứng dụng.",
+    q5:"Cài tiện ích như thế nào?",a5:"Giải nén tệp, mở chrome://extensions, bật Chế độ nhà phát triển, chọn “Tải tiện ích đã giải nén” rồi chọn thư mục. Hãy để ứng dụng máy tính luôn chạy.",
+    z_title:"Sẵn sàng tải nhanh hơn?",z_p:"Tải bộ cài và tiện ích, video tiếp theo của bạn chỉ cách một lần dán.",
+    foot_by:"Tác giả",foot_ai:"được xây dựng với sự hỗ trợ của Claude (Anthropic)",
+    title:"Material Video Downloader – Trình tải video nhanh cho Windows, macOS & Linux"
+  }
+};
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+// icons
+$$("i[data-i]").forEach((el) => {
+  const s = el.dataset.s || 20;
+  el.className = "ico";
+  el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[el.dataset.i] || ""}</svg>`;
+});
+
+// theme
+const root = document.documentElement;
+function setTheme(pref, animate) {
+  const apply = () => {
+    const dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    root.dataset.theme = dark ? "dark" : "light";
+  };
+  try { localStorage.setItem("mvd.landing.theme", pref); } catch (e) {}
+  $$("#themeSeg button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.theme === pref));
+  if (animate && document.startViewTransition && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.startViewTransition(apply);
+  else apply();
+}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if ((localStorage.getItem("mvd.landing.theme") || "system") === "system") setTheme("system");
+});
+$("#themeSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) setTheme(b.dataset.theme, true); });
+setTheme(localStorage.getItem("mvd.landing.theme") || "system");
+
+// language
+function setLang(pref) {
+  try { localStorage.setItem("mvd.landing.lang", pref); } catch (e) {}
+  const lang = pref === "system" ? ((navigator.language || "en").toLowerCase().startsWith("vi") ? "vi" : "en") : pref;
+  const dict = I18N[lang];
+  root.lang = lang;
+  $$("[data-i18n]").forEach((el) => { const v = dict[el.dataset.i18n]; if (v) el.textContent = v; });
+  document.title = dict.title;
+  $$("#langSeg button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === pref));
+}
+$("#langSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) setLang(b.dataset.lang); });
+setLang(localStorage.getItem("mvd.landing.lang") || "system");
+
+// ripple
+document.addEventListener("pointerdown", (e) => {
+  const b = e.target.closest(".btn,.icon-btn");
+  if (!b) return;
+  const r = b.getBoundingClientRect(), size = Math.max(r.width, r.height) * 2;
+  const s = document.createElement("span");
+  s.className = "ripple";
+  s.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - r.left - size / 2}px;top:${e.clientY - r.top - size / 2}px`;
+  b.appendChild(s);
+  s.addEventListener("animationend", () => s.remove());
+}, { passive: true });
+
+// nav behaviour
+const nav = $("#nav");
+const onScroll = () => nav.classList.toggle("scrolled", scrollY > 12);
+addEventListener("scroll", onScroll, { passive: true }); onScroll();
+$("#menuBtn").addEventListener("click", () => $("#links").classList.toggle("open"));
+$$("#links a").forEach((a) => a.addEventListener("click", () => $("#links").classList.remove("open")));
+
+// reveal on scroll
+const io = new IntersectionObserver((entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { threshold: 0.12 });
+$$(".rv").forEach((el) => io.observe(el));
+
+// pick the right installer name by OS (files are placed in /download by the maintainer)
+const ua = navigator.userAgent;
+const dl = $("#dl");
+if (/Mac/i.test(ua) && !/iPhone|iPad/i.test(ua)) { dl.href = "download/Material-Video-Downloader.dmg"; I18N.en.cta_dl = "Download for macOS"; I18N.vi.cta_dl = "Tải cho macOS"; }
+else if (/Linux/i.test(ua) && !/Android/i.test(ua)) { dl.href = "download/Material-Video-Downloader.AppImage"; I18N.en.cta_dl = "Download for Linux"; I18N.vi.cta_dl = "Tải cho Linux"; }
+setLang(localStorage.getItem("mvd.landing.lang") || "system");
+</script>
+</body>
+</html>

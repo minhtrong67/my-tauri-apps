@@ -5,6 +5,7 @@ import {
   Pause, Pencil, PictureInPicture2, Pipette, Play, Plus, RefreshCw, Repeat, Repeat1, Ruler, Search, SearchX, Settings, Share, Shrink, Shuffle,
   SkipBack, SkipForward, SlidersHorizontal, SlidersVertical, Sparkles, Square, Sun, SunMoon, Trash2, Unlink, Upload, User, Volume1, Volume2,
   VolumeX, X, Languages, Type, Power, Pin, HardDrive, Wrench, ShieldAlert, Headphones, AppWindow, TriangleAlert, Eraser, DatabaseBackup, ArchiveRestore,
+  CloudDownload, TrendingUp, Gem, EyeOff, Save, Gauge,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -14,6 +15,12 @@ import {
  */
 export const ICONS: Record<string, LucideIcon> = {
   home: House,
+  cloud_download: CloudDownload,
+  trending_up: TrendingUp,
+  gem: Gem,
+  eye_off: EyeOff,
+  save: Save,
+  gauge: Gauge,
   music_note: Music,
   album: Disc3,
   person: User,

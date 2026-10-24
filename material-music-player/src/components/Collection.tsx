@@ -81,6 +81,7 @@ export function EmptyLibrary() {
         <Button icon="create_new_folder" onClick={importFolder}>{tr('addFolder')}</Button>
         <Button icon="audio_file" variant="tonal" onClick={importFiles}>{tr('addMusicFiles')}</Button>
       </div>
+      <p className="mt-6 text-body-sm text-on-surface-variant">{tr('formatsLine')}</p>
     </div>
   );
 }

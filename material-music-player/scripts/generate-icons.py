@@ -1,5 +1,5 @@
 """
-Generates every icon of Material Music Player (app, setup, uninstall, installer artwork) in the brand colour #E91E63.
+Generates every icon of Material Music (app, setup, uninstall, installer artwork) in the brand colour #E91E63.
 
     pip install pillow
     python scripts/generate-icons.py          # or: npm run icons

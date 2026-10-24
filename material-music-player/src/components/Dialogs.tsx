@@ -10,7 +10,7 @@ function PromptDialog({ d, onClose }: { d: Extract<NonNullable<ReturnType<typeof
   const [v, setV] = useState(d.initial ?? '');
   const submit = () => { if (v.trim()) { d.onSubmit(v.trim()); onClose(); } };
   return (
-    <Modal title={d.title} onClose={onClose} actions={<><Button variant="text" onClick={onClose}>{tr('cancel')}</Button><Button variant="text" onClick={submit} disabled={!v.trim()}>{d.confirmLabel ?? tr('ok')}</Button></>}>
+    <Modal title={d.title} onClose={onClose} actions={<><Button variant="tonal" icon="close" onClick={onClose}>{tr('cancel')}</Button><Button icon="check" onClick={submit} disabled={!v.trim()}>{d.confirmLabel ?? tr('ok')}</Button></>}>
       <label className="block relative mt-1">
         <span className="absolute -top-2.5 left-3 px-1 bg-surface-container-high text-body-sm text-primary">{d.label}</span>
         <input autoFocus value={v} onChange={(e) => setV(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} maxLength={80}
@@ -27,7 +27,7 @@ function AddToPlaylist({ ids, onClose }: { ids: string[]; onClose: () => void })
   const [name, setName] = useState('');
   const create = () => { if (!name.trim()) return; createPlaylist(name, ids); showToast(tr('playlistCreated', { name: name.trim() })); onClose(); };
   return (
-    <Modal title={tr('addToPlaylist')} onClose={onClose} actions={<Button variant="text" onClick={onClose}>{tr('close')}</Button>}>
+    <Modal title={tr('addToPlaylist')} onClose={onClose} actions={<Button variant="tonal" icon="close" onClick={onClose}>{tr('close')}</Button>}>
       <div className="flex gap-2 mb-3">
         <input value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && create()} placeholder={tr('newPlaylistPlaceholder')} maxLength={80}
           className="flex-1 h-12 px-4 rounded-full bg-surface-container-highest outline-none text-body-md focus:ring-2 ring-primary" />
@@ -55,11 +55,70 @@ function InfoDialog({ id, onClose }: { id: string; onClose: () => void }) {
     [tr('infoSampleRate'), t.sampleRate ? `${(t.sampleRate / 1000).toFixed(1)} kHz` : '—'], [tr('infoSize'), fmtSize(t.size)], [tr('infoPath'), t.path],
   ];
   return (
-    <Modal title={tr('songInfo')} wide onClose={onClose} actions={<Button variant="text" onClick={onClose}>{tr('close')}</Button>}>
+    <Modal title={tr('songInfo')} wide onClose={onClose} actions={<Button variant="tonal" icon="close" onClick={onClose}>{tr('close')}</Button>}>
       <div className="flex gap-4 mb-4"><Cover track={t} eager className="w-28 h-28 rounded-2xl" iconSize={48} /></div>
       <dl className="grid grid-cols-[120px_1fr] gap-y-2 text-body-md">
         {rows.map(([k, v]) => (<div key={k} className="contents"><dt className="text-on-surface-variant">{k}</dt><dd className="break-all select-text">{v}</dd></div>))}
       </dl>
+    </Modal>
+  );
+}
+
+function TagField({ label, value, onChange, numeric, wide }: { label: string; value: string; onChange: (v: string) => void; numeric?: boolean; wide?: boolean }) {
+  return (
+    <label className={`block relative ${wide ? 'col-span-2' : ''}`}>
+      <span className="absolute -top-2 left-3 px-1 bg-surface-container-high text-body-sm text-on-surface-variant">{label}</span>
+      <input
+        value={value} inputMode={numeric ? 'numeric' : undefined} maxLength={numeric ? 4 : 200}
+        onChange={(e) => onChange(numeric ? e.target.value.replace(/\D/g, '') : e.target.value)}
+        className="w-full h-12 px-4 rounded-lg bg-transparent border border-outline focus:border-2 focus:border-primary outline-none text-body-lg text-on-surface select-text transition-colors"
+      />
+    </label>
+  );
+}
+
+function EditTagsDialog({ id, onClose }: { id: string; onClose: () => void }) {
+  const t = useStore((s) => s.byId[id]);
+  const editTags = useStore((s) => s.editTags);
+  // the library shows a localized "Unknown ..." placeholder for empty tags: edit them as empty
+  const clean = (v: string, key: 'unknownArtist' | 'unknownAlbum') => (v === tr(key, undefined, 'en') || v === tr(key, undefined, 'vi') ? '' : v);
+  const [f, setF] = useState(() => ({
+    title: t?.title ?? '', artist: clean(t?.artist ?? '', 'unknownArtist'), album: clean(t?.album ?? '', 'unknownAlbum'),
+    albumArtist: t?.albumArtist ?? '', genre: t?.genre ?? '', year: t?.year ? String(t.year) : '', trackNo: t?.trackNo ? String(t.trackNo) : '',
+  }));
+  const [busy, setBusy] = useState(false);
+  if (!t) return null;
+  const set = (k: keyof typeof f) => (v: string) => setF((p) => ({ ...p, [k]: v }));
+  const save = async () => {
+    setBusy(true);
+    const ok = await editTags(id, { ...f, year: parseInt(f.year, 10) || 0, trackNo: parseInt(f.trackNo, 10) || 0 });
+    setBusy(false);
+    if (ok) onClose();
+  };
+  return (
+    <Modal
+      title={tr('editTagsTitle')} wide onClose={busy ? () => undefined : onClose}
+      actions={<><Button variant="tonal" icon="close" onClick={onClose} disabled={busy}>{tr('cancel')}</Button><Button icon="save" onClick={save} disabled={busy || !f.title.trim()}>{busy ? tr('lyricsSearching') : tr('saveTags')}</Button></>}
+    >
+      <div className="flex gap-4 mb-5 items-center">
+        <Cover track={t} eager className="w-20 h-20 rounded-2xl shrink-0" iconSize={36} />
+        <div className="min-w-0">
+          <div className="text-title-md truncate">{t.title}</div>
+          <div className="text-body-sm text-on-surface-variant break-all line-clamp-2">{t.path}</div>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-4 pt-1">
+        <TagField wide label={tr('infoTitle')} value={f.title} onChange={set('title')} />
+        <TagField label={tr('infoArtist')} value={f.artist} onChange={set('artist')} />
+        <TagField label={tr('infoAlbumArtist')} value={f.albumArtist} onChange={set('albumArtist')} />
+        <TagField wide label={tr('infoAlbum')} value={f.album} onChange={set('album')} />
+        <TagField label={tr('infoGenre')} value={f.genre} onChange={set('genre')} />
+        <div className="grid grid-cols-2 gap-3">
+          <TagField numeric label={tr('infoYear')} value={f.year} onChange={set('year')} />
+          <TagField numeric label={tr('infoTrackNo')} value={f.trackNo} onChange={set('trackNo')} />
+        </div>
+      </div>
+      <p className="mt-4 flex items-center gap-2 text-body-sm text-on-surface-variant"><Icon name="info" size={16} />{tr('tagsHint')}</p>
     </Modal>
   );
 }
@@ -73,12 +132,12 @@ function SleepDialog({ onClose }: { onClose: () => void }) {
   const remaining = sleepAt ? Math.max(0, Math.round((sleepAt - Date.now()) / 1000)) : 0;
   const pick = (m: number | 'track' | null) => { setSleep(m); onClose(); };
   return (
-    <Modal title={tr('sleepTitle')} onClose={onClose} actions={<Button variant="text" onClick={onClose}>{tr('close')}</Button>}>
+    <Modal title={tr('sleepTitle')} onClose={onClose} actions={<Button variant="tonal" icon="close" onClick={onClose}>{tr('close')}</Button>}>
       {(sleepAt || eot) && (
         <div className="mb-4 p-4 rounded-2xl bg-primary-container text-on-primary-container flex items-center gap-3">
           <Icon name="bedtime" fill />
           <div className="flex-1 text-body-lg">{eot ? tr('sleepEndOfTrack') : tr('sleepRemaining', { time: fmtTime(remaining) })}</div>
-          <Button variant="text" onClick={() => pick(null)}>{tr('turnOff')}</Button>
+          <Button variant="tonal" icon="close" onClick={() => pick(null)}>{tr('turnOff')}</Button>
         </div>
       )}
       <div className="flex flex-wrap gap-2">
@@ -95,7 +154,7 @@ function AudioDialog({ onClose }: { onClose: () => void }) {
   const setGain = (i: number, v: number) => { const g = [...s.eqGains]; g[i] = v; update({ eqGains: g, eqPreset: 'custom' }); };
   const fx = engine.fxAvailable;
   return (
-    <Modal title={tr('audioTitle')} wide onClose={onClose} actions={<Button variant="text" onClick={onClose}>{tr('done')}</Button>}>
+    <Modal title={tr('audioTitle')} wide onClose={onClose} actions={<Button icon="check" onClick={onClose}>{tr('done')}</Button>}>
       <div className="mb-5">
         <div className="flex items-center justify-between mb-1"><span className="text-title-md">{tr('playbackSpeed')}</span><span className="text-label-lg text-primary">{s.playbackRate.toFixed(2)}×</span></div>
         <Slider min={0.5} max={2} step={0.05} value={s.playbackRate} onChange={(v) => update({ playbackRate: v })} label={tr('playbackSpeed')} />
@@ -145,17 +204,18 @@ export function Dialogs() {
     case 'prompt': return <PromptDialog d={d} onClose={close} />;
     case 'confirm':
       return (
-        <Modal title={d.title} onClose={close} actions={<><Button variant="text" onClick={close}>{tr('cancel')}</Button><Button variant="text" danger={d.danger} onClick={() => { d.onConfirm(); close(); }}>{d.confirmLabel ?? tr('confirm')}</Button></>}>
+        <Modal title={d.title} onClose={close} actions={<><Button variant="tonal" icon="close" onClick={close}>{tr('cancel')}</Button><Button icon={d.danger ? 'delete' : 'check'} danger={d.danger} onClick={() => { d.onConfirm(); close(); }}>{d.confirmLabel ?? tr('confirm')}</Button></>}>
           <p className="text-body-lg text-on-surface-variant">{d.text}</p>
         </Modal>
       );
     case 'info': return <InfoDialog id={d.id} onClose={close} />;
     case 'addToPlaylist': return <AddToPlaylist ids={d.ids} onClose={close} />;
     case 'sleep': return <SleepDialog onClose={close} />;
+    case 'editTags': return <EditTagsDialog id={d.id} onClose={close} />;
     case 'audio': return <AudioDialog onClose={close} />;
     case 'shortcuts':
       return (
-        <Modal title={tr('shortcutsTitle')} onClose={close} actions={<Button variant="text" onClick={close}>{tr('close')}</Button>}>
+        <Modal title={tr('shortcutsTitle')} onClose={close} actions={<Button variant="tonal" icon="close" onClick={close}>{tr('close')}</Button>}>
           <dl className="grid grid-cols-[150px_1fr] gap-y-2 text-body-md">
             {SHORTCUTS.map(([k, v]) => (<div key={k} className="contents"><dt><kbd className="px-2 py-0.5 rounded-md bg-surface-container-highest text-label-md">{k}</kbd></dt><dd>{tr(v)}</dd></div>))}
           </dl>

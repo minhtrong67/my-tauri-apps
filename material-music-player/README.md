@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="src-tauri/icons/icon.png" width="112" alt="Material Music Player icon" />
+<img src="src-tauri/icons/icon.png" width="112" alt="Material Music icon" />
 
-# Material Music Player
+# Material Music
 
 **A beautiful local music player for Windows with a Material Design 3 interface.**
 
@@ -39,7 +39,7 @@ English · [Tiếng Việt](README.vi.md)
 
 ## Introduction
 
-**Material Music Player** plays the music stored on your PC. It is built with [Tauri](https://tauri.app), React and Rust, so it is small, fast and light on memory, and it wears a modern **Material Design 3** interface:
+**Material Music** plays the music stored on your PC. It is built with [Tauri](https://tauri.app), React and Rust, so it is small, fast and light on memory, and it wears a modern **Material Design 3** interface:
 
 - **Material You colors** generated from one theme color of your choice – or from the cover art of the song that is playing – in **light**, **dark** or **follow-system** mode.
 - **English and Vietnamese** user interface, switchable at any time.
@@ -76,20 +76,39 @@ English · [Tiếng Việt](README.vi.md)
 - Browse by Songs, Albums, Artists, Playlists, Favorites and Recent – with **list / grid view** on every tab, accent-insensitive search (`Ctrl+F`) and sorting.
 - Virtualized lists: smooth with tens of thousands of songs.
 - Back up / restore the library (JSON), remove missing files.
+- **Folder watching:** songs you add, rename or delete inside the library folders show up automatically (can be turned off).
+- **Edit tags:** right-click a song → *Edit tags* to rewrite title, artist, album, album artist, genre, year and track number inside the file itself.
+- **Smart playlists** that fill themselves: *Most played*, *New this month*, *Never played* and *Lossless* (FLAC / WAV).
+
+#### Supported audio formats
+
+| Format | Extensions | Tags & cover art | Notes |
+|---|---|---|---|
+| MP3 | `.mp3` | ID3v1 / ID3v2 | Most common lossy format |
+| FLAC | `.flac` | Vorbis comments, picture block | Lossless |
+| WAV | `.wav` | RIFF INFO / ID3 | Uncompressed |
+| Ogg Vorbis | `.ogg`, `.oga` | Vorbis comments | Lossy |
+| Opus | `.opus` | Opus tags | Lossy, very efficient |
+| M4A / AAC | `.m4a`, `.aac` | MP4 atoms / ADTS | Lossy (AAC) |
+
+Playback uses the Microsoft Edge WebView2 media stack, so a file plays if WebView2 can decode it. The list lives in `AUDIO_EXTS` (see [Development](#development)).
 
 ### Playback
 - Play / pause, previous / next, seek, volume, shuffle and repeat (off / all / one).
 - Queue: play next, add to queue, drag to reorder.
+- **Gapless playback** and optional **crossfade** (3 / 6 / 10 s): the next song is preloaded on a second audio deck and takes over without a gap.
+- **ReplayGain** (track or album) evens out loudness between songs, limited by the stored peak so it never clips.
 - Playlists: create, rename, delete, reorder, import / export **M3U / M3U8**.
 - **10-band equalizer** with presets and preamp, playback speed 0.5× – 2×.
-- **Synced lyrics** (`.lrc` next to the song or embedded in the tags) – click a line to seek.
+- **Synced lyrics** (`.lrc` next to the song or embedded in the tags) – click a line to seek. No lyrics yet? **Search online** (LRCLIB, only when you press the button) and save them as a `.lrc` next to the song.
 - Spectrum visualizer, full-window *Now Playing* view and a **mini player** that stays on top.
-- Sleep timer (15 – 120 minutes or after the current song), Windows media keys, restore of the previous session.
+- Sleep timer (15 – 120 minutes or after the current song), **global media keys** (Play/Pause, Next, Previous, Stop – work in the background and from the tray; the Windows media overlay shows the cover and progress), restore of the previous session.
 
 ### Appearance & languages
 - Light, dark or system theme; **18 Material theme colors** + custom color (default theme = `material-theme-blue.json`); optional **dynamic color from the cover art**; **font picker** with popular fonts.
 - A tidy, grouped **Settings** page: General · Appearance · Playback · Library · About.
 - English / Vietnamese UI, automatic by default.
+- **Theme reveal:** switching light / dark / color expands the new theme as a circle from where you clicked (View Transitions, with a fade fallback). Lyrics blur and soften away from the line being sung, and covers zoom in on every song change.
 - Smooth Material motion: staggered card entrances, hover lift, sliding toggles, press feedback and screen transitions (reduced automatically when Windows animations are off).
 
 ### Performance
@@ -101,6 +120,11 @@ English · [Tiếng Việt](README.vi.md)
 - **Window on startup** (*Settings → General*): choose **Remember size** – the app reopens with the window size, position and state you left it in – or **Always maximized** – it opens maximized every time (a normal maximize, not `F11` fullscreen; restoring down returns to your last size). Fullscreen and the mini player are never saved, and if a monitor is unplugged the window is re-centered.
 - System tray with play / pause / previous / next, optional *close to tray*, always on top, single instance.
 - Frameless Material title bar.
+
+### Security
+- The asset protocol starts **empty**: only the cover cache and the folders that hold your library are readable by the web view (no more `**` wildcard).
+- File commands accept only absolute paths to `.m3u`, `.m3u8`, `.lrc` and `.json` files, never write into the app's own data folder and cap the size of what they read.
+- Content-Security-Policy with `object-src 'none'`, `base-uri 'none'` and `frame-ancestors 'none'`; online lyrics are fetched by the Rust side, so the web view still has no network access.
 
 ### Keyboard shortcuts
 
@@ -122,7 +146,7 @@ Download the latest installer from the **Releases** page of this repository:
 
 | File | Description |
 |---|---|
-| `Material Music Player_1.0.0_x64-setup.exe` | Installer for Windows 10 / 11 (64-bit) – recommended |
+| `Material Music_1.1.0_x64-setup.exe` | Installer for Windows 10 / 11 (64-bit) – recommended |
 
 | System requirements | |
 |---|---|
@@ -133,12 +157,12 @@ Supported audio: **MP3, FLAC, WAV, OGG, Opus, M4A, AAC** (playback uses the WebV
 
 ### Install
 
-1. Run **`Material Music Player_1.0.0_x64-setup.exe`**. It installs per user, so **no administrator rights** are needed.
+1. Run **`Material Music_1.1.0_x64-setup.exe`**. It installs per user, so **no administrator rights** are needed.
 2. If Windows SmartScreen shows *"Windows protected your PC"* (the installer is not code-signed), click **More info → Run anyway**.
-3. Follow the wizard and launch **Material Music Player** from the Start menu.
+3. Follow the wizard and launch **Material Music** from the Start menu.
 4. The app scans your **Music** folder automatically; add more with *Add folder* or by dragging folders into the window.
 
-**Uninstall** – *Settings → Apps → Installed apps → Material Music Player → Uninstall* (or run `uninstall.exe` in the install folder). Data lives in `%APPDATA%\com.minhtrong67.material-music-player` and cover cache in `%LOCALAPPDATA%\com.minhtrong67.material-music-player`; delete them for a completely clean removal.
+**Uninstall** – *Settings → Apps → Installed apps → Material Music → Uninstall* (or run `uninstall.exe` in the install folder). Data lives in `%APPDATA%\com.minhtrong67.material-music-player` and cover cache in `%LOCALAPPDATA%\com.minhtrong67.material-music-player`; delete them for a completely clean removal.
 
 **Upgrading from "Melodia"** – the first launch automatically imports the library saved by the old Melodia build.
 
@@ -159,7 +183,7 @@ Supported audio: **MP3, FLAC, WAV, OGG, Opus, M4A, AAC** (playback uses the WebV
 | Design system | Material Design 3 – [`@material/material-color-utilities`](https://github.com/material-foundation/material-color-utilities), [Lucide](https://lucide.dev) icons, `system-ui` font (+ bundled Roboto / Inter / Open Sans, SIL OFL) |
 | State | [Zustand](https://zustand-demo.pmnd.rs) |
 | Audio | HTML5 `<audio>` + Web Audio API (equalizer, visualizer) on Microsoft Edge WebView2 |
-| Rust crates | `tauri`, `tauri-plugin-dialog`, `tauri-plugin-single-instance`, `lofty` (tags & cover art), `walkdir`, `base64`, `serde` |
+| Rust crates | `tauri`, `tauri-plugin-dialog`, `tauri-plugin-single-instance`, `tauri-plugin-global-shortcut` (media keys), `lofty` (read / write tags, cover art, ReplayGain), `rayon` (parallel scan), `notify` (folder watching), `ureq` (online lyrics), `walkdir`, `base64`, `serde` |
 | Installer | NSIS (via the Tauri bundler) |
 
 ## Development
@@ -212,7 +236,7 @@ npm run build
 
 | Artifact | Path (project inside a Cargo workspace → `target` at the workspace root) |
 |---|---|
-| Installer | `target/release/bundle/nsis/Material Music Player_1.0.0_x64-setup.exe` |
+| Installer | `target/release/bundle/nsis/Material Music_1.1.0_x64-setup.exe` |
 | Portable executable | `target/release/material-music-player.exe` |
 
 - The first build downloads the NSIS tooling, so an internet connection is required.
@@ -231,7 +255,7 @@ npm run build
 
 To use your own artwork replace `src-tauri/icons/icon.png` (square, ≥ 512 px), run `npx tauri icon src-tauri/icons/icon.png`, and update `scripts/generate-icons.py` if you also want matching setup / uninstall icons.
 
-**Landing page** – `index.html` at the project root is a single-file Material Design landing page (responsive, SEO + social meta tags, EN/VI). Its Download button points to `download/Material-Music-Player_1.0.0_x64-setup.exe`; copy your built installer into the [`download`](download) folder with that name. Open it by double-clicking, or host the repository root (e.g. GitHub Pages).
+**Landing page** – `index.html` at the project root is a single-file Material Design landing page (responsive, SEO + social meta tags, EN/VI). Its Download button points to `download/Material-Music_1.1.0_x64-setup.exe`; copy your built installer into the [`download`](download) folder with that name. Open it by double-clicking, or host the repository root (e.g. GitHub Pages).
 
 ## Project Structure
 
@@ -246,8 +270,13 @@ material-music-player/
 │  ├─ main.tsx, App.tsx       entry point, layout, global shortcuts, drag & drop, theme
 │  ├─ index.css               Material 3 tokens, motion, sliders
 │  ├─ lib/
-│  │  ├─ store.ts             application state (zustand): library, queue, playback, settings
-│  │  ├─ audio.ts             <audio> engine, equalizer, spectrum
+│  │  ├─ store/               application state (zustand slices)
+│  │  │  ├─ index.ts          composes the slices into `useStore`
+│  │  │  ├─ core.ts           helpers shared by the slices (scan, merge, persistence, next-song sync)
+│  │  │  ├─ library.ts · player.ts · playlists.ts · ui.ts · app.ts
+│  │  │  └─ derived.ts        albums / artists / search hooks
+│  │  ├─ audio.ts             two-deck engine: gapless, crossfade, ReplayGain, equalizer, spectrum
+│  │  ├─ smart.ts             smart playlists
 │  │  ├─ i18n.ts              English / Vietnamese dictionaries
 │  │  ├─ theme.ts             Material 3 palette generation from a seed color
 │  │  ├─ cover.ts, lrc.ts, m3u.ts, menus.ts
@@ -258,7 +287,7 @@ material-music-player/
 ├─ scripts/
 │  └─ generate-icons.py       generates every icon (app, setup, uninstall) in #E91E63
 ├─ src-tauri/                 Rust backend
-│  ├─ src/lib.rs              commands: scan, tags & covers, lyrics, state, tray, window memory
+│  ├─ src/lib.rs              commands: parallel scan, tags (read / write) & covers, lyrics (local / online), state, tray, media keys, folder watcher, window memory
 │  ├─ src/main.rs
 │  ├─ capabilities/           Tauri permissions
 │  ├─ icons/                  app, setup and uninstall icons

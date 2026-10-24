@@ -1,0 +1,455 @@
+@import "tailwindcss";
+
+/* ---- Material 3 color roles -> Tailwind utilities (bg-primary, text-on-surface, ...) ---- */
+@theme inline {
+  --font-sans: var(--app-font);
+
+  --color-primary: var(--md-primary);
+  --color-on-primary: var(--md-on-primary);
+  --color-primary-container: var(--md-primary-container);
+  --color-on-primary-container: var(--md-on-primary-container);
+  --color-secondary: var(--md-secondary);
+  --color-on-secondary: var(--md-on-secondary);
+  --color-secondary-container: var(--md-secondary-container);
+  --color-on-secondary-container: var(--md-on-secondary-container);
+  --color-tertiary: var(--md-tertiary);
+  --color-on-tertiary: var(--md-on-tertiary);
+  --color-tertiary-container: var(--md-tertiary-container);
+  --color-on-tertiary-container: var(--md-on-tertiary-container);
+  --color-error: var(--md-error);
+  --color-on-error: var(--md-on-error);
+  --color-error-container: var(--md-error-container);
+  --color-on-error-container: var(--md-on-error-container);
+  --color-background: var(--md-background);
+  --color-on-background: var(--md-on-background);
+  --color-surface: var(--md-surface);
+  --color-on-surface: var(--md-on-surface);
+  --color-surface-variant: var(--md-surface-variant);
+  --color-on-surface-variant: var(--md-on-surface-variant);
+  --color-outline: var(--md-outline);
+  --color-outline-variant: var(--md-outline-variant);
+  --color-shadow: var(--md-shadow);
+  --color-scrim: var(--md-scrim);
+  --color-inverse-surface: var(--md-inverse-surface);
+  --color-inverse-on-surface: var(--md-inverse-on-surface);
+  --color-inverse-primary: var(--md-inverse-primary);
+  --color-surface-tint: var(--md-surface-tint);
+  --color-surface-dim: var(--md-surface-dim);
+  --color-surface-bright: var(--md-surface-bright);
+  --color-surface-container-lowest: var(--md-surface-container-lowest);
+  --color-surface-container-low: var(--md-surface-container-low);
+  --color-surface-container: var(--md-surface-container);
+  --color-surface-container-high: var(--md-surface-container-high);
+  --color-surface-container-highest: var(--md-surface-container-highest);
+}
+
+@theme {
+  --shadow-elev-1: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 1px 3px 1px rgb(0 0 0 / 0.15);
+  --shadow-elev-2: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 2px 6px 2px rgb(0 0 0 / 0.15);
+  --shadow-elev-3: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 4px 8px 3px rgb(0 0 0 / 0.15);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+:root {
+  --app-font: system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* safe defaults before the theme is applied */
+  --md-surface: #fef7ff;
+  --md-on-surface: #1d1b20;
+  --md-primary: #6750a4;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+@layer base {
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+::selection {
+  background: color-mix(in srgb, var(--md-primary) 30%, transparent);
+}
+
+/* thin themed scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-outline-variant) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--md-outline-variant);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--md-outline);
+  background-clip: content-box;
+  border: 2px solid transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/* State layer + ripple                                                */
+/* ------------------------------------------------------------------ */
+[data-ripple] {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+}
+[data-ripple]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 160ms linear;
+  pointer-events: none;
+  z-index: -1;
+}
+[data-ripple]:hover::after {
+  opacity: 0.08;
+}
+[data-ripple]:focus-visible::after {
+  opacity: 0.1;
+}
+[data-ripple]:disabled::after {
+  display: none;
+}
+.ripple {
+  position: absolute;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0.18;
+  transform: scale(0);
+  animation: ripple 650ms var(--ease-emphasized) forwards;
+  pointer-events: none;
+  z-index: -1;
+}
+@keyframes ripple {
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Animations                                                          */
+/* ------------------------------------------------------------------ */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  70% {
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, 3%, 0) scale(1.08);
+  }
+}
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes bounce-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes tip-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes scrim-out { to { opacity: 0; } }
+@keyframes dialog-out { to { opacity: 0; transform: translateY(12px) scale(0.96); } }
+@keyframes sheet-in {
+  from { opacity: 0; transform: translateX(32px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes sheet-up {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes sheet-out { to { opacity: 0; transform: translateX(24px); } }
+@keyframes sheet-down { to { opacity: 0; transform: translateY(32px); } }
+@keyframes menu-in {
+  from { opacity: 0; transform: scaleY(0.82) translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes menu-out { to { opacity: 0; transform: scaleY(0.9); } }
+@keyframes progress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+@keyframes morph {
+  0%, 100% { border-radius: 38% 62% 55% 45% / 45% 40% 60% 55%; }
+  50% { border-radius: 58% 42% 40% 60% / 55% 60% 40% 45%; }
+}
+
+.anim-tip { animation: tip-in 140ms var(--ease-emphasized) both; }
+.anim-scrim-out { animation: scrim-out 180ms linear both; }
+.anim-dialog-out { animation: dialog-out 180ms ease-in both; }
+.anim-sheet { animation: sheet-up 340ms var(--ease-emphasized) both; }
+.anim-sheet-out { animation: sheet-down 220ms ease-in both; }
+@media (min-width: 768px) {
+  .anim-sheet { animation-name: sheet-in; }
+  .anim-sheet-out { animation-name: sheet-out; }
+}
+.anim-menu { animation: menu-in 180ms var(--ease-emphasized) both; }
+.anim-menu-out { animation: menu-out 140ms ease-in both; }
+.anim-float { animation: float-slow 7s ease-in-out infinite; }
+.anim-morph { animation: morph 9s ease-in-out infinite; }
+
+/* ---- Toast types (own palette per type, tuned for light + dark) ---- */
+.toast {
+  --t-bg: #d7e6ff; --t-fg: #00315e; --t-ac: #1b6ef3; --t-badge: #1b6ef3; --t-on-badge: #fff;
+  background: var(--t-bg);
+  color: var(--t-fg);
+  border: 1px solid color-mix(in srgb, var(--t-ac) 28%, transparent);
+}
+.toast-success { --t-bg: #d3f1d8; --t-fg: #0a3a15; --t-ac: #1e8e3e; --t-badge: #1e8e3e; }
+.toast-warning { --t-bg: #ffe8b5; --t-fg: #4a3000; --t-ac: #b26a00; --t-badge: #d98a00; --t-on-badge: #231500; }
+.toast-error { --t-bg: #ffdad6; --t-fg: #410002; --t-ac: #ba1a1a; --t-badge: #ba1a1a; }
+[data-theme="dark"] .toast { --t-bg: #12365f; --t-fg: #d6e6ff; --t-ac: #8ab8ff; --t-badge: #8ab8ff; --t-on-badge: #002b57; }
+[data-theme="dark"] .toast-success { --t-bg: #14461f; --t-fg: #c9f0cf; --t-ac: #7fdb8b; --t-badge: #7fdb8b; --t-on-badge: #00390f; }
+[data-theme="dark"] .toast-warning { --t-bg: #4f3800; --t-fg: #ffe3a6; --t-ac: #ffc857; --t-badge: #ffc857; --t-on-badge: #3a2800; }
+[data-theme="dark"] .toast-error { --t-bg: #6e1d19; --t-fg: #ffdad6; --t-ac: #ff8a80; --t-badge: #ff8a80; --t-on-badge: #4a0003; }
+.toast-badge { background: var(--t-badge); color: var(--t-on-badge); }
+.toast-action { color: var(--t-ac); }
+.toast-progress { background: var(--t-ac); opacity: 0.55; animation: progress linear forwards; }
+
+.anim-page {
+  animation: page-in 420ms var(--ease-emphasized) both;
+}
+.anim-fade-up {
+  animation: fade-up 480ms var(--ease-emphasized) both;
+  animation-delay: var(--d, 0ms);
+}
+.anim-pop {
+  animation: pop-in 420ms var(--ease-emphasized) both;
+  animation-delay: var(--d, 0ms);
+}
+.anim-toast-in {
+  animation: toast-in 260ms var(--ease-emphasized) both;
+}
+.anim-toast-out {
+  animation: toast-out 200ms ease-in both;
+}
+.anim-dialog {
+  animation: dialog-in 300ms var(--ease-emphasized) both;
+}
+.anim-scrim {
+  animation: scrim-in 200ms linear both;
+}
+.anim-bounce {
+  animation: bounce-soft 2.4s ease-in-out infinite;
+}
+.anim-spin-slow {
+  animation: spin-slow 14s linear infinite;
+}
+
+/* Soft aurora behind the content (gradients only - no expensive blur filters) */
+.aurora {
+  position: fixed;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 35% at 15% 10%, color-mix(in srgb, var(--md-primary) 16%, transparent), transparent 70%),
+    radial-gradient(35% 30% at 85% 20%, color-mix(in srgb, var(--md-tertiary) 14%, transparent), transparent 70%),
+    radial-gradient(40% 35% at 70% 90%, color-mix(in srgb, var(--md-secondary) 14%, transparent), transparent 70%);
+  animation: drift 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, var(--md-primary), var(--md-tertiary), var(--md-primary));
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+/* checkerboard used behind color chips with transparency */
+.checker {
+  background-image: conic-gradient(var(--md-outline-variant) 25%, transparent 0 50%, var(--md-outline-variant) 0 75%, transparent 0);
+  background-size: 12px 12px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Range slider (M3-like)                                              */
+/* ------------------------------------------------------------------ */
+.mtb-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+  --track: var(--md-surface-container-highest);
+}
+.mtb-range::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 9999px;
+  background: var(--track);
+}
+.mtb-range::-moz-range-track {
+  height: 10px;
+  border-radius: 9999px;
+  background: var(--track);
+}
+.mtb-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -6px;
+  border-radius: 9999px;
+  background: var(--md-primary);
+  border: 3px solid var(--md-surface);
+  box-shadow: 0 0 0 1px var(--md-outline-variant), 0 2px 6px rgb(0 0 0 / 0.25);
+  transition: transform 150ms var(--ease-emphasized);
+}
+.mtb-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: var(--md-primary);
+  border: 3px solid var(--md-surface);
+  box-shadow: 0 0 0 1px var(--md-outline-variant);
+}
+.mtb-range:hover::-webkit-slider-thumb,
+.mtb-range:active::-webkit-slider-thumb {
+  transform: scale(1.18);
+}
+
+/* Code blocks */
+.code-block {
+  tab-size: 2;
+  font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .aurora {
+    animation: none;
+  }
+}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#F9F9FF" />
+    <title>Material Video Downloader</title>
+    <script>
+      // Apply the saved theme before first paint to avoid a flash.
+      (function () {
+        try {
+          var ui = JSON.parse(localStorage.getItem("mvd.ui") || "{}");
+          var mode = ui.themeMode || "system";
+          var dark = mode === "dark" || (mode === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+          var root = document.documentElement;
+          root.classList.toggle("dark", dark);
+          root.style.colorScheme = dark ? "dark" : "light";
+          var px = { sm: 14, md: 16, lg: 18 }[ui.fontSize || "md"];
+          root.style.fontSize = px + "px";
+          var saved = JSON.parse(localStorage.getItem("mvd.vars") || "null");
+          if (saved && saved.dark === dark) {
+            for (var k in saved.vars) root.style.setProperty(k, saved.vars[k]);
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

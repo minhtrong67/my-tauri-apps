@@ -1,0 +1,266 @@
+import { useState, type CSSProperties } from "react";
+import {
+  Bell,
+  Bookmark,
+  Check as CheckIcon,
+  Compass,
+  EllipsisVertical,
+  Heart,
+  House,
+  Menu,
+  Plus,
+  Search,
+  Share2,
+  Star,
+  User,
+} from "lucide-react";
+import { THEME_TRANSITION, themeVars, type CustomRoles, type Roles } from "../lib/theme";
+import { cn } from "../lib/utils";
+import { useSettings } from "../state/settings";
+import { Button, Chip, Range, Switch } from "./ui";
+
+/** Scope every `--md-*` variable to the preview container so the whole subtree re-themes. */
+export function scopeStyle(roles: Roles, dark: boolean): CSSProperties {
+  return { ...(themeVars(roles) as CSSProperties), transition: THEME_TRANSITION, colorScheme: dark ? "dark" : "light" };
+}
+
+function Checkbox({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      aria-label="checkbox"
+      onClick={() => onChange(!checked)}
+      className={cn(
+        "grid size-[18px] place-items-center rounded-[3px] border-2 transition-colors duration-200",
+        checked ? "border-primary bg-primary text-on-primary" : "border-on-surface-variant",
+      )}
+    >
+      {checked && <CheckIcon className="anim-pop size-3.5" strokeWidth={3.5} />}
+    </button>
+  );
+}
+
+function Radio({ checked, onClick }: { checked: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={checked}
+      aria-label="radio"
+      onClick={onClick}
+      className={cn("grid size-5 place-items-center rounded-full border-2 transition-colors duration-200", checked ? "border-primary" : "border-on-surface-variant")}
+    >
+      <span className={cn("size-2.5 rounded-full bg-primary transition-transform duration-200", checked ? "scale-100" : "scale-0")} />
+    </button>
+  );
+}
+
+function PhoneScreen() {
+  const { t } = useSettings();
+  const [nav, setNav] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const navItems = [
+    { icon: House, label: t("preview.nav.home") },
+    { icon: Compass, label: t("preview.nav.explore") },
+    { icon: Bookmark, label: t("preview.nav.saved") },
+    { icon: User, label: t("preview.nav.profile") },
+  ];
+  const list = [
+    { c: "bg-primary-container text-on-primary-container", a: "A", title: t("preview.list1"), sub: t("preview.list1sub") },
+    { c: "bg-secondary-container text-on-secondary-container", a: "B", title: t("preview.list2"), sub: t("preview.list2sub") },
+    { c: "bg-tertiary-container text-on-tertiary-container", a: "C", title: t("preview.list3"), sub: t("preview.list3sub") },
+  ];
+  return (
+    <div className="relative flex h-[600px] w-[300px] shrink-0 flex-col overflow-hidden rounded-[36px] border-[6px] border-outline-variant bg-surface text-on-surface shadow-elev-2">
+      <div className="mx-auto mt-1.5 h-1.5 w-16 rounded-full bg-outline-variant" />
+      <div className="flex items-center gap-2 px-4 pb-2 pt-3">
+        <Menu className="size-5 text-on-surface-variant" />
+        <div className="flex h-10 flex-1 items-center gap-2 rounded-full bg-surface-container-high px-3 text-sm text-on-surface-variant">
+          <Search className="size-4" />
+          {t("preview.search")}
+        </div>
+        <span className="grid size-8 place-items-center rounded-full bg-tertiary-container text-xs font-semibold text-on-tertiary-container">M</span>
+      </div>
+      <div className="flex-1 space-y-3 overflow-hidden px-4 pb-2">
+        <div className="rounded-3xl bg-primary-container p-4 text-on-primary-container">
+          <div className="mb-1 flex items-center justify-between">
+            <span className="rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-medium text-on-primary">{t("preview.badge")}</span>
+            <EllipsisVertical className="size-4" />
+          </div>
+          <h4 className="text-lg font-medium leading-snug">{t("preview.heroTitle")}</h4>
+          <p className="mt-1 text-xs opacity-80">{t("preview.heroBody")}</p>
+          <div className="mt-3 flex items-center gap-2">
+            <Button className="h-8 px-4 text-xs">{t("preview.read")}</Button>
+            <button
+              type="button"
+              aria-label="like"
+              data-ripple
+              onClick={() => setLiked((l) => !l)}
+              className="grid size-8 place-items-center rounded-full text-on-primary-container"
+            >
+              <Heart className={cn("size-4 transition-transform duration-300", liked && "scale-125 fill-current")} />
+            </button>
+            <Share2 className="size-4" />
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Chip selected>{t("preview.chip1")}</Chip>
+          <Chip>{t("preview.chip2")}</Chip>
+          <Chip>{t("preview.chip3")}</Chip>
+        </div>
+        <ul className="space-y-1">
+          {list.map((i) => (
+            <li key={i.a} className="flex items-center gap-3 rounded-2xl px-1 py-1.5">
+              <span className={cn("grid size-10 shrink-0 place-items-center rounded-full text-sm font-semibold", i.c)}>{i.a}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium">{i.title}</span>
+                <span className="block truncate text-xs text-on-surface-variant">{i.sub}</span>
+              </span>
+              <Star className="size-4 text-on-surface-variant" />
+            </li>
+          ))}
+        </ul>
+      </div>
+      <button
+        type="button"
+        aria-label="add"
+        data-ripple
+        className="absolute bottom-[88px] right-4 grid size-14 place-items-center rounded-2xl bg-tertiary-container text-on-tertiary-container shadow-elev-3 transition-transform active:scale-90"
+      >
+        <Plus className="size-6" />
+      </button>
+      <nav className="flex items-center justify-around bg-surface-container px-2 pb-3 pt-2">
+        {navItems.map((n, i) => (
+          <button key={i} type="button" onClick={() => setNav(i)} className="flex w-16 flex-col items-center gap-1 text-[11px]">
+            <span className={cn("grid h-8 w-14 place-items-center rounded-full transition-colors duration-300", nav === i ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant")}>
+              <n.icon className="size-5" />
+            </span>
+            <span className={nav === i ? "font-semibold text-on-surface" : "text-on-surface-variant"}>{n.label}</span>
+          </button>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
+function Board({ custom, dark }: { custom: CustomRoles[]; dark: boolean }) {
+  const { t } = useSettings();
+  const [sw, setSw] = useState(true);
+  const [cb, setCb] = useState(true);
+  const [radio, setRadio] = useState(0);
+  const [slider, setSlider] = useState(62);
+  const [tab, setTab] = useState(0);
+  const tabs = [t("preview.tab1"), t("preview.tab2"), t("preview.tab3")];
+  const panel = "rounded-3xl bg-surface-container p-4";
+  const title = "mb-3 text-xs font-semibold uppercase tracking-wider text-on-surface-variant";
+
+  return (
+    <div className="grid min-w-0 flex-1 content-start gap-3">
+      <div className={panel}>
+        <h4 className={title}>{t("preview.buttons")}</h4>
+        <div className="flex flex-wrap gap-2">
+          <Button>{t("preview.filled")}</Button>
+          <Button variant="tonal">{t("preview.tonal")}</Button>
+          <Button variant="outlined">{t("preview.outlined")}</Button>
+          <Button variant="elevated">{t("preview.elevated")}</Button>
+          <Button variant="text">{t("preview.text")}</Button>
+          <Button variant="danger">{t("preview.error")}</Button>
+        </div>
+      </div>
+
+      <div className="grid gap-3 min-[1180px]:grid-cols-2">
+        <div className={panel}>
+          <h4 className={title}>{t("preview.controls")}</h4>
+          <div className="space-y-3">
+            <label className="flex items-center justify-between text-sm">
+              {t("preview.notifications")}
+              <Switch checked={sw} onChange={setSw} label={t("preview.notifications")} />
+            </label>
+            <label className="flex items-center justify-between text-sm">
+              {t("preview.remember")}
+              <Checkbox checked={cb} onChange={setCb} />
+            </label>
+            <div className="flex items-center gap-4 text-sm">
+              {[0, 1, 2].map((i) => (
+                <label key={i} className="flex items-center gap-2">
+                  <Radio checked={radio === i} onClick={() => setRadio(i)} />
+                  {["S", "M", "L"][i]}
+                </label>
+              ))}
+            </div>
+            <Range label="slider" min={0} max={100} value={slider} onChange={setSlider} />
+          </div>
+        </div>
+
+        <div className={panel}>
+          <h4 className={title}>{t("preview.inputs")}</h4>
+          <label className="relative mb-4 block">
+            <span className="absolute -top-2 left-3 bg-surface-container px-1 text-xs text-primary">{t("preview.label")}</span>
+            <input defaultValue="Material 3" className="h-12 w-full rounded-xl border-2 border-primary bg-transparent px-4 text-sm outline-none" />
+          </label>
+          <div className="mb-3 flex flex-wrap gap-2">
+            <Chip selected>{t("preview.chip1")}</Chip>
+            <Chip icon={<Bell className="size-4" />}>{t("preview.assist")}</Chip>
+            <Chip>{t("preview.chip3")}</Chip>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full bg-secondary-container">
+            <div className="h-full rounded-full bg-primary transition-[width] duration-500 ease-emphasized" style={{ width: `${slider}%` }} />
+          </div>
+        </div>
+      </div>
+
+      <div className={panel}>
+        <div className="relative mb-4 grid auto-cols-fr grid-flow-col border-b border-outline-variant">
+          {tabs.map((label, i) => (
+            <button key={i} type="button" data-ripple onClick={() => setTab(i)} className={cn("h-12 text-sm font-medium transition-colors", tab === i ? "text-primary" : "text-on-surface-variant")}>
+              {label}
+            </button>
+          ))}
+          <span
+            className="absolute bottom-0 h-[3px] rounded-t-full bg-primary transition-transform duration-300 ease-emphasized"
+            style={{ width: `${100 / tabs.length}%`, transform: `translateX(${tab * 100}%)` }}
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="min-w-[200px] flex-1 rounded-2xl bg-error-container p-3 text-sm text-on-error-container">{t("preview.errorBanner")}</div>
+          <div className="flex items-center gap-3 rounded-lg bg-inverse-surface py-2.5 pl-4 pr-2 text-sm text-inverse-on-surface">
+            {t("preview.snackbar")}
+            <span className="rounded-full px-3 py-1 font-medium text-inverse-primary">{t("preview.undo")}</span>
+          </div>
+        </div>
+      </div>
+
+      {custom.length > 0 && (
+        <div className={panel}>
+          <h4 className={title}>{t("preview.customColors")}</h4>
+          <div className="flex flex-wrap gap-2">
+            {custom.map((c) => {
+              const s = dark ? c.dark : c.light;
+              return (
+                <div key={c.id} className="flex overflow-hidden rounded-full text-sm font-medium">
+                  <span className="px-3 py-1.5" style={{ background: s.color, color: s.onColor }}>
+                    {c.name}
+                  </span>
+                  <span className="px-3 py-1.5" style={{ background: s.colorContainer, color: s.onColorContainer }}>
+                    {c.name}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function PreviewScene({ roles, custom, dark }: { roles: Roles; custom: CustomRoles[]; dark: boolean }) {
+  return (
+    <div style={scopeStyle(roles, dark)} className="flex flex-wrap items-start gap-4 rounded-[28px] border border-outline-variant bg-background p-4 text-on-background">
+      <PhoneScreen />
+      <Board custom={custom} dark={dark} />
+    </div>
+  );
+}

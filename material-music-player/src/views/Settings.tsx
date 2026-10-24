@@ -195,6 +195,14 @@ export function SettingsView() {
         {/* Playback */}
         <Section title={tr('playbackSection')} icon="graphic_eq">
           <ToggleRow title={tr('restoreSession')} desc={tr('restoreSessionDesc')} checked={s.restoreSession} onChange={(v) => update({ restoreSession: v })} />
+          <ToggleRow title={tr('gapless')} desc={tr('gaplessDesc')} checked={s.gapless} onChange={(v) => update({ gapless: v })} />
+          <Row title={tr('crossfade')} desc={tr('crossfadeDesc')}>
+            <Segmented value={String(s.crossfade)} onChange={(v) => update({ crossfade: Number(v) })} options={[0, 3, 6, 10].map((n) => ({ value: String(n), label: n ? tr('cfSec', { n }) : tr('cfOff') }))} />
+          </Row>
+          <Row title={tr('replayGain')} desc={tr('replayGainDesc')}>
+            <Segmented value={s.replayGain} onChange={(v) => update({ replayGain: v })} options={[{ value: 'off', label: tr('rgOff') }, { value: 'track', label: tr('rgTrack') }, { value: 'album', label: tr('rgAlbum') }]} />
+          </Row>
+          <ToggleRow title={tr('globalMediaKeys')} desc={tr('globalMediaKeysDesc')} checked={s.globalMediaKeys} onChange={(v) => update({ globalMediaKeys: v })} />
           <Row title={tr('audioEq')} desc={tr('audioEqDesc')}>
             <Button variant="tonal" icon="tune" onClick={() => st.openDialog({ type: 'audio' })}>{tr('open')}</Button>
           </Row>
@@ -213,6 +221,12 @@ export function SettingsView() {
             <Stat icon="storage" value={fmtSize(size)} label={tr('infoSize')} />
           </div>
           <ToggleRow title={tr('autoScanMusic')} desc={tr('autoScanMusicDesc')} checked={s.autoScanMusic} onChange={(v) => update({ autoScanMusic: v })} />
+          <ToggleRow title={tr('watchFolders')} desc={tr('watchFoldersDesc')} checked={s.watchFolders} onChange={(v) => update({ watchFolders: v })} />
+          <BlockRow title={tr('supportedFormats')} desc={tr('supportedFormatsDesc')}>
+            <div className="flex flex-wrap gap-2">
+              {['MP3', 'FLAC', 'WAV', 'OGG', 'Opus', 'M4A', 'AAC'].map((f) => <span key={f} className="px-3 h-8 inline-flex items-center rounded-full bg-secondary-container text-on-secondary-container text-label-lg">{f}</span>)}
+            </div>
+          </BlockRow>
           <Row title={tr('importGroup')} desc={tr('importGroupDesc')}>
             <Button icon="create_new_folder" onClick={st.importFolder}>{tr('addFolder')}</Button>
             <Button icon="audio_file" variant="tonal" onClick={st.importFiles}>{tr('addFiles')}</Button>
@@ -225,9 +239,6 @@ export function SettingsView() {
             <Button icon="download" variant="outlined" onClick={st.backup}>{tr('backup')}</Button>
             <Button icon="upload" variant="outlined" onClick={st.restore}>{tr('restore')}</Button>
           </Row>
-          <Row title={tr('dangerZone')} desc={tr('clearLibraryDesc')} tone="danger">
-            <Button icon="delete_forever" variant="outlined" danger onClick={() => st.openDialog({ type: 'confirm', title: tr('clearLibraryQ'), text: tr('clearLibraryText', { app: 'Material Music Player' }), confirmLabel: tr('clearAll'), danger: true, onConfirm: st.clearLibrary })}>{tr('clearLibrary')}</Button>
-          </Row>
         </Section>
 
         {/* About */}
@@ -236,7 +247,7 @@ export function SettingsView() {
             <Logo size={64} />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-title-lg">Material Music Player</span>
+                <span className="text-title-lg">Material Music</span>
                 <span className="px-2.5 h-6 inline-flex items-center rounded-full bg-secondary-container text-on-secondary-container text-label-md">{tr('version')} {__APP_VERSION__}</span>
               </div>
               <div className="text-body-md text-on-surface-variant mt-0.5">{tr('aboutTagline')}</div>
