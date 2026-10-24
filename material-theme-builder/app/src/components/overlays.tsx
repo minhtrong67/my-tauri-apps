@@ -427,7 +427,7 @@ export function Select<T extends string>({
       >
         {SelIcon && <SelIcon className="size-4 shrink-0 text-primary" />}
         <span className="min-w-0 flex-1 truncate">{selected?.label}</span>
-        <ChevronDown className={cn("size-4 shrink-0 text-on-surface-variant transition-transform duration-300 ease-emphasized", open && "rotate-180")} />
+        <ChevronDown className={cn("size-4 shrink-0 text-on-surface-variant transition-transform duration-(--spring-spatial-d) ease-emphasized", open && "rotate-180")} />
       </button>
       {mounted &&
         box &&

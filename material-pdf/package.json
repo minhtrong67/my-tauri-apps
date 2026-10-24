@@ -1,7 +1,7 @@
 {
   "name": "material-pdf",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Material PDF - a fast, beautiful PDF reader and editor built with Tauri and Material Design 3",
   "author": "minhtrong67",
   "license": "MIT",
@@ -22,6 +22,7 @@
     "@material/material-color-utilities": "^0.4.0",
     "@tauri-apps/api": "^2.12.4",
     "@tauri-apps/plugin-dialog": "^2.8.3",
+    "@tauri-apps/plugin-opener": "^2.7.2",
     "lucide-react": "^1.61.0",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^4.10.38",
@@ -30,10 +31,12 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/cli": "^2.12.3",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.7.0",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vite": "^5.4.21"
   }

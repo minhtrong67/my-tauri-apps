@@ -35,9 +35,17 @@ export function Segmented<T extends string>({ value, options, onChange }: {
   value: T; options: { value: T; label: string; icon?: ReactNode }[]; onChange: (v: T, e: React.MouseEvent) => void;
 }) {
   return (
-    <div className="segmented" role="radiogroup">
+    <div className="segmented" role="radiogroup" onKeyDown={(e) => {
+      const d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      const btns = [...e.currentTarget.querySelectorAll<HTMLButtonElement>("[role=radio]")];
+      const i = btns.indexOf(document.activeElement as HTMLButtonElement);
+      const n = btns[(i + d + btns.length) % btns.length];
+      n?.focus(); n?.click();
+    }}>
       {options.map((o) => (
-        <button key={o.value} role="radio" aria-checked={value === o.value} className={`seg ripple ${value === o.value ? "on" : ""}`} onClick={(e) => onChange(o.value, e)}>
+        <button key={o.value} role="radio" tabIndex={value === o.value ? 0 : -1} aria-checked={value === o.value} className={`seg ripple ${value === o.value ? "on" : ""}`} onClick={(e) => onChange(o.value, e)}>
           {o.icon}<span>{o.label}</span>
         </button>
       ))}
@@ -50,7 +58,22 @@ export function Dialog({ title, icon, onClose, children, actions, wide }: {
 }) {
   const t = useT();
   const [closing, setClosing] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
   const close = () => { setClosing(true); setTimeout(onClose, 160); };
+  // move focus into the dialog, keep Tab inside it, and give focus back when it closes
+  useEffect(() => {
+    const prev = document.activeElement as HTMLElement | null, el = box.current;
+    if (el && !el.contains(document.activeElement)) (el.querySelector<HTMLElement>("input,textarea,.dialog-body button,footer button") ?? el).focus({ preventScroll: true });
+    return () => { if (prev?.isConnected) prev.focus({ preventScroll: true }); };
+  }, []);
+  const trap = (e: React.KeyboardEvent) => {
+    if (e.key !== "Tab" || !box.current) return;
+    const f = [...box.current.querySelectorAll<HTMLElement>("button:not(:disabled),input:not(:disabled),textarea:not(:disabled),[tabindex]:not([tabindex='-1'])")].filter((x) => x.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === box.current)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
   useEffect(() => {
     const k = (e: KeyboardEvent) => e.key === "Escape" && (e.stopPropagation(), close());
     window.addEventListener("keydown", k, true);
@@ -58,7 +81,7 @@ export function Dialog({ title, icon, onClose, children, actions, wide }: {
   });
   return (
     <div className={`scrim ${closing ? "out" : ""}`} onMouseDown={(e) => e.target === e.currentTarget && close()}>
-      <div className={`dialog ${wide ? "wide" : ""}`} role="dialog" aria-modal="true" aria-label={title}>
+      <div ref={box} tabIndex={-1} onKeyDown={trap} className={`dialog ${wide ? "wide" : ""}`} role="dialog" aria-modal="true" aria-label={title}>
         <header>
           {icon && <span className="dialog-icon">{icon}</span>}
           <h2>{title}</h2>
@@ -75,6 +98,16 @@ export interface MenuItem { icon?: ReactNode; label: string; hint?: string; onCl
 export function Menu({ trigger, items, align = "right" }: { trigger: (toggle: () => void, open: boolean) => ReactNode; items: MenuItem[]; align?: "left" | "right" }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (open) ref.current?.querySelector<HTMLElement>(".menu-item")?.focus({ preventScroll: true }); }, [open]);
+  const nav = (e: React.KeyboardEvent) => {
+    const d = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
+    if (e.key === "Escape") { setOpen(false); ref.current?.querySelector<HTMLElement>("button")?.focus(); return; }
+    if (!d && e.key !== "Home" && e.key !== "End") return;
+    e.preventDefault();
+    const it = [...(ref.current?.querySelectorAll<HTMLElement>(".menu-item") ?? [])];
+    const i = it.indexOf(document.activeElement as HTMLElement);
+    it[e.key === "Home" ? 0 : e.key === "End" ? it.length - 1 : (i + d + it.length) % it.length]?.focus();
+  };
   useEffect(() => {
     if (!open) return;
     const d = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setOpen(false);
@@ -86,7 +119,7 @@ export function Menu({ trigger, items, align = "right" }: { trigger: (toggle: ()
     <div className="menu-wrap" ref={ref}>
       {trigger(() => setOpen((o) => !o), open)}
       {open && (
-        <div className={`menu ${align}`} role="menu">
+        <div className={`menu ${align}`} role="menu" onKeyDown={nav}>
           {items.map((it, i) => (
             <div key={i}>
               {it.divider && <hr />}

@@ -44,12 +44,13 @@ export const createUiSlice = (set: SetFn, get: GetFn, core: Core): UiSlice => {
         return { view: prev, backStack: s.backStack.slice(0, -1), query: '' };
       }),
     setQuery: (q) => set({ query: q }),
-    showToast: (text, actionLabel, action) => {
+    showToast: (text, actionLabel, action, kind = 'info') => {
       const id = Date.now();
-      set({ toast: { id, text, actionLabel, action } });
+      const dur = actionLabel ? 6000 : kind === 'error' ? 5000 : 3500;
+      set({ toast: { id, text, kind, dur, actionLabel, action } });
       window.setTimeout(() => {
         if (get().toast?.id === id) set({ toast: null });
-      }, actionLabel ? 6000 : 3500);
+      }, dur);
     },
     openDialog: (d) => set({ dialog: d }),
     openMenu: (x, y, items) => set({ menu: { x, y, items } }),

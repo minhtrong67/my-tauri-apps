@@ -9,6 +9,8 @@
   "permissions": [
     "core:default",
     "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-set-focus",
     "core:window:allow-set-title",
     "core:window:allow-set-theme",
     "core:window:allow-set-fullscreen",
@@ -16,6 +18,10 @@
     "core:window:allow-set-size",
     "core:window:allow-maximize",
     "core:window:allow-unmaximize",
-    "core:window:allow-center"
+    "core:window:allow-is-maximized",
+    "core:window:allow-center",
+    "core:window:allow-inner-size",
+    "core:window:allow-scale-factor",
+    "core:webview:default"
   ]
 }

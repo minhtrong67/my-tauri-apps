@@ -2,7 +2,7 @@
   "name": "material-theme-builder",
   "private": true,
   "version": "1.0.0",
-  "description": "Desktop app to design, preview and export Material Design 3 color themes.",
+  "description": "Desktop app to design, preview and export Material 3 Expressive color themes.",
   "author": "minhtrong67 (built with Claude by Anthropic)",
   "license": "MIT",
   "type": "module",

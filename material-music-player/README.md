@@ -108,6 +108,7 @@ Playback uses the Microsoft Edge WebView2 media stack, so a file plays if WebVie
 - Light, dark or system theme; **18 Material theme colors** + custom color (default theme = `material-theme-blue.json`); optional **dynamic color from the cover art**; **font picker** with popular fonts.
 - A tidy, grouped **Settings** page: General · Appearance · Playback · Library · About.
 - English / Vietnamese UI, automatic by default.
+- **Material 3 Expressive:** spring motion tokens (fast / default / slow, spatial and effects, sampled into CSS `linear()` easing), five button sizes that stay round but square off while pressed or selected, icon toggle buttons that morph from circle to rounded square, connected button groups, an expressive slider (thick track, bar handle, value bubble), a **wavy seek bar** that flows while music plays and flattens when paused, a morphing-shape **loading indicator**, a floating-toolbar player bar and emphasized headings.
 - **Theme reveal:** switching light / dark / color expands the new theme as a circle from where you clicked (View Transitions, with a fade fallback). Lyrics blur and soften away from the line being sung, and covers zoom in on every song change.
 - Smooth Material motion: staggered card entrances, hover lift, sliding toggles, press feedback and screen transitions (reduced automatically when Windows animations are off).
 
@@ -277,6 +278,7 @@ material-music-player/
 │  │  │  └─ derived.ts        albums / artists / search hooks
 │  │  ├─ audio.ts             two-deck engine: gapless, crossfade, ReplayGain, equalizer, spectrum
 │  │  ├─ smart.ts             smart playlists
+│  │  ├─ components/Expressive.tsx   wavy seek bar + morphing loading indicator
 │  │  ├─ i18n.ts              English / Vietnamese dictionaries
 │  │  ├─ theme.ts             Material 3 palette generation from a seed color
 │  │  ├─ cover.ts, lrc.ts, m3u.ts, menus.ts

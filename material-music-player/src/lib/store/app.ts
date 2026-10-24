@@ -108,7 +108,7 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
       engine.onError = () => {
         const st = get();
         const t = st.byId[st.queue[st.index]];
-        get().showToast(tr('cannotPlay', { title: t?.title ?? tr('aSong') }));
+        get().showToast(tr('cannotPlay', { title: t?.title ?? tr('aSong') }), undefined, undefined, 'error');
         flags.errorStreak++;
         if (flags.errorStreak < 5 && st.index < st.queue.length - 1) get().next(true);
         else set({ isPlaying: false });
@@ -162,7 +162,7 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
       const path = await api.pickSavePath('material-music-player-backup.json', ['json'], tr('backupName'));
       if (!path) return;
       await api.writeTextFile(path, snapshot());
-      get().showToast(tr('backedUp'));
+      get().showToast(tr('backedUp'), undefined, undefined, 'success');
     },
     restore: async () => {
       const path = await api.pickOne(['json'], tr('backupName'));
@@ -182,9 +182,9 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
         void syncWatchers();
         engine.pause();
         set({ queue: [], baseQueue: [], index: -1, isPlaying: false });
-        get().showToast(tr('restored'));
+        get().showToast(tr('restored'), undefined, undefined, 'success');
       } catch {
-        get().showToast(tr('badBackup'));
+        get().showToast(tr('badBackup'), undefined, undefined, 'error');
       }
     },
 

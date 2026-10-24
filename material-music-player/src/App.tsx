@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useRef } from 'react';
+import { LoadingIndicator } from './components/Expressive';
 import { tr, resolveLang } from './lib/i18n';
 import { setWindowTracking } from './lib/tauri';
 import { listen } from '@tauri-apps/api/event';
@@ -162,7 +163,7 @@ export default function App() {
       if (s.sleepAt && Date.now() >= s.sleepAt) {
         engine.pause();
         s.set({ sleepAt: null, isPlaying: false });
-        s.showToast(tr('sleepDone'));
+        s.showToast(tr('sleepDone'), undefined, undefined, 'success');
       }
     }, 1000);
     const save = window.setInterval(() => {
@@ -244,7 +245,7 @@ export default function App() {
   }, []);
 
   if (!ready) {
-    return <div className="h-full flex flex-col items-center justify-center gap-4 bg-surface"><div className="relative"><span className="splash-ring" /><Logo size={72} /></div><div className="text-body-md text-on-surface-variant">{tr('loading')}</div></div>;
+    return <div className="h-full flex flex-col items-center justify-center gap-4 bg-surface"><div className="relative"><span className="splash-ring" /><Logo size={72} /></div><LoadingIndicator size={44} /><div className="text-body-md text-on-surface-variant">{tr('loading')}</div></div>;
   }
 
   if (mini) return (<div key={lang} className="h-full"><MiniPlayer /><ContextMenu /><Snackbar /></div>);
@@ -265,8 +266,8 @@ export default function App() {
       <ContextMenu />
       <Snackbar />
       {scanning && (
-        <div className="fixed left-1/2 -translate-x-1/2 top-16 z-[80] animate-slide-up rounded-2xl bg-inverse-surface text-inverse-on-surface px-5 py-3 shadow-xl flex items-center gap-3">
-          <Icon name="sync" className="animate-spin" />
+        <div className="fixed left-1/2 -translate-x-1/2 top-16 z-[80] animate-slide-up rounded-2xl bg-surface-container-highest text-on-surface px-5 py-3 shadow-xl ring-1 ring-outline-variant/40 flex items-center gap-3">
+          <LoadingIndicator size={32} />
           <span className="text-body-md">{tr('scanning', { p: scanning.total ? `${scanning.done}/${scanning.total}` : '' })}</span>
         </div>
       )}

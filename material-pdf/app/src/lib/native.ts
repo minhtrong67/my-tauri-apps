@@ -75,3 +75,10 @@ export async function writeMany(folder: string | null, files: { name: string; by
     }
   }
 }
+
+/** Opens http(s) / mailto links in the system browser or mail app (anything else is ignored). */
+export async function openExternal(url: string) {
+  if (!/^(https?:|mailto:)/i.test(url)) return;
+  if (isTauri) { const { openUrl } = await import("@tauri-apps/plugin-opener"); await openUrl(url); }
+  else window.open(url, "_blank", "noopener");
+}

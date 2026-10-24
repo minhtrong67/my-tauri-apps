@@ -5,13 +5,14 @@ import { peek, request } from "../lib/render";
 import { addAnnots, gotoPage, removeAnnot, setZoom } from "../lib/actions";
 import { useStore, type Annot, type Doc, type Tool } from "../lib/store";
 import { useT } from "../lib/store";
+import { PageFields } from "./PageFields";
 
 const PAD = 20, GAP = 14;
 const EMPTY: Annot[] = [];
 
 interface PVProps {
   pdf: PDFDocumentProxy; index: number; scale: number; w: number; h: number; top: number; left: number;
-  q: string; cur: number; jump: number; warm: boolean; annots: Annot[]; tool: Tool; color: string; strokeW: number; textSize: number;
+  q: string; cur: number; jump: number; warm: boolean; forms: Doc["forms"]; annots: Annot[]; tool: Tool; color: string; strokeW: number; textSize: number;
 }
 
 const PageView = memo(function PageView(p: PVProps) {
@@ -88,6 +89,7 @@ const PageView = memo(function PageView(p: PVProps) {
       style={{ width: p.w, height: p.h, top: p.top, left: p.left, ["--scale-factor" as any]: scale, ["--total-scale-factor" as any]: scale }}>
       <div className="canvas-host" ref={canvasHost} />
       <div className="text-host" ref={textHost} style={{ pointerEvents: p.tool === "none" || p.tool === "highlight" ? "auto" : "none" }} />
+      <PageFields pdf={pdf} index={index} scale={scale} active={p.tool === "none"} forms={p.forms} />
       <AnnotLayer {...p} />
     </div>
   );
@@ -170,10 +172,10 @@ function AnnotLayer({ index, scale, w, h, annots, tool, color, strokeW, textSize
 }
 
 export function Viewer({ doc }: { doc: Doc }) {
-  const st = useStore();
-  const { tool, color, strokeW, textSize, search, present } = st;
-  const night = st.settings.nightPages;
-  const layout = present ? "single" : st.settings.layout;
+  const tool = useStore((s) => s.tool), color = useStore((s) => s.color), strokeW = useStore((s) => s.strokeW);
+  const textSize = useStore((s) => s.textSize), search = useStore((s) => s.search), present = useStore((s) => s.present);
+  const night = useStore((s) => s.settings.nightPages);
+  const layout = useStore((s) => (s.present ? "single" : s.settings.layout));
   const box = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 800, h: 600 });
   const [range, setRange] = useState<[number, number]>([0, 4]);
@@ -300,7 +302,7 @@ export function Viewer({ doc }: { doc: Doc }) {
           return (
             <PageView key={`${doc.rev}-${it.i}`} warm={layout === "single"} pdf={doc.pdf} index={it.i} scale={scale} w={it.w} h={it.h} top={it.top} left={it.left}
               q={hitPages.has(it.i) ? search.q : ""} cur={curIdx} jump={curIdx >= 0 ? search.jump : 0}
-              annots={byPage.get(it.i) ?? EMPTY} tool={tool} color={color} strokeW={strokeW} textSize={textSize} />
+              forms={doc.forms} annots={byPage.get(it.i) ?? EMPTY} tool={tool} color={color} strokeW={strokeW} textSize={textSize} />
           );
         })}
       </div>

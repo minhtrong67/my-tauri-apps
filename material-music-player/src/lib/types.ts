@@ -141,9 +141,14 @@ export interface MenuState {
   items: MenuItem[];
 }
 
+export type ToastKind = 'info' | 'success' | 'warning' | 'error';
+
 export interface Toast {
   id: number;
   text: string;
+  kind: ToastKind;
+  /** ms */
+  dur: number;
   actionLabel?: string;
   action?: () => void;
 }

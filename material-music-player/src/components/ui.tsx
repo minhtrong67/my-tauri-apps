@@ -23,11 +23,10 @@ export function IconButton({
   icon, onClick, title, variant = 'standard', size = 'md', active, fill, className = '', disabled, onContextMenu, pop,
 }: {
   icon: string; onClick?: (e: MouseEvent<HTMLButtonElement>) => void; title?: string; variant?: IBVariant;
-  size?: 'sm' | 'md' | 'lg'; active?: boolean; fill?: boolean; className?: string; disabled?: boolean;
+  size?: 'sm' | 'md' | 'lg' | 'xl'; active?: boolean; fill?: boolean; className?: string; disabled?: boolean;
   onContextMenu?: (e: MouseEvent<HTMLButtonElement>) => void; pop?: boolean;
 }) {
-  const dim = size === 'sm' ? 'w-8 h-8' : size === 'lg' ? 'w-14 h-14' : 'w-10 h-10';
-  const isz = size === 'lg' ? 28 : size === 'sm' ? 20 : 24;
+  const isz = size === 'xl' ? 32 : size === 'lg' ? 28 : size === 'sm' ? 20 : 24;
   const v =
     variant === 'filled'
       ? 'bg-primary text-on-primary hover:shadow-md hover:brightness-110'
@@ -35,25 +34,39 @@ export function IconButton({
         ? 'bg-secondary-container text-on-secondary-container hover:brightness-95'
         : variant === 'outlined'
           ? 'border border-outline text-on-surface-variant hover:bg-on-surface/[.08]'
-          : `${active ? 'text-primary' : 'text-on-surface-variant'} hover:bg-on-surface/[.08] active:bg-on-surface/[.12]`;
+          : active
+            ? 'bg-secondary-container text-on-secondary-container hover:brightness-95'
+            : 'text-on-surface-variant hover:bg-on-surface/[.08] active:bg-on-surface/[.12]';
   return (
     <button
-      type="button" title={title} aria-label={title} disabled={disabled} onClick={onClick} onContextMenu={onContextMenu}
-      className={`ripple ${dim} ${v} rounded-full inline-flex items-center justify-center transition-all duration-200 ease-emphasized active:scale-90 focus-ring disabled:opacity-40 disabled:pointer-events-none shrink-0 ${className}`}
+      type="button" title={title} aria-label={title} aria-pressed={active} disabled={disabled} onClick={onClick} onContextMenu={onContextMenu}
+      className={`ripple ibtn ibtn-${size} ${v} inline-flex items-center justify-center focus-ring disabled:opacity-40 disabled:pointer-events-none shrink-0 ${className}`}
     >
       {pop ? <span key={`${icon}${active ? 1 : 0}`} className="pop-heart inline-flex"><Icon name={icon} fill={fill || active} size={isz} /></span> : <Icon name={icon} fill={fill || active} size={isz} />}
     </button>
   );
 }
 
+type BtnSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+const BTN_SIZE: Record<BtnSize, { cls: string; icon: number; padIcon: string; pad: string }> = {
+  xs: { cls: 'btn-xs gap-1.5 text-label-md', icon: 16, padIcon: 'pl-3 pr-4', pad: 'px-4' },
+  sm: { cls: 'btn-sm gap-2 text-label-lg', icon: 18, padIcon: 'pl-4 pr-6', pad: 'px-6' },
+  md: { cls: 'btn-md gap-2.5 text-title-md', icon: 24, padIcon: 'pl-6 pr-8', pad: 'px-8' },
+  lg: { cls: 'btn-lg gap-3 text-headline-sm', icon: 32, padIcon: 'pl-10 pr-12', pad: 'px-12' },
+  xl: { cls: 'btn-xl gap-4 text-headline-md', icon: 40, padIcon: 'pl-14 pr-16', pad: 'px-16' },
+};
+
+/** Button with five sizes. Round by default; it squares off while pressed, and a selected toggle button stays square. */
 export function Button({
-  children, onClick, variant = 'filled', icon, className = '', disabled, danger,
+  children, onClick, variant = 'filled', icon, className = '', disabled, danger, size = 'sm', toggle, selected,
 }: {
   children: ReactNode; onClick?: (e: MouseEvent<HTMLButtonElement>) => void; variant?: 'filled' | 'tonal' | 'outlined' | 'text';
-  icon?: string; className?: string; disabled?: boolean; danger?: boolean;
+  icon?: string; className?: string; disabled?: boolean; danger?: boolean; size?: BtnSize; toggle?: boolean; selected?: boolean;
 }) {
-  const v =
-    variant === 'filled'
+  const z = BTN_SIZE[size];
+  const v = toggle
+    ? selected ? 'btn-sheen bg-primary text-on-primary hover:brightness-110' : 'bg-surface-container-highest text-on-surface-variant hover:brightness-95'
+    : variant === 'filled'
       ? danger ? 'btn-sheen bg-error text-on-error hover:brightness-110' : 'btn-sheen bg-primary text-on-primary hover:shadow-md hover:brightness-110'
       : variant === 'tonal'
         ? 'bg-secondary-container text-on-secondary-container hover:brightness-95'
@@ -62,10 +75,10 @@ export function Button({
           : `${danger ? 'text-error' : 'text-primary'} hover:bg-primary/[.08]`;
   return (
     <button
-      type="button" disabled={disabled} onClick={onClick}
-      className={`ripple h-10 ${icon ? 'pl-4 pr-6' : 'px-6'} rounded-full inline-flex items-center justify-center gap-2 text-label-lg transition-all duration-200 ease-emphasized active:scale-[0.96] focus-ring disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap ${v} ${className}`}
+      type="button" disabled={disabled} onClick={onClick} aria-pressed={toggle ? !!selected : undefined}
+      className={`ripple btn ${z.cls} ${icon ? z.padIcon : z.pad} inline-flex items-center justify-center focus-ring disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap ${v} ${className}`}
     >
-      {icon && <Icon name={icon} size={18} />}
+      {icon && <Icon name={icon} size={z.icon} />}
       {children}
     </button>
   );
@@ -79,7 +92,7 @@ export function Switch({ checked, onChange, decorative, label }: { checked: bool
       className={`relative w-[52px] h-8 rounded-full border-2 transition-colors duration-200 focus-ring shrink-0 ${decorative ? 'pointer-events-none' : ''} ${checked ? 'bg-primary border-primary' : 'bg-surface-container-highest border-outline'}`}
     >
       <span
-        className={`absolute top-1/2 -translate-y-1/2 rounded-full transition-all duration-200 ease-emphasized flex items-center justify-center ${checked ? 'left-[22px] w-6 h-6 bg-on-primary' : 'left-1.5 w-4 h-4 bg-outline'}`}
+        className={`absolute top-1/2 -translate-y-1/2 rounded-full transition-all duration-300 ease-spring-bouncy flex items-center justify-center ${checked ? 'left-[22px] w-6 h-6 bg-on-primary' : 'left-1.5 w-4 h-4 bg-outline'}`}
       >
         {checked && <Icon name="check" size={16} className="text-primary" />}
       </span>
@@ -87,14 +100,12 @@ export function Switch({ checked, onChange, decorative, label }: { checked: bool
   );
 }
 
+/** Connected button group (Material 3 Expressive): the chosen item becomes a full pill, its neighbours keep tight inner corners */
 export function Segmented<T extends string>({ value, options, onChange }: { value: T; options: { value: T; label: string; icon?: string }[]; onChange: (v: T) => void }) {
   return (
-    <div className="inline-flex rounded-full border border-outline overflow-hidden">
-      {options.map((o, i) => (
-        <button
-          key={o.value} type="button" onClick={() => onChange(o.value)}
-          className={`ripple h-10 px-4 inline-flex items-center gap-2 text-label-lg transition-all duration-200 active:scale-[0.97] ${i > 0 ? 'border-l border-outline' : ''} ${value === o.value ? 'bg-secondary-container text-on-secondary-container' : 'text-on-surface hover:bg-on-surface/[.08]'}`}
-        >
+    <div className="cbg" role="group">
+      {options.map((o) => (
+        <button key={o.value} type="button" aria-pressed={value === o.value} onClick={() => onChange(o.value)} className="ripple cbg-item focus-ring">
           {value === o.value ? <Icon name="check" size={18} className="animate-pop" /> : o.icon ? <Icon name={o.icon} size={18} /> : null}
           {o.label}
         </button>
@@ -116,19 +127,26 @@ export function Chip({ children, selected, onClick, icon }: { children: ReactNod
 }
 
 export function Slider({
-  value, min = 0, max = 100, step = 1, onChange, onCommit, className = '', label,
+  value, min = 0, max = 100, step = 1, onChange, onCommit, className = '', label, size = 'md', format,
 }: {
   value: number; min?: number; max?: number; step?: number; onChange?: (v: number) => void; onCommit?: (v: number) => void; className?: string; label?: string;
+  size?: 'sm' | 'md'; /** shows a value bubble above the handle while it is pressed */ format?: (v: number) => string;
 }) {
   const pct = max > min ? ((value - min) / (max - min)) * 100 : 0;
+  const [drag, setDrag] = useState(false);
   return (
-    <input
-      type="range" aria-label={label} className={`m3-slider ${className}`} min={min} max={max} step={step} value={value}
-      style={{ ['--pct' as string]: `${pct}%` }}
-      onChange={(e) => onChange?.(parseFloat(e.target.value))}
-      onPointerUp={(e) => onCommit?.(parseFloat((e.target as HTMLInputElement).value))}
-      onKeyUp={(e) => onCommit?.(parseFloat((e.target as HTMLInputElement).value))}
-    />
+    <div className="relative w-full">
+      <input
+        type="range" aria-label={label} className={`m3-slider ${size === 'sm' ? 'm3-slider-sm' : ''} ${className}`} min={min} max={max} step={step} value={value}
+        style={{ ['--pct' as string]: `${pct}%` }}
+        onChange={(e) => onChange?.(parseFloat(e.target.value))}
+        onPointerDown={() => setDrag(true)}
+        onPointerUp={(e) => { setDrag(false); onCommit?.(parseFloat((e.target as HTMLInputElement).value)); }}
+        onBlur={() => setDrag(false)}
+        onKeyUp={(e) => onCommit?.(parseFloat((e.target as HTMLInputElement).value))}
+      />
+      {format && <span className={`slider-bubble ${drag ? 'on' : ''}`} style={{ left: `calc(${pct}% + ${((0.5 - pct / 100) * 4).toFixed(2)}px)` }}>{format(value)}</span>}
+    </div>
   );
 }
 
@@ -141,7 +159,7 @@ export function Modal({ title, children, actions, onClose, wide }: { title: stri
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-fade-in p-6" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div className={`bg-surface-container-high text-on-surface rounded-m3-xl p-6 shadow-2xl animate-scale-in max-h-[88vh] flex flex-col ${wide ? 'w-[640px]' : 'w-[420px]'} max-w-full`}>
-        <h2 className="text-headline-sm mb-4 shrink-0">{title}</h2>
+        <h2 className="text-headline-sm emph mb-4 shrink-0">{title}</h2>
         <div className="overflow-y-auto min-h-0 -mx-2 px-2">{children}</div>
         {actions && <div className="flex justify-end gap-2 mt-6 shrink-0">{actions}</div>}
       </div>
@@ -217,21 +235,27 @@ export function openMenuBelow(e: MouseEvent<HTMLElement>, items: MenuItem[], ali
   useStore.getState().openMenu(alignRight ? r.right - 220 : r.left, r.bottom + 4, items);
 }
 
+const TOAST_ICON = { info: 'info', success: 'check_circle', warning: 'warning', error: 'error' } as const;
+
+/** Toast with four kinds (info / success / warning / error); colours come from CSS variables that change with the light / dark theme */
 export function Snackbar() {
   const toast = useStore((s) => s.toast);
   if (!toast) return null;
+  const close = () => useStore.getState().set({ toast: null });
   return (
-    <div key={toast.id} className="fixed left-1/2 -translate-x-1/2 bottom-28 z-[70] animate-slide-up">
-      <div className="flex items-center gap-3 min-h-[48px] pl-4 pr-2 py-1 rounded-lg bg-inverse-surface text-inverse-on-surface shadow-lg max-w-[560px]">
+    <div key={toast.id} className="fixed left-1/2 -translate-x-1/2 bottom-28 z-[70] animate-slide-up" role={toast.kind === 'error' ? 'alert' : 'status'}>
+      <div className={`toast toast-${toast.kind} relative overflow-hidden flex items-center gap-3 min-h-[52px] pl-3 pr-2 py-1 rounded-2xl max-w-[560px]`}>
+        <span className="toast-icon w-8 h-8 rounded-full inline-flex items-center justify-center shrink-0"><Icon name={TOAST_ICON[toast.kind]} size={20} className="animate-pop" /></span>
         <span className="text-body-md py-2">{toast.text}</span>
         {toast.actionLabel && (
-          <button className="px-3 h-9 rounded-full text-label-lg text-inverse-primary hover:bg-inverse-on-surface/10" onClick={() => { toast.action?.(); useStore.getState().set({ toast: null }); }}>
+          <button className="toast-btn px-3 h-9 rounded-full text-label-lg font-semibold" onClick={() => { toast.action?.(); close(); }}>
             {toast.actionLabel}
           </button>
         )}
-        <button className="w-9 h-9 rounded-full inline-flex items-center justify-center hover:bg-inverse-on-surface/10" onClick={() => useStore.getState().set({ toast: null })} aria-label={tr('close')}>
+        <button className="toast-btn w-9 h-9 rounded-full inline-flex items-center justify-center" onClick={close} aria-label={tr('close')}>
           <Icon name="close" size={20} />
         </button>
+        <span className="toast-timer" style={{ animationDuration: `${toast.dur}ms` }} />
       </div>
     </div>
   );

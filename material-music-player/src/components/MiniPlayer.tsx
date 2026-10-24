@@ -30,7 +30,7 @@ export function MiniPlayer() {
           </div>
         </div>
       </div>
-      <div className="px-3 pb-2"><SeekBar /></div>
+      <div className="px-3 pb-2"><SeekBar size="sm" /></div>
     </div>
   );
 }

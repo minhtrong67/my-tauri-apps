@@ -3,6 +3,42 @@
 @tailwind utilities;
 
 :root {
+/* Material 3 Expressive motion: real spring curves (stiffness / damping ratio from the M3 spec) sampled into linear() easing */
+  --spring-spatial-fast: cubic-bezier(0.2, 0, 0, 1);
+  --spring-spatial-fast-dur: 260ms;
+  --spring-spatial: cubic-bezier(0.2, 0, 0, 1);
+  --spring-spatial-dur: 282ms;
+  --spring-spatial-slow: cubic-bezier(0.2, 0, 0, 1);
+  --spring-spatial-slow-dur: 430ms;
+  --spring-effects-fast: cubic-bezier(0.2, 0, 0, 1);
+  --spring-effects-fast-dur: 260ms;
+  --spring-effects: cubic-bezier(0.2, 0, 0, 1);
+  --spring-effects-dur: 260ms;
+  --spring-effects-slow: cubic-bezier(0.2, 0, 0, 1);
+  --spring-effects-slow-dur: 314ms;
+  --spring-bouncy: cubic-bezier(0.2, 0, 0, 1);
+  --spring-bouncy-dur: 536ms;
+}
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+  --spring-spatial-fast: linear(0, 0.0156, 0.056, 0.1128, 0.1796, 0.2516, 0.3252, 0.3978, 0.4675, 0.533, 0.5936, 0.6489, 0.6988, 0.7434, 0.7828, 0.8174, 0.8475, 0.8736, 0.8959, 0.9149, 0.931, 0.9446, 0.9559, 0.9653, 0.973, 0.9793, 0.9845, 0.9886, 0.9919, 0.9944, 0.9965, 0.998, 0.9992, 1, 1.0006, 1.001, 1.0013, 1.0015, 1.0015, 1.0015, 1);
+  --spring-spatial-fast-dur: 200ms;
+  --spring-spatial: linear(0, 0.0156, 0.0557, 0.1122, 0.1788, 0.2505, 0.3239, 0.3963, 0.4658, 0.5313, 0.5919, 0.6472, 0.6972, 0.7418, 0.7813, 0.816, 0.8462, 0.8723, 0.8948, 0.9139, 0.9301, 0.9438, 0.9552, 0.9647, 0.9725, 0.9789, 0.9841, 0.9883, 0.9916, 0.9942, 0.9963, 0.9979, 0.9991, 0.9999, 1.0006, 1.001, 1.0013, 1.0014, 1.0015, 1.0015, 1);
+  --spring-spatial-dur: 282ms;
+  --spring-spatial-slow: linear(0, 0.0155, 0.0555, 0.1119, 0.1783, 0.2499, 0.3231, 0.3954, 0.4649, 0.5303, 0.5908, 0.6462, 0.6961, 0.7408, 0.7804, 0.8151, 0.8454, 0.8716, 0.8941, 0.9133, 0.9296, 0.9433, 0.9548, 0.9643, 0.9722, 0.9786, 0.9839, 0.9881, 0.9915, 0.9941, 0.9962, 0.9978, 0.999, 0.9999, 1.0005, 1.001, 1.0013, 1.0014, 1.0015, 1.0015, 1);
+  --spring-spatial-slow-dur: 430ms;
+  --spring-effects-fast: linear(0, 0.0218, 0.0754, 0.1472, 0.2275, 0.3101, 0.3908, 0.467, 0.5372, 0.6007, 0.6575, 0.7075, 0.7513, 0.7894, 0.8222, 0.8503, 0.8743, 0.8947, 0.912, 0.9266, 0.9389, 0.9492, 0.9579, 0.9651, 0.9711, 0.9761, 0.9803, 0.9837, 0.9866, 0.989, 0.9909, 0.9925, 0.9939, 0.995, 0.9959, 0.9966, 0.9972, 0.9977, 0.9982, 0.9985, 1);
+  --spring-effects-fast-dur: 146ms;
+  --spring-effects: linear(0, 0.0213, 0.0737, 0.1441, 0.2231, 0.3046, 0.3845, 0.4601, 0.53, 0.5935, 0.6503, 0.7006, 0.7447, 0.7832, 0.8164, 0.845, 0.8695, 0.8904, 0.9081, 0.9231, 0.9358, 0.9465, 0.9555, 0.963, 0.9693, 0.9745, 0.9789, 0.9826, 0.9856, 0.9881, 0.9902, 0.9919, 0.9933, 0.9945, 0.9955, 0.9963, 0.997, 0.9975, 0.998, 0.9983, 1);
+  --spring-effects-dur: 222ms;
+  --spring-effects-slow: linear(0, 0.0213, 0.0737, 0.1441, 0.2232, 0.3047, 0.3845, 0.4602, 0.5301, 0.5935, 0.6504, 0.7007, 0.7448, 0.7832, 0.8165, 0.8451, 0.8696, 0.8904, 0.9082, 0.9232, 0.9359, 0.9465, 0.9555, 0.963, 0.9693, 0.9746, 0.9789, 0.9826, 0.9856, 0.9881, 0.9902, 0.9919, 0.9933, 0.9945, 0.9955, 0.9963, 0.997, 0.9975, 0.998, 0.9983, 1);
+  --spring-effects-slow-dur: 314ms;
+  --spring-bouncy: linear(0, 0.0415, 0.1467, 0.2889, 0.4465, 0.6026, 0.7455, 0.8676, 0.9652, 1.0378, 1.0866, 1.1147, 1.1257, 1.1237, 1.1126, 1.0957, 1.0762, 1.0562, 1.0375, 1.0212, 1.0079, 0.9977, 0.9907, 0.9864, 0.9843, 0.9841, 0.9852, 0.9872, 0.9896, 0.9921, 0.9946, 0.9967, 0.9985, 0.9999, 1.0009, 1.0016, 1.0019, 1.002, 1.0019, 1.0017, 1);
+  --spring-bouncy-dur: 536ms;
+  }
+}
+
+:root {
   /* Material Theme Builder export (material-theme-blue.json, light scheme) — replaced at runtime by applyTheme() */
   --md-primary: 54 97 142;
   --md-on-primary: 255 255 255;
@@ -68,35 +104,47 @@ input, textarea { user-select: text; -webkit-user-select: text; }
 ::-webkit-scrollbar-thumb:hover { background: rgb(var(--md-outline)); background-clip: content-box; }
 ::-webkit-scrollbar-track { background: transparent; }
 
-/* Slider Material 3 */
+/* Slider — Material 3 Expressive: thick track, a gap around a bar-shaped handle, narrower handle while pressed */
 .m3-slider {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 20px;
+  height: 32px;
   background: transparent;
   cursor: pointer;
   --pct: 0%;
+  --th: 16px;
+  --hh: 32px;
+  --gap: 7px;
   outline: none;
 }
+.m3-slider-sm { height: 24px; --th: 8px; --hh: 24px; --gap: 5px; }
 .m3-slider::-webkit-slider-runnable-track {
-  height: 4px;
+  height: var(--th);
   border-radius: 999px;
-  background: linear-gradient(to right, rgb(var(--md-primary)) var(--pct), rgb(var(--md-secondary-container)) var(--pct));
+  background: linear-gradient(to right,
+    rgb(var(--md-primary)) 0, rgb(var(--md-primary)) calc(var(--pct) - var(--gap)),
+    transparent calc(var(--pct) - var(--gap)), transparent calc(var(--pct) + var(--gap)),
+    rgb(var(--md-secondary-container)) calc(var(--pct) + var(--gap)), rgb(var(--md-secondary-container)) 100%);
 }
 .m3-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  margin-top: -5px;
-  border-radius: 50%;
+  width: 4px;
+  height: var(--hh);
+  margin-top: calc((var(--th) - var(--hh)) / 2);
+  border-radius: 2px;
   background: rgb(var(--md-primary));
-  box-shadow: 0 0 0 0 rgb(var(--md-primary) / 0.16);
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  transition: width var(--spring-bouncy-dur) var(--spring-bouncy), height var(--spring-bouncy-dur) var(--spring-bouncy), margin-top var(--spring-bouncy-dur) var(--spring-bouncy);
 }
-.m3-slider:hover::-webkit-slider-thumb,
-.m3-slider:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 8px rgb(var(--md-primary) / 0.16); }
-.m3-slider:active::-webkit-slider-thumb { transform: scale(1.15); }
+.m3-slider:hover::-webkit-slider-thumb, .m3-slider:focus-visible::-webkit-slider-thumb { height: calc(var(--hh) + 6px); margin-top: calc((var(--th) - var(--hh) - 6px) / 2); }
+.m3-slider:active::-webkit-slider-thumb { width: 2px; }
+.slider-bubble {
+  position: absolute; bottom: calc(100% - 2px); transform: translateX(-50%) scale(0.6); transform-origin: bottom center; opacity: 0; pointer-events: none;
+  padding: 4px 10px; border-radius: 12px; background: rgb(var(--md-inverse-surface)); color: rgb(var(--md-inverse-on-surface));
+  font-size: 12px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums;
+  transition: opacity var(--spring-effects-fast-dur) var(--spring-effects-fast), transform var(--spring-bouncy-dur) var(--spring-bouncy);
+}
+.slider-bubble.on { opacity: 1; transform: translateX(-50%) scale(1); }
 
 @keyframes eq {
   0%, 100% { transform: scaleY(0.3); }
@@ -171,23 +219,110 @@ html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
   transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, fill 0.5s ease, stroke 0.5s ease, box-shadow 0.5s ease !important;
 }
 /* Cover entrance when the song changes: zoom + un-blur with a little overshoot */
-@keyframes cover-in { 0% { opacity: 0; transform: scale(0.82) rotate(-2deg); filter: blur(10px); } 60% { opacity: 1; transform: scale(1.03) rotate(0.4deg); filter: blur(0); } 100% { transform: scale(1) rotate(0); } }
-.cover-in { animation: cover-in 0.65s cubic-bezier(0.2, 0, 0, 1) both; }
+@keyframes cover-in { from { opacity: 0; transform: scale(0.8) rotate(-3deg); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
+.cover-in { animation: cover-in var(--spring-bouncy-dur) var(--spring-bouncy) both; }
 /* The line being sung glows softly */
 .lyric-glow { text-shadow: 0 0 22px rgb(var(--md-primary) / 0.55); }
 /* Soft light sweep across primary buttons on hover */
 .btn-sheen { position: relative; overflow: hidden; }
-.btn-sheen::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.28) 50%, transparent 65%); transform: translateX(-120%); transition: transform 0.7s cubic-bezier(0.2, 0, 0, 1); pointer-events: none; }
+.btn-sheen::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.28) 50%, transparent 65%); transform: translateX(-120%); transition: transform 0.7s var(--spring-effects-slow); pointer-events: none; }
 .btn-sheen:hover::after { transform: translateX(120%); }
 /* Play button: expanding halo while music plays */
 @keyframes halo { 0% { box-shadow: 0 0 0 0 rgb(var(--md-primary) / 0.45); } 100% { box-shadow: 0 0 0 18px rgb(var(--md-primary) / 0); } }
 .halo { animation: halo 1.8s ease-out infinite; }
 /* Screens slide + fade in */
 @keyframes view-in { from { opacity: 0; transform: translateY(14px) scale(0.99); } to { opacity: 1; transform: none; } }
-.view-in { animation: view-in 0.4s cubic-bezier(0.2, 0, 0, 1) both; }
+.view-in { animation: view-in var(--spring-spatial-slow-dur) var(--spring-spatial-slow) both; }
 
 /* Title text slides in when the song changes */
 @keyframes title-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.title-in { animation: title-in 0.35s cubic-bezier(0.2, 0, 0, 1) both; }
+.title-in { animation: title-in var(--spring-spatial-slow-dur) var(--spring-spatial-slow) both; }
 
 @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+
+/* ===== Expressive buttons: five sizes, round by default, square-ish when pressed or selected ===== */
+.btn, .ibtn {
+  --h: 40px; --pr: 14px; --sr: 14px;
+  border-radius: calc(var(--h) / 2);
+  transition: border-radius var(--spring-bouncy-dur) var(--spring-bouncy), transform var(--spring-bouncy-dur) var(--spring-bouncy),
+    background-color var(--spring-effects-dur) var(--spring-effects), color var(--spring-effects-dur) var(--spring-effects),
+    box-shadow var(--spring-effects-dur) var(--spring-effects), filter 0.2s;
+}
+.btn { height: var(--h); }
+.ibtn { width: var(--h); height: var(--h); }
+.btn:active:not(:disabled) { border-radius: var(--pr); transform: scale(0.97); }
+.ibtn:active:not(:disabled) { border-radius: var(--pr); transform: scale(0.9); }
+.btn[aria-pressed='true'], .ibtn[aria-pressed='true'] { border-radius: var(--sr); }
+.btn-xs { --h: 32px; --pr: 10px; --sr: 10px; }
+.btn-sm { --h: 40px; --pr: 14px; --sr: 14px; }
+.btn-md { --h: 56px; --pr: 18px; --sr: 18px; }
+.btn-lg { --h: 96px; --pr: 30px; --sr: 30px; }
+.btn-xl { --h: 136px; --pr: 40px; --sr: 40px; }
+.ibtn-sm { --h: 32px; --pr: 8px; --sr: 10px; }
+.ibtn-md { --h: 40px; --pr: 12px; --sr: 14px; }
+.ibtn-lg { --h: 56px; --pr: 16px; --sr: 20px; }
+.ibtn-xl { --h: 64px; --pr: 18px; --sr: 24px; }
+
+/* ===== Connected button group (replaces the old segmented button) ===== */
+.cbg { display: inline-flex; gap: 2px; flex-shrink: 0; }
+.cbg-item {
+  --r: 20px;
+  height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 16px;
+  border-radius: 6px; font-size: 14px; font-weight: 500; letter-spacing: 0.1px; white-space: nowrap;
+  background: rgb(var(--md-surface-container-highest)); color: rgb(var(--md-on-surface-variant));
+  transition: border-radius var(--spring-bouncy-dur) var(--spring-bouncy), background-color var(--spring-effects-dur) var(--spring-effects), color var(--spring-effects-dur) var(--spring-effects), transform var(--spring-bouncy-dur) var(--spring-bouncy);
+}
+.cbg-item:first-child { border-radius: var(--r) 6px 6px var(--r); }
+.cbg-item:last-child { border-radius: 6px var(--r) var(--r) 6px; }
+.cbg-item:only-child { border-radius: var(--r); }
+.cbg-item:hover { background: rgb(var(--md-surface-container-high)); }
+.cbg-item[aria-pressed='true'] { border-radius: var(--r); background: rgb(var(--md-primary)); color: rgb(var(--md-on-primary)); }
+.cbg-item:active { border-radius: 12px; transform: scale(0.97); }
+.cbg-icon .cbg-item { padding: 0; width: 48px; }
+
+/* ===== Navigation item: pill that squares off a little when pressed ===== */
+.nav-item { border-radius: 24px; transition: border-radius var(--spring-bouncy-dur) var(--spring-bouncy), background-color var(--spring-effects-dur) var(--spring-effects), transform var(--spring-bouncy-dur) var(--spring-bouncy); }
+.nav-item:active { border-radius: 14px; transform: scale(0.98); }
+
+/* ===== Floating toolbar (the player bar) ===== */
+@keyframes toolbar-in { from { opacity: 0; transform: translateY(28px) scale(0.96); } to { opacity: 1; transform: none; } }
+.toolbar-float {
+  box-shadow: 0 12px 32px -10px rgb(0 0 0 / 0.38), 0 2px 8px rgb(0 0 0 / 0.14);
+  border: 1px solid rgb(var(--md-outline-variant) / 0.4);
+  animation: toolbar-in var(--spring-bouncy-dur) var(--spring-bouncy) both;
+}
+
+/* ===== Wavy seek bar ===== */
+@keyframes wave-run { to { transform: translateX(var(--wl)); } }
+.wave-run { animation: wave-run 1.1s linear infinite; }
+.wave-amp { transition: transform var(--spring-spatial-slow-dur) var(--spring-bouncy); }
+.seek-halo { transition: opacity var(--spring-effects-dur) var(--spring-effects), r var(--spring-bouncy-dur) var(--spring-bouncy); }
+
+/* ===== Loading indicator (shape morphing) ===== */
+@keyframes li-spin { to { transform: rotate(360deg); } }
+.li-spin { animation: li-spin 3.4s linear infinite; }
+
+/* ===== Emphasized typography ===== */
+.emph { font-weight: 700; letter-spacing: -0.01em; }
+
+
+/* ===== Toast: info / success / warning / error, light and dark ===== */
+:root {
+  --ts-bg: 214 240 217; --ts-fg: 12 59 23; --ts-ac: 27 122 53;
+  --tw-bg: 255 240 201; --tw-fg: 74 53 0; --tw-ac: 168 111 0;
+}
+.dark {
+  --ts-bg: 28 59 37; --ts-fg: 198 236 201; --ts-ac: 127 208 140;
+  --tw-bg: 74 58 16; --tw-fg: 255 227 160; --tw-ac: 240 184 66;
+}
+.toast { background: rgb(var(--tb)); color: rgb(var(--tf)); box-shadow: 0 10px 28px -8px rgb(0 0 0 / 0.35), 0 0 0 1px rgb(var(--ta) / 0.28); }
+.toast-info { --tb: var(--md-primary-container); --tf: var(--md-on-primary-container); --ta: var(--md-primary); }
+.toast-error { --tb: var(--md-error-container); --tf: var(--md-on-error-container); --ta: var(--md-error); }
+.toast-success { --tb: var(--ts-bg); --tf: var(--ts-fg); --ta: var(--ts-ac); }
+.toast-warning { --tb: var(--tw-bg); --tf: var(--tw-fg); --ta: var(--tw-ac); }
+.toast-icon { background: rgb(var(--ta) / 0.18); color: rgb(var(--ta)); }
+.toast-btn { color: rgb(var(--tf)); transition: background-color var(--spring-effects-dur) var(--spring-effects); }
+.toast-btn:hover { background: rgb(var(--tf) / 0.12); }
+@keyframes toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.toast-timer { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgb(var(--ta) / 0.65); transform-origin: left; animation: toast-timer linear forwards; }

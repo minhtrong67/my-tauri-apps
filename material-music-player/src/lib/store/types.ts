@@ -1,6 +1,6 @@
 import type { StoreApi } from 'zustand';
 import type { TagEdit } from '../tauri';
-import type { MenuItem, MenuState, Playlist, RepeatMode, Settings, Toast, ViewMode, Track, View, Dialog } from '../types';
+import type { ToastKind, MenuItem, MenuState, Playlist, RepeatMode, Settings, Toast, ViewMode, Track, View, Dialog } from '../types';
 
 export interface UiSlice {
   view: View;
@@ -20,7 +20,7 @@ export interface UiSlice {
   nav: (v: View) => void;
   back: () => void;
   setQuery: (q: string) => void;
-  showToast: (text: string, actionLabel?: string, action?: () => void) => void;
+  showToast: (text: string, actionLabel?: string, action?: () => void, kind?: ToastKind) => void;
   openDialog: (d: Dialog | null) => void;
   openMenu: (x: number, y: number, items: MenuItem[]) => void;
   closeMenu: () => void;

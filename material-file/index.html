@@ -22,7 +22,7 @@
   <meta property="og:image" content="https://minhtrong67.github.io/material-file/assets/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Material File app icon: a yellow folder">
+  <meta property="og:image:alt" content="Material File app icon: an amber folder">
   <meta property="og:locale" content="en_US">
   <meta property="og:locale:alternate" content="vi_VN">
   <meta name="twitter:card" content="summary_large_image">
@@ -41,8 +41,8 @@
     "name": "Material File",
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "Windows 10, Windows 11",
-    "description": "A simple, fast, open-source file manager with Material Design 3, built with Tauri.",
-    "softwareVersion": "1.0.0",
+    "description": "A simple, fast, open-source file manager with Material Design 3 Expressive, built with Tauri, React and TypeScript.",
+    "softwareVersion": "1.1.0",
     "license": "https://opensource.org/licenses/MIT",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
     "author": { "@type": "Person", "name": "minhtrong67" },
@@ -68,7 +68,7 @@
       --outline: oklch(0.58 0.022 var(--h)); --outline-variant: oklch(0.84 0.016 var(--h));
       --shadow-2: 0 1px 2px rgb(0 0 0 / .2), 0 2px 8px 2px rgb(0 0 0 / .1);
       --shadow-3: 0 2px 4px rgb(0 0 0 / .2), 0 8px 24px 4px rgb(0 0 0 / .12);
-      --yellow: #FFEB3B;
+      --yellow: #FFC107;
     }
     :root[data-scheme="dark"] {
       color-scheme: dark;
@@ -326,7 +326,7 @@
         <a class="btn btn-outline btn-lg" href="https://github.com/minhtrong67/material-file" target="_blank" rel="noopener"><svg class="icon"><use href="#i-code"/></svg><span data-i18n="hero.src">View source</span></a>
       </div>
       <div class="meta rv" style="--d:.24s">
-        <span><svg class="icon"><use href="#i-check"/></svg><span data-i18n="hero.m1">Version 1.0.0</span></span>
+        <span><svg class="icon"><use href="#i-check"/></svg><span data-i18n="hero.m1">Version 1.1.0</span></span>
         <span><svg class="icon"><use href="#i-check"/></svg><span data-i18n="hero.m2">Windows 10 / 11</span></span>
         <span><svg class="icon"><use href="#i-check"/></svg><span data-i18n="hero.m3">MIT license</span></span>
       </div>
@@ -371,6 +371,10 @@
       <article class="card rv" style="--d:.06s"><div class="ic"><svg class="icon"><use href="#i-palette"/></svg></div><h3 data-i18n="f6.t">Themes &amp; fonts</h3><p data-i18n="f6.p">Light, dark or system mode, any Material color and popular fonts – all changed live.</p></article>
       <article class="card rv" style="--d:.12s"><div class="ic"><svg class="icon"><use href="#i-languages"/></svg></div><h3 data-i18n="f7.t">English &amp; Tiếng Việt</h3><p data-i18n="f7.p">The language of your device is detected automatically and can be switched at any time.</p></article>
       <article class="card rv" style="--d:.18s"><div class="ic"><svg class="icon"><use href="#i-zap"/></svg></div><h3 data-i18n="f8.t">Light &amp; fast</h3><p data-i18n="f8.p">Rust backend with the system WebView – quick start, low memory, smooth animations.</p></article>
+      <article class="card rv"><div class="ic"><svg class="icon"><use href="#i-panel-top"/></svg></div><h3 data-i18n="f9.t">Dual pane &amp; tags</h3><p data-i18n="f9.p">Two folders side by side with drag &amp; drop, colour tags and stars, plus a folder layout remembered per folder.</p></article>
+      <article class="card rv" style="--d:.06s"><div class="ic"><svg class="icon"><use href="#i-search"/></svg></div><h3 data-i18n="f10.t">Command palette</h3><p data-i18n="f10.p">Press Ctrl+K to jump to any folder, file or command. Advanced search with regex, type, size and date filters.</p></article>
+      <article class="card rv" style="--d:.12s"><div class="ic"><svg class="icon"><use href="#i-copy"/></svg></div><h3 data-i18n="f11.t">Duplicates &amp; disk map</h3><p data-i18n="f11.p">Find identical files and see what fills your disk with an interactive treemap.</p></article>
+      <article class="card rv" style="--d:.18s"><div class="ic"><svg class="icon"><use href="#i-layout-grid"/></svg></div><h3 data-i18n="f12.t">Live &amp; preview</h3><p data-i18n="f12.p">The list refreshes by itself when files change. Press Space to preview images, video, PDF, Markdown and text.</p></article>
     </div>
   </div>
 </section>
@@ -417,6 +421,9 @@
       <div class="key rv"><span data-i18n="k.pane">Details pane</span><kbd>Alt+P</kbd></div>
       <div class="key rv" style="--d:.04s"><span data-i18n="k.set">Settings</span><kbd>Ctrl+,</kbd></div>
       <div class="key rv" style="--d:.08s"><span data-i18n="k.full">Full screen</span><kbd>F11</kbd></div>
+      <div class="key rv"><span data-i18n="k.palette">Command palette</span><kbd>Ctrl+K</kbd></div>
+      <div class="key rv" style="--d:.04s"><span data-i18n="k.dual">Dual pane</span><kbd>F9</kbd></div>
+      <div class="key rv" style="--d:.08s"><span data-i18n="k.preview">Preview</span><kbd>Space</kbd></div>
     </div>
   </div>
 </section>
@@ -432,7 +439,7 @@
           <a class="btn btn-filled btn-lg js-dl" href="download/Material-File-Setup.exe" download><svg class="icon"><use href="#i-download"/></svg><span data-i18n="d.btn">Download for Windows</span></a>
           <a class="btn btn-outline btn-lg" href="https://github.com/minhtrong67/material-file/releases/latest" target="_blank" rel="noopener"><span data-i18n="d.rel">All releases</span></a>
         </div>
-        <div class="req"><span><svg class="icon"><use href="#i-check"/></svg><span data-i18n="d.r1">Windows 10 / 11 (64-bit)</span></span><span><svg class="icon"><use href="#i-check"/></svg><span data-i18n="d.r2">WebView2 (included in Windows 11)</span></span><span><svg class="icon"><use href="#i-check"/></svg>v1.0.0</span></div>
+        <div class="req"><span><svg class="icon"><use href="#i-check"/></svg><span data-i18n="d.r1">Windows 10 / 11 (64-bit)</span></span><span><svg class="icon"><use href="#i-check"/></svg><span data-i18n="d.r2">WebView2 (included in Windows 11)</span></span><span><svg class="icon"><use href="#i-check"/></svg>v1.1.0</span></div>
         <div class="note"><svg class="icon"><use href="#i-info"/></svg><span data-i18n="d.note">Windows SmartScreen may warn about an unsigned app. Click “More info”, then “Run anyway”. The source code is public so you can build it yourself.</span></div>
       </div>
     </div>
@@ -480,7 +487,7 @@
     'skip':'Bỏ qua đến nội dung','nav.features':'Tính năng','nav.customize':'Tuỳ biến','nav.shortcuts':'Phím tắt','nav.download':'Tải về','nav.faq':'Hỏi đáp','nav.get':'Tải ứng dụng',
     'hero.chip':'Miễn phí & mã nguồn mở · Windows','hero.h1a':'Quản lý tệp theo phong cách','hero.h1b':'Material','hero.h1c':'.',
     'hero.lead':'Trình quản lý tệp đơn giản, nhanh, lấy cảm hứng từ File Explorer của Windows 11, thiết kế theo Material Design 3 và xây dựng bằng Tauri. Thẻ thư mục, giao diện, phông chữ và mọi thứ bạn dùng hằng ngày – không hơn.',
-    'hero.dl':'Tải cho Windows','hero.src':'Xem mã nguồn','hero.m1':'Phiên bản 1.0.0','hero.m2':'Windows 10 / 11','hero.m3':'Giấy phép MIT',
+    'hero.dl':'Tải cho Windows','hero.src':'Xem mã nguồn','hero.m1':'Phiên bản 1.1.0','hero.m2':'Windows 10 / 11','hero.m3':'Giấy phép MIT',
     'f.eyebrow':'Tính năng','f.title':'Mọi thứ bạn cần, không rườm rà','f.sub':'Những phần của File Explorer được dùng mỗi ngày, làm lại với giao diện Material 3 gọn gàng.',
     'f1.t':'Thẻ & điều hướng','f1.p':'Thẻ thư mục, breadcrumb nhảy tới thư mục con, cây thư mục, lịch sử tiến/lùi và nút bên của chuột.',
     'f2.t':'Nhiều kiểu xem','f2.p':'Chi tiết với cột đổi kích thước, biểu tượng nhỏ đến lớn kèm ảnh thu nhỏ, nhóm, bộ lọc và ngăn xem trước.',
@@ -489,7 +496,7 @@
     'f5.t':'Tìm kiếm tức thì','f5.p':'Lọc ngay khi gõ, nhấn Enter để tìm trong mọi thư mục con của vị trí hiện tại.',
     'f6.t':'Giao diện & phông chữ','f6.p':'Sáng, tối hoặc theo hệ thống, mọi màu Material và các phông chữ phổ biến – đổi ngay lập tức.',
     'f7.t':'English & Tiếng Việt','f7.p':'Tự nhận diện ngôn ngữ của thiết bị và có thể chuyển đổi bất cứ lúc nào.',
-    'f8.t':'Nhẹ & nhanh','f8.p':'Lõi Rust cùng WebView hệ thống – khởi động nhanh, ít bộ nhớ, hiệu ứng mượt.',
+    'f9.t':'Hai ngăn & thẻ màu','f9.p':'Hai thư mục cạnh nhau với kéo thả, thẻ màu và dấu sao, mỗi thư mục nhớ kiểu xem riêng.','f10.t':'Bảng lệnh','f10.p':'Nhấn Ctrl+K để nhảy tới thư mục, tệp hay lệnh bất kỳ. Tìm kiếm nâng cao với regex, loại, kích thước và ngày.','f11.t':'Tệp trùng & bản đồ dung lượng','f11.p':'Tìm các tệp giống hệt nhau và xem cái gì đang chiếm đĩa bằng treemap tương tác.','f12.t':'Tự cập nhật & xem trước','f12.p':'Danh sách tự làm mới khi tệp thay đổi. Nhấn Space để xem trước ảnh, video, PDF, Markdown và văn bản.','k.palette':'Bảng lệnh','k.dual':'Hai ngăn','k.preview':'Xem trước','f8.t':'Nhẹ & nhanh','f8.p':'Lõi Rust cùng WebView hệ thống – khởi động nhanh, ít bộ nhớ, hiệu ứng mượt.',
     'c.eyebrow':'Cá nhân hoá','c.title':'Màu của bạn. Phông của bạn. Cửa sổ của bạn.','c.sub':'Chọn bất kỳ màu Material nào và toàn bộ giao diện đổi theo – thử ngay trên trang này. Chọn cửa sổ ghi nhớ kích thước hoặc luôn mở phóng to tối đa.',
     'c.color':'Màu chủ đề','c.mode':'Chế độ','c.light':'Sáng','c.dark':'Tối','c.system':'Hệ thống',
     's.eyebrow':'Ảnh chụp màn hình','s.title':'Xem ứng dụng hoạt động',

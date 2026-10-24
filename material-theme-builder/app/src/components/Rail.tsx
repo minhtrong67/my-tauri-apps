@@ -1,7 +1,9 @@
-import { Bookmark, LibraryBig, Palette, Settings, type LucideIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Bookmark, LibraryBig, Menu, Palette, PanelLeftClose, Settings, type LucideIcon } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useSettings } from "../state/settings";
 import { AppLogo } from "./AppLogo";
+import { IconButton } from "./ui";
 
 export type Page = "builder" | "library" | "settings";
 
@@ -14,37 +16,88 @@ function useItems() {
   ];
 }
 
-function NavButton({ active, icon: Icon, label, onClick, badge }: { active: boolean; icon: LucideIcon; label: string; onClick: () => void; badge?: number }) {
+function NavButton({ active, icon: Icon, label, onClick, badge, expanded }: { active: boolean; icon: LucideIcon; label: string; onClick: () => void; badge?: number; expanded?: boolean }) {
+  const icon = (
+    <Icon className={cn("size-6 shrink-0 transition-[transform,color] duration-(--spring-spatial-d) ease-emphasized", active ? "scale-105 text-on-secondary-container" : "text-on-surface-variant group-hover:text-on-surface", active && Icon === Settings && "rotate-45")} />
+  );
+  const count = !!badge && (
+    <span className={cn("grid min-w-4 place-items-center rounded-full bg-error px-1 text-[10px] text-on-error", expanded ? "ml-auto" : "absolute -right-0.5 top-0")}>{badge}</span>
+  );
+  const pill = (
+    <span
+      aria-hidden
+      className={cn("absolute inset-0 -z-10 origin-center rounded-full bg-secondary-container transition-[transform,opacity] duration-(--spring-spatial-d) ease-emphasized", active ? "scale-x-100 opacity-100" : "scale-x-50 opacity-0")}
+    />
+  );
+  if (expanded) {
+    return (
+      <button type="button" onClick={onClick} aria-current={active ? "page" : undefined} className="group w-full text-sm font-medium">
+        <span data-ripple className="relative flex h-14 items-center gap-3 rounded-full px-5">
+          {pill}
+          {icon}
+          <span className={cn("truncate transition-colors", active ? "text-on-secondary-container" : "text-on-surface-variant group-hover:text-on-surface")}>{label}</span>
+          {count}
+        </span>
+      </button>
+    );
+  }
   return (
     <button type="button" onClick={onClick} aria-current={active ? "page" : undefined} className="group flex w-full flex-col items-center gap-1 py-1 text-xs font-medium">
       <span data-ripple className="relative grid h-8 w-14 place-items-center rounded-full">
-        <span
-          aria-hidden
-          className={cn("absolute inset-0 -z-10 origin-center rounded-full bg-secondary-container transition-[transform,opacity] duration-300 ease-emphasized", active ? "scale-x-100 opacity-100" : "scale-x-50 opacity-0")}
-        />
-        <Icon className={cn("size-6 transition-[transform,color] duration-300 ease-emphasized", active ? "scale-105 text-on-secondary-container" : "text-on-surface-variant group-hover:text-on-surface", label && active && Icon === Settings && "rotate-45")} />
-        {!!badge && <span className="absolute -right-0.5 top-0 grid min-w-4 place-items-center rounded-full bg-error px-1 text-[10px] text-on-error">{badge}</span>}
+        {pill}
+        {icon}
+        {count}
       </span>
       <span className={cn("transition-colors", active ? "text-on-surface" : "text-on-surface-variant")}>{label}</span>
     </button>
   );
 }
 
+/** The expanded rail only fits when the window is wide enough for the builder layout. */
+const WIDE = "(min-width: 1440px)";
+function useWide() {
+  const [wide, setWide] = useState(() => typeof window !== "undefined" && window.matchMedia(WIDE).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(WIDE);
+    const on = () => setWide(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return wide;
+}
+
 export function Rail({ page, onChange, savedCount }: { page: Page; onChange: (p: Page) => void; savedCount: number }) {
   const items = useItems();
+  const { settings, set, t } = useSettings();
+  const wide = useWide();
+  const expanded = settings.railExpanded && wide;
+  const toggle = expanded ? t("nav.collapse") : t("nav.expand");
   return (
-    <nav className="relative z-10 hidden w-20 shrink-0 flex-col items-center gap-3 bg-surface-container-low/80 py-5 backdrop-blur-md md:flex" aria-label="Primary">
-      <AppLogo size={44} className="mb-3 drop-shadow-sm transition-transform duration-500 hover:rotate-[8deg] hover:scale-110" />
+    <nav
+      className={cn(
+        "relative z-10 hidden shrink-0 flex-col gap-3 overflow-hidden bg-surface-container-low/80 py-5 backdrop-blur-md transition-[width,padding] duration-(--spring-spatial-d) ease-emphasized md:flex",
+        expanded ? "w-60 items-stretch px-3" : "w-20 items-center",
+      )}
+      aria-label="Primary"
+    >
+      <div className={cn("mb-3 flex items-center gap-2", expanded ? "justify-between pl-2" : "flex-col")}>
+        <AppLogo size={44} className="shrink-0 drop-shadow-sm transition-transform duration-500 hover:rotate-[8deg] hover:scale-110" />
+        {wide && (
+          <IconButton label={toggle} aria-expanded={expanded} onClick={() => set({ railExpanded: !expanded })}>
+            {expanded ? <PanelLeftClose className="size-5" /> : <Menu className="size-5" />}
+          </IconButton>
+        )}
+      </div>
       {items
         .filter((i) => i.id !== "settings")
         .map((i) => (
-          <NavButton key={i.id} active={page === i.id} icon={i.icon} label={i.label} badge={i.id === "library" ? savedCount : undefined} onClick={() => onChange(i.id)} />
+          <NavButton key={i.id} expanded={expanded} active={page === i.id} icon={i.icon} label={i.label} badge={i.id === "library" ? savedCount : undefined} onClick={() => onChange(i.id)} />
         ))}
       <div className="mt-auto w-full">
         {items
           .filter((i) => i.id === "settings")
           .map((i) => (
-            <NavButton key={i.id} active={page === i.id} icon={i.icon} label={i.label} onClick={() => onChange(i.id)} />
+            <NavButton key={i.id} expanded={expanded} active={page === i.id} icon={i.icon} label={i.label} onClick={() => onChange(i.id)} />
           ))}
       </div>
     </nav>

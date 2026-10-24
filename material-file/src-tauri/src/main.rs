@@ -20,6 +20,8 @@ use std::{
     },
     time::{Duration, Instant},
 };
+mod extras;
+
 use tauri::{AppHandle, Emitter, Manager, State};
 
 /* ------------------------------------------------------------------ models */
@@ -357,34 +359,6 @@ async fn list_dir(path: String) -> Result<Vec<Entry>, String> {
             Err(_) => continue,
         };
         out.push(make_entry(&p, &md));
-    }
-    Ok(out)
-}
-
-/// Recursive file-name search (case-insensitive), capped for responsiveness.
-#[tauri::command]
-async fn search_dir(root: String, query: String, limit: usize) -> Result<Vec<Entry>, String> {
-    let needle = query.to_lowercase();
-    let mut out = Vec::new();
-    let mut stack = vec![PathBuf::from(&root)];
-    let mut visited = 0usize;
-    while let Some(dir) = stack.pop() {
-        let Ok(rd) = fs::read_dir(&dir) else { continue };
-        for item in rd.flatten() {
-            visited += 1;
-            if visited > 300_000 || out.len() >= limit {
-                return Ok(out);
-            }
-            let Ok(md) = item.metadata() else { continue };
-            let p = item.path();
-            if item.file_name().to_string_lossy().to_lowercase().contains(&needle) {
-                let md_follow = fs::metadata(&p).unwrap_or_else(|_| md.clone());
-                out.push(make_entry(&p, &md_follow));
-            }
-            if md.is_dir() {
-                stack.push(p);
-            }
-        }
     }
     Ok(out)
 }
@@ -814,7 +788,6 @@ async fn new_window(app: AppHandle, state: State<'_, OpState>, path: Option<Stri
         .min_inner_size(720.0, 420.0)
         .center()
         .visible(false)
-        .disable_drag_drop_handler()
         .build()
         .map_err(|e| e.to_string())?;
     if let Some(icon) = app.default_window_icon().cloned() {
@@ -905,6 +878,28 @@ mod mouse_nav {
 fn main() {
     tauri::Builder::default()
         .manage(OpState::default())
+        .manage(extras::ExtraState::default())
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(|app, _shortcut, event| {
+                    if event.state() == tauri_plugin_global_shortcut::ShortcutState::Pressed {
+                        extras::toggle_main(app);
+                    }
+                })
+                .build(),
+        )
+        .on_window_event(|window, event| {
+            // optional "keep running in the system tray": closing the main window only hides it
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                if window.label() == "main" {
+                    let on = window.app_handle().state::<extras::ExtraState>().tray_on.load(Ordering::Relaxed);
+                    if on {
+                        api.prevent_close();
+                        let _ = window.hide();
+                    }
+                }
+            }
+        })
         .setup(|app| {
             #[cfg(windows)]
             mouse_nav::start(app.handle().clone());
@@ -923,7 +918,14 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             list_dir,
-            search_dir,
+            extras::search_dir,
+            extras::watch_dir,
+            extras::get_thumbnail,
+            extras::clear_thumb_cache,
+            extras::find_duplicates,
+            extras::folder_sizes,
+            extras::set_tray,
+            extras::set_global_shortcut,
             get_places,
             get_drives,
             open_item,

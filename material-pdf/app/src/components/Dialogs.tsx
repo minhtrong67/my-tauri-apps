@@ -14,7 +14,7 @@ import { Thumb } from "./Thumb";
 import { FONTS } from "../lib/fonts";
 import { Logo } from "./Logo";
 
-export const APP_VERSION = "1.0.0";
+export const APP_VERSION = "1.1.0";
 
 /* ---------------- Settings ---------------- */
 function Row({ title, desc, children, stack }: { title: string; desc?: string; children: React.ReactNode; stack?: boolean }) {

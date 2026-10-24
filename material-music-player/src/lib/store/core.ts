@@ -182,7 +182,7 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
     try {
       return await api.scanPaths(paths, opts.known);
     } catch (e) {
-      if (!opts.quiet) get().showToast(tr('scanFailed', { e: String(e) }));
+      if (!opts.quiet) get().showToast(tr('scanFailed', { e: String(e) }), undefined, undefined, 'error');
       return null;
     } finally {
       window.clearTimeout(timer);
@@ -226,7 +226,7 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
     const res = await ingest([dir]);
     if (!res) return;
     if (!res.found.length) {
-      get().showToast(tr('noSongsInFolder'));
+      get().showToast(tr('noSongsInFolder'), undefined, undefined, 'warning');
       return;
     }
     const { added, updated } = mergeTracks(res.tracks);

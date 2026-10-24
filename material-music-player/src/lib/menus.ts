@@ -13,7 +13,7 @@ export function trackMenu(t: Track, opts: { onPlay?: () => void; onRemoveFromLis
     { label: tr('addToPlaylistE'), icon: 'playlist_add', onClick: () => s.openDialog({ type: 'addToPlaylist', ids: [t.id] }) },
     { label: liked ? tr('unfavorite') : tr('favorite'), icon: liked ? 'heart_minus' : 'favorite', onClick: () => s.toggleLike(t.id) },
     { divider: true },
-    { label: tr('showInFolder'), icon: 'folder_open', onClick: () => reveal(t.path).catch(() => s.showToast(tr('openFolderFail'))) },
+    { label: tr('showInFolder'), icon: 'folder_open', onClick: () => reveal(t.path).catch(() => s.showToast(tr('openFolderFail'), undefined, undefined, 'error')) },
     { label: tr('editTags'), icon: 'edit', onClick: () => s.openDialog({ type: 'editTags', id: t.id }) },
     { label: tr('songInfo'), icon: 'info', onClick: () => s.openDialog({ type: 'info', id: t.id }) },
   ];

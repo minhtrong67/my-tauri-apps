@@ -22,30 +22,28 @@ Material PDF lets you read, search, annotate and reorganize PDF files completely
 
 | | |
 |---|---|
-| ![Welcome](screenshots/image01.png) | ![Viewer](screenshots/image02.png) |
-| ![Custom tooltips](screenshots/image03.png) | ![Annotations](screenshots/image04.png) |
-| ![Search](screenshots/image05.png) | ![Organize pages](screenshots/image06.png) |
-| ![Settings - appearance](screenshots/image07.png) | ![Settings - fonts](screenshots/image08.png) |
-| ![Dark theme, Vietnamese](screenshots/image09.png) | ![About](screenshots/image10.png) |
+| ![Reading with thumbnails](screenshots/image01.png) | ![Annotations](screenshots/image02.png) |
+| ![Settings](screenshots/image03.png) | ![Dark theme, Vietnamese](screenshots/image04.png) |
 
 ## Features
 
 - **Reading** — multi-tab, continuous or single-page layout, zoom (fit width / fit page / custom, Ctrl + wheel), thumbnails, outline, night mode for pages, presentation mode (F5), print.
 - **Search** — full-text search with highlighted matches and a results list.
-- **Annotate** — highlight selected text, pen, rectangle, text notes (Unicode / Vietnamese supported), eraser, undo/redo. Annotations are embedded into the PDF on save.
+- **Annotate** — highlight selected text, pen, rectangle, text notes (Unicode / Vietnamese supported), eraser, undo/redo, and an annotations list in the sidebar. Annotations are saved as **standard PDF annotations** (`/Highlight`, `/Square`, `/Ink`, `/FreeText` with appearance streams), so other readers show them too — and they stay editable when you reopen the file in Material PDF. Annotations made by other tools are left untouched.
+- **Forms & links** — fill in AcroForm fields (text, checkboxes, radio buttons, dropdowns) and save the values into the PDF; internal links, bookmarks and web links are clickable.
 - **Edit** — merge PDFs, split / extract by ranges, organize pages (drag to reorder, rotate, delete), images → PDF, export pages as PNG, edit document properties.
 - **Security** — opens password-protected documents.
 - **Personalization** — light / dark / system theme, 18 Material theme colors, 5 fonts (System, Roboto, Inter, Open Sans, Noto Sans — bundled, offline), 3 font sizes, English & Vietnamese (auto-detected), window startup: remember size or always maximized.
-- **Smooth** — rendered pages are cached, so scrolling, zooming and presentation page-flips never flash blank; custom animated tooltips with shortcut hints.
-- **Convenience** — drag & drop, recent files, "Open with" file association, keyboard shortcuts (Ctrl+O/S/P/F/W, Ctrl +/−/0, arrows).
+- **Smooth** — rendered pages are cached, so scrolling, zooming and presentation page-flips never flash blank; custom animated tooltips with shortcut hints, and typed toasts (info / success / warning / error) for light and dark themes.
+- **Convenience** — drag & drop, recent files, "Open with" file association (a second launch opens the file in the running window), crash-safe saving (temp file + atomic rename), keyboard shortcuts (Ctrl+O/S/P/F/W, Ctrl +/−/0, arrows).
 
 ## Installation
 
-Download the installer from the [`download`](download) folder (or the landing page `index.html`) and run `Material-PDF_1.0.0_x64-setup.exe`. Or build it yourself — see below.
+Download the installer from the [`download`](download) folder (or the landing page `index.html`) and run `Material-PDF_1.1.0_x64-setup.exe`. Or build it yourself — see below.
 
 ## Tech stack
 
-Tauri 2 (Rust) · React 18 + TypeScript · Vite · pdf.js · pdf-lib · Zustand · Lucide icons · Material Color Utilities.
+Tauri 2 (Rust) · React 18 + TypeScript · Vite · Tailwind CSS 4 · pdf.js · pdf-lib · Zustand · Lucide icons · Material Color Utilities.
 
 ## Development
 
@@ -77,8 +75,8 @@ material-pdf/
 │   ├── index.html
 │   ├── public/           # icon.svg, pdf.js cmaps/fonts (copied on install)
 │   └── src/
-│       ├── components/   # Toolbar, Viewer, Sidebar, Dialogs, ...
-│       └── lib/          # store, i18n, theme, pdf engine, native bridge
+│       ├── components/   # Toolbar, Viewer, PageFields (links + forms), Sidebar, Dialogs, Shape, ...
+│       └── lib/          # store, i18n, theme, pdf engine, annots (PDF annotation I/O), native bridge
 ├── src-tauri/            # Rust backend, config, icons
 └── scripts/
 ```
@@ -93,4 +91,4 @@ Author: **minhtrong67**, with the support of AI **Claude**.
 
 ## Tiếng Việt
 
-Material PDF là trình đọc & chỉnh sửa PDF nhanh, đẹp, mã nguồn mở, hoạt động hoàn toàn ngoại tuyến. Chạy `npm install` → `npm run dev` → `npm run build`. Bộ cài đặt đặt trong thư mục `download/`. Giấy phép MIT. Tác giả **minhtrong67** với sự hỗ trợ của AI **Claude**.
+Material PDF là trình đọc & chỉnh sửa PDF nhanh, đẹp, mã nguồn mở, hoạt động hoàn toàn ngoại tuyến. Chú thích được lưu thành chú thích PDF chuẩn (mở lại vẫn sửa được), hỗ trợ điền biểu mẫu và bấm liên kết. Chạy `npm install` → `npm run dev` → `npm run build`. Bộ cài đặt đặt trong thư mục `download/`. Giấy phép MIT. Tác giả **minhtrong67** với sự hỗ trợ của AI **Claude**.

@@ -107,6 +107,7 @@ App phát nhạc bằng bộ giải mã media của Microsoft Edge WebView2, nê
 ### Giao diện & ngôn ngữ
 - Chủ đề sáng, tối hoặc theo hệ thống; màu có sẵn + màu tùy chọn; **màu động theo ảnh bìa**.
 - Giao diện Tiếng Việt / English, mặc định tự theo hệ thống.
+- **Material 3 Expressive:** chuyển động spring (nhanh / mặc định / chậm, spatial và effects, lấy mẫu thành easing `linear()` của CSS), nút có năm kích cỡ vẫn tròn nhưng vuông bo lại khi nhấn hoặc được chọn, nút biểu tượng bật/tắt đổi hình từ tròn sang vuông bo, nhóm nút liền (connected button group), slider kiểu mới (track dày, tay cầm dạng thanh, bong bóng giá trị), **thanh tua dạng sóng** chạy khi đang phát và phẳng lại khi tạm dừng, **loading indicator** đổi hình, thanh phát nhạc dạng toolbar nổi và tiêu đề nhấn mạnh.
 - **Hiệu ứng đổi giao diện:** khi chuyển sáng / tối / màu chủ đề, giao diện mới lan ra dạng vòng tròn từ chỗ bạn bấm (View Transitions, có phương án mờ dần dự phòng). Lời bài hát mờ và nhòe dần ra xa dòng đang hát, ảnh bìa phóng vào mỗi khi đổi bài.
 - Chuyển động mượt kiểu Material: thẻ xuất hiện lần lượt, nhấc lên khi rê chuột, nút chuyển trượt, phản hồi khi bấm và chuyển màn hình (tự giảm khi tắt hiệu ứng động của Windows).
 
@@ -276,6 +277,7 @@ material-music-player/
 │  │  │  └─ derived.ts        hook album / nghệ sĩ / tìm kiếm
 │  │  ├─ audio.ts             bộ máy hai deck: gapless, crossfade, ReplayGain, equalizer, phổ âm thanh
 │  │  ├─ smart.ts             playlist thông minh
+│  │  ├─ components/Expressive.tsx   thanh tua dạng sóng + loading indicator đổi hình
 │  │  ├─ i18n.ts              từ điển English / Tiếng Việt
 │  │  ├─ theme.ts             sinh bảng màu Material 3 từ màu chủ đề
 │  │  ├─ cover.ts, lrc.ts, m3u.ts, menus.ts

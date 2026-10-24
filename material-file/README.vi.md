@@ -1,18 +1,20 @@
 <div align="center">
 
-<img src="src/assets/logo.svg" alt="Material File logo" width="120" height="120">
+<img src="src/assets/logo.svg" alt="Logo Material File" width="120" height="120">
 
 # Material File
 
-**Trình quản lý tệp đơn giản, nhanh, lấy cảm hứng từ File Explorer của Windows 11, thiết kế theo Material Design 3 — xây dựng bằng Tauri.**
+**Trình quản lý tệp đơn giản, nhanh, lấy cảm hứng từ File Explorer của Windows 11, thiết kế theo Material Design 3 Expressive — xây dựng bằng Tauri, React và TypeScript.**
 
 [English](README.md) · [Tiếng Việt](README.vi.md)
 
 ![Tauri](https://img.shields.io/badge/Tauri-2.x-24C8DB?logo=tauri&logoColor=white)
-![Rust](https://img.shields.io/badge/Rust-1.77%2B-DEA584?logo=rust&logoColor=white)
-![Design](https://img.shields.io/badge/Design-Material%203-2196F3)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)
+![Design](https://img.shields.io/badge/Design-Material%203%20Expressive-FFC107)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Author](https://img.shields.io/badge/Tác giả-minhtrong67-FFEB3B)
+![Author](https://img.shields.io/badge/Author-minhtrong67-FFC107)
 ![AI](https://img.shields.io/badge/AI-Claude-D97757)
 
 </div>
@@ -21,140 +23,136 @@
 
 ## Giới thiệu
 
-Material File giữ lại những phần của File Explorer mà bạn dùng hằng ngày — truy cập nhanh, ổ đĩa, thẻ thư mục, breadcrumb, chế độ xem chi tiết và biểu tượng, sao chép / cắt / dán, đổi tên, thùng rác, tìm kiếm và ngăn chi tiết — và lược bỏ phần còn lại. Ứng dụng khởi động nhanh, tốn ít bộ nhớ (Tauri + WebView của hệ thống) và theo phong cách **Material Design 3** của Google.
+Material File giữ lại những phần của File Explorer mà mọi người dùng hằng ngày — truy cập nhanh, ổ đĩa, thẻ thư mục, breadcrumb, chế độ chi tiết và biểu tượng, sao chép / cắt / dán, đổi tên, thùng rác, tìm kiếm và ngăn chi tiết — rồi bổ sung những thứ Explorer còn thiếu: **hai ngăn, thẻ màu, bảng lệnh, tìm tệp trùng và bản đồ dung lượng**. Ứng dụng khởi động nhanh, ít tốn bộ nhớ (Tauri + WebView hệ thống) và theo **Material Design 3 Expressive** với chuyển động lò xo và nút đổi hình.
 
 ## Ảnh chụp màn hình
 
 <p align="center">
-  <img src="screenshots/image01.png" alt="Material File - light theme" width="49%">
-  <img src="screenshots/image02.png" alt="Material File - dark theme" width="49%">
+  <img src="screenshots/image01.png" alt="Material File - giao diện sáng" width="49%">
+  <img src="screenshots/image02.png" alt="Material File - giao diện tối" width="49%">
 </p>
 <p align="center">
-  <img src="screenshots/image03.png" alt="Material File - icon view and details pane" width="49%">
-  <img src="screenshots/image04.png" alt="Material File - context menu and settings" width="49%">
+  <img src="screenshots/image03.png" alt="Material File - chế độ biểu tượng và ngăn chi tiết" width="49%">
+  <img src="screenshots/image04.png" alt="Material File - hai ngăn và cài đặt" width="49%">
 </p>
 
 ## Tính năng
 
-| Nhóm | Nội dung |
+| Nhóm | Bạn nhận được |
 | --- | --- |
-| **Điều hướng** | **Trang chủ** như Windows 11 (thẻ truy cập nhanh, thư mục thường dùng, tệp gần đây, ổ đĩa), quay lại / tiến tới / lên / làm mới (chuột phải vào nút quay lại / tiến tới để xem **lịch sử**; **nút Back / Forward bên hông chuột** hoạt động, kể cả chuột chơi game), thanh địa chỉ breadcrumb gõ trực tiếp được (bấm `›` để nhảy vào thư mục con), **cây thư mục** ở thanh bên (chỉ mở khi bạn bấm mũi tên; có tuỳ chọn tự mở tới thư mục hiện tại), thư mục đã ghim, *Máy tính này* với thanh dung lượng ổ đĩa, lối tắt Thùng rác, **thẻ thư mục** (`Ctrl+T`, nhấn chuột giữa vào thư mục) |
-| **Chế độ xem** | Chi tiết với **cột kéo giãn và bật / tắt được** (tên, ngày sửa đổi, ngày tạo, loại, kích thước), biểu tượng nhỏ / vừa / lớn có ảnh thu nhỏ, **Nhóm theo** (tên, loại, ngày sửa đổi, kích thước), **bộ lọc loại tệp**, **ô chọn mục** tuỳ chọn, **ngăn chi tiết** tuỳ chọn (xem trước ảnh và văn bản, `Alt+P`), bật / tắt mục ẩn và đuôi tên tệp |
-| **Thao tác tệp** | Tạo thư mục / văn bản / Markdown / JSON / HTML / CSV, cắt, sao chép, dán với hộp thoại xử lý trùng tên **Thay thế / Bỏ qua / Giữ cả hai**, đổi tên ngay trên dòng (`F2`) và **đổi tên hàng loạt**, xoá vào Thùng rác hoặc xoá vĩnh viễn, **hoàn tác** (`Ctrl+Z`), kéo thả để di chuyển (giữ `Ctrl` để sao chép), chọn bằng cách kéo khung, và **thẻ tiến trình có nút Huỷ** cho thao tác sao chép / di chuyển lâu |
-| **Menu chuột phải** | Menu kiểu Windows cho tệp, thư mục, thanh bên và vùng trống: *Mở*, *Mở trong thẻ mới*, **Mở trong Terminal**, **Mở bằng Code**, *Mở bằng* (Notepad, WinRAR), *Hiện trong File Explorer*, *Ghim vào Truy cập nhanh*, **Sao chép dưới dạng đường dẫn**, cắt / sao chép / đổi tên / xoá, *Thuộc tính*, *Đặt làm hình nền* cho ảnh, *Mở trong cửa sổ mới*, cùng menu con Xem / Sắp xếp theo / Mới |
-| **Tệp nén** | **Giải nén tại đây / vào thư mục** và **Nén thành ZIP / RAR** bằng **WinRAR** khi đã cài (dự phòng 7-Zip, rồi PowerShell / `tar` cho ZIP) |
-| **Đường dẫn** | Đường dẫn dài không còn tràn: thanh địa chỉ luôn hiện các thư mục sâu nhất, hộp thoại tự xuống dòng, và có **nút sao chép đường dẫn** ở thanh địa chỉ và hộp thoại Thuộc tính |
-| **Tìm kiếm** | Lọc tức thì khi gõ; nhấn `Enter` để tìm trong thư mục hiện tại và mọi thư mục con |
-| **Cửa sổ** | **Tuỳ chọn cửa sổ** trong Cài đặt: *ghi nhớ kích thước cửa sổ* (mở lại đúng kích thước bạn đã chỉnh lần trước) hoặc *luôn mở ở chế độ phóng to tối đa*; `F11` bật / tắt toàn màn hình; mở thêm cửa sổ bằng `Ctrl+N` |
-| **Giao diện** | Sáng / tối / theo hệ thống, **màu chủ đề** (toàn bộ màu Material Design + bộ chọn màu tuỳ ý, mặc định Material Blue), **phông chữ** (mặc định hệ thống, 5 phông kèm theo và các phông hệ thống phổ biến), trang Cài đặt dạng thẻ gọn gàng, chuyển động kiểu Material (ripple, chuyển cảnh hộp thoại và menu; tôn trọng cài đặt giảm chuyển động) |
-| **Ngôn ngữ** | Tiếng Anh và Tiếng Việt, đổi ngay khi đang chạy; tự nhận diện ở lần mở đầu tiên |
-| **Đóng gói** | Icon ứng dụng, icon trình cài đặt, icon gỡ cài đặt màu vàng (`#FFEB3B`) cùng hình cho bộ cài NSIS / MSI, đều theo phong cách Material 3 |
-| **Trang giới thiệu** | `index.html` ở thư mục gốc: trang một file theo Material 3 (EN / VI, sáng / tối, responsive, thẻ meta SEO + mạng xã hội) kèm nút tải về |
+| Điều hướng | Thẻ thư mục (bấm giữa để đóng), breadcrumb nhảy tới thư mục con, cây thư mục, lịch sử tiến / lùi, nút bên của chuột, **hai ngăn (F9)** với kéo thả giữa các ngăn |
+| Kiểu xem | Chi tiết với cột đổi kích thước, biểu tượng nhỏ / vừa / lớn, nhóm, lọc theo loại, **danh sách ảo hoá** (chỉ vẽ các dòng đang thấy nên thư mục rất lớn vẫn mượt), **nhớ kiểu xem theo từng thư mục**, mật độ gọn / thoải mái |
+| Bảng lệnh | **Ctrl+K** để nhảy tới thư mục, tệp hoặc lệnh bất kỳ |
+| Thao tác tệp | Sao chép / di chuyển / đổi tên với hộp thoại trùng tên, tiến trình có nút huỷ, xoá vào Thùng rác, hoàn tác, đổi tên hàng loạt, kéo thả (kể cả **từ Explorer vào ứng dụng**) |
+| Sắp xếp | **Thẻ màu và dấu sao**, thư mục ghim, thư mục hay dùng, tệp gần đây |
+| Tìm kiếm | Lọc khi gõ, Enter tìm trong mọi thư mục con (có thể huỷ), **tìm nâng cao**: regex, loại tệp, kích thước, ngày |
+| Công cụ | **Tìm tệp trùng** (kích thước → băm một phần → băm đầy đủ), **bản đồ dung lượng treemap**, tệp nén (ZIP tích hợp, RAR / 7-Zip qua WinRAR / 7-Zip), đặt hình nền |
+| Xem trước | Ngăn chi tiết có xem trước văn bản, **xem nhanh bằng Space** cho ảnh (zoom / kéo), video, âm thanh, PDF, Markdown và văn bản; **ảnh thu nhỏ** thật do Rust tạo và lưu đệm |
+| Trực tiếp | Danh sách **tự làm mới** khi tệp thay đổi (theo dõi tệp) |
+| Chạy nền | **Khay hệ thống** tuỳ chọn, phím tắt toàn cục **Ctrl+Alt+E**, khôi phục thẻ, menu chuột phải **"Open with Material File"** của Explorer (do bộ cài thêm) |
+| Giao diện | Sáng / tối / theo hệ thống, 19 màu chủ đề Material + màu tuỳ chỉnh, 5 phông kèm theo (Roboto, Inter, Open Sans, Noto Sans, Nunito) + phông hệ thống, cỡ chữ (nhỏ / vừa / lớn), English & Tiếng Việt |
+| Cửa sổ | Ghi nhớ kích thước cửa sổ **hoặc** luôn mở phóng to tối đa |
+| Cập nhật | Thông báo bản mới từ GitHub Releases (mỗi ngày một lần, có thể tắt) |
+| Chi tiết UI | Tooltip tuỳ biến, dropdown tuỳ biến (không dùng `<select>` mặc định), toast (info / success / warning / error), hộp thoại có nút kèm biểu tượng, nhãn và màu theo hành động |
 
 ### Phím tắt
 
-| Thao tác | Phím tắt | Thao tác | Phím tắt |
+| Hành động | Phím | Hành động | Phím |
 | --- | --- | --- | --- |
-| Mở | `Enter` | Cắt / Sao chép / Dán | `Ctrl+X` / `Ctrl+C` / `Ctrl+V` |
-| Lùi / Tiến / Lên | `Backspace` / `Alt+←` / `Alt+→` / `Alt+↑`, nút bên hông chuột | Sao chép đường dẫn | `Ctrl+Shift+C` |
-| Thanh địa chỉ | `Ctrl+L` / `Alt+D` | Hoàn tác | `Ctrl+Z` |
-| Tìm kiếm | `Ctrl+F` | Đổi tên | `F2` |
-| Thẻ mới / Đóng thẻ / Thẻ kế | `Ctrl+T` / `Ctrl+W` / `Ctrl+Tab` | Xoá / xoá vĩnh viễn | `Del` / `Shift+Del` |
-| Thư mục mới | `Ctrl+Shift+N` | Thuộc tính | `Alt+Enter` |
-| Xem chi tiết / biểu tượng | `Ctrl+1` / `Ctrl+2` | Ngăn chi tiết | `Alt+P` |
-| Làm mới | `F5` | Toàn màn hình | `F11` |
-| Cửa sổ mới | `Ctrl+N` | Đổi tên hàng loạt (chọn nhiều mục) | `F2` |
-| Cài đặt | `Ctrl+,` | Xoá tìm kiếm hoặc bỏ chọn | `Esc` |
+| Bảng lệnh | `Ctrl+K` | Cài đặt | `Ctrl+,` |
+| Thẻ mới / đóng thẻ | `Ctrl+T` / `Ctrl+W` | Cửa sổ mới | `Ctrl+N` |
+| Thanh địa chỉ | `Ctrl+L` | Tìm / tìm nâng cao | `Ctrl+F` / `Ctrl+Shift+F` |
+| Thư mục mới | `Ctrl+Shift+N` | Đổi tên | `F2` |
+| Sao chép / cắt / dán | `Ctrl+C` / `X` / `V` | Xoá / xoá vĩnh viễn | `Del` / `Shift+Del` |
+| Hoàn tác | `Ctrl+Z` | Sao chép đường dẫn | `Ctrl+Shift+C` |
+| Lùi / tiến / lên | `Alt+←` / `→` / `↑` | Thuộc tính | `Alt+Enter` |
+| Xem nhanh | `Space` | Ngăn chi tiết | `Alt+P` |
+| Hai ngăn | `F9` | Toàn màn hình | `F11` |
+| Chi tiết / biểu tượng | `Ctrl+1` / `Ctrl+2` | Đổi cỡ biểu tượng | `Ctrl+Lăn chuột` |
 
 ## Tải về
 
-Tải bộ cài Windows mới nhất (`Material File_x.y.z_x64-setup.exe`) tại trang **[Releases](https://github.com/minhtrong67/material-file/releases/latest)**, hoặc trong thư mục [`download/`](download) (xem [`download/README.md`](download/README.md); trang giới thiệu liên kết tới `download/Material-File-Setup.exe`).
+Tải bộ cài mới nhất ở trang [Releases](https://github.com/minhtrong67/material-file/releases) hoặc nút **Tải về** trên landing page (`index.html`).
 
 ## Cài đặt
 
-1. Tải và chạy bộ cài — cài cho người dùng hiện tại, không cần quyền quản trị.
-2. Mở **Material File** từ menu Start.
-3. Tuỳ chọn: cài [WinRAR](https://www.win-rar.com) để giải nén / nén RAR, 7z, ZIP và [VS Code](https://code.visualstudio.com) (có `code` trong `PATH`) cho **Mở bằng Code**.
+1. Chạy `Material-File-Setup.exe` (cài cho người dùng hiện tại — không cần quyền quản trị).
+2. Nếu Windows SmartScreen cảnh báo ứng dụng chưa ký số, chọn **Thông tin thêm → Vẫn chạy**.
+3. Yêu cầu **Windows 10 / 11 (64-bit)** có WebView2 (đã có sẵn trong Windows 11).
 
 ## Công nghệ sử dụng
 
 | Lớp | Công nghệ |
 | --- | --- |
-| Khung ứng dụng | [Tauri 2](https://tauri.app) |
-| Backend | Rust — [`trash`](https://crates.io/crates/trash), [`sysinfo`](https://crates.io/crates/sysinfo), [`open`](https://crates.io/crates/open), [`dirs`](https://crates.io/crates/dirs) |
-| Giao diện | HTML / CSS / JavaScript thuần (không cần bundler), biểu tượng [Lucide](https://lucide.dev), phông biến thiên [Fontsource](https://fontsource.org) (Roboto, Inter, Open Sans, Noto Sans, Nunito) |
-| Thiết kế | Material Design 3 (bảng màu OKLCH sinh từ một màu gốc) |
-| Công cụ | npm (Tauri CLI), Python + Pillow (tạo icon) |
+| Vỏ / backend | [Tauri 2](https://tauri.app) + Rust (`notify`, `image`, `regex`, `trash`, `sysinfo`) |
+| Giao diện | React 18 + TypeScript 5 |
+| Build | Vite 6 |
+| Style | Tailwind CSS 4 + vai trò màu Material 3 (biến CSS, OKLCH) |
+| State | Zustand |
+| Biểu tượng | [Lucide](https://lucide.dev) (`lucide-react`) |
+| Xem trước | `marked` + `DOMPurify` (Markdown) |
+| Phông chữ | Mặc định dùng phông hệ thống; Roboto, Inter, Open Sans, Noto Sans, Nunito kèm theo qua Fontsource |
 
 ## Phát triển
 
-Yêu cầu:
+Yêu cầu: [Node.js 20+](https://nodejs.org), [Rust](https://rustup.rs) và [các thành phần Tauri](https://tauri.app/start/prerequisites/) cho Windows (WebView2 + MSVC build tools).
 
-- [Rust](https://rustup.rs) 1.77+
-- [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) (Windows: Microsoft C++ Build Tools và WebView2)
-- [Node.js](https://nodejs.org) (npm)
+Thư mục này là một thành viên của Cargo workspace (`*/src-tauri`) dùng chung một bộ nhớ đệm build (`../target`).
 
 ```bash
-cd material-file
-
-npm install        # một lần: cài Tauri CLI
-npm run dev        # chạy chế độ phát triển
+npm install     # cài thư viện
+npm run dev     # chạy ứng dụng desktop có hot reload (tauri dev)
 ```
 
-Dự án được thiết kế để nằm trong Cargo workspace (`members = ["*/src-tauri"]`) và dùng chung thư mục `target/`. Nếu muốn dùng riêng lẻ, thêm bảng `[workspace]` rỗng vào `src-tauri/Cargo.toml`.
-
-Để tạo lại toàn bộ icon (ứng dụng, cài đặt, gỡ cài đặt, hình NSIS / MSI): `pip install pillow` rồi `python tools/generate_icons.py`.
+Tuỳ chọn: `npm run web:dev` chỉ chạy giao diện trong trình duyệt thường với hệ thống tệp giả lập trong bộ nhớ (tiện khi chỉnh UI, không cần Rust). `npm run web:build` kiểm tra kiểu và build frontend.
 
 ## Build
 
 ```bash
-npm run build
+npm run build   # tsc + vite build + tauri build → bộ cài NSIS
 ```
 
-Bộ cài nằm trong `<workspace>/target/release/bundle/` (`nsis/` cho file `.exe`, `msi/` cho file `.msi`).
+Bộ cài nằm trong `target/release/bundle/nsis/` (gốc workspace). Chép nó vào `download/Material-File-Setup.exe` để landing page có file để tải.
 
-> **Icon.** Icon ứng dụng (vàng `#FFEB3B`), icon cài đặt và **icon gỡ cài đặt riêng** (`uninstallerIcon`, Tauri 2.9+) đều theo phong cách Material 3 — file `.ico` có đủ kích thước chuẩn 16 – 256 px, cùng PNG 32 / 128 / 256 / 512 px.
+Tạo lại icon ứng dụng / bộ cài / gỡ cài đặt (màu amber `#FFC107`): `npm run icons` (cần Python + Pillow).
 
 ## Cấu trúc dự án
 
 ```
 material-file/
-├── index.html                # Trang giới thiệu (một file, Material 3, EN / VI)
-├── assets/                   # Hình cho trang giới thiệu (og-image, favicon, icon)
-├── download/                 # Đặt file cài đặt vào đây (Material-File-Setup.exe)
-├── screenshots/              # image01.png, image02.png, ... dùng trong README này
-├── src/                      # Giao diện (HTML / CSS / JS thuần, không cần bundler)
-│   ├── index.html
-│   ├── styles.css            # Material Design 3 tokens and components
-│   ├── theme.js              # Màu gốc → bảng màu M3, sáng/tối/hệ thống
-│   ├── boot.js               # Áp dụng theme đã lưu trước lần vẽ đầu tiên
-│   ├── fonts.css             # Phông kèm theo (assets/fonts, latin + vietnamese)
-│   ├── i18n.js               # Chuỗi tiếng Anh + tiếng Việt
-│   ├── app.js                # Điều hướng, thẻ, danh sách, chọn mục, menu, thao tác tệp
-│   └── assets/                # logo.svg, fonts/
-├── src-tauri/                # Backend Rust
-│   ├── src/main.rs           # lệnh liệt kê / tìm / sao chép / di chuyển / đổi tên / thùng rác / ổ đĩa / tệp nén / công cụ
-│   ├── tauri.conf.json       # Cửa sổ, đóng gói, trình cài đặt
-│   ├── capabilities/         # Quyền của Tauri
-│   └── icons/                # Icon ứng dụng + installer/ (icon cài đặt & gỡ cài đặt, hình ảnh)
-├── tools/generate_icons.py   # Tạo lại toàn bộ icon bằng code
-├── package.json
-├── LICENSE
-└── README.md
+├─ index.html                 # landing page (1 file, meta SEO + mạng xã hội, EN/VI, giao diện)
+├─ package.json  vite.config.ts  tsconfig.json
+├─ src/                       # gốc ứng dụng Vite
+│  ├─ index.html  main.tsx  Root.tsx  index.css  fonts.css
+│  ├─ assets/                 # logo.svg, phông chữ kèm theo
+│  ├─ components/             # FileList (ảo hoá), ngăn, sidebar, thanh lệnh, chi tiết…
+│  │  ├─ ui/                  # Tooltip, Select, Modal, Toaster, ContextMenu, Buttons, Controls
+│  │  └─ dialogs/             # Cài đặt, Thuộc tính, Tệp trùng, Bản đồ dung lượng, Tìm kiếm, Lightbox, Bảng lệnh, Cập nhật
+│  ├─ store/                  # zustand: settings, explorer (ngăn/thẻ/thao tác), ui
+│  ├─ hooks/                  # phím tắt, hiệu ứng cửa sổ/theme/watcher/kéo thả/khay
+│  └─ lib/                    # api (cầu nối Tauri + mock trình duyệt), i18n (EN/VI), theme, menus, view, treemap
+├─ src-tauri/
+│  ├─ src/main.rs             # lệnh: liệt kê, sao chép/di chuyển có tiến trình, thùng rác, nén…
+│  ├─ src/extras.rs           # tìm kiếm, watcher, ảnh thu nhỏ, tệp trùng, dung lượng, khay, phím tắt
+│  ├─ icons/                  # icon ứng dụng + installer/ (setup, gỡ cài đặt, ảnh NSIS/WiX, hooks.nsh)
+│  └─ tauri.conf.json  capabilities/
+├─ tools/generate_icons.py    # trình tạo icon Material màu amber
+├─ screenshots/               # image01.png … image04.png
+├─ download/                  # đặt file setup vào đây
+└─ LICENSE
 ```
 
-### Giới hạn
+### Hạn chế
 
-- Cắt / sao chép / dán hoạt động trong phạm vi ứng dụng; không trao đổi tệp với clipboard hệ thống hay ứng dụng khác.
-- Khi dán trùng tên, ứng dụng hỏi bạn thay thế, bỏ qua hay giữ cả hai (đặt tên như `file (2).txt`).
-- Hoàn tác áp dụng cho đổi tên, tạo mới, sao chép / dán, di chuyển và nén — không áp dụng cho xoá (hãy khôi phục từ Thùng rác).
-- *Thay thế* trong hộp thoại trùng tên sẽ xoá hẳn mục cũ (không vào Thùng rác).
-- Màu sắc dùng `oklch()` và `color-mix()`, cần WebView2 / WebKit đủ mới.
+- Ưu tiên Windows: lối tắt Thùng rác, tích hợp WinRAR / 7-Zip, hook nút bên chuột, hình nền và menu chuột phải Explorer là tính năng của Windows.
+- Kiểm tra cập nhật chỉ *thông báo* có bản phát hành mới trên GitHub, không tự cài đặt.
+- Bộ cài chưa ký số → SmartScreen cảnh báo ở lần chạy đầu.
 
 ## Ghi công
 
-Tác giả: **minhtrong67** với sự hỗ trợ của trợ lý AI **Claude** ([Anthropic](https://www.anthropic.com)).
+Thiết kế và phát triển bởi **minhtrong67** với sự hỗ trợ của **Claude** (Anthropic).
+Biểu tượng của [Lucide](https://lucide.dev), phông chữ của [Fontsource](https://fontsource.org).
 
 ## Giấy phép
 
-Phát hành theo [MIT License](LICENSE).
+Phát hành theo [Giấy phép MIT](LICENSE) — miễn phí và mã nguồn mở.

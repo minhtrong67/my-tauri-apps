@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./fonts.css";
 import "./styles.css";
+import "./tailwind.css";
 
 // Material ripple via event delegation: any element with .ripple gets the effect.
 document.addEventListener("pointerdown", (e) => {

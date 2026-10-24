@@ -34,8 +34,8 @@
     "publisher": "minhtrong67",
     "copyright": "Copyright (c) 2026 minhtrong67",
     "category": "DeveloperTool",
-    "shortDescription": "Design, preview and export Material Design 3 themes",
-    "longDescription": "Material Theme Builder is an open-source desktop app to generate Material Design 3 color schemes, preview them on live components, check accessibility and export to CSS, Tailwind, Compose, Flutter and more.",
+    "shortDescription": "Design, preview and export Material 3 Expressive themes",
+    "longDescription": "Material Theme Builder is an open-source desktop app, styled with Material 3 Expressive, to generate Material Design 3 color schemes, preview them on live components, check accessibility and export to CSS, Tailwind, Compose, Flutter and more.",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

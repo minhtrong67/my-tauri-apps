@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import { FolderOpen, X } from "lucide-react";
+import { listen } from "@tauri-apps/api/event";
+import { FolderOpen } from "lucide-react";
 import { activeDoc, closeDoc, gotoPage, openBytes, openPicker, printDoc, redoAnnot, saveDoc, setZoom, undoAnnot } from "./lib/actions";
 import { launchFile, openPath, isTauri } from "./lib/native";
 import { stepHit } from "./lib/search";
-import { useDoc, useLang, useStore, useT } from "./lib/store";
+import { toast, useDoc, useLang, useStore, useT } from "./lib/store";
 import { fontStack } from "./lib/fonts";
 import { applyScheme, resolveDark, watchSystemTheme } from "./lib/theme";
 import { initWindow, onCloseRequest, setFullscreen, setWindowTitle } from "./lib/window";
@@ -15,6 +16,7 @@ import { Viewer } from "./components/Viewer";
 import { Welcome } from "./components/Welcome";
 import { DialogHost } from "./components/Dialogs";
 import { TooltipHost } from "./components/Tooltip";
+import { ToastHost } from "./components/Toasts";
 
 const FONT_PX = { small: 14, medium: 16, large: 18 } as const;
 
@@ -22,7 +24,9 @@ export default function App() {
   const t = useT();
   const lang = useLang();
   const doc = useDoc();
-  const { settings, present, toast, dragging } = useStore();
+  const settings = useStore((s) => s.settings);
+  const present = useStore((s) => s.present);
+  const dragging = useStore((s) => s.dragging);
 
   // theme + font size + language + animations
   useEffect(() => {
@@ -44,6 +48,10 @@ export default function App() {
       const f = await launchFile();
       if (f) await openBytes(await openPath(f));
       if (isTauri) {
+        // a second launch ("Open with" while the app is running) forwards its file here
+        unsubs.push(await listen<string>("open-file", async (e) => {
+          try { await openBytes(await openPath(e.payload)); } catch { toast("openFailed"); }
+        }));
         unsubs.push(await getCurrentWebview().onDragDropEvent(async (e) => {
           const p = e.payload;
           if (p.type === "enter" || p.type === "over") useStore.getState().setDragging(true);
@@ -106,11 +114,11 @@ export default function App() {
   return (
     <div className={`app ${present ? "present" : ""}`}>
       {!present && <Toolbar doc={doc} />}
-      {!present && doc && <AnnotBar doc={doc} />}
       {!present && <Tabs />}
       <div className="body">
         {doc ? (
           <>
+            {!present && <AnnotBar doc={doc} />}
             {!present && <Sidebar doc={doc} />}
             <Viewer key={doc.id} doc={doc} />
             {present && <div className="present-hint">{t("exitPresent")}</div>}
@@ -119,7 +127,7 @@ export default function App() {
       </div>
       <DialogHost />
       <TooltipHost />
-      {toast && <div className="snackbar" key={toast.id} role="status"><span>{toast.msg}</span><button aria-label={t("close")} onClick={() => useStore.setState({ toast: null })}><X size={16} /></button></div>}
+      <ToastHost />
       {dragging && <div className="drop-overlay"><div><FolderOpen size={48} /><b>{t("drop")}</b></div></div>}
     </div>
   );

@@ -14,20 +14,20 @@ const URL = process.env.APP_URL || "http://localhost:4173/";
 const cfg = (source, variant = "tonalSpot") => ({ source, variant, contrast: 0, core: {}, custom: [] });
 const shots = [
   { file: "image01.png", mode: "light", lang: "en", accent: "#6750A4", config: cfg("#6750A4"), tab: 0 },
-  { file: "image02.png", mode: "dark", lang: "en", accent: "#009688", config: cfg("#00897B", "vibrant"), tab: 0, split: true },
+  { file: "image02.png", rail: true, mode: "dark", lang: "en", accent: "#009688", config: cfg("#00897B", "vibrant"), tab: 0, split: true },
   { file: "image03.png", mode: "light", lang: "en", accent: "#FF5722", config: cfg("#E4572E", "expressive"), tab: 2 },
   { file: "image04.png", mode: "dark", lang: "vi", accent: "#673AB7", config: cfg("#6750A4"), page: "settings" },
 ];
 
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH, args: ["--no-sandbox"] });
 for (const s of shots) {
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1.5, colorScheme: s.mode, locale: s.lang === "vi" ? "vi-VN" : "en-US" });
+  const ctx = await browser.newContext({ viewport: s.rail ? { width: 1440, height: 900 } : { width: 1280, height: 800 }, deviceScaleFactor: 1.5, colorScheme: s.mode, locale: s.lang === "vi" ? "vi-VN" : "en-US" });
   await ctx.addInitScript(
     ([settings, config]) => {
       localStorage.setItem("mtb.settings", JSON.stringify(settings));
       localStorage.setItem("mtb.current", JSON.stringify(config));
     },
-    [{ mode: s.mode, accent: s.accent, fontSize: "medium", lang: s.lang, font: "roboto", windowMode: "remember", windowSize: null }, s.config],
+    [{ mode: s.mode, accent: s.accent, fontSize: "medium", lang: s.lang, font: "roboto", windowMode: "remember", windowSize: null, railExpanded: !!s.rail }, s.config],
   );
   const p = await ctx.newPage();
   await p.goto(URL);

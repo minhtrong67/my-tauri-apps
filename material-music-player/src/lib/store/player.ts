@@ -117,13 +117,13 @@ export const createPlayerSlice = (set: SetFn, get: GetFn, core: Core): PlayerSli
       const q = [...s.queue];
       q.splice(s.index + 1, 0, ...ids);
       set({ queue: q, baseQueue: [...s.baseQueue, ...ids] });
-      get().showToast(ids.length > 1 ? tr('willPlayNextN', { n: ids.length }) : tr('willPlayNext'));
+      get().showToast(ids.length > 1 ? tr('willPlayNextN', { n: ids.length }) : tr('willPlayNext'), undefined, undefined, 'success');
     },
     addToQueue: (ids) => {
       const s = get();
       if (s.index < 0) return get().playTracks(ids, 0);
       set({ queue: [...s.queue, ...ids], baseQueue: [...s.baseQueue, ...ids] });
-      get().showToast(ids.length > 1 ? tr('addedToQueueN', { n: ids.length }) : tr('addedToQueue'));
+      get().showToast(ids.length > 1 ? tr('addedToQueueN', { n: ids.length }) : tr('addedToQueue'), undefined, undefined, 'success');
     },
     removeFromQueue: (i) =>
       set((s) => {

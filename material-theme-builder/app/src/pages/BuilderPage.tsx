@@ -58,7 +58,7 @@ export function BuilderPage() {
     <div className="flex h-full min-h-0 flex-col">
       <header className="flex flex-wrap items-center gap-2 px-4 pb-3 pt-4 min-[900px]:px-6">
         <div className="mr-auto min-w-0">
-          <h1 className="shimmer-text truncate text-2xl font-medium leading-tight">{t("builder.title")}</h1>
+          <h1 className="shimmer-text t-display truncate text-3xl">{t("builder.title")}</h1>
           <p className="truncate text-sm text-on-surface-variant">{b.currentName ? t("builder.editing", { name: b.currentName }) : t("builder.subtitle")}</p>
         </div>
         <IconButton label={`${t("common.undo")} (Ctrl+Z)`} disabled={!b.canUndo} onClick={b.undo}>
@@ -90,7 +90,7 @@ export function BuilderPage() {
         </aside>
 
         <main className="flex min-w-0 flex-1 flex-col min-[900px]:overflow-y-auto min-[900px]:pr-1">
-          <div className="sticky top-0 z-20 -mx-1 mb-3 px-1 pb-2 pt-1">
+          <div className="sticky top-0 z-20 -mx-1 mb-3 bg-surface/85 px-1 pb-2 pt-1 backdrop-blur-md">
             <Segmented<Tab>
               hideLabelsOnSmall
               value={tab}

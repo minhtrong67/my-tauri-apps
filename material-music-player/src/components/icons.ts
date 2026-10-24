@@ -5,7 +5,7 @@ import {
   Pause, Pencil, PictureInPicture2, Pipette, Play, Plus, RefreshCw, Repeat, Repeat1, Ruler, Search, SearchX, Settings, Share, Shrink, Shuffle,
   SkipBack, SkipForward, SlidersHorizontal, SlidersVertical, Sparkles, Square, Sun, SunMoon, Trash2, Unlink, Upload, User, Volume1, Volume2,
   VolumeX, X, Languages, Type, Power, Pin, HardDrive, Wrench, ShieldAlert, Headphones, AppWindow, TriangleAlert, Eraser, DatabaseBackup, ArchiveRestore,
-  CloudDownload, TrendingUp, Gem, EyeOff, Save, Gauge,
+  CircleCheck, CircleAlert, CloudDownload, TrendingUp, Gem, EyeOff, Save, Gauge,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -106,6 +106,8 @@ export const ICONS: Record<string, LucideIcon> = {
   storage: HardDrive,
   build: Wrench,
   warning: TriangleAlert,
+  check_circle: CircleCheck,
+  error: CircleAlert,
   shield: ShieldAlert,
   headphones: Headphones,
   window: AppWindow,

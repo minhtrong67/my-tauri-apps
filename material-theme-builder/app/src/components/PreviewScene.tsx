@@ -2,6 +2,15 @@ import { useState, type CSSProperties } from "react";
 import {
   Bell,
   Bookmark,
+  ChevronDown,
+  Bold,
+  Italic,
+  Underline,
+  Share,
+  Pencil,
+  Camera,
+  Image as ImageIcon,
+  X,
   Check as CheckIcon,
   Compass,
   EllipsisVertical,
@@ -17,7 +26,7 @@ import {
 import { THEME_TRANSITION, themeVars, type CustomRoles, type Roles } from "../lib/theme";
 import { cn } from "../lib/utils";
 import { useSettings } from "../state/settings";
-import { Button, Chip, Range, Switch } from "./ui";
+import { Button, Chip, LoadingIndicator, Range, ShapeBox, Switch, WavyProgress, type ShapeName } from "./ui";
 
 /** Scope every `--md-*` variable to the preview container so the whole subtree re-themes. */
 export function scopeStyle(roles: Roles, dark: boolean): CSSProperties {
@@ -92,7 +101,7 @@ function PhoneScreen() {
           <h4 className="text-lg font-medium leading-snug">{t("preview.heroTitle")}</h4>
           <p className="mt-1 text-xs opacity-80">{t("preview.heroBody")}</p>
           <div className="mt-3 flex items-center gap-2">
-            <Button className="h-8 px-4 text-xs">{t("preview.read")}</Button>
+            <Button size="xs">{t("preview.read")}</Button>
             <button
               type="button"
               aria-label="like"
@@ -145,6 +154,156 @@ function PhoneScreen() {
   );
 }
 
+const SHAPES: ShapeName[] = ["cookie", "sunny", "clover", "flower", "gem", "burst"];
+
+/** Material 3 Expressive components, themed by the scene variables. */
+function ExpressivePanel({ panel, title }: { panel: string; title: string }) {
+  const { t } = useSettings();
+  const [group, setGroup] = useState(1);
+  const [fab, setFab] = useState(false);
+  const [fmt, setFmt] = useState<Record<string, boolean>>({ b: true });
+  const [shape, setShape] = useState(0);
+  const labels = [t("preview.day"), t("preview.week"), t("preview.month")];
+  return (
+    <div className={panel}>
+      <h4 className={title}>{t("preview.expressive")}</h4>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+        {/* connected button group */}
+        <div className="cbg" style={{ ["--bh" as string]: "40px" }}>
+          {labels.map((l, i) => (
+            <button
+              key={l}
+              type="button"
+              data-ripple
+              aria-pressed={group === i}
+              aria-selected={group === i}
+              onClick={() => setGroup(i)}
+              className={cn("px-4 text-sm font-medium", group === i ? "bg-secondary text-on-secondary" : "bg-secondary-container text-on-secondary-container")}
+            >
+              {l}
+            </button>
+          ))}
+        </div>
+
+        {/* split button */}
+        <div className="flex gap-0.5">
+          <button type="button" data-ripple className="h-10 rounded-l-full rounded-r-md bg-primary pl-5 pr-4 text-sm font-medium text-on-primary">
+            {t("preview.share")}
+          </button>
+          <button type="button" aria-label="more" data-ripple className="grid h-10 w-11 place-items-center rounded-l-md rounded-r-full bg-primary text-on-primary">
+            <ChevronDown className="size-4" />
+          </button>
+        </div>
+
+        {/* loading indicators */}
+        <div className="flex items-center gap-3">
+          <LoadingIndicator size={44} />
+          <LoadingIndicator size={52} contained />
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-4">
+        {/* shape swatches that morph on hover and click */}
+        <div className="flex items-center gap-2">
+          {SHAPES.map((sh, i) => (
+            <button
+              key={sh}
+              type="button"
+              aria-label={sh}
+              onClick={() => setShape(i)}
+              className="group grid size-10 place-items-center rounded-full"
+            >
+              <ShapeBox
+                shape={shape === i ? "circle" : sh}
+                className={cn(
+                  "size-9 transition-transform duration-(--spring-spatial-fast-d) ease-emphasized group-hover:scale-110 group-active:scale-90",
+                  ["bg-primary", "bg-secondary", "bg-tertiary", "bg-primary-container", "bg-tertiary-container", "bg-secondary-container"][i],
+                )}
+              >
+                {shape === i && <CheckIcon className="anim-pop size-4 text-on-primary" strokeWidth={3} />}
+              </ShapeBox>
+            </button>
+          ))}
+        </div>
+
+        {/* floating toolbar */}
+        <div className="flex items-center gap-1 rounded-full bg-primary-container p-1.5 text-on-primary-container shadow-elev-2">
+          {[
+            ["b", Bold],
+            ["i", Italic],
+            ["u", Underline],
+          ].map(([k, Ico]) => {
+            const I = Ico as typeof Bold;
+            const on = !!fmt[k as string];
+            return (
+              <button
+                key={k as string}
+                type="button"
+                data-ripple
+                aria-label={k as string}
+                aria-pressed={on}
+                onClick={() => setFmt((f) => ({ ...f, [k as string]: !f[k as string] }))}
+                className={cn("m3e-icon-btn grid size-10 place-items-center", on ? "bg-primary text-on-primary" : "")}
+              >
+                <I className="size-5" />
+              </button>
+            );
+          })}
+          <span className="mx-1 h-6 w-px bg-on-primary-container/25" />
+          <button type="button" data-ripple aria-label="share" className="m3e-icon-btn grid size-10 place-items-center">
+            <Share className="size-5" />
+          </button>
+        </div>
+
+        {/* FAB menu */}
+        <div className="relative ml-auto flex items-center gap-2">
+          <div
+            className={cn(
+              "flex items-center gap-2 transition-[opacity,transform] duration-(--spring-spatial-d) ease-emphasized",
+              fab ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-4 opacity-0",
+            )}
+          >
+            {[
+              [Pencil, t("preview.fabNote")],
+              [Camera, t("preview.fabPhoto")],
+              [ImageIcon, t("preview.fabImage")],
+            ].map(([Ico, label], i) => {
+              const I = Ico as typeof Pencil;
+              return (
+                <button
+                  key={label as string}
+                  type="button"
+                  data-ripple
+                  aria-label={label as string}
+                  style={{ transitionDelay: fab ? `${i * 40}ms` : "0ms" }}
+                  className="m3e-btn flex items-center gap-2 bg-primary-container px-4 text-sm font-medium text-on-primary-container"
+                >
+                  <I className="size-4" />
+                  {label as string}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            type="button"
+            data-ripple
+            aria-label="menu"
+            aria-expanded={fab}
+            onClick={() => setFab((f) => !f)}
+            className={cn(
+              "m3e-btn grid w-14 place-items-center shadow-elev-2",
+              fab ? "bg-primary text-on-primary" : "bg-tertiary-container text-on-tertiary-container",
+            )}
+            style={{ ["--bh" as string]: "56px" }}
+          >
+            {fab ? <X key="x" className="anim-pop size-6" /> : <Plus key="p" className="anim-pop size-6" />}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Board({ custom, dark }: { custom: CustomRoles[]; dark: boolean }) {
   const { t } = useSettings();
   const [sw, setSw] = useState(true);
@@ -190,7 +349,7 @@ function Board({ custom, dark }: { custom: CustomRoles[]; dark: boolean }) {
                 </label>
               ))}
             </div>
-            <Range label="slider" min={0} max={100} value={slider} onChange={setSlider} />
+            <Range label="slider" halo="var(--md-surface-container)" min={0} max={100} value={slider} onChange={setSlider} />
           </div>
         </div>
 
@@ -205,11 +364,11 @@ function Board({ custom, dark }: { custom: CustomRoles[]; dark: boolean }) {
             <Chip icon={<Bell className="size-4" />}>{t("preview.assist")}</Chip>
             <Chip>{t("preview.chip3")}</Chip>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-secondary-container">
-            <div className="h-full rounded-full bg-primary transition-[width] duration-500 ease-emphasized" style={{ width: `${slider}%` }} />
-          </div>
+          <WavyProgress value={slider} label="progress" />
         </div>
       </div>
+
+      <ExpressivePanel panel={panel} title={title} />
 
       <div className={panel}>
         <div className="relative mb-4 grid auto-cols-fr grid-flow-col border-b border-outline-variant">
@@ -219,7 +378,7 @@ function Board({ custom, dark }: { custom: CustomRoles[]; dark: boolean }) {
             </button>
           ))}
           <span
-            className="absolute bottom-0 h-[3px] rounded-t-full bg-primary transition-transform duration-300 ease-emphasized"
+            className="absolute bottom-0 h-[3px] rounded-t-full bg-primary transition-transform duration-(--spring-spatial-d) ease-emphasized"
             style={{ width: `${100 / tabs.length}%`, transform: `translateX(${tab * 100}%)` }}
           />
         </div>

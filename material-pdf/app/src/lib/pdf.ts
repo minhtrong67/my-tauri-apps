@@ -1,8 +1,7 @@
 import * as pdfjs from "pdfjs-dist";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import type { PDFDocumentProxy } from "pdfjs-dist";
-import { BlendMode, degrees, LineCapStyle, PDFDocument, rgb } from "pdf-lib";
-import type { Annot } from "./store";
+import { degrees, PDFDocument } from "pdf-lib";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 export { pdfjs };
@@ -34,58 +33,6 @@ export async function readSizes(pdf: PDFDocumentProxy) {
 }
 
 export const uid = () => Math.random().toString(36).slice(2, 10);
-
-const hexRgb = (hex: string) => {
-  const n = parseInt(hex.slice(1), 16);
-  return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
-};
-
-async function textToPng(text: string, size: number, color: string) {
-  const k = 3, fam = getComputedStyle(document.documentElement).getPropertyValue("--font").trim() || "system-ui, sans-serif", font = `${size * k}px ${fam}`;
-  const lines = text.split("\n");
-  const c = document.createElement("canvas");
-  const ctx = c.getContext("2d")!;
-  ctx.font = font;
-  const w = Math.ceil(Math.max(...lines.map((l) => ctx.measureText(l).width))) + 4;
-  const lh = Math.ceil(size * k * 1.25);
-  c.width = w; c.height = lh * lines.length + 4;
-  ctx.font = font; ctx.fillStyle = color; ctx.textBaseline = "top";
-  lines.forEach((l, i) => ctx.fillText(l, 2, i * lh + 2));
-  const blob: Blob = await new Promise((r) => c.toBlob((b) => r(b!), "image/png"));
-  return { png: new Uint8Array(await blob.arrayBuffer()), w: c.width / k, h: c.height / k };
-}
-
-/** Bakes annotations (stored in scale-1 viewport units) into the PDF. */
-export async function flattenAnnots(bytes: Uint8Array, pdf: PDFDocumentProxy, annots: Annot[]): Promise<Uint8Array> {
-  if (!annots.length) return bytes;
-  const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-  const byPage = new Map<number, Annot[]>();
-  annots.forEach((a) => byPage.set(a.page, [...(byPage.get(a.page) ?? []), a]));
-  for (const [pi, list] of byPage) {
-    const page = doc.getPage(pi);
-    const vp = (await pdf.getPage(pi + 1)).getViewport({ scale: 1 });
-    const P = (x: number, y: number) => vp.convertToPdfPoint(x, y) as [number, number];
-    for (const a of list) {
-      if (a.type === "highlight" || a.type === "rect") {
-        const [x0, y0] = P(a.x, a.y), [x1, y1] = P(a.x + a.w, a.y + a.h);
-        const o = { x: Math.min(x0, x1), y: Math.min(y0, y1), width: Math.abs(x1 - x0), height: Math.abs(y1 - y0) };
-        if (a.type === "highlight") page.drawRectangle({ ...o, color: hexRgb(a.color), opacity: 0.4, blendMode: BlendMode.Multiply, borderWidth: 0 });
-        else page.drawRectangle({ ...o, borderColor: hexRgb(a.color), borderWidth: a.width });
-      } else if (a.type === "pen") {
-        for (let i = 1; i < a.pts.length; i++) {
-          const [sx, sy] = P(...a.pts[i - 1]), [ex, ey] = P(...a.pts[i]);
-          page.drawLine({ start: { x: sx, y: sy }, end: { x: ex, y: ey }, thickness: a.width, color: hexRgb(a.color), lineCap: LineCapStyle.Round });
-        }
-      } else if (a.text.trim()) {
-        const t = await textToPng(a.text, a.size, a.color);
-        const img = await doc.embedPng(t.png);
-        const [x, y] = P(a.x, a.y + t.h);
-        page.drawImage(img, { x, y, width: t.w, height: t.h, rotate: degrees(vp.rotation) });
-      }
-    }
-  }
-  return doc.save({ useObjectStreams: true });
-}
 
 export async function applyPageOps(bytes: Uint8Array, ops: { src: number; rot: number }[]): Promise<Uint8Array> {
   const src = await PDFDocument.load(bytes, { ignoreEncryption: true });

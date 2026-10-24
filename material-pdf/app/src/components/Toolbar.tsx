@@ -65,6 +65,7 @@ export function Toolbar({ doc }: { doc: Doc | null }) {
 
       {d && (
         <div className="tb-group center">
+          <div className="cgroup">
           <IconButton icon={<ChevronLeft size={22} />} label={t("prevPage")} onClick={() => gotoPage(d.page - 1)} disabled={d.page <= 0} />
           <div className="page-input">
             <input value={pageText} inputMode="numeric" aria-label={t("page")}
@@ -75,10 +76,13 @@ export function Toolbar({ doc }: { doc: Doc | null }) {
             <span>{t("of")} {d.numPages}</span>
           </div>
           <IconButton icon={<ChevronRight size={22} />} label={t("nextPage")} onClick={() => gotoPage(d.page + 1)} disabled={d.page >= d.numPages - 1} />
+          </div>
           <span className="tb-sep" />
+          <div className="cgroup">
           <IconButton icon={<Minus size={20} />} label={`${t("zoomOut")} (Ctrl -)`} onClick={() => setZoom(d.scale / 1.2)} />
           <Menu align="left" items={zoomItems} trigger={(toggle) => <button className="zoom-pill ripple" onClick={toggle} data-tip={t("zoom")}>{Math.round(d.scale * 100)}%</button>} />
           <IconButton icon={<Plus size={20} />} label={`${t("zoomIn")} (Ctrl +)`} onClick={() => setZoom(d.scale * 1.2)} />
+          </div>
         </div>
       )}
 

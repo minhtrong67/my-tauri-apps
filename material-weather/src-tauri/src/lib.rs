@@ -5,6 +5,7 @@ use tauri::Manager;
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_notification::init())
         .setup(|app| {
             // The main window starts hidden so the frontend can apply the saved
             // window size / maximized mode first (no visible resize flicker).

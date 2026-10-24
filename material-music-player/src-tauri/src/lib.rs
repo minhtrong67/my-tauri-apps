@@ -1015,6 +1015,17 @@ fn watch_folders(app: AppHandle, state: State<FolderWatcher>, paths: Vec<String>
     *guard = Some(watcher);
 }
 
+/// WebView2 sometimes keeps the old (e.g. maximized) size after the window goes fullscreen, leaving a black strip: push the real size to it
+#[tauri::command]
+fn fit_webview(app: AppHandle) {
+    if let (Some(w), Some(wv)) = (app.get_window("main"), app.get_webview("main")) {
+        if let Ok(size) = w.inner_size() {
+            let _ = wv.set_position(tauri::PhysicalPosition::new(0, 0));
+            let _ = wv.set_size(size);
+        }
+    }
+}
+
 // ---------- khởi chạy ----------
 
 pub fn run() {
@@ -1163,7 +1174,8 @@ pub fn run() {
             set_media_keys,
             write_tags,
             fetch_lyrics_online,
-            watch_folders
+            watch_folders,
+            fit_webview
         ])
         .run(tauri::generate_context!())
         .expect("failed to start Material Music");

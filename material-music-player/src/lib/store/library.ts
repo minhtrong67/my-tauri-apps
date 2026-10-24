@@ -45,7 +45,7 @@ export const createLibrarySlice = (set: SetFn, get: GetFn, core: Core): LibraryS
         const res = await ingest(files);
         if (!res) return;
         if (!res.found.length) {
-          get().showToast(tr('noAudioSupported'));
+          get().showToast(tr('noAudioSupported'), undefined, undefined, 'warning');
           return;
         }
         mergeTracks(res.tracks);
@@ -56,7 +56,7 @@ export const createLibrarySlice = (set: SetFn, get: GetFn, core: Core): LibraryS
       const pl = get().playlists.find((p) => p.id === id);
       if (!pl?.folder) return;
       if (!(await api.isDir(pl.folder))) {
-        get().showToast(tr('folderUnreachable'));
+        get().showToast(tr('folderUnreachable'), undefined, undefined, 'error');
         return;
       }
       const res = await ingest([pl.folder], { known: knownFiles() });
@@ -65,7 +65,7 @@ export const createLibrarySlice = (set: SetFn, get: GetFn, core: Core): LibraryS
       const ids = sortedIds(res.found.map((f) => f.id));
       set((s) => ({ playlists: s.playlists.map((p) => (p.id === id ? { ...p, trackIds: ids } : p)) }));
       const removed = await pruneMissing();
-      get().showToast(tr('rescanned', { name: pl.name, n: ids.length, extra: removed ? tr('rescannedRemoved', { n: removed }) : '' }));
+      get().showToast(tr('rescanned', { name: pl.name, n: ids.length, extra: removed ? tr('rescannedRemoved', { n: removed }) : '' }), undefined, undefined, 'success');
     },
 
     syncLibrary: async (silent = false, force = false) => {
@@ -118,7 +118,7 @@ export const createLibrarySlice = (set: SetFn, get: GetFn, core: Core): LibraryS
     rescanAll: async () => get().syncLibrary(false, true),
     removeMissing: async () => {
       const n = await pruneMissing();
-      get().showToast(n ? tr('removedMissing', { n }) : tr('noMissing'));
+      get().showToast(n ? tr('removedMissing', { n }) : tr('noMissing'), undefined, undefined, n ? 'success' : 'info');
     },
     removeTracks: (ids) => {
       const rm = new Set(ids);
@@ -152,7 +152,7 @@ export const createLibrarySlice = (set: SetFn, get: GetFn, core: Core): LibraryS
     clearLibrary: () => {
       engine.pause();
       set({ byId: {}, playlists: [], liked: {}, history: [], plays: {}, queue: [], baseQueue: [], index: -1, isPlaying: false, position: 0, duration: 0 });
-      get().showToast(tr('libraryCleared'));
+      get().showToast(tr('libraryCleared'), undefined, undefined, 'success');
     },
 
     editTags: async (id, edit) => {
@@ -161,10 +161,10 @@ export const createLibrarySlice = (set: SetFn, get: GetFn, core: Core): LibraryS
       try {
         const fresh = await api.writeTags(t.path, edit);
         mergeTracks([fresh]);
-        get().showToast(tr('tagsSaved'));
+        get().showToast(tr('tagsSaved'), undefined, undefined, 'success');
         return true;
       } catch (e) {
-        get().showToast(tr('tagsFailed', { e: String(e) }));
+        get().showToast(tr('tagsFailed', { e: String(e) }), undefined, undefined, 'error');
         return false;
       }
     },

@@ -25,7 +25,7 @@ function AddToPlaylist({ ids, onClose }: { ids: string[]; onClose: () => void })
   const byId = useStore((s) => s.byId);
   const { addToPlaylist, createPlaylist, showToast } = useStore.getState();
   const [name, setName] = useState('');
-  const create = () => { if (!name.trim()) return; createPlaylist(name, ids); showToast(tr('playlistCreated', { name: name.trim() })); onClose(); };
+  const create = () => { if (!name.trim()) return; createPlaylist(name, ids); showToast(tr('playlistCreated', { name: name.trim() }), undefined, undefined, 'success'); onClose(); };
   return (
     <Modal title={tr('addToPlaylist')} onClose={onClose} actions={<Button variant="tonal" icon="close" onClick={onClose}>{tr('close')}</Button>}>
       <div className="flex gap-2 mb-3">
@@ -157,7 +157,7 @@ function AudioDialog({ onClose }: { onClose: () => void }) {
     <Modal title={tr('audioTitle')} wide onClose={onClose} actions={<Button icon="check" onClick={onClose}>{tr('done')}</Button>}>
       <div className="mb-5">
         <div className="flex items-center justify-between mb-1"><span className="text-title-md">{tr('playbackSpeed')}</span><span className="text-label-lg text-primary">{s.playbackRate.toFixed(2)}×</span></div>
-        <Slider min={0.5} max={2} step={0.05} value={s.playbackRate} onChange={(v) => update({ playbackRate: v })} label={tr('playbackSpeed')} />
+        <Slider min={0.5} max={2} step={0.05} value={s.playbackRate} onChange={(v) => update({ playbackRate: v })} label={tr('playbackSpeed')} format={(v) => `${v.toFixed(2)}×`} />
         <div className="flex gap-2 mt-2">{[0.75, 1, 1.25, 1.5, 2].map((r) => <Chip key={r} selected={s.playbackRate === r} onClick={() => update({ playbackRate: r })}>{r}×</Chip>)}</div>
       </div>
       <div className="flex items-center justify-between mb-2">
@@ -175,7 +175,7 @@ function AudioDialog({ onClose }: { onClose: () => void }) {
               <span className="text-label-md text-on-surface-variant tabular-nums w-8 text-center">{s.eqGains[i] > 0 ? '+' : ''}{s.eqGains[i]}</span>
               <div className="relative w-6 h-36">
                 <div className="absolute left-1/2 top-1/2 w-36 h-6 -translate-x-1/2 -translate-y-1/2 -rotate-90">
-                  <Slider min={-12} max={12} step={1} value={s.eqGains[i]} onChange={(v) => setGain(i, v)} label={tr('band', { l })} />
+                  <Slider size="sm" min={-12} max={12} step={1} value={s.eqGains[i]} onChange={(v) => setGain(i, v)} label={tr('band', { l })} />
                 </div>
               </div>
               <span className="text-label-md text-on-surface-variant">{l}</span>
@@ -184,7 +184,7 @@ function AudioDialog({ onClose }: { onClose: () => void }) {
         </div>
         <div className="mt-4">
           <div className="flex justify-between"><span className="text-title-sm">Preamp</span><span className="text-label-lg text-primary">{s.preamp > 0 ? '+' : ''}{s.preamp} dB</span></div>
-          <Slider min={-12} max={12} step={1} value={s.preamp} onChange={(v) => update({ preamp: v })} label="Preamp" />
+          <Slider min={-12} max={12} step={1} value={s.preamp} onChange={(v) => update({ preamp: v })} label="Preamp" format={(v) => `${v > 0 ? '+' : ''}${v} dB`} />
         </div>
       </div>
     </Modal>

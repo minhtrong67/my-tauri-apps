@@ -46,7 +46,7 @@ export const createPlaylistSlice = (set: SetFn, get: GetFn, core: Core): Playlis
           return { ...p, trackIds: [...p.trackIds, ...add] };
         }),
       }));
-      get().showToast(added ? tr('addedToPlaylistN', { n: added }) : tr('alreadyInPlaylist'));
+      get().showToast(added ? tr('addedToPlaylistN', { n: added }) : tr('alreadyInPlaylist'), undefined, undefined, added ? 'success' : 'warning');
     },
     removeFromPlaylist: (pid, index) =>
       set((s) => ({ playlists: s.playlists.map((p) => (p.id === pid ? { ...p, trackIds: p.trackIds.filter((_, i) => i !== index) } : p)) })),
@@ -67,7 +67,7 @@ export const createPlaylistSlice = (set: SetFn, get: GetFn, core: Core): Playlis
       if (!path) return;
       const tracks = pl.trackIds.map((i) => get().byId[i]).filter(Boolean);
       await api.writeTextFile(path, buildM3U(tracks));
-      get().showToast(tr('exported', { name: pl.name }));
+      get().showToast(tr('exported', { name: pl.name }), undefined, undefined, 'success');
     },
     importPlaylistFile: async () => {
       const path = await api.pickOne(['m3u', 'm3u8'], 'Playlist M3U');
@@ -76,14 +76,14 @@ export const createPlaylistSlice = (set: SetFn, get: GetFn, core: Core): Playlis
       const res = await ingest(paths);
       if (!res) return;
       if (!res.found.length) {
-        get().showToast(tr('noValidSongsInM3U'));
+        get().showToast(tr('noValidSongsInM3U'), undefined, undefined, 'warning');
         return;
       }
       mergeTracks(res.tracks);
       const ids = res.found.map((f) => f.id);
       const pid = get().createPlaylist(stripExt(basename(path)), ids);
       get().nav({ name: 'playlist', id: pid });
-      get().showToast(tr('imported', { n: ids.length }));
+      get().showToast(tr('imported', { n: ids.length }), undefined, undefined, 'success');
     },
 
   };

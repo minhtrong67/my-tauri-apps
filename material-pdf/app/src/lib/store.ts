@@ -7,7 +7,7 @@ import type { FontId } from "./fonts";
 export type FontSize = "small" | "medium" | "large";
 export type Tool = "none" | "highlight" | "pen" | "text" | "rect" | "eraser";
 export type Fit = "width" | "page" | "custom";
-export type SideTab = "thumbs" | "outline" | "search";
+export type SideTab = "thumbs" | "outline" | "annots" | "search";
 
 export interface Settings {
   themeMode: ThemeMode; seed: string; fontSize: FontSize; font: FontId; lang: Lang | "auto";
@@ -26,10 +26,14 @@ export type Annot =
   | { id: string; type: "text"; page: number; x: number; y: number; text: string; color: string; size: number };
 
 export interface Doc {
-  id: string; name: string; path: string | null; bytes: Uint8Array; pdf: PDFDocumentProxy; password?: string;
+  id: string; name: string; path: string | null; bytes: Uint8Array; base: Uint8Array; pdf: PDFDocumentProxy; password?: string;
   numPages: number; sizes: { w: number; h: number }[]; page: number; scale: number; fit: Fit; dirty: boolean;
   annots: Annot[]; past: Annot[][]; future: Annot[][]; rev: number;
+  /** typed-in form field values by field name (written into the PDF on save) */
+  forms: Record<string, string | boolean>;
 }
+export type ToastType = "info" | "success" | "warning" | "error";
+export interface ToastItem { id: number; msg: string; type: ToastType }
 export interface RecentFile { path: string; name: string; time: number }
 export interface SearchHit { page: number; idx: number; snippet: string }
 
@@ -47,7 +51,7 @@ interface State {
   setSearch: (p: Partial<State["search"]>) => void;
   present: boolean; setPresent: (v: boolean) => void;
   dialog: { kind: string; props?: any } | null; openDialog: (kind: string, props?: any) => void; closeDialog: () => void;
-  toast: { id: number; msg: string } | null; showToast: (msg: string) => void;
+  toasts: ToastItem[]; showToast: (msg: string, type?: ToastType) => void; dismissToast: (id: number) => void;
   dragging: boolean; setDragging: (v: boolean) => void;
 }
 
@@ -78,8 +82,14 @@ export const useStore = create<State>((set, get) => ({
   setSearch: (p) => set((s) => ({ search: { ...s.search, ...p } })),
   present: false, setPresent: (present) => set({ present }),
   dialog: null, openDialog: (kind, props) => set({ dialog: { kind, props } }), closeDialog: () => set({ dialog: null }),
-  toast: null,
-  showToast: (msg) => { const id = ++toastId; set({ toast: { id, msg } }); setTimeout(() => get().toast?.id === id && set({ toast: null }), 3600); },
+  toasts: [],
+  showToast: (msg, type = "info") => {
+    const id = ++toastId;
+    // same message already on screen -> refresh it instead of stacking duplicates
+    set((s) => ({ toasts: [...s.toasts.filter((x) => x.msg !== msg || x.type !== type), { id, msg, type }].slice(-4) }));
+    setTimeout(() => get().dismissToast(id), type === "error" ? 6000 : type === "warning" ? 4800 : 3600);
+  },
+  dismissToast: (id) => set((s) => (s.toasts.some((x) => x.id === id) ? { toasts: s.toasts.filter((x) => x.id !== id) } : s)),
   dragging: false, setDragging: (dragging) => set({ dragging }),
 }));
 
@@ -97,4 +107,11 @@ export const tr = (key: Key, vars?: Record<string, string | number>) => {
   const l = useStore.getState().settings.lang;
   return translate(l === "auto" ? detectLang() : l, key, vars);
 };
-export const toast = (key: Key, vars?: Record<string, string | number>) => useStore.getState().showToast(tr(key, vars));
+const TOAST_TYPE: Partial<Record<Key, ToastType>> = {
+  saved: "success", exported: "success", merged: "success", imagesDone: "success", splitDone: "success",
+  pagesApplied: "success", metaSaved: "success",
+  keepOne: "warning",
+  saveFailed: "error", openFailed: "error", encryptedEdit: "error",
+};
+export const toast = (key: Key, vars?: Record<string, string | number>, type?: ToastType) =>
+  useStore.getState().showToast(tr(key, vars), type ?? TOAST_TYPE[key] ?? "info");

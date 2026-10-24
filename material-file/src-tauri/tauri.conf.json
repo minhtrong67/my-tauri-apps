@@ -1,13 +1,16 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Material File",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "identifier": "com.minhtrong67.material-file",
   "build": {
-    "frontendDist": "../src"
+    "beforeDevCommand": "vite",
+    "beforeBuildCommand": "tsc --noEmit && vite build",
+    "devUrl": "http://127.0.0.1:1420",
+    "frontendDist": "../dist"
   },
   "app": {
-    "withGlobalTauri": true,
+    "withGlobalTauri": false,
     "windows": [
       {
         "label": "main",
@@ -18,15 +21,20 @@
         "minHeight": 420,
         "center": true,
         "visible": false,
-        "dragDropEnabled": false
+        "dragDropEnabled": true
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: asset: http://asset.localhost; font-src 'self' data:",
-      "dangerousDisableAssetCspModification": ["style-src"],
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: asset: http://asset.localhost; media-src 'self' asset: http://asset.localhost; frame-src asset: http://asset.localhost; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost https://api.github.com",
+      "devCsp": null,
+      "dangerousDisableAssetCspModification": [
+        "style-src"
+      ],
       "assetProtocol": {
         "enable": true,
-        "scope": ["**"]
+        "scope": [
+          "**"
+        ]
       }
     }
   },
@@ -37,7 +45,7 @@
     "copyright": "Copyright (c) 2026 minhtrong67",
     "category": "Utility",
     "shortDescription": "Simple, fast file manager with Material Design 3.",
-    "longDescription": "Material File is a lightweight file manager inspired by Windows 11 File Explorer: quick access, drives, details and icon views, copy/cut/paste, rename, recycle bin, search, themes and English/Vietnamese support. Created by minhtrong67 with the support of Claude.",
+    "longDescription": "Material File is a lightweight file manager with Material Design 3 Expressive: quick access, drives, details and icon views, dual pane, tabs, tags, duplicate finder, disk usage map, command palette, themes and English/Vietnamese support. Created by minhtrong67 with the support of Claude.",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -52,7 +60,8 @@
         "uninstallerHeaderImage": "icons/installer/nsis-header-uninstall.bmp",
         "headerImage": "icons/installer/nsis-header.bmp",
         "sidebarImage": "icons/installer/nsis-sidebar.bmp",
-        "installMode": "currentUser"
+        "installMode": "currentUser",
+        "installerHooks": "icons/installer/hooks.nsh"
       },
       "wix": {
         "bannerPath": "icons/installer/wix-banner.bmp",

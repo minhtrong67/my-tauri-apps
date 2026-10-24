@@ -81,7 +81,7 @@ export function SettingsPage() {
           <SettingsIcon className="anim-spin-slow size-7" />
         </span>
         <div>
-          <h1 className="text-2xl font-medium">{t("settings.title")}</h1>
+          <h1 className="t-display text-3xl">{t("settings.title")}</h1>
           <p className="text-sm text-on-surface-variant">{t("settings.subtitle")}</p>
         </div>
       </header>

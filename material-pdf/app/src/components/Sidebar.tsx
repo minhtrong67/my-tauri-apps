@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronRight, FileSearch, List, LayoutGrid, Search as SearchIcon, ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronRight, FileSearch, List, LayoutGrid, Search as SearchIcon, ChevronUp, ChevronDown, Highlighter, MessageSquareText, Pencil, Square, Trash2, Type } from "lucide-react";
 import type { PDFDocumentProxy } from "pdfjs-dist";
-import { gotoPage } from "../lib/actions";
+import { gotoPage, removeAnnot } from "../lib/actions";
 import { runSearch, stepHit } from "../lib/search";
 import { useStore, useT, type Doc, type SideTab } from "../lib/store";
 import { Thumb } from "./Thumb";
@@ -57,6 +57,29 @@ function Thumbs({ doc }: { doc: Doc }) {
   );
 }
 
+function Annots({ doc }: { doc: Doc }) {
+  const t = useT();
+  const list = [...doc.annots].map((a, i) => ({ a, i })).sort((x, y) => x.a.page - y.a.page || x.i - y.i).map((x) => x.a);
+  if (!list.length) return <div className="side-empty"><MessageSquareText size={36} /><p>{t("noAnnots")}</p></div>;
+  const ico = { highlight: Highlighter, pen: Pencil, text: Type, rect: Square } as const;
+  return (
+    <ul className="annot-list">
+      {list.map((a) => {
+        const I = ico[a.type];
+        return (
+          <li key={a.id}>
+            <button className="annot-row ripple" onClick={() => gotoPage(a.page)}>
+              <span className="annot-dot" style={{ background: a.color, color: a.color.toUpperCase() === "#FFEB3B" ? "#222" : "#fff" }}><I size={15} /></span>
+              <span className="at"><b>{a.type === "text" ? a.text.split("\n")[0] : t(`tool_${a.type}` as any)}</b><small>{t("page")} {a.page + 1}</small></span>
+            </button>
+            <IconButton size="sm" icon={<Trash2 size={16} />} label={t("delete")} onClick={() => removeAnnot(a.id)} />
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 function Search({ doc }: { doc: Doc }) {
   const t = useT();
   const { search } = useStore();
@@ -94,6 +117,7 @@ export function Sidebar({ doc }: { doc: Doc }) {
   const tabs: { id: SideTab; icon: JSX.Element; label: string }[] = [
     { id: "thumbs", icon: <LayoutGrid size={20} />, label: t("thumbnails") },
     { id: "outline", icon: <List size={20} />, label: t("outline") },
+    { id: "annots", icon: <MessageSquareText size={20} />, label: t("annotations") },
     { id: "search", icon: <FileSearch size={20} />, label: t("search") },
   ];
   return (
@@ -107,6 +131,7 @@ export function Sidebar({ doc }: { doc: Doc }) {
         <div className="side-content" key={sideTab}>
           {sideTab === "thumbs" && <Thumbs doc={doc} />}
           {sideTab === "outline" && <Outline doc={doc} />}
+          {sideTab === "annots" && <Annots doc={doc} />}
           {sideTab === "search" && <Search doc={doc} />}
         </div>
       </div>

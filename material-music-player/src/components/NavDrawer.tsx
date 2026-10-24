@@ -27,7 +27,7 @@ export function NavDrawer() {
   const item = (icon: string, label: string, active: boolean, onClick: () => void, extra?: React.ReactNode, onContext?: (e: React.MouseEvent) => void) => (
     <button
       key={label + icon} onClick={onClick} onContextMenu={onContext} title={collapsed ? label : undefined}
-      className={`ripple ${active ? 'nav-active' : ''} h-12 rounded-full flex items-center gap-3 transition-colors ${collapsed ? 'w-14 justify-center mx-auto' : 'px-4 w-full'} ${active ? 'bg-secondary-container text-on-secondary-container font-medium' : 'text-on-surface-variant hover:bg-on-surface/[.08]'}`}
+      className={`ripple ${active ? 'nav-active' : ''} nav-item h-12 flex items-center gap-3 ${collapsed ? 'w-14 justify-center mx-auto' : 'px-4 w-full'} ${active ? 'bg-secondary-container text-on-secondary-container font-medium' : 'text-on-surface-variant hover:bg-on-surface/[.08]'}`}
     >
       <Icon name={icon} fill={active} />
       {!collapsed && <span className="truncate text-label-lg flex-1 text-left">{label}</span>}

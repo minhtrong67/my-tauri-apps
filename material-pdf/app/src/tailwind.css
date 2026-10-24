@@ -1,0 +1,3 @@
+/* Tailwind v4 – theme + utilities only (no preflight), so it coexists with the Material styles in styles.css. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);

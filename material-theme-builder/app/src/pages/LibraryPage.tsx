@@ -96,7 +96,7 @@ export function LibraryPage({ onOpen }: { onOpen: () => void }) {
     <div className="mx-auto h-full max-w-6xl overflow-y-auto px-4 pb-8 pt-4 min-[900px]:px-8">
       <header className="mb-6 flex flex-wrap items-center gap-3">
         <div className="mr-auto">
-          <h1 className="text-2xl font-medium">{t("library.title")}</h1>
+          <h1 className="t-display text-3xl">{t("library.title")}</h1>
           <p className="text-sm text-on-surface-variant">{t("library.subtitle")}</p>
         </div>
         <Button variant="tonal" icon={<Upload className="size-4" />} onClick={() => fileRef.current?.click()}>

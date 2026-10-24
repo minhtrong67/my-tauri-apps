@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Material Weather — Beautiful Material Design 3 weather app for desktop</title>
+<meta name="description" content="Material Weather is a free, open-source desktop weather app built with Tauri 2, React and Tailwind CSS. Hourly & 7-day forecasts, air quality, smart tips, themes, English and Tiếng Việt." />
+<meta name="keywords" content="weather app, desktop weather, Material Design 3, Tauri, React, Tailwind CSS, open source, forecast, air quality, thời tiết, ứng dụng thời tiết" />
+<meta name="author" content="minhtrong67" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#f8f9ff" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)" />
+<!-- TODO: replace https://minhtrong67.github.io/material-weather/ with the real URL where this page is hosted -->
+<link rel="canonical" href="https://minhtrong67.github.io/material-weather/" />
+<link rel="icon" type="image/png" href="src-tauri/icons/32x32.png" />
+<link rel="apple-touch-icon" href="src-tauri/icons/128x128@2x.png" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Material Weather" />
+<meta property="og:title" content="Material Weather — Material Design 3 weather app for desktop" />
+<meta property="og:description" content="Free & open-source. Live forecasts, air quality, smart tips, dynamic themes. Built with Tauri 2, React and Tailwind CSS." />
+<meta property="og:url" content="https://minhtrong67.github.io/material-weather/" />
+<meta property="og:image" content="https://minhtrong67.github.io/material-weather/screenshots/image01.png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="800" />
+<meta property="og:image:alt" content="Material Weather main screen showing the current weather" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="vi_VN" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Material Weather — Material Design 3 weather app" />
+<meta name="twitter:description" content="Free & open-source desktop weather app with hourly & 7-day forecasts, air quality, smart tips and dynamic themes." />
+<meta name="twitter:image" content="https://minhtrong67.github.io/material-weather/screenshots/image01.png" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material Weather","applicationCategory":"UtilitiesApplication","operatingSystem":"Windows, macOS, Linux","softwareVersion":"1.1.0","description":"A free, open-source Material Design 3 desktop weather app built with Tauri 2, React and Tailwind CSS.","author":{"@type":"Person","name":"minhtrong67"},"license":"https://opensource.org/licenses/MIT","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"downloadUrl":"https://minhtrong67.github.io/material-weather/download/Material%20Weather_1.1.0_x64-setup.exe","screenshot":"https://minhtrong67.github.io/material-weather/screenshots/image01.png","inLanguage":["en","vi"]}
+</script>
+<style>
+:root{--ease:cubic-bezier(.2,0,0,1);--r-xl:28px;--font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --p:#0b57d0;--on-p:#fff;--pc:#d6e3ff;--on-pc:#001b3f;--sc:#dfe6f6;--on-sc:#131c2b;--s:#f8f9ff;--on-s:#191c20;--on-sv:#44474e;--o:#74777f;--ov:#c4c6d0;--c1:#f0f3fb;--c2:#e9edf6;--c3:#e2e7f1}
+*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{font:16px/1.6 var(--font);background:var(--s);color:var(--on-s);-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background .35s,color .35s}
+img{max-width:100%;height:auto;display:block}a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+svg.i{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:focus-visible{outline:3px solid var(--p);outline-offset:3px;border-radius:12px}
+.wrap{width:min(1140px,100% - 40px);margin-inline:auto}
+.btn{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 26px;border-radius:999px;font-weight:600;transition:transform .2s var(--ease),box-shadow .2s}
+.btn::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .15s;z-index:-1}.btn:hover::after{opacity:.09}.btn:active{transform:scale(.97)}
+.btn.lg{height:56px;padding:0 26px;font-size:1rem}
+.filled{background:var(--p);color:var(--on-p)}.filled:hover{box-shadow:0 6px 20px color-mix(in srgb,var(--p) 40%,transparent)}
+.tonal{background:var(--sc);color:var(--on-sc)}.outlined{border:1px solid var(--o);color:var(--p)}
+.rw{position:absolute;border-radius:50%;background:currentColor;opacity:.2;transform:scale(0);animation:rip .6s cubic-bezier(0,0,0,1) forwards;pointer-events:none}@keyframes rip{to{transform:scale(1);opacity:0}}
+header.top{position:fixed;inset:0 0 auto;z-index:50;transition:background .3s,box-shadow .3s}
+header.top.scrolled{background:color-mix(in srgb,var(--s) 82%,transparent);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--ov)}
+.nav{display:flex;align-items:center;gap:8px;height:72px}.brand{display:flex;align-items:center;gap:12px;font-weight:700;font-size:1.15rem;white-space:nowrap}@media(max-width:520px){.brand{font-size:1rem;gap:9px}.brand img{width:32px;height:32px}.ib{width:40px;height:40px}}.brand img{width:38px;height:38px;border-radius:11px}
+.links{display:flex;gap:2px;margin-left:28px}.links a{padding:8px 16px;border-radius:999px;font-weight:500;color:var(--on-sv);transition:background .2s,color .2s}.links a:hover{background:var(--c3);color:var(--on-s)}
+.tools{margin-left:auto;display:flex;align-items:center;gap:4px}
+.ib{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--on-sv);position:relative;overflow:hidden;transition:background .2s}.ib:hover{background:var(--c3);color:var(--on-s)}
+.pw{position:relative}
+.pop{position:absolute;top:calc(100% + 10px);right:0;min-width:200px;background:var(--c2);border-radius:20px;padding:8px;box-shadow:0 8px 28px rgb(0 0 0/.22);opacity:0;transform:translateY(-6px) scale(.96);pointer-events:none;transform-origin:top right;transition:all .22s var(--ease)}
+.pop.open{opacity:1;transform:none;pointer-events:auto}.pop>button{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border-radius:12px;text-align:left}.pop>button:hover{background:var(--c3)}.pop>button[aria-checked=true]{background:var(--sc);color:var(--on-sc);font-weight:600}
+.sw{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:10px;min-width:244px}.sw button{aspect-ratio:1;border-radius:50%;padding:0;background:var(--c);display:grid;place-items:center;color:#fff;transition:transform .2s var(--ease)}.sw button:hover{transform:scale(1.12)}.sw button svg{opacity:0}.sw button[aria-checked=true]{box-shadow:0 0 0 3px var(--c2),0 0 0 5px var(--p)}.sw button[aria-checked=true] svg{opacity:1}.sw input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.sw label{position:relative;border-radius:50%;background:conic-gradient(#f44336,#ff9800,#ffeb3b,#4caf50,#00bcd4,#2196f3,#9c27b0,#f44336);aspect-ratio:1;display:grid;place-items:center;color:#fff;overflow:hidden}
+.menu{display:none}
+.hero{position:relative;padding:150px 0 90px;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;z-index:-1;animation:drift 18s ease-in-out infinite alternate}.b1{width:520px;height:520px;background:var(--pc);top:-120px;right:-120px}.b2{width:420px;height:420px;background:color-mix(in srgb,var(--p) 30%,transparent);bottom:-160px;left:-120px;animation-delay:-6s;opacity:.35}
+@keyframes drift{to{transform:translate(50px,40px) scale(1.12)}}
+.hero-grid{display:grid;grid-template-columns:1.02fr 1fr;gap:56px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 10px;border-radius:999px;background:var(--pc);color:var(--on-pc);font-size:.88rem;font-weight:600}
+h1{font-size:clamp(2.5rem,5.4vw,4.3rem);line-height:1.06;letter-spacing:-.025em;margin:20px 0}h1 em{font-style:normal;background:linear-gradient(100deg,var(--p),#f29900 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:1.2rem;color:var(--on-sv);max-width:34rem}.cta{display:flex;flex-wrap:wrap;gap:12px;margin:32px 0 18px}.meta{display:flex;flex-wrap:wrap;gap:8px 20px;color:var(--on-sv);font-size:.9rem}.meta>span{display:inline-flex;align-items:center;gap:7px}
+.stage{position:relative;perspective:1400px}
+.win{border-radius:20px;overflow:hidden;background:var(--c2);box-shadow:0 30px 70px rgb(0 0 0/.28),0 0 0 1px var(--ov);transform:rotateY(-9deg) rotateX(4deg);transition:transform .25s ease-out;animation:floaty 7s ease-in-out infinite}
+.win .bar{height:34px;background:var(--c3);display:flex;align-items:center;gap:7px;padding:0 14px}.win .bar i{width:11px;height:11px;border-radius:50%;background:var(--o);opacity:.45}.win .bar span{margin-left:10px;font-size:.78rem;color:var(--on-sv)}
+.win img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}
+@keyframes floaty{50%{translate:0 -12px}}
+.float{position:absolute;display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:18px;background:var(--c2);box-shadow:0 12px 32px rgb(0 0 0/.22);font-weight:600;animation:floaty 6s ease-in-out infinite}.f1{left:-28px;bottom:48px;animation-delay:-2s}.f2{right:-18px;top:36px;animation-delay:-4s}.float svg{color:var(--p)}
+section{padding:90px 0}.eyebrow{color:var(--p);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.8rem}h2{font-size:clamp(1.9rem,3.6vw,2.8rem);line-height:1.15;letter-spacing:-.02em;margin:10px 0 14px}.sub{color:var(--on-sv);max-width:40rem;font-size:1.08rem}
+.head{margin-bottom:46px}.center{text-align:center}.center .sub{margin-inline:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.card{background:var(--c1);border-radius:var(--r-xl);padding:28px;transition:transform .3s var(--ease),background .3s}.card:hover{transform:translateY(-6px);background:var(--c2)}
+.card .ico{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;background:var(--pc);color:var(--on-pc);margin-bottom:18px;transition:transform .4s var(--ease),border-radius .4s var(--ease)}.card:hover .ico{transform:rotate(-8deg) scale(1.08);border-radius:50%}
+.card h3{font-size:1.18rem;margin-bottom:6px}.card p{color:var(--on-sv)}
+.alt{background:var(--c1)}.alt .card{background:var(--s)}.alt .card:hover{background:var(--c2)}
+.tabs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:26px}.tabs button{padding:9px 20px;border-radius:999px;border:1px solid var(--o);font-weight:600;transition:all .25s}.tabs button[aria-selected=true]{background:var(--sc);color:var(--on-sc);border-color:transparent}
+.shot{max-width:980px;margin-inline:auto;border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgb(0 0 0/.25),0 0 0 1px var(--ov);cursor:zoom-in;background:var(--c2)}.shot img{width:100%;aspect-ratio:16/10;object-fit:cover;transition:opacity .35s,transform .6s var(--ease)}.shot:hover img{transform:scale(1.02)}.shot img.fade{opacity:0}
+.cap{text-align:center;color:var(--on-sv);margin-top:18px;min-height:1.6em}
+.lb{position:fixed;inset:0;z-index:100;background:rgb(0 0 0/.86);display:grid;place-items:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s}.lb.open{opacity:1;pointer-events:auto}.lb img{max-height:88vh;border-radius:16px;box-shadow:0 20px 60px #000;transform:scale(.94);transition:transform .35s var(--ease)}.lb.open img{transform:none}.lb .ib{position:absolute;top:18px;right:18px;color:#fff;background:rgb(255 255 255/.15)}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}.palette{display:flex;flex-wrap:wrap;gap:14px;margin:26px 0}.palette button{width:56px;height:56px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;transition:transform .25s var(--ease),border-radius .3s}.palette button svg{opacity:0}.palette button:hover{transform:scale(1.12);border-radius:40%}.palette button[aria-checked=true]{box-shadow:0 0 0 4px var(--c1),0 0 0 7px var(--p)}.palette button[aria-checked=true] svg{opacity:1}
+.demo{background:var(--s);border-radius:var(--r-xl);padding:26px;display:grid;gap:14px}.demo .row{display:flex;gap:10px;flex-wrap:wrap}.pill{padding:8px 18px;border-radius:999px;font-weight:600}.d1{background:var(--p);color:var(--on-p)}.d2{background:var(--pc);color:var(--on-pc)}.d3{background:var(--sc);color:var(--on-sc)}.d4{background:var(--c3)}
+.bar2{height:10px;border-radius:99px;background:var(--c3);overflow:hidden}.bar2 i{display:block;height:100%;width:68%;background:var(--p);border-radius:99px;animation:grow 2.6s var(--ease) infinite alternate}@keyframes grow{from{width:18%}}
+.tech{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}.tech span{padding:12px 22px;border-radius:999px;background:var(--c1);font-weight:600;border:1px solid var(--ov);transition:transform .25s var(--ease),background .25s}.tech span:hover{transform:translateY(-4px);background:var(--pc);color:var(--on-pc)}
+.dl{background:linear-gradient(135deg,var(--pc),color-mix(in srgb,var(--pc) 60%,var(--s)));color:var(--on-pc);border-radius:40px;padding:64px 28px;text-align:center}.dl p{max-width:34rem;margin:0 auto 28px;opacity:.85}.dl .filled{box-shadow:0 10px 30px color-mix(in srgb,var(--p) 35%,transparent)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:40px;text-align:left}.step{background:color-mix(in srgb,var(--s) 70%,transparent);border-radius:20px;padding:18px 20px}.step b{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--p);color:var(--on-p);margin-bottom:8px}
+details{background:var(--s);border-radius:20px;margin-bottom:10px;overflow:hidden}details[open]{background:var(--c2)}summary{cursor:pointer;list-style:none;padding:20px 24px;font-weight:600;display:flex;justify-content:space-between;gap:16px}summary::-webkit-details-marker{display:none}summary svg{transition:transform .3s var(--ease)}details[open] summary svg{transform:rotate(180deg)}details p{padding:0 24px 22px;color:var(--on-sv)}
+footer{padding:50px 0 60px;border-top:1px solid var(--ov);text-align:center;color:var(--on-sv)}.credit{display:inline-flex;align-items:center;gap:8px;margin:12px 0}.credit b{padding:3px 14px;border-radius:999px}.credit .a{background:var(--pc);color:var(--on-pc)}.credit .c{background:linear-gradient(90deg,#d97757,#c15f3c);color:#fff}
+.reveal{opacity:0;transform:translateY(34px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:var(--d,0ms)}.reveal.in{opacity:1;transform:none}
+@media(max-width:900px){.hero-grid,.tgrid{grid-template-columns:1fr}.hero{padding-top:120px}.links{display:none}.menu{display:grid}.win{transform:none}.f1{left:0}.f2{right:0}section{padding:64px 0}.stage{max-width:560px;margin:10px auto 0}}
+body.nav-open .links{display:flex;position:fixed;inset:72px 12px auto;flex-direction:column;background:var(--c2);border-radius:24px;padding:12px;box-shadow:0 12px 40px rgb(0 0 0/.3);margin:0}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<header class="top" id="top"><div class="wrap nav">
+  <a class="brand" href="#home"><img src="src-tauri/icons/128x128.png" alt="" width="38" height="38" />Material Weather</a>
+  <nav class="links" aria-label="Main"><a href="#features" data-i="nav_features"></a><a href="#screens" data-i="nav_screens"></a><a href="#themes" data-i="nav_themes"></a><a href="#download" data-i="nav_download"></a><a href="#faq" data-i="nav_faq"></a></nav>
+  <div class="tools">
+    <div class="pw"><button class="ib" id="bTheme" aria-label="Theme" title="Theme" aria-haspopup="true"><svg data-ic="sunmoon"></svg></button>
+      <div class="pop" id="pTheme" role="menu"><button role="menuitemradio" data-theme="light"><svg data-ic="sun"></svg><span data-i="t_light"></span></button><button role="menuitemradio" data-theme="dark"><svg data-ic="moon"></svg><span data-i="t_dark"></span></button><button role="menuitemradio" data-theme="system"><svg data-ic="monitor"></svg><span data-i="t_system"></span></button></div></div>
+    <div class="pw"><button class="ib" id="bLang" aria-label="Language" title="Language" aria-haspopup="true"><svg data-ic="globe"></svg></button>
+      <div class="pop" id="pLang" role="menu"><button role="menuitemradio" data-lang="en">English</button><button role="menuitemradio" data-lang="vi">Tiếng Việt</button></div></div>
+    <div class="pw"><button class="ib" id="bColor" aria-label="Color" title="Color" aria-haspopup="true"><svg data-ic="palette"></svg></button>
+      <div class="pop" id="pColor"><div class="sw" id="swatches"></div></div></div>
+    <button class="ib menu" id="bMenu" aria-label="Menu"><svg data-ic="menu"></svg></button>
+  </div>
+</div></header>
+<main id="home">
+<section class="hero"><i class="blob b1"></i><i class="blob b2"></i><div class="wrap hero-grid">
+  <div>
+    <span class="chip reveal"><svg data-ic="sparkle"></svg><span data-i="chip"></span></span>
+    <h1 class="reveal" style="--d:80ms"><span data-i="h1a"></span> <em data-i="h1b"></em></h1>
+    <p class="lead reveal" style="--d:160ms" data-i="lead"></p>
+    <div class="cta reveal" style="--d:240ms">
+      <a class="btn filled lg" id="dlMain" href="#download" download><svg data-ic="download"></svg><span data-i="dl_btn"></span></a>
+      <a class="btn tonal lg" id="gh1" href="#" target="_blank" rel="noopener"><svg data-ic="github"></svg><span data-i="gh"></span></a>
+    </div>
+    <div class="meta reveal" style="--d:320ms"><span><svg data-ic="monitor"></svg>Windows 10/11 · x64</span><span><svg data-ic="shield"></svg><span data-i="free"></span></span><span><svg data-ic="tag"></svg>v1.1.0</span></div>
+  </div>
+  <div class="stage reveal" style="--d:200ms" id="stage">
+    <div class="win" id="win"><div class="bar"><i></i><i></i><i></i><span>Material Weather</span></div><img src="screenshots/image01.png" alt="Material Weather main screen" width="1280" height="800" fetchpriority="high" /></div>
+    <div class="float f1"><svg data-ic="umbrella"></svg><span data-i="fl1"></span></div>
+    <div class="float f2"><svg data-ic="leaf"></svg><span data-i="fl2"></span></div>
+  </div>
+</div></section>
+<section id="features" class="alt"><div class="wrap">
+  <div class="head center reveal"><div class="eyebrow" data-i="nav_features"></div><h2 data-i="f_title"></h2><p class="sub" data-i="f_sub"></p></div>
+  <div class="grid" id="featGrid"></div>
+</div></section>
+<section id="screens"><div class="wrap">
+  <div class="head center reveal"><div class="eyebrow" data-i="nav_screens"></div><h2 data-i="s_title"></h2><p class="sub" data-i="s_sub"></p></div>
+  <div class="tabs reveal" id="tabs" role="tablist"></div>
+  <div class="shot reveal" id="shot" tabindex="0" role="button" aria-label="Open screenshot"><img id="shotImg" src="screenshots/image01.png" alt="" width="1280" height="800" loading="lazy" /></div>
+  <p class="cap" id="cap"></p>
+</div></section>
+<section id="themes" class="alt"><div class="wrap tgrid">
+  <div class="reveal"><div class="eyebrow" data-i="nav_themes"></div><h2 data-i="th_title"></h2><p class="sub" data-i="th_sub"></p><div class="palette" id="palette" role="radiogroup"></div></div>
+  <div class="demo reveal" style="--d:120ms"><div class="row"><span class="pill d1">Primary</span><span class="pill d2">Container</span><span class="pill d3">Secondary</span><span class="pill d4">Surface</span></div><div class="bar2"><i></i></div><div class="row"><a class="btn filled" href="#download"><svg data-ic="download"></svg><span data-i="dl_btn"></span></a><span class="btn tonal"><svg data-ic="sun"></svg>Tonal</span><span class="btn outlined">Outlined</span></div></div>
+</div></section>
+<section><div class="wrap"><div class="head center reveal"><div class="eyebrow">Tech</div><h2 data-i="te_title"></h2></div>
+  <div class="tech reveal"><span>Tauri 2</span><span>Rust</span><span>React 18</span><span>TypeScript</span><span>Tailwind CSS 4</span><span>Vite 6</span><span>Material Design 3</span><span>Lucide Icons</span><span>Open-Meteo</span></div>
+</div></section>
+<section id="download"><div class="wrap"><div class="dl reveal">
+  <img src="src-tauri/icons/128x128@2x.png" alt="" width="96" height="96" style="margin:0 auto 18px;border-radius:24px" />
+  <h2 data-i="d_title"></h2><p data-i="d_sub"></p>
+  <a class="btn filled lg" id="dlMain2" href="#download" download><svg data-ic="download"></svg><span data-i="dl_btn"></span></a>
+  <p style="margin:14px auto 0;font-size:.9rem" id="osNote"></p>
+  <div class="steps"><div class="step"><b>1</b><div data-i="st1"></div></div><div class="step"><b>2</b><div data-i="st2"></div></div><div class="step"><b>3</b><div data-i="st3"></div></div></div>
+</div></div></section>
+<section id="faq" class="alt"><div class="wrap" style="max-width:820px"><div class="head center reveal"><div class="eyebrow">FAQ</div><h2 data-i="q_title"></h2></div><div id="faqList" class="reveal"></div></div></section>
+</main>
+<footer><div class="wrap">
+  <div class="brand" style="justify-content:center"><img src="src-tauri/icons/128x128.png" alt="" width="38" height="38" />Material Weather</div>
+  <div class="credit"><span data-i="by"></span><b class="a">minhtrong67</b><span>×</span><b class="c">Claude</b></div>
+  <p><span data-i="lic"></span> · <a id="gh2" href="#" target="_blank" rel="noopener" style="text-decoration:underline">GitHub</a> · <a href="https://open-meteo.com/" target="_blank" rel="noopener" style="text-decoration:underline" data-i="data"></a></p>
+</div></footer>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Screenshot"><button class="ib" id="lbX" aria-label="Close"><svg data-ic="x"></svg></button><img id="lbImg" alt="" /></div>
+<script>
+/* ---- config (edit these) ---- */
+const DOWNLOAD_URL = 'download/Material%20Weather_1.1.0_x64-setup.exe';
+const REPO_URL = 'https://github.com/minhtrong67/material-weather';
+
+const IC = {
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',monitor:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  sunmoon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/><path d="M19 2v3M17.5 3.5h3"/>',
+  globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  palette:'<circle cx="13.5" cy="6.5" r=".6"/><circle cx="17.5" cy="10.5" r=".6"/><circle cx="8.5" cy="7.5" r=".6"/><circle cx="6.5" cy="12.5" r=".6"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.6-.7 1.6-1.6 0-.4-.2-.8-.5-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.6 1.6-1.6H16c3 0 6-2.5 6-5.5C22 6 17.5 2 12 2z"/>',
+  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',check:'<path d="M20 6 9 17l-5-5"/>',chev:'<path d="m6 9 6 6 6-6"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/>',
+  github:'<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>',
+  shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+  tag:'<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r=".6"/>',
+  sparkle:'<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 3v4M17 5h4"/>',
+  umbrella:'<path d="M12 3a9 9 0 0 0-9 9h18a9 9 0 0 0-9-9zM12 12v6a2 2 0 0 0 4 0"/>',leaf:'<path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14z"/><path d="M5 19c3-4 6-6 10-8"/>',
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',pin:'<path d="M12 17v5M9 3h6l-1 7 3 3v2H7v-2l3-3z"/>',
+  type:'<path d="M4 7V4h16v3M9 20h6M12 4v16"/>',kbd:'<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/>',
+  locate:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/>',
+  layers:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/>',gauge:'<path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/>'
+};
+const svgOf=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${IC[n]||''}</svg>`;
+document.querySelectorAll('svg[data-ic]').forEach(s=>{s.setAttribute('viewBox','0 0 24 24');s.classList.add('i');s.innerHTML=IC[s.dataset.ic]||''});
+
+const L={en:{nav_features:'Features',nav_screens:'Screenshots',nav_themes:'Themes',nav_download:'Download',nav_faq:'FAQ',t_light:'Light',t_dark:'Dark',t_system:'System',
+ chip:'Free & open source · Tauri 2 + React',h1a:'Weather that feels',h1b:'like Material.',lead:'A fast, beautiful desktop weather app: live forecasts, air quality, smart tips and dynamic Material Design 3 themes — in English and Tiếng Việt.',
+ dl_btn:'Download for Windows',gh:'View on GitHub',free:'Free · MIT license',fl1:'Rain likely at 3 PM',fl2:'Air quality: Moderate',
+ f_title:'Everything you need, nothing you don’t',f_sub:'Packed with thoughtful features and polished motion, in a small native app.',
+ s_title:'See it in action',s_sub:'Light, dark and every colour you can imagine.',
+ th_title:'Your colour, Material style',th_sub:'Pick any seed colour and the whole app — surfaces, buttons, charts — is rebuilt from real Material 3 tonal palettes. Try it on this page too.',
+ te_title:'Built with modern tools',d_title:'Get Material Weather',d_sub:'Free forever. No account, no ads, no tracking. Download the installer and you are ready in seconds.',
+ st1:'Download the installer',st2:'Run it and choose your language',st3:'Allow location and enjoy the forecast',
+ osNote:'The installer is for Windows 10/11 (x64). On macOS or Linux, build from source with “npm run build”.',osNoteOther:'You are not on Windows — build from source with “npm run build” (see the README on GitHub).',
+ q_title:'Frequently asked questions',by:'Created by',lic:'Released under the MIT License',data:'Weather data by Open-Meteo.com',
+ tabs:['Home','Dark','Teal','Settings']},
+ vi:{nav_features:'Tính năng',nav_screens:'Ảnh chụp',nav_themes:'Giao diện',nav_download:'Tải về',nav_faq:'Hỏi đáp',t_light:'Sáng',t_dark:'Tối',t_system:'Hệ thống',
+ chip:'Miễn phí & mã nguồn mở · Tauri 2 + React',h1a:'Thời tiết đậm chất',h1b:'Material.',lead:'Ứng dụng thời tiết nhanh và đẹp cho máy tính: dự báo trực tiếp, chất lượng không khí, gợi ý thông minh và giao diện Material Design 3 linh hoạt — tiếng Anh và tiếng Việt.',
+ dl_btn:'Tải cho Windows',gh:'Xem trên GitHub',free:'Miễn phí · Giấy phép MIT',fl1:'Có thể mưa lúc 15h',fl2:'Không khí: Trung bình',
+ f_title:'Đủ mọi thứ bạn cần, không thừa thứ nào',f_sub:'Nhiều tính năng tinh tế và chuyển động mượt mà trong một ứng dụng native nhỏ gọn.',
+ s_title:'Xem thực tế',s_sub:'Sáng, tối và mọi màu sắc bạn muốn.',
+ th_title:'Màu của bạn, phong cách Material',th_sub:'Chọn một màu gốc bất kỳ, toàn bộ ứng dụng — nền, nút, biểu đồ — sẽ được tạo lại từ bảng màu Material 3 chuẩn. Thử ngay trên trang này.',
+ te_title:'Xây dựng bằng công nghệ hiện đại',d_title:'Tải Material Weather',d_sub:'Miễn phí mãi mãi. Không tài khoản, không quảng cáo, không theo dõi. Tải bộ cài và dùng ngay sau vài giây.',
+ st1:'Tải bộ cài đặt',st2:'Chạy file và chọn ngôn ngữ',st3:'Cho phép vị trí và xem dự báo',
+ osNote:'Bộ cài dành cho Windows 10/11 (x64). Trên macOS hoặc Linux, hãy build từ mã nguồn bằng “npm run build”.',osNoteOther:'Bạn không dùng Windows — hãy build từ mã nguồn bằng “npm run build” (xem README trên GitHub).',
+ q_title:'Câu hỏi thường gặp',by:'Tác giả',lic:'Phát hành theo giấy phép MIT',data:'Dữ liệu thời tiết bởi Open-Meteo.com',
+ tabs:['Trang chủ','Tối','Xanh ngọc','Cài đặt']}};
+const FEATS=[['sun','Live weather','Thời tiết trực tiếp','Temperature, feels-like, humidity, wind, pressure, UV, visibility and more.','Nhiệt độ, cảm giác như, độ ẩm, gió, áp suất, UV, tầm nhìn và nhiều hơn.'],
+ ['gauge','Hourly & 7-day forecast','Dự báo theo giờ & 7 ngày','Animated charts for temperature, rain, wind and humidity; tap a day for details.','Biểu đồ chuyển động cho nhiệt độ, mưa, gió, độ ẩm; chạm vào ngày để xem chi tiết.'],
+ ['leaf','Air quality','Chất lượng không khí','US AQI with PM2.5, PM10, ozone, NO₂, SO₂ and CO plus health advice.','Chỉ số AQI cùng PM2.5, PM10, ôzôn, NO₂, SO₂, CO và lời khuyên sức khoẻ.'],
+ ['sparkle','Smart tips','Gợi ý thông minh','Umbrella, UV, heat, cold, wind and air-quality tips generated from the forecast.','Gợi ý mang ô, chống nắng, nóng, lạnh, gió, không khí được tạo từ dự báo.'],
+ ['bell','Weather alerts','Cảnh báo thời tiết','Desktop notifications when rain or a thunderstorm is on the way.','Thông báo trên máy tính khi sắp có mưa hoặc giông.'],
+ ['palette','Dynamic themes','Giao diện linh hoạt','Light, dark or system, 8 Material colours, custom colour and adaptive colour.','Sáng, tối hoặc theo hệ thống, 8 màu Material, màu tuỳ chọn và màu thích ứng.'],
+ ['type','Fonts & text size','Phông chữ & cỡ chữ','System font by default, or Roboto, Inter, Open Sans, Be Vietnam Pro — in 3 sizes.','Mặc định là phông hệ thống, hoặc Roboto, Inter, Open Sans, Be Vietnam Pro — 3 cỡ chữ.'],
+ ['locate','Location with permission','Vị trí có xin quyền','Asks before using your location, with an approximate IP fallback.','Hỏi trước khi dùng vị trí, có phương án gần đúng theo IP.'],
+ ['layers','Saved places','Địa điểm đã lưu','Search any city, save favourites, set a home place, switch with Alt+↑/↓.','Tìm mọi thành phố, lưu yêu thích, đặt nơi mặc định, chuyển nhanh bằng Alt+↑/↓.'],
+ ['pin','Desktop friendly','Thân thiện với desktop','Remember window size or open maximized, always-on-top, offline cache.','Nhớ kích thước cửa sổ hoặc luôn mở tối đa, luôn trên cùng, lưu cache ngoại tuyến.'],
+ ['kbd','Keyboard shortcuts','Phím tắt','Ctrl+K search, F5 refresh, Ctrl+, settings, ? for help.','Ctrl+K tìm kiếm, F5 làm mới, Ctrl+, cài đặt, ? xem trợ giúp.'],
+ ['moon','Moon, sun & more','Mặt trăng, mặt trời & hơn thế','Moon phase, sunrise/sunset arc, dew point, comparison with yesterday.','Pha trăng, cung mặt trời, điểm sương, so sánh với hôm qua.']];
+const SHOTS=[['screenshots/image01.png','Home — current weather and smart tips','Trang chủ — thời tiết hiện tại và gợi ý'],['screenshots/image02.png','Dark mode, Tiếng Việt, Be Vietnam Pro font','Chế độ tối, tiếng Việt, phông Be Vietnam Pro'],['screenshots/image03.png','Teal theme and air-quality details','Giao diện xanh ngọc và chi tiết chất lượng không khí'],['screenshots/image04.png','Settings — theme, typography, language, units','Cài đặt — giao diện, kiểu chữ, ngôn ngữ, đơn vị']];
+const FAQ=[['Is it really free?','Có thật sự miễn phí không?','Yes. Material Weather is open source under the MIT license — no account, ads or tracking.','Có. Material Weather là mã nguồn mở theo giấy phép MIT — không tài khoản, quảng cáo hay theo dõi.'],
+ ['Where does the weather data come from?','Dữ liệu thời tiết lấy từ đâu?','From Open-Meteo.com, a free weather API that needs no key.','Từ Open-Meteo.com, một API thời tiết miễn phí không cần khoá.'],
+ ['Why does it ask for my location?','Vì sao ứng dụng xin vị trí?','To show the forecast where you are. Your location stays on your computer; you can decline and search cities instead, or use an approximate location from your IP.','Để hiển thị dự báo nơi bạn đang ở. Vị trí chỉ nằm trên máy bạn; bạn có thể từ chối và tìm thành phố, hoặc dùng vị trí gần đúng theo IP.'],
+ ['Does it work on macOS and Linux?','Có chạy trên macOS và Linux không?','The project builds with Tauri on all three platforms — run “npm install” then “npm run build”. The ready-made installer here is for Windows.','Dự án build được bằng Tauri trên cả ba hệ điều hành — chạy “npm install” rồi “npm run build”. Bộ cài sẵn ở đây dành cho Windows.']];
+
+let lang=localStorage.getItem('mw.lang')||((navigator.language||'en').toLowerCase().startsWith('vi')?'vi':'en'),shot=0;
+function applyLang(){const d=L[lang],vi=lang==='vi';document.documentElement.lang=lang;
+ document.querySelectorAll('[data-i]').forEach(e=>e.textContent=d[e.dataset.i]??'');
+ document.getElementById('featGrid').innerHTML=FEATS.map((f,i)=>`<article class="card reveal in" style="--d:${i*40}ms"><div class="ico">${svgOf(f[0])}</div><h3>${vi?f[2]:f[1]}</h3><p>${vi?f[4]:f[3]}</p></article>`).join('');
+ document.getElementById('faqList').innerHTML=FAQ.map(f=>`<details><summary>${vi?f[1]:f[0]}${svgOf('chev')}</summary><p>${vi?f[3]:f[2]}</p></details>`).join('');
+ document.getElementById('tabs').innerHTML=d.tabs.map((n,i)=>`<button role="tab" aria-selected="${i===shot}" data-s="${i}">${n}</button>`).join('');
+ setShot(shot,false);
+ document.getElementById('osNote').textContent=d[/Windows/i.test(navigator.userAgent)?'osNote':'osNoteOther'];
+ document.querySelectorAll('#pLang button').forEach(b=>b.setAttribute('aria-checked',b.dataset.lang===lang));
+ document.title=vi?'Material Weather — Ứng dụng thời tiết Material Design 3 cho máy tính':'Material Weather — Beautiful Material Design 3 weather app for desktop';
+ localStorage.setItem('mw.lang',lang)}
+function setShot(i,anim=true){shot=i;const img=document.getElementById('shotImg'),t=SHOTS[i][lang==='vi'?2:1];
+ const apply=()=>{img.src=SHOTS[i][0];img.alt=t;document.getElementById('cap').textContent=t;img.classList.remove('fade')};
+ document.querySelectorAll('#tabs button').forEach((b,k)=>b.setAttribute('aria-selected',k===i));if(anim){img.classList.add('fade');setTimeout(apply,250)}else apply()}
+document.getElementById('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setShot(+b.dataset.s)});
+const lb=document.getElementById('lb'),lbImg=document.getElementById('lbImg');
+const openLb=()=>{lbImg.src=SHOTS[shot][0];lbImg.alt=SHOTS[shot][lang==='vi'?2:1];lb.classList.add('open')},closeLb=()=>lb.classList.remove('open');
+document.getElementById('shot').addEventListener('click',openLb);document.getElementById('shot').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openLb()}});
+lb.addEventListener('click',e=>{if(e.target!==lbImg)closeLb()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLb();closePops()}else if(lb.classList.contains('open')&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){setShot((shot+(e.key==='ArrowRight'?1:3))%4,false);lbImg.src=SHOTS[shot][0]}});
+
+/* ---- theme: Material-3-like tonal roles generated from a seed colour ---- */
+const PRESETS=['#0B57D0','#6750A4','#00796B','#2E7D32','#E65100','#C2185B','#BA1A1A','#546E7A'];
+let mode=localStorage.getItem('mw.theme')||'system',seed=localStorage.getItem('mw.seed')||PRESETS[0];
+const mq=matchMedia('(prefers-color-scheme: dark)');
+function hs(hex){const r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255,M=Math.max(r,g,b),m=Math.min(r,g,b);let h=0,s=0;const l=(M+m)/2;if(M!==m){const d=M-m;s=l>.5?d/(2-M-m):d/(M+m);h=M===r?(g-b)/d+(g<b?6:0):M===g?(b-r)/d+2:(r-g)/d+4;h*=60}return[h,s*100]}
+function applyTheme(){const dark=mode==='dark'||(mode==='system'&&mq.matches),[h,s0]=hs(seed),s=Math.min(Math.max(s0,40),90),c=(sa,l)=>`hsl(${h.toFixed(0)} ${sa}% ${l}%)`,R=document.documentElement.style,set=o=>Object.entries(o).forEach(([k,v])=>R.setProperty('--'+k,v));
+ if(dark)set({p:c(s,76),'on-p':c(s,16),pc:c(s*.8,26),'on-pc':c(s,90),sc:c(22,27),'on-sc':c(25,90),s:c(14,8),'on-s':c(10,90),'on-sv':c(8,74),o:c(6,56),ov:c(10,24),c1:c(12,11),c2:c(11,14),c3:c(10,19)});
+ else set({p:c(s,40),'on-p':'#fff',pc:c(Math.min(s+10,90),90),'on-pc':c(s,13),sc:c(28,89),'on-sc':c(30,14),s:c(40,98),'on-s':c(14,10),'on-sv':c(8,30),o:c(6,46),ov:c(14,80),c1:c(30,95),c2:c(26,92),c3:c(22,88)});
+ document.documentElement.style.colorScheme=dark?'dark':'light';
+ document.querySelectorAll('#pTheme button').forEach(b=>b.setAttribute('aria-checked',b.dataset.theme===mode));
+ document.querySelectorAll('[data-c]').forEach(b=>b.setAttribute('aria-checked',b.dataset.c.toLowerCase()===seed.toLowerCase()))}
+mq.addEventListener('change',applyTheme);
+function swatches(){const mk=()=>PRESETS.map(c=>`<button data-c="${c}" style="--c:${c}" role="radio" aria-label="${c}">${svgOf('check')}</button>`).join('');
+ document.getElementById('swatches').innerHTML=mk()+`<label title="Custom"><input type="color" id="custom" value="${seed}" aria-label="Custom colour"/>${svgOf('palette')}</label>`;document.getElementById('palette').innerHTML=mk()}
+const setSeed=c=>{seed=c;localStorage.setItem('mw.seed',c);applyTheme()};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(b)setSeed(b.dataset.c);const t=e.target.closest('[data-theme]');if(t){mode=t.dataset.theme;localStorage.setItem('mw.theme',mode);applyTheme();closePops()}const l=e.target.closest('[data-lang]');if(l){lang=l.dataset.lang;applyLang();closePops()}});
+document.addEventListener('input',e=>{if(e.target.id==='custom')setSeed(e.target.value.toUpperCase())});
+const pops=[['bTheme','pTheme'],['bLang','pLang'],['bColor','pColor']];
+function closePops(){pops.forEach(([b,p])=>{document.getElementById(p).classList.remove('open');document.getElementById(b).setAttribute('aria-expanded','false')})}
+pops.forEach(([b,p])=>document.getElementById(b).addEventListener('click',e=>{e.stopPropagation();const o=document.getElementById(p).classList.contains('open');closePops();if(!o){document.getElementById(p).classList.add('open');e.currentTarget.setAttribute('aria-expanded','true')}}));
+document.addEventListener('click',e=>{if(!e.target.closest('.pop'))closePops();if(!e.target.closest('#bMenu')&&!e.target.closest('.links'))document.body.classList.remove('nav-open')});
+document.getElementById('bMenu').addEventListener('click',e=>{e.stopPropagation();document.body.classList.toggle('nav-open')});
+document.querySelectorAll('.links a').forEach(a=>a.addEventListener('click',()=>document.body.classList.remove('nav-open')));
+document.querySelectorAll('#dlMain,#dlMain2').forEach(a=>a.href=DOWNLOAD_URL);document.getElementById('gh1').href=REPO_URL;document.getElementById('gh2').href=REPO_URL;
+const hdr=document.getElementById('top'),onScroll=()=>hdr.classList.toggle('scrolled',scrollY>12);addEventListener('scroll',onScroll,{passive:true});onScroll();
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('.btn,.ib,.tabs button');if(!b)return;const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,w=document.createElement('span');w.className='rw';w.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;if(getComputedStyle(b).position==='static')b.style.position='relative';b.style.overflow='hidden';b.appendChild(w);w.addEventListener('animationend',()=>w.remove())});
+const stage=document.getElementById('stage'),win=document.getElementById('win');
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&matchMedia('(pointer:fine)').matches&&innerWidth>900){stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;win.style.animation='none';win.style.transform=`rotateY(${-9+x*10}deg) rotateX(${4-y*8}deg)`});stage.addEventListener('pointerleave',()=>{win.style.transform='';win.style.animation=''})}
+swatches();applyTheme();applyLang();
+</script>
+</body>
+</html>

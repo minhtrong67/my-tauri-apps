@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./expressive.css";
 
 /* ---- Material 3 color roles -> Tailwind utilities (bg-primary, text-on-surface, ...) ---- */
 @theme inline {
@@ -47,7 +48,15 @@
   --shadow-elev-1: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 1px 3px 1px rgb(0 0 0 / 0.15);
   --shadow-elev-2: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 2px 6px 2px rgb(0 0 0 / 0.15);
   --shadow-elev-3: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 4px 8px 3px rgb(0 0 0 / 0.15);
-  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  /* Material 3 Expressive: spatial spring is the default "emphasized" motion */
+  --ease-emphasized: var(--spring-spatial);
+  --ease-effects: var(--spring-effects);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  /* expanded shape scale */
+  --radius-3xl: 28px;
+  --radius-4xl: 36px;
+  --radius-5xl: 48px;
+  --radius-6xl: 64px;
 }
 
 /* ------------------------------------------------------------------ */
@@ -154,7 +163,7 @@ body {
   background: currentColor;
   opacity: 0.18;
   transform: scale(0);
-  animation: ripple 650ms var(--ease-emphasized) forwards;
+  animation: ripple 650ms var(--ease-standard) forwards;
   pointer-events: none;
   z-index: -1;
 }
@@ -298,16 +307,16 @@ body {
   50% { border-radius: 58% 42% 40% 60% / 55% 60% 40% 45%; }
 }
 
-.anim-tip { animation: tip-in 140ms var(--ease-emphasized) both; }
+.anim-tip { animation: tip-in 160ms var(--ease-standard) both; }
 .anim-scrim-out { animation: scrim-out 180ms linear both; }
 .anim-dialog-out { animation: dialog-out 180ms ease-in both; }
-.anim-sheet { animation: sheet-up 340ms var(--ease-emphasized) both; }
+.anim-sheet { animation: sheet-up var(--spring-spatial-d) var(--spring-spatial) both; }
 .anim-sheet-out { animation: sheet-down 220ms ease-in both; }
 @media (min-width: 768px) {
   .anim-sheet { animation-name: sheet-in; }
   .anim-sheet-out { animation-name: sheet-out; }
 }
-.anim-menu { animation: menu-in 180ms var(--ease-emphasized) both; }
+.anim-menu { animation: menu-in var(--spring-spatial-fast-d) var(--spring-spatial-fast) both; }
 .anim-menu-out { animation: menu-out 140ms ease-in both; }
 .anim-float { animation: float-slow 7s ease-in-out infinite; }
 .anim-morph { animation: morph 9s ease-in-out infinite; }
@@ -331,24 +340,24 @@ body {
 .toast-progress { background: var(--t-ac); opacity: 0.55; animation: progress linear forwards; }
 
 .anim-page {
-  animation: page-in 420ms var(--ease-emphasized) both;
+  animation: page-in var(--spring-spatial-d) var(--spring-spatial) both;
 }
 .anim-fade-up {
-  animation: fade-up 480ms var(--ease-emphasized) both;
+  animation: fade-up var(--spring-spatial-d) var(--spring-spatial) both;
   animation-delay: var(--d, 0ms);
 }
 .anim-pop {
-  animation: pop-in 420ms var(--ease-emphasized) both;
+  animation: pop-in var(--spring-spatial-fast-d) var(--spring-spatial-fast) both;
   animation-delay: var(--d, 0ms);
 }
 .anim-toast-in {
-  animation: toast-in 260ms var(--ease-emphasized) both;
+  animation: toast-in var(--spring-spatial-fast-d) var(--spring-spatial-fast) both;
 }
 .anim-toast-out {
   animation: toast-out 200ms ease-in both;
 }
 .anim-dialog {
-  animation: dialog-in 300ms var(--ease-emphasized) both;
+  animation: dialog-in var(--spring-spatial-d) var(--spring-spatial) both;
 }
 .anim-scrim {
   animation: scrim-in 200ms linear both;
@@ -390,49 +399,52 @@ body {
 }
 
 /* ------------------------------------------------------------------ */
-/* Range slider (M3-like)                                              */
+/* Range slider - M3 Expressive: thick track, slim handle with a gap   */
 /* ------------------------------------------------------------------ */
 .mtb-range {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 22px;
+  height: 36px;
   background: transparent;
   cursor: pointer;
-  --track: var(--md-surface-container-highest);
+  --track: var(--md-secondary-container);
 }
 .mtb-range::-webkit-slider-runnable-track {
-  height: 10px;
+  height: 16px;
   border-radius: 9999px;
   background: var(--track);
 }
 .mtb-range::-moz-range-track {
-  height: 10px;
+  height: 16px;
   border-radius: 9999px;
   background: var(--track);
 }
 .mtb-range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 22px;
-  height: 22px;
-  margin-top: -6px;
+  width: 8px;
+  height: 36px;
+  margin-top: -10px;
   border-radius: 9999px;
   background: var(--md-primary);
-  border: 3px solid var(--md-surface);
-  box-shadow: 0 0 0 1px var(--md-outline-variant), 0 2px 6px rgb(0 0 0 / 0.25);
-  transition: transform 150ms var(--ease-emphasized);
+  border: 0;
+  /* the "gap" between handle and track is a surface-colored halo */
+  box-shadow: 0 0 0 4px var(--halo, var(--md-surface-container-low));
+  transition: width var(--spring-spatial-fast-d) var(--spring-spatial-fast), box-shadow 160ms linear;
 }
 .mtb-range::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
+  width: 8px;
+  height: 36px;
   border-radius: 9999px;
   background: var(--md-primary);
-  border: 3px solid var(--md-surface);
-  box-shadow: 0 0 0 1px var(--md-outline-variant);
+  border: 0;
+  box-shadow: 0 0 0 4px var(--halo, var(--md-surface-container-low));
 }
-.mtb-range:hover::-webkit-slider-thumb,
+.mtb-range:hover::-webkit-slider-thumb {
+  width: 10px;
+}
 .mtb-range:active::-webkit-slider-thumb {
-  transform: scale(1.18);
+  width: 4px;
 }
 
 /* Code blocks */
@@ -452,4 +464,129 @@ body {
   .aurora {
     animation: none;
   }
+}
+
+
+/* ------------------------------------------------------------------ */
+/* Material 3 Expressive                                               */
+/* ------------------------------------------------------------------ */
+
+@layer components {
+/* Buttons morph their shape: round at rest -> squarer while pressed / when toggled on */
+.m3e-btn {
+  --bh: 40px;
+  height: var(--bh);
+  border-radius: calc(var(--bh) / 2);
+  transition:
+    border-radius var(--spring-spatial-fast-d) var(--spring-spatial-fast),
+    transform var(--spring-spatial-fast-d) var(--spring-spatial-fast),
+    box-shadow var(--spring-effects-d) var(--spring-effects),
+    background-color var(--spring-effects-d) var(--spring-effects),
+    color var(--spring-effects-d) var(--spring-effects);
+}
+.m3e-btn[data-size="xs"] { --bh: 32px; }
+.m3e-btn[data-size="sm"] { --bh: 40px; }
+.m3e-btn[data-size="md"] { --bh: 56px; }
+.m3e-btn[data-size="lg"] { --bh: 72px; }
+.m3e-btn:hover:not(:disabled) { border-radius: calc(var(--bh) * 0.36); }
+.m3e-btn:active:not(:disabled) { border-radius: calc(var(--bh) * 0.22); transform: scale(0.97); }
+.m3e-btn[aria-pressed="true"] { border-radius: calc(var(--bh) * 0.3); }
+
+.m3e-icon-btn {
+  border-radius: 9999px;
+  transition:
+    border-radius var(--spring-spatial-fast-d) var(--spring-spatial-fast),
+    transform var(--spring-spatial-fast-d) var(--spring-spatial-fast),
+    background-color var(--spring-effects-d) var(--spring-effects),
+    color var(--spring-effects-d) var(--spring-effects);
+}
+.m3e-icon-btn:hover:not(:disabled) { border-radius: 14px; }
+.m3e-icon-btn:active:not(:disabled) { border-radius: 10px; transform: scale(0.92); }
+.m3e-icon-btn[aria-pressed="true"] { border-radius: 14px; }
+
+/* Connected button group: inner corners are small, outer ends and the selected item are fully round */
+.cbg {
+  --bh: 40px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 2px;
+}
+.cbg > button {
+  height: var(--bh);
+  border-radius: 10px;
+  transition:
+    border-radius var(--spring-spatial-fast-d) var(--spring-spatial-fast),
+    background-color var(--spring-effects-d) var(--spring-effects),
+    color var(--spring-effects-d) var(--spring-effects),
+    transform var(--spring-spatial-fast-d) var(--spring-spatial-fast);
+}
+.cbg > button:first-child { border-top-left-radius: calc(var(--bh) / 2); border-bottom-left-radius: calc(var(--bh) / 2); }
+.cbg > button:last-child { border-top-right-radius: calc(var(--bh) / 2); border-bottom-right-radius: calc(var(--bh) / 2); }
+.cbg > button[aria-selected="true"], .cbg > button[aria-pressed="true"] { border-radius: calc(var(--bh) / 2); }
+.cbg > button:active { transform: scale(0.96); }
+.cbg > button:active:not([aria-selected="true"]) { border-radius: calc(var(--bh) / 2); }
+
+/* Switch (expressive): thumb grows on press, shows a check when on */
+.m3e-switch .thumb {
+  transition:
+    left var(--spring-spatial-fast-d) var(--spring-spatial-fast),
+    width var(--spring-spatial-fast-d) var(--spring-spatial-fast),
+    height var(--spring-spatial-fast-d) var(--spring-spatial-fast),
+    background-color var(--spring-effects-d) var(--spring-effects);
+}
+.m3e-switch:active .thumb { width: 28px !important; height: 28px !important; }
+
+/* Emphasized type: heavier weight, tighter tracking, used for titles and key numbers */
+.t-display { font-weight: 700; letter-spacing: -0.025em; line-height: 1.08; }
+.t-headline { font-weight: 650; letter-spacing: -0.015em; line-height: 1.15; }
+.t-title { font-weight: 600; letter-spacing: -0.005em; }
+.t-label { font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; }
+
+}
+
+/* Loading indicator: a shape that morphs through a sequence while rotating */
+@keyframes loader-spin {
+  to { transform: rotate(360deg); }
+}
+.m3e-loader {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: var(--ls, 48px);
+  height: var(--ls, 48px);
+  color: var(--md-primary);
+}
+.m3e-loader.contained { background: var(--md-primary-container); color: var(--md-on-primary-container); border-radius: 9999px; }
+.m3e-loader > i {
+  display: block;
+  width: 62%;
+  height: 62%;
+  background: currentColor;
+  animation: shape-loop 4.2s linear infinite, loader-spin 4.2s linear infinite;
+}
+
+/* Wavy progress indicator */
+@keyframes wave-flow {
+  to { mask-position: 24px 50%; -webkit-mask-position: 24px 50%; }
+}
+.wavy { display: flex; align-items: center; gap: 6px; height: 14px; color: var(--md-primary); }
+.wavy > .wave {
+  height: 14px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='14' viewBox='0 0 24 14'%3E%3Cpath d='M0 7Q6 1 12 7T24 7' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x 0 50% / 24px 14px;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='14' viewBox='0 0 24 14'%3E%3Cpath d='M0 7Q6 1 12 7T24 7' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x 0 50% / 24px 14px;
+  animation: wave-flow 1.1s linear infinite;
+  transition: width var(--spring-spatial-d) var(--spring-spatial);
+  flex: none;
+}
+.wavy > .rest { flex: 1; height: 4px; border-radius: 9999px; background: var(--md-secondary-container); position: relative; }
+.wavy > .rest::after { content: ""; position: absolute; right: 0; top: 50%; width: 4px; height: 4px; margin-top: -2px; border-radius: 9999px; background: var(--md-primary); }
+
+/* Shape hover morph helper (avatars, swatches) */
+.shape-morph-hover { transition: clip-path var(--spring-spatial-d) var(--spring-spatial), transform var(--spring-spatial-d) var(--spring-spatial); }
+
+@media (prefers-reduced-motion: reduce) {
+  .m3e-loader > i { animation-duration: 8s; }
+  .wavy > .wave { animation: none; }
 }

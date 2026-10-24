@@ -19,6 +19,7 @@ export interface Settings {
   font: FontId;
   windowMode: WindowMode;
   windowSize: WindowSize | null;
+  railExpanded: boolean;
 }
 
 export const FONTS: { id: FontId; label: string; stack: string }[] = [
@@ -69,6 +70,7 @@ function defaults(): Settings {
     font: "system",
     windowMode: "remember",
     windowSize: null,
+    railExpanded: false,
   };
 }
 

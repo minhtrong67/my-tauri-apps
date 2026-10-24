@@ -1,16 +1,36 @@
 {
   "name": "material-file",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Material File - a simple, fast file manager with Material Design 3, built with Tauri.",
+  "type": "module",
+  "description": "Material File - a simple, fast file manager with Material Design 3 Expressive, built with Tauri, Vite, React, TypeScript and Tailwind CSS.",
   "author": "minhtrong67",
   "license": "MIT",
   "scripts": {
     "tauri": "tauri",
     "dev": "tauri dev",
-    "build": "tauri build"
+    "build": "tauri build",
+    "web:dev": "vite",
+    "web:build": "tsc --noEmit && vite build",
+    "icons": "python tools/generate_icons.py"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.9.0",
+    "dompurify": "^3.2.6",
+    "lucide-react": "^0.468.0",
+    "marked": "^15.0.12",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.9.0"
+    "@tailwindcss/vite": "^4.1.13",
+    "@tauri-apps/cli": "^2.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.7.0",
+    "tailwindcss": "^4.1.13",
+    "typescript": "~5.6.3",
+    "vite": "^6.3.5"
   }
 }

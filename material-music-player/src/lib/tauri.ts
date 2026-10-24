@@ -67,3 +67,6 @@ export const writeTags = (path: string, edit: TagEdit) => invoke<Track>('write_t
 export interface OnlineLyrics { synced: string; plain: string }
 export const fetchLyricsOnline = (title: string, artist: string, album: string, duration: number) =>
   invoke<OnlineLyrics | null>('fetch_lyrics_online', { title, artist, album, duration });
+
+/** Force WebView2 to the real window size (it can stay at the old size after a fullscreen switch) */
+export const fitWebview = () => invoke<void>('fit_webview').catch(() => undefined);

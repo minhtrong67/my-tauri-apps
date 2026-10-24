@@ -4,7 +4,7 @@
 
 # Material Theme Builder
 
-**Design, preview and export Material Design 3 color themes — as a fast, native desktop app.**
+**Design, preview and export Material Design 3 color themes — in a fast, native desktop app styled with Material 3 Expressive.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-6750A4.svg)](LICENSE)
 ![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB)
@@ -64,7 +64,7 @@ It is built with Tauri, so it is tiny, starts instantly and works fully offline.
 - Window behavior: remember last size, or always start maximized
 
 **Experience**
-- Material 3 Expressive look: shape morphing, ripples, spring-like motion
+- Material 3 Expressive (2026) throughout: shape morphing, spring motion, emphasized type, wavy progress, morphing loading indicator, connected button groups, expandable navigation rail
 - Custom tooltips, toasts (info / success / warning / error), dropdowns and dialogs that follow light and dark themes
 - Keyboard shortcuts (press `?` in the builder)
 - Custom app, installer and uninstaller icons

@@ -4,11 +4,12 @@
 
 # Material Weather
 
-**A fast, beautiful desktop weather app — Material Design 3, built with Tauri 2.**
+**A fast, beautiful desktop weather app — Material Design 3, built with Tauri 2, React, TypeScript and Tailwind CSS.**
 
 ![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)
-![Rust](https://img.shields.io/badge/Rust-stable-000000?logo=rust)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 Created by **`minhtrong67`** with the support of **Claude** (Anthropic)
@@ -17,59 +18,56 @@ Created by **`minhtrong67`** with the support of **Claude** (Anthropic)
 
 ## Introduction
 
-**Material Weather** is a lightweight cross-platform desktop app that shows live conditions, an hourly outlook, a 7-day forecast and air quality for any city in the world. It follows **Material Design 3**: dynamic colour from a seed colour, light / dark / system themes, tonal surfaces, ripples and motion that stays out of your way. The UI is available in **English** and **Tiếng Việt**.
+**Material Weather** is a lightweight cross-platform desktop app that shows live conditions, an hourly outlook, a 7-day forecast and air quality for any city. It follows **Material Design 3**: colour generated from a seed colour, light / dark / system themes, tonal surfaces, ripples and motion that stays out of your way. The UI is available in **English** and **Tiếng Việt**.
 
-Weather data comes from [Open-Meteo](https://open-meteo.com/) — free, no API key required.
+Weather data comes from [Open-Meteo](https://open-meteo.com/) — free, no API key required. A single-file landing page is included in [`landing.html`](landing.html).
 
 ## Screenshots
 
 | | |
 |---|---|
-| ![Home](screenshots/image01.png) | ![Forecast](screenshots/image02.png) |
-| ![Details](screenshots/image03.png) | ![Settings](screenshots/image04.png) |
+| ![Home](screenshots/image01.png) | ![Dark mode, Vietnamese](screenshots/image02.png) |
+| ![Teal theme and air quality](screenshots/image03.png) | ![Settings](screenshots/image04.png) |
 
-> The files in `screenshots/` are placeholders — replace `image01.png` … `image04.png` with real screenshots.
+> Screenshots are real renders of the UI with sample weather data.
 
 ## Features
 
-- **Live weather** — temperature, feels-like, condition, humidity, wind (speed, direction, gusts), pressure, UV index, visibility, cloud cover, precipitation.
-- **Hourly forecast** — next 24 hours with an animated temperature curve and rain probability.
-- **7-day forecast** — daily range bars with a marker for the current temperature.
-- **Air quality** — US AQI with colour-coded category and PM2.5.
-- **Sun** — sunrise, sunset, daylight length and live sun position on an arc.
-- **Location with permission** — “Use my location” explains why it is needed and asks for your permission (OS prompt); if it is blocked or unavailable you get clear instructions and can fall back to an approximate, IP-based location.
-- **Search & places** — city search with autocomplete and saved locations.
-- **Smart tips** — umbrella, UV, air-quality, heat/cold and wind advice generated from the forecast.
-- **Moon phase & dew point** — computed locally, no extra API calls.
-- **Copy summary** — one click copies a short weather summary to the clipboard.
-- **Always on top** — pin the window above other apps (top bar button or Settings).
-- **Weather effects** — animated rain, snow, clouds, stars, sun glow and lightning on the main card (can be turned off).
-- **Themes** — light / dark / system, 8 preset colours plus a custom colour picker (real Material 3 tonal palettes).
-- **Languages** — English and Tiếng Việt, switchable instantly.
-- **Units** — °C / °F and km/h / m/s / mph.
-- **Window option** — *remember window size* or *always open maximized*.
-- **Offline friendly** — last data is cached and shown when you are offline; auto refresh every 15 minutes.
-- **Keyboard shortcuts** — `Ctrl+K` or `/` search · `F5` / `Ctrl+R` refresh · `Ctrl+,` settings · `Alt+↑/↓` switch location · `Esc` close.
-- **Polish** — ripples, staggered entrance animations, skeleton loading, reduced-motion support, pause when the window is hidden.
+- **Live weather** — temperature, feels-like, condition, humidity (+ dew point), wind (speed, direction, gusts), pressure, UV, visibility, cloud cover, precipitation, comparison with yesterday.
+- **Hourly forecast** — next 24 hours with an animated chart you can switch between temperature, rain, wind and humidity.
+- **7-day forecast** — range bars; click a day to open a **side sheet** with that day's details and hour-by-hour chart.
+- **Air quality** — US AQI; click the tile for a pollutant breakdown (PM2.5, PM10, O₃, NO₂, SO₂, CO) and advice.
+- **Smart tips** — umbrella, UV, heat/cold, wind and air-quality tips generated from the forecast.
+- **Weather alerts** — optional desktop notifications when rain or a thunderstorm is coming.
+- **Moon phase & sun arc** — computed locally; sunrise, sunset, daylight length.
+- **Location with permission** — “Use my location” explains why and asks first; if blocked you get instructions and an approximate (IP-based) fallback.
+- **Places** — search with autocomplete, saved places, a **home** place opened at startup, `Alt+↑/↓` to switch.
+- **Weather effects** — animated rain, snow, clouds, stars, sun glow and lightning on the main card.
+- **Settings** — light / dark / system; 8 Material colours + custom colour + adaptive colour; **5 fonts** (System UI, Roboto, Inter, Open Sans, Be Vietnam Pro) bundled offline; **text size** (small / medium / large); English / Tiếng Việt; °C/°F; km/h, m/s, mph; 12/24-hour; refresh interval; **window mode** (remember size or always maximized); always on top.
+- **Polish** — custom tooltips, typed toasts (info / success / warning / error), custom dropdown selects, confirm dialogs, side sheets, ripples, skeleton loading, offline cache, reduced-motion support.
+- **Keyboard** — `Ctrl+K` / `/` search · `F5` refresh · `Ctrl+,` settings · `?` help · `Esc` close.
 
 ## Installation
 
-Download the installer for your platform from the build output (see [Build](#build)) and run it:
+Download the installer from the build output (see [Build](#build)) or from the landing page and run it.
 
 | Platform | File |
 |---|---|
-| Windows | `Material Weather_1.0.0_x64-setup.exe` (NSIS, English + Tiếng Việt installer) |
-| macOS | `Material Weather_1.0.0_*.dmg` |
+| Windows | `Material Weather_1.1.0_x64-setup.exe` (NSIS, English + Tiếng Việt installer) |
+| macOS | `Material Weather_1.1.0_*.dmg` |
 | Linux | `.deb` / `.AppImage` |
+
+To publish the Windows installer on the landing page, put the file into [`download/`](download/) (see `download/README.txt`).
 
 ## Tech stack
 
 | Layer | Technology |
 |---|---|
-| Shell | [Tauri 2](https://tauri.app/) (Rust) |
-| UI | Vanilla JavaScript (ES modules) + Vite 6 |
-| Design | Material Design 3, `@material/material-color-utilities`, `system-ui` font |
-| Data | Open-Meteo forecast, geocoding & air-quality APIs · BigDataCloud (reverse geocoding) · ipwho.is / geojs.io / ipapi.co (approximate IP location fallback) |
+| Shell | [Tauri 2](https://tauri.app/) (Rust) + notification & opener plugins |
+| UI | React 18 · TypeScript · Vite 6 · Tailwind CSS 4 · Zustand |
+| Design | Material Design 3 via `@material/material-color-utilities`, `system-ui` default font, [Lucide](https://lucide.dev/) icons |
+| Fonts | `@fontsource` (Roboto, Inter, Open Sans, Be Vietnam Pro — latin + vietnamese subsets) |
+| Data | Open-Meteo (forecast, geocoding, air quality) · BigDataCloud (reverse geocoding) · ipwho.is / geojs.io / ipapi.co (approximate-location fallback) |
 
 ## Development
 
@@ -86,14 +84,14 @@ npm run dev      # start Tauri in development mode (hot reload)
 ## Build
 
 ```bash
-npm run build    # production build + installers
+npm run build    # type-check, production build + installers
 ```
 
-Because of the workspace, installers are written to the **workspace root**: `../target/release/bundle/` (e.g. `nsis/Material Weather_1.0.0_x64-setup.exe`).
+Installers are written to the **workspace root**: `../target/release/bundle/` (e.g. `nsis/Material Weather_1.1.0_x64-setup.exe`).
 
 ### Icons
 
-All icon sources are in `design/` (app, setup and uninstall icons). To regenerate them:
+Icon sources are in `design/` (app, setup and uninstall icons).
 
 ```bash
 pip install cairosvg pillow
@@ -105,40 +103,31 @@ npx tauri icon design/app-icon.png  # app icons for every platform
 
 ```
 material-weather/
+├── landing.html             # single-file landing page (themes, EN/VI, SEO)
+├── download/                # put the installer here
 ├── design/                  # icon sources (SVG) + generator script
 ├── public/                  # logo & favicon
 ├── screenshots/             # image01.png … image04.png
 ├── src/
-│   ├── main.js              # app bootstrap & orchestration
-│   ├── lib/                 # api, store, i18n, theme, window, fx, icons, formatters
-│   ├── locales/             # en.js, vi.js
-│   ├── ui/                  # view templates, dialogs, search, ripple, toast
-│   └── styles/              # tokens, base, components, weather
-├── src-tauri/
-│   ├── src/                 # main.rs, lib.rs
-│   ├── capabilities/        # window / opener permissions
-│   ├── icons/               # app, setup & uninstall icons
-│   ├── installer/           # NSIS header/sidebar images + hooks
-│   ├── Cargo.toml
-│   └── tauri.conf.json
-├── index.html
-├── package.json
-└── vite.config.js
+│   ├── main.tsx · App.tsx
+│   ├── components/          # Hero, Sections, Sheets, Dialogs, SettingsDialog, Drawer, TopBar …
+│   │   └── ui/              # Tooltip, Button, Dialog/Sheet, Select, Controls, Toaster, ripple
+│   ├── lib/                 # api, store, actions, i18n, theme, fonts, window, notify, insights, fx …
+│   ├── locales/             # en.ts, vi.ts
+│   └── styles/index.css     # Tailwind + Material 3 tokens + animations
+├── src-tauri/               # Rust, capabilities, icons, installer assets
+├── index.html · package.json · vite.config.ts · tsconfig.json
 ```
 
 ## Privacy
 
-No account and no tracking. Your precise location is requested only after you press **Use my location** (or on first launch) and you allow it; it is used to fetch the forecast and a place name and is kept only on your computer. Approximate IP-based location is used only if you choose it or if precise location is unavailable. Requests go only to Open-Meteo, BigDataCloud and the IP-location providers listed above.
+No account and no tracking. Your precise location is requested only after you press **Use my location** (or on first launch) and you allow it; it is used to fetch the forecast and a place name and is kept only on your computer. Approximate IP-based location is used only if you choose it or if precise location is unavailable.
 
-### If location is blocked
-
-- **Windows:** Settings → Privacy & security → Location → turn on *Location services* and *Let desktop apps access your location*, then press *Try again* in the app.
-- **macOS:** System Settings → Privacy & Security → Location Services.
-- **Linux:** precise location may be unavailable in WebKitGTK; the app falls back to the approximate location.
+If location is blocked — **Windows:** Settings → Privacy & security → Location → turn on *Location services* and *Let desktop apps access your location*. **macOS:** System Settings → Privacy & Security → Location Services. **Linux:** precise location may be unavailable in WebKitGTK; the approximate fallback is used.
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Released under the [MIT License](LICENSE) — public and open source.
 
 <div align="center">
 

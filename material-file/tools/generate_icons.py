@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Material File - icon generator (Material Design 3 style, yellow #FFEB3B app icon)
+Material File - icon generator (Material Design 3 style, amber #FFC107 app icon)
 
 Generates every raster asset the project needs from code, so the icons stay
 reproducible and can be re-themed by editing the palette below.
@@ -21,15 +21,15 @@ INSTALLER = ICONS / "installer"
 for d in (ICONS, INSTALLER):
     d.mkdir(parents=True, exist_ok=True)
 
-# --- icon palette (Material Yellow 500 container + warm tonal neighbours) -----
-YELLOW = (255, 235, 59)         # #FFEB3B  app icon color
-FOLDER_BACK = (93, 72, 0)       # #5D4800  folder back panel + tab (on-yellow tone)
-CREAM = (255, 249, 196)         # #FFF9C4  folder front panel
-PAPER_LINE_1 = (255, 224, 130)  # #FFE082
-PAPER_LINE_2 = (255, 241, 118)  # #FFF176
-BADGE = (93, 72, 0)             # #5D4800  install badge / check badge
+# --- icon palette (Material Amber 500 container + warm tonal neighbours) -----
+AMBER = (255, 193, 7)           # #FFC107  app icon color (Material Amber 500)
+FOLDER_BACK = (78, 52, 0)        # #4E3400  folder back panel + tab (on-amber tone)
+CREAM = (255, 236, 179)         # #FFECB3  folder front panel
+PAPER_LINE_1 = (255, 213, 79)   # #FFD54F
+PAPER_LINE_2 = (255, 224, 130)  # #FFE082
+BADGE = (78, 52, 0)             # #4E3400  install badge / check badge
 ERROR = (179, 38, 30)           # #B3261E  uninstall badge
-SURFACE = (255, 251, 230)       # installer background
+SURFACE = (255, 248, 225)       # installer background
 WHITE = (255, 255, 255)
 
 DESIGN = 1024  # design grid
@@ -52,7 +52,7 @@ def poly(d, pts, fill):
 def badge(img, kind, cx, cy, r):
     d = ImageDraw.Draw(img)
     ring = r + 22
-    d.ellipse((s(cx - ring), s(cy - ring), s(cx + ring), s(cy + ring)), fill=YELLOW)
+    d.ellipse((s(cx - ring), s(cy - ring), s(cx + ring), s(cy + ring)), fill=AMBER)
     color = BADGE if kind == "install" else ERROR
     d.ellipse((s(cx - r), s(cy - r), s(cx + r), s(cy + r)), fill=color)
     w = 26
@@ -72,7 +72,7 @@ def render(variant="app"):
     d = ImageDraw.Draw(img)
 
     # container
-    rrect(d, (64, 64, 960, 960), 232, YELLOW)
+    rrect(d, (64, 64, 960, 960), 232, AMBER)
 
     # folder: back panel + tab
     rrect(d, (172, 236, 472, 420), 52, FOLDER_BACK)
@@ -89,9 +89,9 @@ def render(variant="app"):
     if variant == "app":
         # small check badge
         d.ellipse((s(676), s(612), s(796), s(732)), fill=BADGE)
-        d.line([(s(704), s(674)), (s(728), s(698)), (s(770), s(646))], fill=YELLOW, width=s(22), joint="curve")
+        d.line([(s(704), s(674)), (s(728), s(698)), (s(770), s(646))], fill=AMBER, width=s(22), joint="curve")
         for px, py in ((704, 674), (770, 646)):
-            d.ellipse((s(px - 11), s(py - 11), s(px + 11), s(py + 11)), fill=YELLOW)
+            d.ellipse((s(px - 11), s(py - 11), s(px + 11), s(py + 11)), fill=AMBER)
     else:
         badge(img, variant, 744, 744, 138)
 
@@ -151,7 +151,7 @@ un_logo = render("uninstall").resize((44, 44), Image.LANCZOS)
 header_un.paste(un_logo, (98, 6), un_logo)
 header_un.save(INSTALLER / "nsis-header-uninstall.bmp")
 
-side = vertical_gradient((164, 314), CREAM, YELLOW)
+side = vertical_gradient((164, 314), CREAM, AMBER)
 sd = ImageDraw.Draw(side)
 sd.ellipse((-60, 200, 120, 380), fill=(255, 224, 130))
 sd.ellipse((60, 230, 240, 410), fill=(255, 213, 79))
@@ -166,7 +166,7 @@ banner.paste(b_logo, (440, 7), b_logo)
 banner.save(INSTALLER / "wix-banner.bmp")
 
 dialog = Image.new("RGB", (493, 312), WHITE)
-left = vertical_gradient((164, 312), CREAM, YELLOW)
+left = vertical_gradient((164, 312), CREAM, AMBER)
 dialog.paste(left, (0, 0))
 dd = ImageDraw.Draw(dialog)
 dd.ellipse((-60, 200, 120, 380), fill=(255, 224, 130))
@@ -185,7 +185,7 @@ card = Image.new("RGB", (1200, 630), SURFACE)
 cd = ImageDraw.Draw(card)
 cd.rectangle((0, 0, 1200, 630), fill=(255, 251, 230))
 cd.ellipse((760, -140, 1360, 460), fill=(255, 241, 118))
-cd.ellipse((900, 260, 1400, 760), fill=YELLOW)
+cd.ellipse((900, 260, 1400, 760), fill=AMBER)
 big = app.resize((420, 420), Image.LANCZOS)
 card.paste(big, (700, 105), big)
 try:
@@ -198,8 +198,8 @@ try:
                 pass
         return ImageFont.load_default()
     cd.text((80, 190), "Material File", font=font(86, True), fill=FOLDER_BACK)
-    cd.text((84, 306), "A simple, fast file manager", font=font(36), fill=(93, 72, 0))
-    cd.text((84, 354), "Material Design 3 - built with Tauri", font=font(36), fill=(93, 72, 0))
+    cd.text((84, 306), "A simple, fast file manager", font=font(36), fill=(78, 52, 0))
+    cd.text((84, 354), "Material Design 3 - built with Tauri", font=font(36), fill=(78, 52, 0))
 except Exception:
     pass
 card.save(WEB / "og-image.png")

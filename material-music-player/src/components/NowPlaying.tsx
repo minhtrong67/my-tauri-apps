@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { tr } from '../lib/i18n';
 import { Cover } from './Cover';
 import { Button, Icon, IconButton, Segmented } from './ui';
+import { LoadingIndicator } from './Expressive';
 import { SeekBar, TransportControls } from './PlayerControls';
 import { QueuePanel } from './QueuePanel';
 import { WindowControls } from './TitleBar';
@@ -68,13 +69,13 @@ function LyricsPane() {
     try {
       const res = await fetchLyricsOnline(t.title, t.artist === tr('unknownArtist') ? '' : t.artist, t.album, t.duration);
       const raw = res ? (res.synced.trim() ? res.synced : res.plain) : '';
-      if (!raw.trim()) toast(tr('lyricsNotFoundOnline'));
+      if (!raw.trim()) toast(tr('lyricsNotFoundOnline'), undefined, undefined, 'warning');
       else {
         setLyrics(parseLyrics(raw));
         setOnline({ raw, saved: false });
       }
     } catch (e) {
-      toast(tr('lyricsOnlineFailed', { e: String(e) }));
+      toast(tr('lyricsOnlineFailed', { e: String(e) }), undefined, undefined, 'error');
     } finally {
       setSearching(false);
     }
@@ -86,9 +87,9 @@ function LyricsPane() {
     try {
       await writeTextFile(t.path.replace(/\.[^.\\/]+$/, '.lrc'), online.raw);
       setOnline({ ...online, saved: true });
-      toast(tr('lyricsSaved'));
+      toast(tr('lyricsSaved'), undefined, undefined, 'success');
     } catch (e) {
-      toast(tr('lyricsSaveFailed', { e: String(e) }));
+      toast(tr('lyricsSaveFailed', { e: String(e) }), undefined, undefined, 'error');
     }
   };
 
@@ -116,7 +117,7 @@ function LyricsPane() {
     box.scrollTo({ top: box.scrollTop + (r.top - b.top) - b.height * 0.38 + r.height / 2, behavior: 'smooth' });
   }, [active]);
 
-  if (loading) return <div className="h-full flex items-center justify-center text-on-surface-variant">{tr('lyricsLoading')}</div>;
+  if (loading) return <div className="h-full flex flex-col gap-3 items-center justify-center text-on-surface-variant"><LoadingIndicator size={40} />{tr('lyricsLoading')}</div>;
   if (!lyrics || !lyrics.lines.length)
     return (
       <div className="h-full flex flex-col items-center justify-center text-center text-on-surface-variant gap-2 px-10">

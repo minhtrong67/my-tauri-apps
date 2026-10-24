@@ -12,7 +12,7 @@ export function MediaCard({ track, title, subtitle, onOpen, onPlay, round, onCon
 }) {
   return (
     <div
-      className={`group cursor-pointer rounded-2xl p-2 hover:bg-on-surface/[.06] hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.985] transition-all duration-300 ease-emphasized animate-card-in ${fluid ? 'w-full' : 'w-[168px] shrink-0'} ${active ? 'bg-secondary-container/50' : ''}`}
+      className={`group cursor-pointer rounded-2xl hover:rounded-[28px] p-2 hover:bg-on-surface/[.06] hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.985] transition-all duration-300 ease-emphasized animate-card-in ${fluid ? 'w-full' : 'w-[168px] shrink-0'} ${active ? 'bg-secondary-container/50' : ''}`}
       onClick={onOpen} onContextMenu={onContextMenu}
     >
       <div className="relative">

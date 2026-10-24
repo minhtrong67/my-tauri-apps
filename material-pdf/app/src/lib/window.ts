@@ -1,5 +1,5 @@
 import { PhysicalPosition, PhysicalSize } from "@tauri-apps/api/dpi";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { availableMonitors, getCurrentWindow } from "@tauri-apps/api/window";
 import { isTauri } from "./native";
 
 const KEY = "mpdf.window";
@@ -20,6 +20,14 @@ async function snapshot() {
 }
 const schedule = () => { clearTimeout(timer); timer = window.setTimeout(snapshot, 350); };
 
+/** True when the saved window's title-bar area still lies inside one of the connected monitors. */
+async function onScreen(st: WinState) {
+  try {
+    const cx = st.x + st.w / 2, top = st.y + 24;
+    return (await availableMonitors()).some((m) => cx >= m.position.x && cx <= m.position.x + m.size.width && top >= m.position.y && top <= m.position.y + m.size.height);
+  } catch { return false; }
+}
+
 /** Applies the startup behaviour, then shows the (initially hidden) window. */
 export async function initWindow(mode: Startup) {
   startup = mode;
@@ -33,7 +41,8 @@ export async function initWindow(mode: Startup) {
         if (st.max) await win.maximize();
         else {
           await win.setSize(new PhysicalSize(st.w, st.h));
-          await win.setPosition(new PhysicalPosition(Math.max(0, st.x), Math.max(0, st.y)));
+          if (await onScreen(st)) await win.setPosition(new PhysicalPosition(st.x, st.y));
+          else await win.center(); // saved spot belongs to a monitor that is gone
         }
       }
     }

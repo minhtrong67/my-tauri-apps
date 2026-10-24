@@ -31,7 +31,7 @@ export function Collection({
         )}
         <div className="min-w-0">
           <div className="text-label-lg text-on-surface-variant">{kind}</div>
-          <h1 className="text-headline-lg text-on-surface truncate">{title}</h1>
+          <h1 className="text-headline-lg emph text-on-surface truncate">{title}</h1>
           <div className="text-body-md text-on-surface-variant mt-1 truncate">
             {[subtitle, tr('nSongs', { n: tracks.length }), tracks.length ? fmtLong(total) : null].filter(Boolean).join(' • ')}
           </div>
@@ -61,7 +61,7 @@ export function PageHeader({ title, subtitle, children }: { title: string; subti
   return (
     <div className="flex items-end justify-between gap-4 px-8 pt-8 pb-4">
       <div className="min-w-0 shrink-0 max-w-[40%]">
-        <h1 className="text-headline-lg truncate">{title}</h1>
+        <h1 className="text-headline-lg emph truncate">{title}</h1>
         {subtitle && <div className="text-body-md text-on-surface-variant">{subtitle}</div>}
       </div>
       <div className="flex items-center gap-2 flex-wrap justify-end">{children}</div>

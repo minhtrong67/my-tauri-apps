@@ -1,5 +1,5 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
-import { Contrast, ImagePlus, Layers, Pipette, Plus, RotateCcw, Shapes, SwatchBook, Trash2, Upload } from "lucide-react";
+import { Contrast, ImagePlus, Layers, Pipette, Plus, RotateCcw, Shapes, SwatchBook, Trash2 } from "lucide-react";
 import { colorsFromImage, hctFromHex, readableOn } from "../lib/color";
 import { CORE_KEYS, QUICK_PICKS, VARIANT_IDS, variantPreview, type CoreKey, type VariantId } from "../lib/theme";
 import { cn, uid } from "../lib/utils";
@@ -7,7 +7,7 @@ import { useBuilder } from "../state/builder";
 import { useSettings } from "../state/settings";
 import { useToast } from "../state/toast";
 import { HctPicker, HexField } from "./ColorPicker";
-import { Chip, IconButton, Range, Section, Switch } from "./ui";
+import { Chip, IconButton, LoadingIndicator, Range, Section, Switch } from "./ui";
 
 const CONTRAST_STEPS: [number, "contrast.reduced" | "contrast.standard" | "contrast.medium" | "contrast.high"][] = [
   [-1, "contrast.reduced"],
@@ -113,8 +113,8 @@ export function SourcePanel() {
               onClick={() => update({ source: hex })}
               style={{ background: hex, "--d": `${i * 25}ms` } as React.CSSProperties}
               className={cn(
-                "anim-pop aspect-square rounded-full ring-offset-2 ring-offset-surface-container-low transition-transform duration-200 hover:scale-110",
-                config.source === hex && "ring-2 ring-primary",
+                "anim-pop shape aspect-square transition-transform duration-(--spring-spatial-fast-d) ease-emphasized hover:scale-110 active:scale-90",
+                config.source === hex ? "shape-cookie scale-105" : "shape-circle hover-shape-cookie",
               )}
             />
           ))}
@@ -142,8 +142,8 @@ export function SourcePanel() {
             {thumb ? (
               <img src={thumb} alt="" className="size-12 rounded-lg object-cover" />
             ) : (
-              <span className="flex size-12 items-center justify-center rounded-lg bg-secondary-container text-on-secondary-container">
-                {busy ? <Upload className="size-5 anim-bounce" /> : <ImagePlus className="size-5" />}
+              <span className="shape shape-sunny flex size-12 items-center justify-center bg-secondary-container text-on-secondary-container">
+                {busy ? <LoadingIndicator size={36} /> : <ImagePlus className="size-5" />}
               </span>
             )}
             <span className="min-w-0 flex-1">
@@ -162,7 +162,7 @@ export function SourcePanel() {
                   aria-label={hex}
                   onClick={() => update({ source: hex })}
                   style={{ background: hex, "--d": `${i * 40}ms` } as React.CSSProperties}
-                  className={cn("anim-pop size-8 rounded-full transition-transform hover:scale-110", config.source === hex && "ring-2 ring-primary ring-offset-2 ring-offset-surface-container-low")}
+                  className={cn("anim-pop shape shape-cookie size-8 transition-transform hover:scale-110", config.source === hex && "scale-110 shape-circle")}
                 />
               ))}
             </div>

@@ -24,7 +24,8 @@ const en = {
   // annotate
   tool_none: "Select / read", tool_highlight: "Highlight text", tool_pen: "Pen", tool_text: "Text", tool_rect: "Rectangle",
   tool_eraser: "Eraser", color: "Color", thickness: "Thickness", textSize: "Text size", typeHere: "Type here…",
-  annotHint: "Annotations are embedded into the PDF when you save.", noAnnots: "No annotations",
+  annotHint: "Saved as standard PDF annotations — still editable when you reopen the file.", noAnnots: "No annotations",
+  annotations: "Annotations", tileMerge: "Combine several PDFs into one", tileImages: "Turn pictures into a PDF", tileTheme: "Colors, fonts, language and window",
   // settings
   appearance: "Appearance", theme: "Theme", light: "Light", dark: "Dark", system: "System", themeColor: "Theme color",
   fontSize: "Font size", small: "Small", medium: "Medium", large: "Large", language: "Language", auto: "Auto (system)",
@@ -86,7 +87,8 @@ const vi: Record<Key, string> = {
   organizeDesc: "Đổi thứ tự, xoay hoặc xóa trang bằng kéo thả.", imagesDesc: "Chuyển ảnh JPG, PNG, WebP thành PDF.",
   tool_none: "Chọn / đọc", tool_highlight: "Tô sáng chữ", tool_pen: "Bút vẽ", tool_text: "Văn bản", tool_rect: "Hình chữ nhật",
   tool_eraser: "Tẩy", color: "Màu", thickness: "Độ dày", textSize: "Cỡ chữ", typeHere: "Nhập nội dung…",
-  annotHint: "Chú thích sẽ được ghi vào PDF khi bạn lưu.", noAnnots: "Chưa có chú thích",
+  annotHint: "Lưu thành chú thích PDF chuẩn — mở lại vẫn chỉnh sửa được.", noAnnots: "Chưa có chú thích",
+  annotations: "Danh sách chú thích", tileMerge: "Gộp nhiều PDF thành một", tileImages: "Biến ảnh thành tệp PDF", tileTheme: "Màu sắc, phông chữ, ngôn ngữ và cửa sổ",
   appearance: "Giao diện", theme: "Chủ đề", light: "Sáng", dark: "Tối", system: "Hệ thống", themeColor: "Màu chủ đề",
   fontSize: "Cỡ chữ", small: "Nhỏ", medium: "Vừa", large: "Lớn", language: "Ngôn ngữ", auto: "Tự động (hệ thống)",
   english: "English", vietnamese: "Tiếng Việt", window: "Cửa sổ", startup: "Khi mở ứng dụng",
