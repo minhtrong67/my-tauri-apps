@@ -3,7 +3,5 @@ dist
 target
 src-tauri/gen
 *.log
-download/*.exe
-download/*.msi
 app/public/cmaps
 app/public/standard_fonts
