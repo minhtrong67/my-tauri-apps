@@ -40,6 +40,7 @@ MP3 Downloader biến link (hoặc chỉ một tên bài hát) thành file MP3 c
 - **An toàn** — công cụ tải về được kiểm tra SHA-256, CSP nghiêm ngặt, chỉ chạy một cửa sổ.
 - **Luôn cập nhật** — cảnh báo khi yt-dlp cũ và cập nhật một chạm; thông báo trên màn hình.
 - **Của riêng bạn** — sáng / tối / hệ thống, 16 màu Material + màu tuỳ chỉnh, 5 font (mặc định theo hệ thống, có Roboto…), 3 cỡ chữ, tiếng Anh & tiếng Việt, chế độ cửa sổ (nhớ kích thước / luôn phóng to).
+- **Thao tác nhanh hơn** — kéo-thả link vào cửa sổ, gợi ý link từ clipboard, phím tắt (`Ctrl+K`, `Ctrl+V`, `Ctrl+1/2/3`, `?`), hoàn tác khi gỡ mục, lọc hàng đợi, tiến độ tổng trên thanh tiêu đề.
 - **Giao diện chỉn chu** — thanh tiêu đề tuỳ chỉnh, tooltip, toast (info / success / warning / error), dropdown riêng, dialog và side sheet có nút kèm nhãn, icon và màu.
 
 ## Cài đặt

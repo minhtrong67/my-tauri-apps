@@ -1,36 +1,45 @@
-import { argbFromHex, hexFromArgb, themeFromSourceColor } from '@material/material-color-utilities';
+import { Hct, MaterialDynamicColors, SchemeExpressive, SchemeTonalSpot, SchemeVibrant, argbFromHex, hexFromArgb, type DynamicScheme } from '@material/material-color-utilities';
 import type { Kind } from './format';
-import type { ThemeMode } from './types';
+import type { PaletteStyle, ThemeMode } from './types';
 
-/** Material Design colour presets offered in Settings. */
-export const PRESETS = ['#0B57D0', '#6750A4', '#00796B', '#2E7D32', '#E65100', '#C2185B', '#BA1A1A', '#546E7A'];
+/** Material Design colour presets offered in Settings (name = i18n key suffix). */
+export const PRESETS = ['#0B57D0', '#6750A4', '#7B1FA2', '#C2185B', '#BA1A1A', '#E65100', '#F9A825', '#2E7D32', '#00796B', '#00838F', '#3949AB', '#546E7A'];
+
+/** Palette styles of Material 3 Expressive: calm (tonal spot), lively (vibrant) and playful (expressive). */
+export const PALETTES: PaletteStyle[] = ['tonal', 'vibrant', 'expressive'];
+const SCHEMES = { tonal: SchemeTonalSpot, vibrant: SchemeVibrant, expressive: SchemeExpressive } as const;
+
+const ROLES = [
+  'primary', 'onPrimary', 'primaryContainer', 'onPrimaryContainer', 'secondary', 'onSecondary', 'secondaryContainer', 'onSecondaryContainer',
+  'tertiary', 'onTertiary', 'tertiaryContainer', 'onTertiaryContainer', 'error', 'onError', 'errorContainer', 'onErrorContainer',
+  'surface', 'onSurface', 'surfaceVariant', 'onSurfaceVariant', 'outline', 'outlineVariant', 'scrim', 'inverseSurface', 'inverseOnSurface', 'inversePrimary',
+  'surfaceContainerLowest', 'surfaceContainerLow', 'surfaceContainer', 'surfaceContainerHigh', 'surfaceContainerHighest', 'surfaceDim', 'surfaceBright',
+] as const;
 
 const kebab = (s: string) => s.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
 const mq = window.matchMedia('(prefers-color-scheme: dark)');
 let last = '';
-let timer = 0;
 
 export const isDark = (mode: ThemeMode) => mode === 'dark' || (mode === 'system' && mq.matches);
 
-/** Generates a Material Design 3 scheme from the seed colour and writes it as CSS variables. */
-export function applyTheme(mode: ThemeMode, seed: string, animate = false) {
+/** Generates a Material 3 dynamic scheme from the seed colour and writes it as CSS variables (--md-*). */
+export function applyTheme(mode: ThemeMode, seed: string, palette: PaletteStyle = 'tonal', animate = false) {
   const dark = isDark(mode);
-  const key = `${dark}|${seed}`;
+  const key = `${dark}|${seed}|${palette}`;
   if (key === last) return;
   last = key;
   const root = document.documentElement;
-  if (animate) {
-    root.classList.add('theme-anim');
-    clearTimeout(timer);
-    timer = window.setTimeout(() => root.classList.remove('theme-anim'), 450);
-  }
-  const theme = themeFromSourceColor(argbFromHex(seed));
-  const scheme = (dark ? theme.schemes.dark : theme.schemes.light).toJSON() as unknown as Record<string, number>;
-  for (const k in scheme) root.style.setProperty('--md-' + kebab(k), hexFromArgb(scheme[k]));
-  const tones = dark ? [4, 10, 12, 17, 22] : [100, 96, 94, 92, 90];
-  ['lowest', 'low', '', 'high', 'highest'].forEach((n, i) =>
-    root.style.setProperty(`--md-surface-container${n ? '-' + n : ''}`, hexFromArgb(theme.palettes.neutral.tone(tones[i]))),
-  );
+  const write = () => paint(root, dark, seed, palette);
+  // A GPU cross-fade of the whole window is far cheaper than transitioning every element's colours.
+  const vt = (document as Document & { startViewTransition?: (cb: () => void) => unknown }).startViewTransition;
+  if (animate && vt && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) vt.call(document, write);
+  else write();
+}
+
+function paint(root: HTMLElement, dark: boolean, seed: string, palette: PaletteStyle) {
+  const Scheme = SCHEMES[palette] ?? SchemeTonalSpot;
+  const scheme: DynamicScheme = new Scheme(Hct.fromInt(argbFromHex(seed)), dark, 0);
+  for (const r of ROLES) root.style.setProperty('--md-' + kebab(r), hexFromArgb(MaterialDynamicColors[r].getArgb(scheme)));
   root.dataset.scheme = dark ? 'dark' : 'light';
   root.style.colorScheme = dark ? 'dark' : 'light';
 }

@@ -18,7 +18,7 @@ export function ConfirmHost() {
       {c && (
         <>
           <div className="flex flex-col items-center gap-2.5 px-7 pb-1 pt-8 text-center">
-            <div className={cn('grid size-16 place-items-center rounded-full', c.tone === 'error' ? 'bg-error-container text-error' : 'bg-primary-container text-primary')}><Head size={30} /></div>
+            <div className={cn('shape-cookie grid size-20 place-items-center', c.tone === 'error' ? 'bg-error-container text-error' : 'bg-primary-container text-primary')}><Head size={30} /></div>
             <h2 className="text-2xl font-medium">{c.title}</h2>
             <p className="text-on-surface-variant">{c.message}</p>
           </div>
@@ -45,8 +45,9 @@ export function LocationDialog() {
       {loc && (
         <>
           <div className="flex flex-col items-center gap-2.5 px-7 pb-2 pt-8 text-center">
-            <div className={cn('relative grid size-[72px] place-items-center rounded-full', denied ? 'bg-error-container text-error' : 'bg-primary-container text-on-primary-container')}>
-              {denied ? <MapPinOff size={34} /> : <LocateFixed size={34} />}
+            <div className="relative grid size-20 place-items-center">
+              <span className={cn('shape-cookie absolute inset-0 animate-[cookieSpin_14s_linear_infinite]', denied ? 'bg-error-container' : 'bg-primary-container')} />
+              <span className={cn('relative', denied ? 'text-error' : 'text-on-primary-container')}>{denied ? <MapPinOff size={34} /> : <LocateFixed size={34} />}</span>
               <span className={cn('absolute inset-0 animate-[pulse-ring_2s_ease-out_infinite] rounded-full border-2', denied ? 'border-error' : 'border-primary')} />
             </div>
             <h2 className="text-2xl font-medium">{t(denied ? 'loc.deniedTitle' : 'loc.title')}</h2>

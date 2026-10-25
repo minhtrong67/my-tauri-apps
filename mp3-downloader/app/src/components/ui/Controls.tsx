@@ -73,7 +73,7 @@ export function TextField({ label, value, onChange, leading, trailing, inputRef,
   const up = value.length > 0 || !!placeholder;
   const h = size === "lg" ? "h-16" : "h-14";
   return (
-    <div className={`group relative flex items-center rounded-m3-lg border-2 bg-surface-highest transition-[border-color,border-radius] duration-300 ease-spring focus-within:rounded-m3-md ${invalid ? "border-error" : "border-transparent focus-within:border-primary"} ${h} ${className}`}>
+    <div className={`group relative flex items-center rounded-m3-lg border-2 bg-surface-highest transition-[border-color,border-radius] duration-300 ease-spring focus-within:rounded-m3-md focus-within:ring-4 ${invalid ? "border-error focus-within:ring-error/25" : "border-transparent focus-within:border-primary focus-within:ring-primary/25"} ${h} ${className}`}>
       {leading && <span className="pl-4 text-on-surface-variant">{leading}</span>}
       <div className="relative h-full min-w-0 flex-1">
         <input id={id} ref={inputRef} value={value} onChange={(e) => onChange(e.target.value)} maxLength={maxLength} placeholder={placeholder ?? " "} spellCheck={false} autoComplete="off"

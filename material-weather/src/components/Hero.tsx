@@ -38,7 +38,7 @@ function useTick(ms: number) {
   }, [ms]);
 }
 
-const Chip = ({ children }: { children: ReactNode }) => <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 backdrop-blur-md">{children}</span>;
+const Chip = ({ children }: { children: ReactNode }) => <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-4 py-1.5">{children}</span>;
 
 export function Hero() {
   const m = useStore((s) => s.model)!;
@@ -64,7 +64,7 @@ export function Hero() {
   const other = m.tempUnit === 'c' ? 'F' : 'C';
 
   return (
-    <section className={cn('relative grid min-h-[17rem] animate-[pop_0.6s_var(--ease-emphasized)_both] grid-cols-[1fr_auto] items-center gap-4 overflow-hidden rounded-[28px] px-8 pb-10 pt-7 text-white shadow-e1 [--wx-cloud:#fff] [--wx-cloud2:#dbe4ee] max-md:grid-cols-1 max-md:px-5', skyClass(n.code, n.isDay))}>
+    <section className={cn('relative grid min-h-[17rem] animate-pop [@media(max-height:700px)]:min-h-[14rem] [@media(max-height:700px)]:pb-8 [@media(max-height:700px)]:pt-5 grid-cols-[1fr_auto] items-center gap-4 overflow-hidden rounded-[40px] px-8 pb-10 pt-7 text-white shadow-e1 [--wx-cloud:#fff] [--wx-cloud2:#dbe4ee] max-md:grid-cols-1 max-md:px-5', skyClass(n.code, n.isDay))}>
       <canvas ref={canvas} className="pointer-events-none absolute inset-0 size-full" />
       <div className="relative z-10 [text-shadow:0_1px_12px_rgb(0_0_0/0.18)]">
         <div className="flex items-center gap-1.5">
@@ -79,7 +79,7 @@ export function Hero() {
         <div className="ml-7 opacity-85">{placeSub(m.place)}</div>
         <div className="ml-7 text-[0.8rem] opacity-85">{fmt.placeDateTime(m)}</div>
         <div className="mt-2.5 flex items-start font-light leading-none tracking-tight tabular-nums">
-          <span className="text-[6.5rem] max-md:text-[5.25rem]"><CountUp value={Math.round(n.temp)} /></span>
+          <span className="text-[6.5rem] font-medium max-md:text-[5.25rem] [@media(max-height:700px)]:text-[4.75rem]"><CountUp value={Math.round(n.temp)} /></span>
           <Tooltip label={t('hero.switchUnit', { u: other })}>
             <button onClick={() => void changeSetting({ tempUnit: m.tempUnit === 'c' ? 'f' : 'c' })} aria-label={t('hero.switchUnit', { u: other })} className="ripple mt-3 rounded-xl px-2 py-1 text-3xl font-normal tracking-normal transition-colors hover:bg-white/15">
               °{m.tempUnit.toUpperCase()}
@@ -99,10 +99,15 @@ export function Hero() {
           )}
         </div>
       </div>
-      <div className="relative z-10 pr-3 drop-shadow-[0_10px_24px_rgb(0_0_0/0.2)] max-md:hidden"><WxIcon code={n.code} isDay={n.isDay} size={168} animated /></div>
-      <Tooltip label={t('action.copy')}>
-        <button aria-label={t('action.copy')} onClick={() => void copySummary()} className="ripple absolute right-3.5 top-3.5 z-20 grid size-10 place-items-center rounded-full bg-white/20 backdrop-blur-md transition hover:bg-white/30 active:scale-90"><Copy size={19} /></button>
-      </Tooltip>
+      <div className="relative z-10 mr-3 grid size-60 place-items-center max-md:hidden max-[1000px]:size-48 [@media(max-height:700px)]:size-48">
+        <span className="shape-cookie absolute inset-0 animate-[cookieSpin_40s_linear_infinite] bg-white/15 will-change-transform" />
+        <span className="drop-shadow-[0_10px_24px_rgb(0_0_0/0.2)]"><WxIcon code={n.code} isDay={n.isDay} size={150} animated /></span>
+      </div>
+      <div className="absolute right-3.5 top-3.5 z-20">
+        <Tooltip label={t('action.copy')}>
+          <button aria-label={t('action.copy')} onClick={() => void copySummary()} className="ripple press-morph grid size-11 place-items-center rounded-full bg-white/20 hover:rounded-2xl hover:bg-white/30 active:scale-90"><Copy size={19} /></button>
+        </Tooltip>
+      </div>
       <div className={cn('absolute bottom-3 right-5 z-10 flex items-center gap-1.5 text-xs opacity-85', offline && 'rounded-full bg-black/30 px-2.5 py-0.5 opacity-100')}>
         {offline && <><CloudOff size={14} /><span>{t('hero.offline')} ·</span></>}
         <span>{t('hero.updated', { time: fmt.updated(m.fetchedAt) })}</span>

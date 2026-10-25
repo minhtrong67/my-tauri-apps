@@ -207,6 +207,23 @@ const vi: Record<string, string> = {
   'shortcuts.close': `Đóng hộp thoại hoặc bảng`,
   'action.shortcuts': `Phím tắt (?)`,
   'action.back': `Quay lại`,
+  'settings.palette': `Kiểu màu`,
+  'settings.paletteDesc': `Mức độ rực rỡ của bảng màu được tạo ra.`,
+  'palette.tonal': `Dịu`,
+  'palette.vibrant': `Rực rỡ`,
+  'palette.expressive': `Biểu cảm`,
+  'settings.backup': `Sao lưu`,
+  'settings.backupDesc': `Sao chép cài đặt và địa điểm, hoặc khôi phục từ bộ nhớ tạm.`,
+  'action.export': `Sao chép`,
+  'action.import': `Dán`,
+  'toast.exported': `Đã sao chép cài đặt vào bộ nhớ tạm.`,
+  'toast.imported': `Đã khôi phục cài đặt.`,
+  'toast.importFail': `Bộ nhớ tạm không chứa dữ liệu Material Weather hợp lệ.`,
+  'error.title': `Đã xảy ra lỗi`,
+  'error.body': `Ứng dụng gặp lỗi không mong muốn. Địa điểm và cài đặt của bạn vẫn an toàn.`,
+  'action.reload': `Tải lại ứng dụng`,
+  'hour.pop': `Khả năng mưa`,
+  'action.top': `Lên đầu trang`,
 };
 
 export default vi;

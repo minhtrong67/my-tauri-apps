@@ -28,7 +28,7 @@ export function Nav() {
       <nav
         className={cx(
           "hidden shrink-0 flex-col gap-1 bg-transparent py-4 transition-[width] duration-500 ease-spring sm:flex",
-          open ? "w-60 px-3" : "w-[88px] items-center px-3",
+          open ? "w-60 px-3" : "w-24 items-center px-3",
         )}
         aria-label="Main"
       >
@@ -45,10 +45,9 @@ export function Nav() {
               key={item.id}
               onClick={() => setPage(item.id)}
               aria-current={on ? "page" : undefined}
-              title={open ? undefined : t(item.key)}
-              className={cx(
+                            className={cx(
                 "ripple-host group relative flex shrink-0 items-center transition-all duration-500 ease-spring active:scale-[0.97]",
-                open ? "h-14 w-full gap-3 rounded-full px-5" : "h-14 w-14 flex-col justify-center rounded-2xl",
+                open ? "h-14 w-full gap-3 rounded-full px-5" : "h-[4.25rem] w-[4.5rem] flex-col justify-center gap-1 rounded-2xl",
                 on ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant hover:rounded-full hover:bg-on-surface/8",
                 on && !open && "rounded-full",
               )}
@@ -59,7 +58,7 @@ export function Nav() {
                   <span className="anim-pop absolute -top-2 -right-2.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-error px-1 text-[0.625rem] font-bold text-on-error">{active}</span>
                 )}
               </span>
-              {open && <span className={cx("text-[0.95rem]", on ? "font-semibold" : "font-medium")}>{t(item.key)}</span>}
+              <span className={cx(open ? "text-[0.95rem]" : "text-[0.6875rem] leading-none tracking-tight", on ? "font-semibold" : "font-medium")}>{t(item.key)}</span>
             </button>
           );
         })}

@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
-import { Scale, Sparkles, User, X } from "lucide-react";
+import { Keyboard, Scale, Sparkles, User, X } from "lucide-react";
 import { getVersion } from "@tauri-apps/api/app";
 import { Dialog } from "./ui/Overlay";
 import { Button } from "./ui/Button";
 import { useI18n } from "../lib/i18n";
 import { inTauri } from "../lib/tauri";
 
-export function AboutDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function AboutDialog({ open, onClose, onShortcuts }: { open: boolean; onClose: () => void; onShortcuts: () => void }) {
   const { t } = useI18n();
   const [v, setV] = useState("0.5.0");
   useEffect(() => { if (inTauri) getVersion().then(setV).catch(() => {}); }, []);
   return (
     <Dialog open={open} onClose={onClose} centered title="MP3 Downloader"
-      actions={<Button variant="tonal" icon={X} onClick={onClose} data-autofocus>{t("about.close")}</Button>}>
+      actions={<><Button variant="tonal" icon={Keyboard} onClick={() => { onClose(); onShortcuts(); }}>{t("about.shortcuts")}</Button><Button variant="filled" icon={X} onClick={onClose} data-autofocus>{t("about.close")}</Button></>}>
       <div className="flex flex-col items-center gap-1">
         <img src="/app-icon.png" alt="" width={88} height={88} className="mb-1 h-[88px] w-[88px] animate-pop drop-shadow-lg" />
         <p>{t("about.version", { v })}</p>

@@ -62,14 +62,14 @@ export function AddDialog() {
   const open = seed !== null;
 
   const analyze = useCallback(
-    async (url: string, extra?: { title?: string; referer?: string; userAgent?: string; cookie?: string }) => {
+    async (url: string, extra?: { title?: string; referer?: string; userAgent?: string; cookie?: string; thumbnail?: string }) => {
       const id = ++runId.current;
       setPhase("loading");
       setError("");
       try {
         const result = await api.analyze(url, extra);
         if (id !== runId.current) return;
-        setInfo(result);
+        setInfo(result.thumbnail || !extra?.thumbnail ? result : { ...result, thumbnail: extra.thumbnail });
         setOptId(result.options[0]?.id ?? "best");
         setFilename(result.filename);
         setPhase("result");
@@ -100,7 +100,7 @@ export function AddDialog() {
     setText(seed.url ?? "");
     setPhase("input");
     if (seed.url && seed.auto) {
-      void analyze(seed.url, { title: seed.title, referer: seed.referer, userAgent: seed.userAgent, cookie: seed.cookie });
+      void analyze(seed.url, { title: seed.title, referer: seed.referer, userAgent: seed.userAgent, cookie: seed.cookie, thumbnail: seed.thumbnail });
     } else {
       setTimeout(() => inputRef.current?.focus(), 60);
     }

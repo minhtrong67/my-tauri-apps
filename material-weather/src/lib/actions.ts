@@ -95,13 +95,13 @@ export function toggleHome(id: string) {
 /* ---------- location: ask permission, fall back to IP ---------- */
 const setLocating = (v: boolean) => ui().set({ locating: v });
 
-function useLocation(p: Found, approx: boolean) {
+function applyLocation(p: Found, approx: boolean) {
   selectFound({ ...p, name: p.name || t('loc.mine'), admin: p.name ? p.admin : `${p.lat.toFixed(2)}, ${p.lon.toFixed(2)}` }, { notify: true, approx });
 }
 export async function runIP() {
   setLocating(true);
   try {
-    useLocation(await locateByIP(), true);
+    applyLocation(await locateByIP(), true);
   } catch {
     toast.error(t('status.detectFail'), { action: { label: t('action.retry'), run: () => void startLocate() } });
   } finally {
@@ -112,7 +112,7 @@ export async function runGPS(onDismiss?: () => void) {
   setLocating(true);
   toast.info(t('loc.waiting'), { duration: 2500 });
   try {
-    useLocation(await locateByGPS(st().settings.lang), false);
+    applyLocation(await locateByGPS(st().settings.lang), false);
     setLocating(false);
   } catch (e) {
     setLocating(false);
@@ -183,4 +183,32 @@ export async function copySummary() {
     document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
   }
   toast.success(t('status.copied'), { duration: 1800 });
+}
+
+/* ---------- backup: settings + places via the clipboard ---------- */
+export async function exportData() {
+  const { settings, places, homeId } = st();
+  const text = JSON.stringify({ app: 'material-weather', v: 1, settings, places, homeId }, null, 2);
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success(t('toast.exported'), { duration: 2200 });
+  } catch {
+    toast.error(t('toast.importFail'));
+  }
+}
+export async function importData() {
+  try {
+    const d = JSON.parse(await navigator.clipboard.readText());
+    if (d?.app !== 'material-weather' || typeof d.settings !== 'object') throw new Error('invalid');
+    const prev = st().settings;
+    st().setSettings(d.settings);
+    if (Array.isArray(d.places)) d.places.slice(0, 15).forEach((p: Place) => p?.id && p.name && st().upsertPlace(p));
+    if (typeof d.homeId === 'string') st().setHome(d.homeId);
+    void applyWindowMode();
+    void setOnTop(st().settings.alwaysOnTop);
+    if (prev.tempUnit !== st().settings.tempUnit || prev.windUnit !== st().settings.windUnit) void reload();
+    toast.success(t('toast.imported'), { duration: 2400 });
+  } catch {
+    toast.error(t('toast.importFail'), { duration: 4000 });
+  }
 }

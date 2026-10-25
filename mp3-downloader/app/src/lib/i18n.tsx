@@ -53,6 +53,16 @@ const EN: Record<string, string> = {
   "e.update_check": "Couldn’t reach GitHub: {d}",
   "ban.updateTitle": "A newer yt-dlp is available",
   "empty.title": "Your queue is empty",
+  "dnd.title": "Drop it here", "dnd.sub": "Release a link or text to add it",
+  "clip.found": "Link found in your clipboard", "clip.use": "Use link", "clip.dismiss": "Dismiss",
+  "set.clipWatch": "Suggest links from the clipboard", "set.clipWatchDesc": "When you return to the app, offer to use a supported link you copied.",
+  "undo": "Undo", "toast.removed": "Removed from the list",
+  "flt.all": "All", "flt.active": "In progress", "flt.done": "Done", "flt.failed": "Failed",
+  "act.retryFailed": "Retry failed", "act.openFolder": "Open save folder",
+  "sc.title": "Keyboard shortcuts", "sc.focus": "Focus the search box", "sc.paste": "Paste a link anywhere", "sc.add": "Add to queue",
+  "sc.nav": "Go to Download / History / Settings", "sc.settings": "Open Settings", "sc.help": "Show this list", "sc.close": "Close dialogs",
+  "about.shortcuts": "Shortcuts", "tb.active": "{n} active",
+  "dl.heroTip": "Paste, drop or type — we handle the rest.",
 };
 const VI: Record<string, string> = {
   "nav.history": "Lịch sử",
@@ -104,6 +114,16 @@ const VI: Record<string, string> = {
   "e.update_check": "Không kết nối được GitHub: {d}",
   "ban.updateTitle": "Có bản yt-dlp mới hơn",
   "empty.title": "Hàng đợi đang trống",
+  "dnd.title": "Thả vào đây", "dnd.sub": "Thả link hoặc văn bản để thêm vào",
+  "clip.found": "Có link trong clipboard của bạn", "clip.use": "Dùng link này", "clip.dismiss": "Bỏ qua",
+  "set.clipWatch": "Gợi ý link từ clipboard", "set.clipWatchDesc": "Khi quay lại app, gợi ý dùng link được hỗ trợ mà bạn vừa sao chép.",
+  "undo": "Hoàn tác", "toast.removed": "Đã gỡ khỏi danh sách",
+  "flt.all": "Tất cả", "flt.active": "Đang xử lý", "flt.done": "Xong", "flt.failed": "Lỗi",
+  "act.retryFailed": "Thử lại mục lỗi", "act.openFolder": "Mở thư mục lưu",
+  "sc.title": "Phím tắt", "sc.focus": "Chuyển đến ô tìm kiếm", "sc.paste": "Dán link ở bất kỳ đâu", "sc.add": "Thêm vào hàng đợi",
+  "sc.nav": "Đến Tải xuống / Lịch sử / Cài đặt", "sc.settings": "Mở Cài đặt", "sc.help": "Hiện danh sách này", "sc.close": "Đóng hộp thoại",
+  "about.shortcuts": "Phím tắt", "tb.active": "{n} đang chạy",
+  "dl.heroTip": "Dán, thả hoặc gõ — phần còn lại để app lo.",
 };
 
 const DICT: Record<"en" | "vi", Record<string, string>> = { en: { ...enBase, ...EN }, vi: { ...viBase, ...VI } };

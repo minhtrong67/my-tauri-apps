@@ -1,7 +1,7 @@
 // Exports a handful of Lucide icons as plain SVG strings for the browser extension (no bundler needed there).
 import { writeFileSync } from "node:fs";
 
-const names = ["download", "settings", "film", "radio", "check", "trash", "monitor", "sun", "moon", "link-2", "play", "plug-zap", "circle-alert", "globe", "x", "wifi-off", "list-video", "zap", "layers", "palette", "languages", "puzzle", "shield-check", "chevron-down", "menu", "gauge", "pause", "clipboard", "heart"];
+const names = ["download", "settings", "film", "radio", "check", "trash", "monitor", "sun", "moon", "link-2", "play", "plug-zap", "circle-alert", "globe", "x", "wifi-off", "list-video", "zap", "layers", "palette", "languages", "puzzle", "shield-check", "chevron-down", "menu", "gauge", "pause", "clipboard", "heart", "arrow-up-left", "arrow-up-right", "loader"];
 const out = {};
 for (const n of names) {
   const mod = await import(new URL(`../node_modules/lucide-react/dist/esm/icons/${n}.mjs`, import.meta.url));

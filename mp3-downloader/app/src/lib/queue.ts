@@ -14,6 +14,7 @@ interface QState {
   cancel: (id: string) => void;
   retry: (id: string) => void;
   remove: (id: string) => void;
+  restore: (items: QueueItem[]) => void;
   clearFinished: () => void;
   stopAll: () => void;
   pump: () => void;
@@ -40,6 +41,7 @@ export const useQueue = create<QState>((set, get) => {
     },
     retry: (id) => { patch(id, { stage: "queued", percent: 0, message: "" }); get().pump(); },
     remove: (id) => set((s) => ({ items: s.items.filter((i) => i.id !== id) })),
+    restore: (items) => set((s) => ({ items: [...s.items, ...items.filter((i) => !s.items.some((x) => x.id === i.id))] })),
     clearFinished: () => set((s) => ({ items: s.items.filter((i) => !FINISHED.includes(i.stage)) })),
     stopAll: () => { for (const i of get().items) if (i.stage === "queued" || ACTIVE.includes(i.stage)) get().cancel(i.id); },
     pump: () => {
@@ -104,3 +106,12 @@ export function toolsReady(): boolean {
   if (tools && tools.ffmpeg == null) { toast.warning(t("toast.needFfmpeg")); return false; }
   return true;
 }
+
+export const useActiveCount = () => useQueue((s) => s.items.filter((i) => ACTIVE.includes(i.stage) || i.stage === "queued").length);
+/** Tiến độ trung bình (0–100) của các mục đang chạy/đang chờ; -1 nếu không có mục nào. */
+export const useOverallPercent = () =>
+  useQueue((s) => {
+    const a = s.items.filter((i) => ACTIVE.includes(i.stage) || i.stage === "queued");
+    if (!a.length) return -1;
+    return Math.round(a.reduce((n, i) => n + (i.stage === "queued" ? 0 : i.percent), 0) / a.length);
+  });

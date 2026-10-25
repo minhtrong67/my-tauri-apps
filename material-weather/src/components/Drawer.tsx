@@ -21,10 +21,10 @@ export function Drawer() {
   return (
     <>
       <div onClick={() => set({ navOpen: false })} className={cn('fixed inset-0 z-[35] bg-scrim/35 transition-opacity duration-300 min-[961px]:hidden', navOpen ? 'opacity-100' : 'pointer-events-none opacity-0')} />
-      <aside className={cn('z-40 flex w-[300px] shrink-0 flex-col rounded-r-2xl bg-sc-low px-3 pb-3 pt-4 transition-transform duration-[400ms] ease-emphasized max-[960px]:fixed max-[960px]:inset-y-0 max-[960px]:left-0 max-[960px]:shadow-e3', navOpen ? 'max-[960px]:translate-x-0' : 'max-[960px]:-translate-x-[105%]')}>
+      <aside className={cn('z-40 flex w-[300px] shrink-0 flex-col rounded-r-[32px] bg-sc-low px-3 pb-3 pt-4 transition-transform duration-[400ms] ease-emphasized max-[960px]:fixed max-[960px]:inset-y-0 max-[960px]:left-0 max-[960px]:shadow-e3', navOpen ? 'max-[960px]:translate-x-0' : 'max-[960px]:-translate-x-[105%]')}>
         <div className="flex items-center gap-3 px-3 pb-4 pt-1">
-          <img src="/logo.svg" width={44} height={44} alt="" className="rounded-xl" />
-          <div><div className="text-[1.15rem] font-semibold leading-tight">{t('app.name')}</div><div className="text-xs text-on-surface-variant">Open-Meteo</div></div>
+          <img src="/logo.svg" width={44} height={44} alt="" className="rounded-[14px] transition-[border-radius,transform] duration-300 ease-spring hover:-rotate-6 hover:rounded-full" />
+          <div><div className="text-[1.15rem] font-bold leading-tight tracking-tight">{t('app.name')}</div><div className="text-xs text-on-surface-variant">Open-Meteo</div></div>
         </div>
         <div className="px-4 py-2 text-xs font-semibold uppercase tracking-widest text-on-surface-variant">{t('nav.locations')}</div>
         <nav className="-mx-1 flex flex-1 flex-col gap-0.5 overflow-y-auto px-1">
@@ -34,7 +34,7 @@ export function Drawer() {
             return (
               <div key={p.id} role="button" tabIndex={0} onClick={() => activate(p.id)} onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); activate(p.id); } }}
                 style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}
-                className={cn('ripple group flex h-[60px] shrink-0 animate-[slideLeft_0.35s_var(--ease-emphasized)_both] cursor-pointer items-center gap-3 rounded-full pl-3 pr-2 transition-[background-color,transform] duration-200 active:scale-[0.985]', active && 'bg-secondary-container text-on-secondary-container')}>
+                className={cn('ripple group flex h-[60px] shrink-0 animate-[slideLeft_0.35s_var(--ease-emphasized)_both] cursor-pointer items-center gap-3 rounded-full pl-3 pr-2 transition-[background-color,transform] duration-200 active:scale-[0.985]', active ? 'bg-secondary-container text-on-secondary-container' : 'hover:bg-sc')}>
                 <span className="grid w-8 place-items-center">{p.code != null ? <WxIcon code={p.code} isDay={p.isDay !== false} size={30} /> : <MapPin size={22} />}</span>
                 <span className="flex min-w-0 flex-1 flex-col">
                   <b className="flex items-center gap-1 truncate font-semibold">{p.name}{homeId === p.id && <House size={13} className="shrink-0 text-primary" />}</b>

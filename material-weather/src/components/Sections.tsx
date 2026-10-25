@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ArrowUp, ChevronRight, Cloud, Droplets, Eye, Gauge, Leaf, Moon as MoonIcon, Sun, Sunrise, Sunset, Thermometer, Umbrella, Wind, Zap, type LucideIcon } from 'lucide-react';
 import { useStore } from '../lib/store';
 import { useT } from '../lib/i18n';
@@ -13,9 +13,9 @@ const useModel = () => useStore((s) => s.model)!;
 const tipIcon: Record<Tip['icon'], LucideIcon> = { zap: Zap, umbrella: Umbrella, leaf: Leaf, sun: Sun, thermometer: Thermometer, wind: Wind };
 const tone: Record<Tip['tone'], string> = { warn: 'bg-error-container text-on-error-container', info: 'bg-secondary-container text-on-secondary-container', good: 'bg-tertiary-container text-on-tertiary-container' };
 
-export const SectionTitle = ({ children }: { children: ReactNode }) => <h2 className="mb-3 pl-2 text-base font-semibold">{children}</h2>;
+export const SectionTitle = ({ children }: { children: ReactNode }) => <h2 className="mb-3 pl-2 text-lg font-semibold tracking-tight">{children}</h2>;
 const Card = ({ children, i, className }: { children: ReactNode; i: number; className?: string }) => (
-  <section className={cn('animate-rise rounded-[28px] bg-sc-low p-5 pr-2', className)} style={{ animationDelay: `${i * 70}ms` }}>{children}</section>
+  <section className={cn('animate-rise rounded-[32px] bg-sc-low p-5 pr-2', className)} style={{ animationDelay: `${i * 40}ms` }}>{children}</section>
 );
 
 /* ------------------------------ tips ------------------------------ */
@@ -25,11 +25,11 @@ export function Tips() {
   return (
     <section className="animate-rise">
       <SectionTitle>{t('tips.title')}</SectionTitle>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(15.5rem,1fr))] gap-2.5">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,14rem),1fr))] gap-2.5">
         {tips.map((x, i) => {
           const Icon = tipIcon[x.icon];
           return (
-            <div key={x.text} style={{ animationDelay: `${i * 70 + 100}ms` }} className={cn('flex animate-rise items-center gap-3 rounded-2xl px-4 py-3 transition-transform duration-200 hover:-translate-y-0.5', tone[x.tone])}>
+            <div key={x.text} style={{ animationDelay: `${i * 40 + 60}ms` }} className={cn('flex animate-rise items-center gap-3 rounded-[20px] px-4 py-3 transition-transform duration-200 hover:-translate-y-0.5', tone[x.tone])}>
               <Icon size={22} className="shrink-0" />
               <span className="text-sm">{x.text}</span>
             </div>
@@ -62,9 +62,24 @@ export function HourChart({ hours, metric, now }: { hours: HourPoint[]; metric: 
   const pts: [number, number][] = vs.map((v, i) => [i * COL + COL / 2, top + ((hi - v) / (hi - lo || 1)) * (H - top - bot)]);
   const line = smooth(pts);
   const suffix = metric === 'temp' ? '°' : metric === 'wind' ? '' : '%';
+  const [hover, setHover] = useState(-1);
+  const box = useRef<HTMLDivElement>(null);
+  const [edge, setEdge] = useState({ l: false, r: true });
+  const measure = () => { const e = box.current; if (e) setEdge({ l: e.scrollLeft > 4, r: e.scrollLeft + e.clientWidth < e.scrollWidth - 4 }); };
+  useEffect(() => {
+    const e = box.current; if (!e) return;
+    // vertical mouse wheel scrolls the chart horizontally (only when it can scroll)
+    const wheel = (ev: WheelEvent) => { if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX) && e.scrollWidth > e.clientWidth) { e.scrollLeft += ev.deltaY; ev.preventDefault(); } };
+    e.addEventListener('wheel', wheel, { passive: false });
+    const ro = new ResizeObserver(measure); ro.observe(e); measure();
+    return () => { e.removeEventListener('wheel', wheel); ro.disconnect(); };
+  }, [hours.length]);
+  const move = (ev: React.PointerEvent<HTMLDivElement>) => { const r = ev.currentTarget.getBoundingClientRect(); setHover(Math.min(hours.length - 1, Math.max(0, Math.floor((ev.clientX - r.left) / COL)))); };
+  const mask = edge.l && edge.r ? 'linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent)' : edge.l ? 'linear-gradient(90deg,transparent,#000 28px)' : edge.r ? 'linear-gradient(90deg,#000 calc(100% - 28px),transparent)' : undefined;
   return (
-    <div className="overflow-x-auto pb-2 pr-2">
-      <div style={{ width: W }} className="flex flex-col">
+    <div ref={box} onScroll={measure} className="overflow-x-auto pb-2 pr-2" style={{ maskImage: mask, WebkitMaskImage: mask }}>
+      <div style={{ width: W }} className="relative isolate flex flex-col" onPointerMove={move} onPointerLeave={() => setHover(-1)}>
+        <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 -z-10 w-[68px] rounded-[28px] bg-secondary-container/70 transition-[transform,opacity] duration-300 ease-spring" style={{ transform: `translateX(${Math.max(hover, 0) * COL}px)`, opacity: hover < 0 ? 0 : 1 }} />
         <div className="flex">
           {hours.map((h, i) => (
             <div key={h.time} className="flex w-[68px] shrink-0 flex-col items-center gap-1 text-xs text-on-surface-variant">
@@ -79,8 +94,8 @@ export function HourChart({ hours, metric, now }: { hours: HourPoint[]; metric: 
           <path d={line} pathLength={1} className="hline" />
           {pts.map(([x, y], i) => (
             <g key={i}>
-              <text x={x} y={y - 11} textAnchor="middle" className="fill-on-surface text-[13px] font-semibold">{Math.round(vs[i])}{suffix}</text>
-              <circle cx={x} cy={y} r={3.5} className="fill-sc-low stroke-primary" strokeWidth={2.5} />
+              <text x={x} y={y - (hover === i ? 13 : 11)} textAnchor="middle" className={cn('fill-on-surface font-semibold transition-all duration-300', hover === i ? 'text-[16px]' : 'text-[13px]')}>{Math.round(vs[i])}{suffix}</text>
+              <circle cx={x} cy={y} r={hover === i ? 6 : 3.5} className="fill-sc-low stroke-primary transition-all duration-300 ease-spring" strokeWidth={2.5} />
             </g>
           ))}
         </svg>
@@ -107,7 +122,7 @@ export function Hourly() {
         <h2 className="text-base font-semibold">{t('section.hourly')}</h2>
         <div role="tablist" className="flex gap-1 rounded-full bg-sc p-1">
           {tabs.map(([k, label]) => (
-            <button key={k} role="tab" aria-selected={metric === k} onClick={() => setMetric(k)} className={cn('ripple rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200', metric === k ? 'bg-primary text-on-primary' : 'text-on-surface-variant')}>{t(label)}</button>
+            <button key={k} role="tab" aria-selected={metric === k} onClick={() => setMetric(k)} className={cn('ripple rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200', metric === k ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-sc-high')}>{t(label)}</button>
           ))}
         </div>
       </div>
@@ -120,8 +135,8 @@ export function Hourly() {
 function Tile({ icon: Icon, title, i, children, className, onClick }: { icon: LucideIcon; title: string; i: number; children: ReactNode; className?: string; onClick?: () => void }) {
   const Tag = onClick ? 'button' : 'div';
   return (
-    <Tag onClick={onClick} style={{ animationDelay: `${i * 55 + 150}ms` }} className={cn('flex min-h-[7.5rem] animate-rise flex-col gap-1.5 rounded-[28px] bg-sc-low p-4 text-left transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-sc', onClick && 'ripple cursor-pointer', className)}>
-      <div className="flex items-center gap-2 font-medium text-on-surface-variant"><Icon size={18} />{title}{onClick && <ChevronRight size={16} className="ml-auto" />}</div>
+    <Tag onClick={onClick} style={{ animationDelay: `${i * 35 + 40}ms` }} className={cn('flex min-h-[7.5rem] animate-rise flex-col gap-1.5 rounded-[28px] bg-sc-low p-4 text-left transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-sc', onClick && 'ripple cursor-pointer', className)}>
+      <div className="flex items-center gap-2 font-medium text-on-surface-variant"><span className="grid size-8 place-items-center rounded-xl bg-secondary-container text-on-secondary-container"><Icon size={17} /></span>{title}{onClick && <ChevronRight size={16} className="ml-auto" />}</div>
       {children}
     </Tag>
   );
@@ -175,7 +190,7 @@ export function Details() {
   const vis = n.visibility == null ? null : imperial ? n.visibility / 1609.34 : n.visibility / 1000;
   const uv = uvInfo(n.uv), mp = moonPhase(), a = m.aqi?.us != null ? aqiInfo(m.aqi.us) : null;
   return (
-    <section className="animate-rise" style={{ animationDelay: '140ms' }}>
+    <section className="animate-rise" style={{ animationDelay: '90ms' }}>
       <SectionTitle>{t('section.details')}</SectionTitle>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-3">
         <Tile icon={Droplets} title={t('detail.humidity')} i={0}><Big v={Math.round(n.humidity)} unit="%" /><Meter pct={n.humidity} /><Sub>{t('detail.dew', { v: deg(dewPoint(m)) })}</Sub></Tile>
@@ -221,7 +236,7 @@ export function Daily() {
         {m.daily.map((d, i) => {
           const left = ((d.min - lo) / span) * 100, width = Math.max(((d.max - d.min) / span) * 100, 6);
           return (
-            <button key={d.date} onClick={() => ui().set({ daySheet: i })} style={{ animationDelay: `${i * 60 + 250}ms` }}
+            <button key={d.date} onClick={() => ui().set({ daySheet: i })} style={{ animationDelay: `${i * 30 + 120}ms` }}
               className="ripple grid h-[52px] animate-rise grid-cols-[84px_40px_58px_40px_1fr_40px] items-center gap-2.5 rounded-xl px-2 text-left transition-colors max-md:grid-cols-[70px_36px_1fr_36px]">
               <span className="font-semibold capitalize">{fmt.dayName(d.date, i)}</span>
               <WxIcon code={d.code} isDay size={34} />

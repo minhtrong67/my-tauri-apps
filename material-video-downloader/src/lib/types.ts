@@ -117,6 +117,7 @@ export interface ExtensionAdd {
   userAgent?: string;
   cookie?: string;
   pageUrl?: string;
+  thumbnail?: string;
 }
 
 export const DEFAULT_CORE: CoreSettings = {

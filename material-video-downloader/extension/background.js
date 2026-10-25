@@ -1,4 +1,4 @@
-import { PAGE_SITES, fileNameOf, isMediaUrl, pageCookies, sendToApp } from "./lib/shared.js";
+import { PAGE_SITES, fileNameOf, isMediaUrl, isNoise, pageCookies, sendToApp, siteThumb } from "./lib/shared.js";
 
 // Media requests detected per tab: Map<tabId, Map<url, item>>
 const found = new Map();
@@ -41,6 +41,7 @@ chrome.webRequest.onResponseStarted.addListener(
     if (!isPlaylist && total > 0 && total < 150 * 1024) return;
     if (/\.(ts|m4s)(\?|$)/i.test(d.url) || /\/(seg|chunk|frag)[-_]?\d+/i.test(d.url)) return;
     if (/\.mpd(\?|$)/i.test(d.url)) return;
+    if (isNoise(d.url)) return;
 
     chrome.tabs.get(d.tabId).then(
       (tab) =>
@@ -61,20 +62,69 @@ chrome.webRequest.onResponseStarted.addListener(
   ["responseHeaders"],
 );
 
+const lastPage = new Map(); // tabId -> URL without hash (detects SPA navigation)
+const metas = new Map();    // tabId -> { top, frames: { [frameId]: video[] } }
+
+function forget(tabId) {
+  found.set(tabId, new Map());
+  metas.delete(tabId);
+  chrome.storage.session.remove([`tab:${tabId}`, `meta:${tabId}`]);
+  chrome.action.setBadgeText({ tabId, text: "" }).catch(() => undefined);
+}
+
 chrome.tabs.onRemoved.addListener((tabId) => {
   found.delete(tabId);
-  chrome.storage.session.remove(`tab:${tabId}`);
+  metas.delete(tabId);
+  lastPage.delete(tabId);
+  chrome.storage.session.remove([`tab:${tabId}`, `meta:${tabId}`]);
 });
 
-chrome.webNavigation?.onCommitted?.addListener?.(() => undefined);
 chrome.tabs.onUpdated.addListener((tabId, info) => {
-  // New page in the same tab: forget the previous page's media.
-  if (info.status === "loading" && info.url) {
-    found.set(tabId, new Map());
-    chrome.storage.session.remove(`tab:${tabId}`);
-    chrome.action.setBadgeText({ tabId, text: "" });
-  }
+  // A new page, or an in-page (SPA) navigation: forget what the previous page played.
+  if (!info.url && info.status !== "loading") return;
+  const url = (info.url || "").split("#")[0];
+  if (info.url && lastPage.get(tabId) === url) return;
+  if (info.url) lastPage.set(tabId, url);
+  if (info.url || info.status === "loading") forget(tabId);
 });
+
+// ---- metadata (thumbnails, durations) reported by content scripts in every frame
+async function restoreMeta(tabId) {
+  if (metas.has(tabId)) return metas.get(tabId);
+  const stored = (await chrome.storage.session.get(`meta:${tabId}`))[`meta:${tabId}`] || { top: null, frames: {} };
+  metas.set(tabId, stored);
+  return stored;
+}
+
+async function storeMeta(sender, msg) {
+  const tabId = sender.tab?.id;
+  if (tabId === undefined || tabId < 0) return;
+  const m = await restoreMeta(tabId);
+  if (msg.top) m.top = msg.top;
+  m.frames[sender.frameId ?? 0] = (msg.videos || []).map((v) => ({ ...v, frameId: sender.frameId ?? 0 }));
+  chrome.storage.session.set({ [`meta:${tabId}`]: m }).catch(() => undefined);
+}
+
+function pickPrimary(videos) {
+  return [...videos].sort((a, b) => Number(b.playing) - Number(a.playing) || b.w * b.h - a.w * a.h)[0];
+}
+
+/** Add a thumbnail, duration and a readable title to each detected item. */
+function enrich(items, meta, tab) {
+  const videos = Object.values(meta.frames || {}).flat();
+  const primary = pickPrimary(videos.filter((v) => v.thumb)) || pickPrimary(videos);
+  const pageThumb = siteThumb(tab?.url) || meta.top?.og || "";
+  return items.map((it) => {
+    const own = videos.find((v) => v.srcs?.includes(it.url));
+    const v = own || primary;
+    return {
+      ...it,
+      thumb: (own && own.thumb) || (!own && v && v.thumb) || pageThumb || "",
+      duration: (v && v.duration) || 0,
+      title: (meta.top && meta.top.title) || it.pageTitle || "",
+    };
+  });
+}
 
 // Fallback for plain files when the desktop app is not running.
 async function browserDownload(url, referer) {
@@ -94,26 +144,33 @@ async function send(payload) {
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {
   (async () => {
     if (msg.type === "list") {
-      const tab = await restore(msg.tabId);
-      reply({ items: [...tab.values()].sort((a, b) => b.at - a.at) });
+      const [tabItems, meta, tabInfo] = await Promise.all([restore(msg.tabId), restoreMeta(msg.tabId), chrome.tabs.get(msg.tabId).catch(() => null)]);
+      const items = enrich([...tabItems.values()].sort((a, b) => b.at - a.at), meta, tabInfo);
+      const pageThumb = siteThumb(tabInfo?.url) || meta.top?.og || "";
+      const primary = pickPrimary(Object.values(meta.frames || {}).flat().filter((v) => v.thumb));
+      reply({ items, page: { thumb: siteThumb(tabInfo?.url) || primary?.thumb || pageThumb || "", duration: primary?.duration || 0 } });
+    } else if (msg.type === "meta") {
+      await storeMeta(sender, msg);
+      reply({ ok: true });
     } else if (msg.type === "send") {
-      const cookie = msg.withCookies === false ? "" : await pageCookies(msg.pageUrl || msg.url);
+      const pageUrl = msg.pageUrl || sender.tab?.url || msg.frameUrl || "";
+      const url = msg.url || pageUrl;
+      const cookie = msg.withCookies === false ? "" : await pageCookies(pageUrl || url);
       const res = await send({
-        url: msg.url,
-        title: msg.title,
-        referer: msg.pageUrl,
+        url,
+        title: msg.title || sender.tab?.title || "",
+        referer: pageUrl,
         userAgent: navigator.userAgent,
         cookie,
-        pageUrl: msg.pageUrl,
+        pageUrl,
+        thumbnail: msg.thumbnail || siteThumb(pageUrl) || "",
       });
-      if (!res.ok && res.reason === "offline" && msg.fallback && isMediaUrl(msg.url) && !/\.m3u8/i.test(msg.url)) {
-        res.fallback = await browserDownload(msg.url, msg.pageUrl);
+      if (!res.ok && res.reason === "offline" && msg.fallback && isMediaUrl(url) && !/\.m3u8/i.test(url)) {
+        res.fallback = await browserDownload(url, pageUrl);
       }
       reply(res);
     } else if (msg.type === "clear") {
-      found.set(msg.tabId, new Map());
-      chrome.storage.session.remove(`tab:${msg.tabId}`);
-      chrome.action.setBadgeText({ tabId: msg.tabId, text: "" });
+      forget(msg.tabId);
       reply({ ok: true });
     } else if (msg.type === "isPageSite") {
       reply({ ok: PAGE_SITES.test(msg.url || "") });
@@ -141,6 +198,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     userAgent: navigator.userAgent,
     cookie: await pageCookies(tab?.url || url),
     pageUrl: tab?.url,
+    thumbnail: siteThumb(url) || siteThumb(tab?.url),
   });
   chrome.action.setBadgeBackgroundColor({ color: res.ok ? "#2E7D32" : "#BA1A1A" });
   chrome.action.setBadgeText({ text: res.ok ? "✓" : "!" });

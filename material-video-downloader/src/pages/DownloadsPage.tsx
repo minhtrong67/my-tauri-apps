@@ -183,23 +183,26 @@ export function DownloadsPage() {
         </div>
       </div>
 
-      {/* Floating toolbar (bulk actions) */}
+      {/* Floating toolbar (bulk actions): icon + label, M3 Expressive "floating toolbar" */}
       {(anyActive || anyPaused || counts.done > 0) && (
-        <div className="anim-pop absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-full bg-surface-highest p-1.5 shadow-xl ring-1 ring-outline-variant/40 sm:bottom-8">
+        <div className="anim-pop absolute bottom-5 left-1/2 z-20 flex max-w-[calc(100%-7.5rem)] -translate-x-1/2 items-center gap-1 rounded-full bg-surface-highest p-1.5 shadow-xl ring-1 ring-outline-variant/40 sm:bottom-8" role="toolbar" aria-label={t("bulkActions")}>
           {anyActive && (
-            <IconButton label={t("pauseAll")} tone="primary" onClick={() => api.pauseAll()}>
-              <Pause size={20} />
-            </IconButton>
+            <button onClick={() => api.pauseAll()} className="ripple-host morph flex h-11 items-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary hover:rounded-2xl active:scale-95">
+              <Pause size={18} />
+              <span className="hidden sm:inline">{t("pauseAll")}</span>
+            </button>
           )}
           {anyPaused && (
-            <IconButton label={t("resumeAll")} tone="primary" onClick={() => api.resumeAll()}>
-              <Play size={20} />
-            </IconButton>
+            <button onClick={() => api.resumeAll()} className="ripple-host morph flex h-11 items-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary hover:rounded-2xl active:scale-95">
+              <Play size={18} />
+              <span className="hidden sm:inline">{t("resumeAll")}</span>
+            </button>
           )}
           {counts.done > 0 && (
-            <IconButton label={t("clearDone")} onClick={() => api.clearFinished()}>
-              <Trash2 size={20} />
-            </IconButton>
+            <button onClick={() => api.clearFinished()} className="ripple-host morph flex h-11 items-center gap-2 rounded-full bg-error-container px-4 text-sm font-semibold text-on-error-container hover:rounded-2xl active:scale-95">
+              <Trash2 size={18} />
+              <span className="hidden sm:inline">{t("clearDone")}</span>
+            </button>
           )}
         </div>
       )}

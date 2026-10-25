@@ -12,13 +12,13 @@ export interface Settings {
   seed: string; mode: Mode; lang: Lang; font: FontId; fontSize: FontSize;
   quality: Quality; outDir: string; crop: boolean;
   nameTpl: NameTpl; artistFolder: boolean; dup: DupPolicy; parallel: number; speed: string;
-  cookies: string; proxy: string; notify: boolean; checkUpdates: boolean;
+  cookies: string; proxy: string; notify: boolean; checkUpdates: boolean; clipWatch: boolean;
 }
 export const DEFAULTS: Settings = {
   seed: DEFAULT_SEED, mode: "auto", lang: "auto", font: "system", fontSize: "medium",
   quality: "best", outDir: "", crop: true,
   nameTpl: "artist-title", artistFolder: false, dup: "rename", parallel: 2, speed: "",
-  cookies: "", proxy: "", notify: true, checkUpdates: true,
+  cookies: "", proxy: "", notify: true, checkUpdates: true, clipWatch: true,
 };
 
 interface SettingsStore { s: Settings; set: (p: Partial<Settings>) => void; reset: () => void }
@@ -56,12 +56,13 @@ export const toast = {
 
 /* ───────── Lịch sử ───────── */
 export interface HistoryEntry { id: string; url: string; file: string; title: string; artist: string; thumbnail: string; source: string; quality: Quality; at: number }
-interface HistoryStore { items: HistoryEntry[]; add: (e: HistoryEntry) => void; remove: (id: string) => void; clear: () => void }
+interface HistoryStore { items: HistoryEntry[]; add: (e: HistoryEntry) => void; restore: (e: HistoryEntry) => void; remove: (id: string) => void; clear: () => void }
 export const useHistory = create<HistoryStore>()(
   persist(
     (set) => ({
       items: [],
       add: (e) => set((st) => ({ items: [e, ...st.items.filter((x) => x.file !== e.file)].slice(0, 500) })),
+      restore: (e) => set((st) => ({ items: [e, ...st.items].sort((a, b) => b.at - a.at) })),
       remove: (id) => set((st) => ({ items: st.items.filter((x) => x.id !== id) })),
       clear: () => set({ items: [] }),
     }),
@@ -77,3 +78,11 @@ export interface QueueItem {
   id: string; jobId: string | null; url: string; info: TrackInfo | null; edited: boolean; quality: Quality;
   stage: Stage; percent: number; speed: string; eta: string; message: string; file: string | null;
 }
+
+/* ───────── Nhận link từ bên ngoài (kéo-thả, dán toàn cục) & lệnh focus ───────── */
+interface IntakeStore { seq: number; text: string; focus: number; push: (text: string) => void; focusInput: () => void }
+export const useIntake = create<IntakeStore>((set) => ({
+  seq: 0, text: "", focus: 0,
+  push: (text) => set((s) => ({ text, seq: s.seq + 1 })),
+  focusInput: () => set((s) => ({ focus: s.focus + 1 })),
+}));

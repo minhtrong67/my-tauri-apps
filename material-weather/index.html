@@ -1,15 +1,562 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="description" content="Material Weather - a beautiful Material Design 3 desktop weather app." />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Material Weather</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Material Weather — Material 3 Expressive weather app for desktop</title>
+<meta name="description" content="Material Weather is a free, open-source desktop weather app in Material 3 Expressive style. Live forecasts, 7-day outlook, air quality, smart tips, dynamic colour themes, English and Tiếng Việt. Built with Tauri 2, React and Tailwind CSS." />
+<meta name="keywords" content="weather app, desktop weather app, Material 3 Expressive, Material Design 3, Tauri, React, Tailwind CSS, open source, forecast, air quality, Windows weather app, thời tiết, ứng dụng thời tiết, minhtrong67" />
+<meta name="author" content="minhtrong67" />
+<meta name="application-name" content="Material Weather" />
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#f9f9ff" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)" />
+<!-- TODO: replace https://minhtrong67.github.io/material-weather/ with the real URL where this page is hosted -->
+<link rel="canonical" href="https://minhtrong67.github.io/material-weather/" />
+<link rel="icon" type="image/png" sizes="32x32" href="src-tauri/icons/32x32.png" />
+<link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
+<link rel="apple-touch-icon" href="src-tauri/icons/128x128@2x.png" />
+<link rel="preload" as="image" href="screenshots/image01.png" fetchpriority="high" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Material Weather" />
+<meta property="og:title" content="Material Weather — Material 3 Expressive weather app for desktop" />
+<meta property="og:description" content="Free & open source. Live forecasts, air quality, smart tips and dynamic colour themes. Tauri 2 + React + Tailwind CSS." />
+<meta property="og:url" content="https://minhtrong67.github.io/material-weather/" />
+<meta property="og:image" content="https://minhtrong67.github.io/material-weather/screenshots/image01.png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="800" />
+<meta property="og:image:alt" content="Material Weather main screen showing the current weather" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="vi_VN" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Material Weather — Material 3 Expressive weather app" />
+<meta name="twitter:description" content="Free & open-source desktop weather app: hourly & 7-day forecasts, air quality, smart tips, dynamic themes." />
+<meta name="twitter:image" content="https://minhtrong67.github.io/material-weather/screenshots/image01.png" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"SoftwareApplication","name":"Material Weather","applicationCategory":"UtilitiesApplication","operatingSystem":"Windows, macOS, Linux","softwareVersion":"1.2.0","description":"A free, open-source Material 3 Expressive desktop weather app built with Tauri 2, React and Tailwind CSS.","author":{"@type":"Person","name":"minhtrong67"},"license":"https://opensource.org/licenses/MIT","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"downloadUrl":"https://minhtrong67.github.io/material-weather/download/Material%20Weather_1.2.0_x64-setup.exe","screenshot":"https://minhtrong67.github.io/material-weather/screenshots/image01.png","inLanguage":["en","vi"]},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is Material Weather free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is open source under the MIT license with no account, ads or tracking."}},
+{"@type":"Question","name":"Where does the weather data come from?","acceptedAnswer":{"@type":"Answer","text":"From Open-Meteo.com, a free weather API that needs no key."}},
+{"@type":"Question","name":"Does it work on macOS and Linux?","acceptedAnswer":{"@type":"Answer","text":"The project builds with Tauri on Windows, macOS and Linux: run npm install, then npm run build."}}]}]}
+</script>
+<style>
+:root{
+  --sp:cubic-bezier(.34,1.45,.64,1);--sf:cubic-bezier(.2,0,0,1);
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  /* fallback palette (replaced at runtime by the generated Material 3 tonal palette) */
+  --p:#0b57d0;--on-p:#fff;--pc:#d3e3fd;--on-pc:#041e49;--sc:#dde3f1;--on-sc:#131c2b;--tc:#f3d9ff;--on-tc:#2c0f3d;
+  --s:#f9f9ff;--on-s:#191c20;--on-sv:#44474e;--o:#74777f;--ov:#c4c6d0;--c0:#fff;--c1:#f3f3fa;--c2:#edeef4;--c3:#e7e8ee;--c4:#e2e2e9;
+  --g1:#2f80ed;--g2:#56ccf2;
+  --cookie:polygon(50.0% 0.0%, 53.2% 0.9%, 56.1% 3.5%, 58.6% 6.8%, 60.7% 9.9%, 62.9% 12.0%, 65.5% 12.7%, 68.7% 12.1%, 72.5% 11.0%, 76.5% 10.3%, 80.2% 10.6%, 82.9% 12.5%, 84.3% 15.7%, 84.6% 19.7%, 84.2% 23.8%, 84.0% 27.3%, 84.6% 30.0%, 86.6% 31.9%, 89.8% 33.5%, 93.5% 35.2%, 96.9% 37.4%, 98.9% 40.3%, 99.2% 43.5%, 97.7% 46.9%, 95.0% 50.0%, 92.1% 52.8%, 90.0% 55.3%, 89.3% 57.8%, 90.1% 60.7%, 91.7% 64.2%, 93.3% 68.0%, 94.1% 71.7%, 93.3% 75.0%, 90.9% 77.3%, 87.2% 78.6%, 83.1% 79.0%, 79.3% 79.3%, 76.4% 80.1%, 74.6% 82.0%, 73.5% 85.1%, 72.5% 89.0%, 71.1% 92.9%, 69.0% 95.8%, 66.0% 97.3%, 62.6% 96.9%, 59.0% 95.1%, 55.6% 92.7%, 52.7% 90.8%, 50.0% 90.0%, 47.3% 90.8%, 44.4% 92.7%, 41.0% 95.1%, 37.4% 96.9%, 34.0% 97.3%, 31.0% 95.8%, 28.9% 92.9%, 27.5% 89.0%, 26.5% 85.1%, 25.4% 82.0%, 23.6% 80.1%, 20.7% 79.3%, 16.9% 79.0%, 12.8% 78.6%, 9.1% 77.3%, 6.7% 75.0%, 5.9% 71.7%, 6.7% 68.0%, 8.3% 64.2%, 9.9% 60.7%, 10.7% 57.8%, 10.0% 55.3%, 7.9% 52.8%, 5.0% 50.0%, 2.3% 46.9%, 0.8% 43.5%, 1.1% 40.3%, 3.1% 37.4%, 6.5% 35.2%, 10.2% 33.5%, 13.4% 31.9%, 15.4% 30.0%, 16.0% 27.3%, 15.8% 23.8%, 15.4% 19.7%, 15.7% 15.7%, 17.1% 12.5%, 19.8% 10.6%, 23.5% 10.3%, 27.5% 11.0%, 31.3% 12.1%, 34.5% 12.7%, 37.1% 12.0%, 39.3% 9.9%, 41.4% 6.8%, 43.9% 3.5%, 46.8% 0.9%);
+  --flower:polygon(50.0% 0.0%, 53.2% 0.9%, 56.1% 3.3%, 58.6% 7.0%, 60.4% 11.4%, 61.6% 15.7%, 62.6% 19.6%, 63.6% 22.4%, 65.0% 24.0%, 67.1% 24.4%, 70.0% 23.9%, 73.9% 22.8%, 78.3% 21.7%, 83.0% 21.1%, 87.3% 21.3%, 90.9% 22.6%, 93.3% 25.0%, 94.2% 28.2%, 93.5% 32.0%, 91.5% 35.9%, 88.6% 39.6%, 85.5% 42.9%, 82.6% 45.7%, 80.7% 48.0%, 80.0% 50.0%, 80.7% 52.0%, 82.6% 54.3%, 85.5% 57.1%, 88.6% 60.4%, 91.5% 64.1%, 93.5% 68.0%, 94.2% 71.8%, 93.3% 75.0%, 90.9% 77.4%, 87.3% 78.7%, 83.0% 78.9%, 78.3% 78.3%, 73.9% 77.2%, 70.0% 76.1%, 67.1% 75.6%, 65.0% 76.0%, 63.6% 77.6%, 62.6% 80.4%, 61.6% 84.3%, 60.4% 88.6%, 58.6% 93.0%, 56.1% 96.7%, 53.2% 99.1%, 50.0% 100.0%, 46.8% 99.1%, 43.9% 96.7%, 41.4% 93.0%, 39.6% 88.6%, 38.4% 84.3%, 37.4% 80.4%, 36.4% 77.6%, 35.0% 76.0%, 32.9% 75.6%, 30.0% 76.1%, 26.1% 77.2%, 21.7% 78.3%, 17.0% 78.9%, 12.7% 78.7%, 9.1% 77.4%, 6.7% 75.0%, 5.8% 71.8%, 6.5% 68.0%, 8.5% 64.1%, 11.4% 60.4%, 14.5% 57.1%, 17.4% 54.3%, 19.3% 52.0%, 20.0% 50.0%, 19.3% 48.0%, 17.4% 45.7%, 14.5% 42.9%, 11.4% 39.6%, 8.5% 35.9%, 6.5% 32.0%, 5.8% 28.2%, 6.7% 25.0%, 9.1% 22.6%, 12.7% 21.3%, 17.0% 21.1%, 21.7% 21.7%, 26.1% 22.8%, 30.0% 23.9%, 32.9% 24.4%, 35.0% 24.0%, 36.4% 22.4%, 37.4% 19.6%, 38.4% 15.7%, 39.6% 11.4%, 41.4% 7.0%, 43.9% 3.3%, 46.8% 0.9%);
+  --burst:polygon(50.0% 0.0%, 53.1% 2.2%, 55.6% 7.4%, 57.4% 12.7%, 59.3% 15.2%, 62.2% 14.0%, 66.5% 10.3%, 71.2% 7.0%, 75.0% 6.7%, 76.6% 10.1%, 76.2% 15.9%, 75.1% 21.4%, 75.5% 24.5%, 78.6% 24.9%, 84.1% 23.8%, 89.9% 23.4%, 93.3% 25.0%, 93.0% 28.8%, 89.7% 33.5%, 86.0% 37.8%, 84.8% 40.7%, 87.3% 42.6%, 92.6% 44.4%, 97.8% 46.9%, 100.0% 50.0%, 97.8% 53.1%, 92.6% 55.6%, 87.3% 57.4%, 84.8% 59.3%, 86.0% 62.2%, 89.7% 66.5%, 93.0% 71.2%, 93.3% 75.0%, 89.9% 76.6%, 84.1% 76.2%, 78.6% 75.1%, 75.5% 75.5%, 75.1% 78.6%, 76.2% 84.1%, 76.6% 89.9%, 75.0% 93.3%, 71.2% 93.0%, 66.5% 89.7%, 62.2% 86.0%, 59.3% 84.8%, 57.4% 87.3%, 55.6% 92.6%, 53.1% 97.8%, 50.0% 100.0%, 46.9% 97.8%, 44.4% 92.6%, 42.6% 87.3%, 40.7% 84.8%, 37.8% 86.0%, 33.5% 89.7%, 28.8% 93.0%, 25.0% 93.3%, 23.4% 89.9%, 23.8% 84.1%, 24.9% 78.6%, 24.5% 75.5%, 21.4% 75.1%, 15.9% 76.2%, 10.1% 76.6%, 6.7% 75.0%, 7.0% 71.2%, 10.3% 66.5%, 14.0% 62.2%, 15.2% 59.3%, 12.7% 57.4%, 7.4% 55.6%, 2.2% 53.1%, 0.0% 50.0%, 2.2% 46.9%, 7.4% 44.4%, 12.7% 42.6%, 15.2% 40.7%, 14.0% 37.8%, 10.3% 33.5%, 7.0% 28.8%, 6.7% 25.0%, 10.1% 23.4%, 15.9% 23.8%, 21.4% 24.9%, 24.5% 24.5%, 24.9% 21.4%, 23.8% 15.9%, 23.4% 10.1%, 25.0% 6.7%, 28.8% 7.0%, 33.5% 10.3%, 37.8% 14.0%, 40.7% 15.2%, 42.6% 12.7%, 44.4% 7.4%, 46.9% 2.2%);
+}
+@supports (transition-timing-function:linear(0,1)){:root{--sp:linear(0,.0284,.1016,.2038,.3215,.4444,.5644,.6757,.7748,.8595,.9291,.9838,1.0248,1.0535,1.0716,1.081,1.0835,1.0808,1.0745,1.0659,1.056,1.0457,1.0357,1.0265,1.0183,1.0113,1.0056,1.0011,.9977,.9954,.9939,.9932,.993,.9933,.9938,.9946,.9954,.9962,.9971,.9978,1)}}
+*{box-sizing:border-box;margin:0;padding:0}
+ html{scroll-behavior:smooth;scroll-padding-top:96px;-webkit-text-size-adjust:100%}
+body{font:16px/1.6 var(--font);background:var(--s);color:var(--on-s);-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background-color .4s,color .4s}
+img,svg,canvas{display:block;max-width:100%}img{height:auto}a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+svg.i{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:focus-visible{outline:3px solid var(--p);outline-offset:3px;border-radius:14px}
+::selection{background:var(--pc);color:var(--on-pc)}
+.wrap{width:min(1180px,100% - 40px);margin-inline:auto}
+section{position:relative;padding:112px 0;scroll-margin-top:96px}
+.skip{position:absolute;left:12px;top:-60px;z-index:200;background:var(--p);color:var(--on-p);padding:10px 18px;border-radius:999px;transition:top .2s}.skip:focus{top:12px}
+/* ---------- buttons (pill that morphs to a squircle on hover/press) ---------- */
+.btn{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 26px;border-radius:999px;font-weight:600;white-space:nowrap;transition:border-radius .3s var(--sp),transform .3s var(--sp),box-shadow .2s,background-color .2s}
+.btn::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .2s;z-index:-1}.btn:hover::after{opacity:.09}
+.btn:hover{border-radius:18px}.btn:active{transform:scale(.95);border-radius:14px}
+.btn.lg{height:60px;padding:0 32px;font-size:1.05rem}
+.filled{background:var(--p);color:var(--on-p)}.filled:hover{box-shadow:0 10px 28px color-mix(in srgb,var(--p) 42%,transparent)}
+.tonal{background:var(--sc);color:var(--on-sc)}.outlined{border:1.5px solid var(--o);color:var(--p)}
+.rw{position:absolute;border-radius:50%;background:currentColor;opacity:.18;transform:scale(0);animation:rip .65s cubic-bezier(0,0,0,1) forwards;pointer-events:none}@keyframes rip{to{transform:scale(1);opacity:0}}
+/* ---------- header: floating expressive toolbar ---------- */
+header.top{position:fixed;inset:14px 0 auto;z-index:60;pointer-events:none}
+.bar{pointer-events:auto;display:flex;align-items:center;gap:6px;height:64px;padding:0 10px 0 14px;border-radius:32px;background:color-mix(in srgb,var(--c2) 94%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--ov) 60%,transparent),0 8px 30px rgb(0 0 0/.08);transition:box-shadow .3s,background-color .3s}
+header.top.scrolled .bar{box-shadow:0 0 0 1px color-mix(in srgb,var(--ov) 60%,transparent),0 14px 40px rgb(0 0 0/.16)}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:1.12rem;letter-spacing:-.01em;white-space:nowrap}.brand img{width:40px;height:40px;border-radius:13px;transition:border-radius .3s var(--sp),transform .3s var(--sp)}.brand:hover img{border-radius:50%;transform:rotate(-8deg) scale(1.06)}
+.links{position:relative;display:flex;margin-left:18px;gap:2px}
+.links a{position:relative;z-index:1;padding:9px 16px;border-radius:999px;font-weight:600;font-size:.95rem;color:var(--on-sv);transition:color .25s}.links a:hover{color:var(--on-s)}.links a.on{color:var(--on-sc)}
+.pill{position:absolute;z-index:0;top:0;bottom:0;left:0;width:0;border-radius:999px;background:var(--sc);transition:transform .55s var(--sp),width .55s var(--sp),opacity .3s;opacity:0}
+.tools{margin-left:auto;display:flex;align-items:center;gap:2px}
+.ib{position:relative;overflow:hidden;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--on-sv);transition:background-color .15s,border-radius .3s var(--sp),color .15s,transform .3s var(--sp)}.ib:hover{background:var(--c4);color:var(--on-s);border-radius:16px}.ib:active{transform:scale(.9)}.ib[aria-expanded=true]{background:var(--pc);color:var(--on-pc);border-radius:16px}
+.pw{position:relative}
+.pop{position:absolute;top:calc(100% + 14px);right:0;min-width:210px;background:var(--c3);border-radius:28px;padding:8px;box-shadow:0 18px 50px rgb(0 0 0/.28);opacity:0;visibility:hidden;transform:translateY(-10px) scale(.92);transform-origin:top right;transition:transform .3s var(--sp),opacity .15s,visibility .15s}
+.pop.open{opacity:1;visibility:visible;transform:none}
+.pop>button{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border-radius:18px;text-align:left;font-weight:500;transition:background-color .2s}.pop>button:hover{background:var(--c4)}.pop>button[aria-checked=true]{background:var(--pc);color:var(--on-pc);font-weight:700}
+.pop h4{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--on-sv);padding:8px 12px 6px}
+.sw{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:8px 10px 12px;min-width:236px}
+.sw button,.sw label{position:relative;aspect-ratio:1;border-radius:50%;background:var(--c);display:grid;place-items:center;color:#fff;transition:transform .45s var(--sp),border-radius .45s var(--sp)}
+.sw button:hover,.sw label:hover{transform:scale(1.14)}.sw button svg{opacity:0;transition:opacity .2s}
+.sw button[aria-checked=true]{border-radius:34%;box-shadow:0 0 0 3px var(--c3),0 0 0 5px var(--p)}.sw button[aria-checked=true] svg{opacity:1}
+.sw label{background:conic-gradient(#f44336,#ff9800,#ffeb3b,#4caf50,#00bcd4,#2196f3,#9c27b0,#f44336);overflow:hidden;cursor:pointer}.sw input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.menu{display:none}
+.hcta{height:44px;padding:0 20px;margin-right:6px}
+/* ---------- hero ---------- */
+.hero{padding:150px 0 100px;overflow:hidden}
+.blob{position:absolute;z-index:-1;pointer-events:none;opacity:.5}
+.b1{width:520px;height:520px;background:var(--pc);top:-160px;right:-140px;clip-path:var(--cookie);animation-name:spin,drift}
+.b2{width:420px;height:420px;background:color-mix(in srgb,var(--tc) 70%,transparent);bottom:-140px;left:-120px;clip-path:var(--flower);opacity:.5;}
+@keyframes drift{to{translate:50px 40px}}@keyframes spin{to{rotate:360deg}}
+
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:9px;padding:7px 16px 7px 10px;border-radius:999px;background:var(--pc);color:var(--on-pc);font-size:.88rem;font-weight:700}
+.chip .dot{width:22px;height:22px;background:var(--p);clip-path:var(--cookie);animation:spin 8s linear infinite}
+h1{font-size:clamp(2.6rem,5.2vw,4.4rem);line-height:1.04;letter-spacing:-.035em;font-weight:800;margin:22px 0}
+h1 em{font-style:normal;color:var(--p);position:relative;display:inline-block}
+h1 em svg{position:absolute;left:0;bottom:-.14em;width:100%;height:.28em;overflow:visible}
+h1 em path{stroke:var(--p);stroke-width:5;fill:none;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.4s .8s var(--sf) forwards}@keyframes draw{to{stroke-dashoffset:0}}
+.lead{font-size:1.2rem;color:var(--on-sv);max-width:35rem}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin:34px 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;color:var(--on-sv);font-size:.92rem}.meta span{display:inline-flex;align-items:center;gap:7px}
+/* live demo card */
+.stage{position:relative;perspective:1500px}
+.demo{position:relative;border-radius:44px;padding:30px 30px 26px;color:#fff;overflow:hidden;min-height:430px;display:flex;flex-direction:column;background:linear-gradient(160deg,var(--g1),var(--g2));transition:background .8s;box-shadow:0 30px 80px color-mix(in srgb,var(--g1) 45%,transparent);transform:rotateY(-7deg) rotateX(3deg);transition:transform .18s ease-out,background .6s;transform-style:preserve-3d;will-change:transform}
+.demo canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.demo .top{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.demo .loc{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.3rem}.demo small{display:block;opacity:.85;font-size:.85rem}
+.demo .badge{position:absolute;right:-6px;top:-4px;width:150px;height:150px;display:grid;place-items:center}
+.demo .badge::before{content:"";position:absolute;inset:0;background:rgb(255 255 255/.18);clip-path:var(--cookie);animation:spin 36s linear infinite;will-change:transform}
+.demo .badge svg{position:relative;width:84px;height:84px;stroke-width:1.4;filter:drop-shadow(0 8px 16px rgb(0 0 0/.22));transition:transform .35s var(--sp)}
+.demo .t{position:relative;margin-top:auto;font-size:7.4rem;line-height:.9;font-weight:500;letter-spacing:-.05em;font-variant-numeric:tabular-nums}.demo .t sup{font-size:2.2rem;font-weight:400;vertical-align:top;margin-left:6px;position:relative;top:10px}
+.demo .cond{position:relative;font-size:1.35rem;font-weight:600;margin:6px 0 16px}
+.pills{position:relative;display:flex;flex-wrap:wrap;gap:8px}.pills span{padding:7px 15px;border-radius:999px;background:rgb(255 255 255/.2);font-size:.85rem;font-weight:600}
+.scenes{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px;justify-content:center}
+.scenes button{height:42px;padding:0 16px;border-radius:999px;background:var(--c3);color:var(--on-s);font-weight:600;font-size:.9rem;display:inline-flex;align-items:center;gap:7px;transition:border-radius .3s var(--sp),background-color .25s,color .25s,transform .3s var(--sp)}
+.scenes button:hover{border-radius:14px}.scenes button[aria-pressed=true]{background:var(--p);color:var(--on-p);border-radius:14px}.scenes button:active{transform:scale(.93)}
+.float{position:absolute;display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:22px;background:var(--c1);box-shadow:0 14px 40px rgb(0 0 0/.18);font-weight:700;font-size:.88rem;animation:bob 6s ease-in-out infinite;z-index:3}
+.float .ico{width:34px;height:34px;display:grid;place-items:center;background:var(--tc);color:var(--on-tc);clip-path:var(--cookie)}
+.f1{left:44%;top:-30px}.f2{right:-22px;bottom:150px;animation-delay:-3s}@keyframes bob{50%{transform:translateY(-12px)}}
+/* ---------- marquee ---------- */
+.marq{padding:26px 0;overflow:hidden;background:var(--c1);border-block:1px solid var(--ov);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.marq div{display:flex;gap:14px;width:max-content;animation:mq 38s linear infinite;will-change:transform}.marq:hover div{animation-play-state:paused}
+.marq span{display:inline-flex;align-items:center;gap:10px;padding:10px 22px;border-radius:999px;background:var(--c3);font-weight:700;color:var(--on-sv)}.marq span:nth-child(3n+1){background:var(--pc);color:var(--on-pc)}.marq span:nth-child(3n+2){background:var(--tc);color:var(--on-tc)}
+@keyframes mq{to{transform:translateX(-50%)}}
+/* ---------- section heads ---------- */
+.head{max-width:760px;margin-bottom:56px}.head.center{margin-inline:auto;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--p)}.eyebrow::before{content:"";width:14px;height:14px;background:var(--p);clip-path:var(--flower)}
+h2{font-size:clamp(2rem,4.4vw,3.4rem);line-height:1.08;letter-spacing:-.03em;font-weight:800;margin:12px 0 14px}.sub{font-size:1.1rem;color:var(--on-sv)}
+.alt{background:var(--c1)}
+/* ---------- bento features ---------- */
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{--mx:50%;--my:50%;position:relative;overflow:hidden;grid-column:span 4;padding:28px;border-radius:32px;background:var(--c2);transition:transform .3s var(--sp),background-color .2s;contain:paint}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(360px circle at var(--mx) var(--my),color-mix(in srgb,var(--p) 16%,transparent),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.card:hover{transform:translateY(-5px)}.card:hover::before{opacity:1}
+.card.w6{grid-column:span 6}.card.w8{grid-column:span 8}.card.tint{background:var(--pc);color:var(--on-pc)}.card.tint p{color:inherit;opacity:.85}.card.tint2{background:var(--tc);color:var(--on-tc)}.card.tint2 p{color:inherit;opacity:.85}
+.ico{width:58px;height:58px;display:grid;place-items:center;margin-bottom:18px;background:var(--p);color:var(--on-p);clip-path:var(--cookie);transition:rotate .3s var(--sp)}.card:nth-child(3n+2) .ico{clip-path:var(--flower);background:var(--sc);color:var(--on-sc)}.card:nth-child(3n) .ico{clip-path:var(--burst);background:var(--tc);color:var(--on-tc)}.card:hover .ico{rotate:90deg}
+.card h3{font-size:1.28rem;letter-spacing:-.01em;margin-bottom:6px}.card p{color:var(--on-sv)}
+/* ---------- stats ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+.stat{padding:30px 24px;border-radius:32px;background:var(--sc);color:var(--on-sc);text-align:center;transition:border-radius .35s var(--sp)}.stat:nth-child(even){background:var(--tc);color:var(--on-tc);border-radius:44px 24px 44px 24px}.stat:hover{border-radius:24px 44px 24px 44px}
+.stat b{display:block;font-size:3.4rem;line-height:1;letter-spacing:-.04em;font-weight:800}.stat span{font-weight:600;opacity:.85}
+/* ---------- screenshots ---------- */
+.tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:28px}
+.tabs button{height:44px;padding:0 22px;border-radius:999px;background:var(--c3);font-weight:700;color:var(--on-sv);position:relative;overflow:hidden;transition:border-radius .3s var(--sp),background-color .25s,color .25s,transform .3s var(--sp)}.tabs button:hover{border-radius:15px}.tabs button[aria-selected=true]{background:var(--p);color:var(--on-p);border-radius:15px}.tabs button:active{transform:scale(.94)}
+.shotwrap{position:relative;max-width:1000px;margin-inline:auto}
+.win{border-radius:32px;overflow:hidden;background:var(--c3);box-shadow:0 40px 90px rgb(0 0 0/.22),0 0 0 1px var(--ov);cursor:zoom-in;transition:transform .3s var(--sp)}.win:hover{transform:scale(1.01)}
+.win .bar2{display:flex;align-items:center;gap:7px;padding:13px 18px;background:var(--c4);font-size:.82rem;font-weight:700;color:var(--on-sv)}.win .bar2 i{width:12px;height:12px;border-radius:50%;background:var(--o);opacity:.5}
+.win img{width:100%;aspect-ratio:1280/800;object-fit:cover;transition:opacity .2s,transform .3s var(--sf)}.win img.fade{opacity:0;transform:scale(.985)}
+.cap{text-align:center;color:var(--on-sv);margin-top:20px;min-height:1.6em}
+.lb{position:fixed;inset:0;z-index:120;background:rgb(0 0 0/.82);display:grid;place-items:center;padding:24px;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;cursor:zoom-out}.lb.open{opacity:1;visibility:visible}.lb img{max-height:92vh;border-radius:24px;transform:scale(.9);transition:transform .55s var(--sp)}.lb.open img{transform:none}
+.lb .ib{position:absolute;top:18px;right:18px;color:#fff;background:rgb(255 255 255/.16)}
+.prog{height:4px;width:min(240px,60%);margin:-8px auto 26px;border-radius:4px;background:var(--c4);overflow:hidden}.prog i{display:block;height:100%;width:100%;background:var(--p);border-radius:4px;transform-origin:left;transform:scaleX(0)}
+.prog.run i{animation:fill var(--dur,6s) linear forwards}@keyframes fill{to{transform:scaleX(1)}}
+.shotwrap .nav{position:absolute;top:50%;z-index:5;width:52px;height:52px;margin-top:-26px;background:var(--c1);box-shadow:0 8px 24px rgb(0 0 0/.2);opacity:0;transition:opacity .25s,background-color .2s,border-radius .3s var(--sp)}
+.shotwrap:hover .nav,.shotwrap:focus-within .nav{opacity:1}.nav.prev{left:-26px}.nav.next{right:-26px}
+.win img{touch-action:pan-y}
+@media(hover:none){.shotwrap .nav{display:none}}
+/* ---------- theme lab ---------- */
+.lab{display:grid;grid-template-columns:1fr 1.05fr;gap:48px;align-items:center}
+.palette{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:26px 0 22px;max-width:440px}
+.palette button{position:relative;aspect-ratio:1;border-radius:50%;background:var(--c);display:grid;place-items:center;color:#fff;transition:transform .3s var(--sp),border-radius .3s var(--sp)}.palette button:hover{transform:scale(1.15) rotate(8deg)}.palette button svg{opacity:0;transform:scale(.4);transition:all .4s var(--sp)}.palette button[aria-checked=true]{border-radius:32%;box-shadow:0 0 0 3px var(--c1),0 0 0 5px var(--p)}.palette button[aria-checked=true] svg{opacity:1;transform:none}
+.seg{display:inline-flex;gap:3px;flex-wrap:wrap}.seg button{height:44px;padding:0 20px;font-weight:700;background:var(--c4);color:var(--on-s);border-radius:6px;transition:border-radius .3s var(--sp),background-color .25s,color .25s}.seg button:first-child{border-radius:999px 6px 6px 999px}.seg button:last-child{border-radius:6px 999px 999px 6px}.seg button[aria-checked=true]{background:var(--p);color:var(--on-p);border-radius:999px}
+.lbl{display:block;font-weight:700;font-size:.85rem;color:var(--on-sv);margin:18px 0 8px}
+.mock{background:var(--c0);border-radius:40px;padding:26px;box-shadow:0 30px 70px rgb(0 0 0/.14),0 0 0 1px var(--ov);display:grid;gap:18px;transition:background-color .4s}
+.mock .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.mock .card2{border-radius:28px;padding:20px;background:var(--pc);color:var(--on-pc);display:flex;align-items:center;gap:16px}.mock .card2 .ico{margin:0;width:54px;height:54px}.mock .card2 b{font-size:1.25rem;display:block}
+.mock .tile{flex:1;min-width:120px;border-radius:24px;padding:16px;background:var(--c3)}.mock .tile:nth-child(2){background:var(--sc);color:var(--on-sc)}.mock .tile:nth-child(3){background:var(--tc);color:var(--on-tc)}.mock .tile b{font-size:1.7rem;display:block;line-height:1.1}
+.sw2{width:56px;height:34px;border-radius:99px;background:var(--p);position:relative;transition:background-color .3s}.sw2::after{content:"";position:absolute;right:5px;top:5px;width:24px;height:24px;border-radius:50%;background:var(--on-p);animation:tog 3.2s var(--sp) infinite}@keyframes tog{0%,35%{transform:none}50%,85%{transform:translateX(-22px)}}
+.slider{flex:1;min-width:140px;height:18px;border-radius:99px;background:var(--c4);position:relative}.slider i{position:absolute;inset:0 38% 0 0;background:var(--p);border-radius:99px 6px 6px 99px}.slider b{position:absolute;left:62%;top:-6px;width:6px;height:30px;border-radius:3px;background:var(--p)}
+.fab{width:60px;height:60px;border-radius:20px;background:var(--pc);color:var(--on-pc);display:grid;place-items:center;box-shadow:0 6px 16px rgb(0 0 0/.18);transition:border-radius .3s var(--sp)}.fab:hover{border-radius:50%}
+.wave{height:12px;width:100%;overflow:hidden;border-radius:6px}.wave svg{width:1200px;height:12px;animation:wv 1s linear infinite}@keyframes wv{to{transform:translateX(-30px)}}
+/* ---------- steps ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;counter-reset:s}
+.step{position:relative;padding:34px 28px;border-radius:36px;background:var(--c2);counter-increment:s}.step::before{content:counter(s);display:grid;place-items:center;width:64px;height:64px;font-size:1.8rem;font-weight:800;background:var(--p);color:var(--on-p);clip-path:var(--cookie);margin-bottom:18px}.step:nth-child(2)::before{clip-path:var(--flower);background:var(--sc);color:var(--on-sc)}.step:nth-child(3)::before{clip-path:var(--burst);background:var(--tc);color:var(--on-tc)}.step h3{font-size:1.2rem}.step p{color:var(--on-sv)}
+/* ---------- download ---------- */
+.dl{position:relative;overflow:hidden;border-radius:56px;padding:76px 28px;text-align:center;background:var(--pc);color:var(--on-pc);isolation:isolate}
+.dl::before,.dl::after{content:"";position:absolute;z-index:-1;background:color-mix(in srgb,var(--p) 18%,transparent)}.dl::before{width:420px;height:420px;left:-120px;top:-140px;clip-path:var(--flower)}.dl::after{width:340px;height:340px;right:-90px;bottom:-120px;clip-path:var(--cookie)}
+.dl h2{margin-top:0}.dl .sub{color:inherit;opacity:.85;max-width:38rem;margin:0 auto 32px}.dl .btn.filled{box-shadow:0 14px 34px color-mix(in srgb,var(--p) 35%,transparent)}
+.new{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:760px;margin:36px auto 0}.new li{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;background:color-mix(in srgb,var(--p) 14%,transparent);font-size:.88rem;font-weight:700}.new li svg{width:1em;height:1em}
+.dl .note{margin:20px auto 0;font-size:.92rem;opacity:.85;max-width:40rem}.dl .ver{display:inline-flex;gap:8px;margin-bottom:22px}.dl .ver span{padding:6px 14px;border-radius:999px;background:var(--on-pc);color:var(--pc);font-size:.82rem;font-weight:700}
+/* ---------- faq ---------- */
+.faq{display:grid;gap:10px;max-width:820px;margin-inline:auto}
+.q{border-radius:28px;background:var(--c2);overflow:hidden;transition:border-radius .3s var(--sp),background-color .3s}.q.open{border-radius:36px;background:var(--c3)}
+.q button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;text-align:left;font-weight:700;font-size:1.05rem}.q button svg{transition:transform .3s var(--sp)}.q.open button svg{transform:rotate(180deg)}
+.q .a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s var(--sf)}.q.open .a{grid-template-rows:1fr}.q .a>div{overflow:hidden}.q .a p{padding:0 26px 24px;color:var(--on-sv)}
+/* ---------- footer + fab ---------- */
+footer{padding:56px 0 44px;background:var(--c1);border-top:1px solid var(--ov)}
+.foot{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}.foot p{color:var(--on-sv);font-size:.92rem}.foot a{text-decoration:underline;text-underline-offset:3px}
+.cred{display:inline-flex;align-items:center;gap:8px;font-weight:800}.cred b{padding:3px 12px;border-radius:999px;background:var(--pc);color:var(--on-pc)}.cred b+span+b{background:linear-gradient(90deg,#d97757,#c15f3c);color:#fff}
+.top-fab{position:fixed;right:22px;bottom:22px;z-index:70;width:60px;height:60px;border-radius:22px;background:var(--pc);color:var(--on-pc);display:grid;place-items:center;box-shadow:0 12px 34px rgb(0 0 0/.28);transform:translateY(120px) scale(.6);opacity:0;pointer-events:none;transition:transform .35s var(--sp),opacity .25s,border-radius .3s var(--sp)}
+.top-fab.show{transform:none;opacity:1;pointer-events:auto}.top-fab:hover{border-radius:50%}.top-fab:active{transform:scale(.9)}
+.top-fab svg.ring{position:absolute;inset:0;width:100%;height:100%;rotate:-90deg;overflow:visible}.top-fab circle{fill:none;stroke:var(--p);stroke-width:3;stroke-linecap:round}
+.top-fab .i{position:relative;transition:transform .4s var(--sp)}.top-fab:hover .i{transform:translateY(-3px)}
+/* ---------- reveal ---------- */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .45s var(--sf) var(--d,0ms),transform .55s var(--sp) var(--d,0ms)}.reveal.in{opacity:1;transform:none}
+/* ---------- responsive ---------- */
+@media(max-width:1020px){.hero-grid,.lab{grid-template-columns:1fr}.stage{max-width:520px;margin-inline:auto}.demo{transform:none}.f1{left:auto;right:12px}.f2{right:-6px}.card,.card.w6,.card.w8{grid-column:span 6}.stats{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}
+ .links{display:none;position:absolute;left:0;right:0;top:calc(100% + 10px);flex-direction:column;margin:0;padding:10px;border-radius:32px;background:var(--c3);box-shadow:0 20px 60px rgb(0 0 0/.3)}.links a{padding:14px 18px}.pill{display:none}.links a.on{background:var(--pc);color:var(--on-pc)}.nav-open .links{display:flex;animation:pop .3s var(--sp)}@keyframes pop{from{opacity:0;transform:translateY(-10px) scale(.94)}}.menu{display:grid}.bar{position:relative}}
+@media(max-width:640px){.hcta span{display:none}.hcta{width:44px;padding:0}.shotwrap .nav{display:none}section{padding:78px 0}.hero{padding:118px 0 70px}.card,.card.w6,.card.w8{grid-column:span 12}.demo{min-height:390px;padding:24px}.demo .t{font-size:5.6rem}.demo .badge{width:120px;height:120px}.demo .badge svg{width:64px;height:64px}.palette{grid-template-columns:repeat(4,1fr)}.dl{padding:56px 20px;border-radius:40px}.brand span{display:none}.float{display:none}.btn.lg{width:100%}.stat b{font-size:2.6rem}.mock{padding:18px;border-radius:32px}.top-fab{right:14px;bottom:14px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.28s}
+</style>
+</head>
+<body>
+<a class="skip" href="#features" data-i="skip">Skip to content</a>
+<header class="top" id="top"><div class="wrap" style="position:relative"><div class="bar" id="bar">
+  <a class="brand" href="#home" aria-label="Material Weather"><img src="src-tauri/icons/128x128.png" alt="" width="40" height="40" /><span>Material Weather</span></a>
+  <nav class="links" id="links" aria-label="Main"><i class="pill" id="pill"></i><a href="#features" data-i="nav_features"></a><a href="#screens" data-i="nav_screens"></a><a href="#themes" data-i="nav_themes"></a><a href="#download" data-i="nav_download"></a><a href="#faq" data-i="nav_faq"></a></nav>
+  <div class="tools">
+    <a class="btn filled hcta" data-dl href="#download" download><svg data-ic="download"></svg><span data-i="dl_short"></span></a>
+    <div class="pw"><button class="ib" id="bTheme" aria-label="Theme" aria-haspopup="true" aria-expanded="false"><svg data-ic="sunmoon"></svg></button>
+      <div class="pop" id="pTheme" role="menu"><h4 data-i="t_title"></h4><button role="menuitemradio" data-theme="light"><svg data-ic="sun"></svg><span data-i="t_light"></span></button><button role="menuitemradio" data-theme="dark"><svg data-ic="moon"></svg><span data-i="t_dark"></span></button><button role="menuitemradio" data-theme="system"><svg data-ic="monitor"></svg><span data-i="t_system"></span></button></div></div>
+    <div class="pw"><button class="ib" id="bLang" aria-label="Language" aria-haspopup="true" aria-expanded="false"><svg data-ic="globe"></svg></button>
+      <div class="pop" id="pLang" role="menu"><h4 data-i="l_title"></h4><button role="menuitemradio" data-lang="en">English</button><button role="menuitemradio" data-lang="vi">Tiếng Việt</button></div></div>
+    <div class="pw"><button class="ib" id="bColor" aria-label="Colour" aria-haspopup="true" aria-expanded="false"><svg data-ic="palette"></svg></button>
+      <div class="pop" id="pColor"><h4 data-i="c_title"></h4><div class="sw" id="swatches"></div></div></div>
+    <button class="ib menu" id="bMenu" aria-label="Menu" aria-expanded="false"><svg data-ic="menu"></svg></button>
+  </div></div></div></header>
+
+<main id="home">
+<section class="hero"><i class="blob b1"></i><i class="blob b2"></i><div class="wrap hero-grid">
+  <div>
+    <span class="chip reveal"><i class="dot"></i><span data-i="chip"></span></span>
+    <h1 class="reveal" style="--d:80ms"><span data-i="h1a"></span> <em><span data-i="h1b"></span><svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M4 12 Q 40 -2 76 12 T 148 12 T 220 12 T 296 12"/></svg></em></h1>
+    <p class="lead reveal" style="--d:160ms" data-i="lead"></p>
+    <div class="cta reveal" style="--d:240ms">
+      <a class="btn filled lg" data-dl href="#download" download><svg data-ic="download"></svg><span data-i="dl_btn"></span></a>
+      <a class="btn tonal lg" data-gh href="#" target="_blank" rel="noopener"><svg data-ic="github"></svg><span data-i="gh"></span></a>
+    </div>
+    <div class="meta reveal" style="--d:320ms"><span><svg data-ic="shield"></svg><span data-i="m1"></span></span><span><svg data-ic="tag"></svg><span data-i="m2"></span></span><span><svg data-ic="sparkle"></svg><span data-i="m3"></span></span></div>
+  </div>
+  <div class="reveal" style="--d:200ms">
+    <div class="stage" id="stage">
+      <div class="demo" id="demo" aria-label="Interactive weather demo">
+        <canvas id="fx" aria-hidden="true"></canvas>
+        <div class="top"><div><div class="loc"><svg data-ic="pin2"></svg><span data-i="city"></span></div><small data-i="date"></small></div><div class="badge"><svg id="demoIcon" viewBox="0 0 24 24" class="i"></svg></div></div>
+        <div class="t"><span id="demoT">31</span><sup>°C</sup></div>
+        <div class="cond" id="demoC"></div>
+        <div class="pills"><span id="p1"></span><span id="p2"></span><span id="p3"></span></div>
+      </div>
+      <div class="float f1"><span class="ico"><svg data-ic="umbrella"></svg></span><span data-i="fl1"></span></div>
+      <div class="float f2"><span class="ico"><svg data-ic="leaf"></svg></span><span data-i="fl2"></span></div>
+      <div class="scenes" id="scenes" role="group" aria-label="Weather scenes"></div>
+    </div>
+  </div>
+</div></section>
+
+<div class="marq" aria-hidden="true"><div id="marq"></div></div>
+
+<section id="features"><div class="wrap">
+  <div class="head center reveal"><div class="eyebrow" data-i="nav_features"></div><h2 data-i="f_title"></h2><p class="sub" data-i="f_sub"></p></div>
+  <div class="bento" id="bento"></div>
+  <div class="stats" id="stats"></div>
+</div></section>
+
+<section id="screens" class="alt"><div class="wrap">
+  <div class="head center reveal"><div class="eyebrow" data-i="nav_screens"></div><h2 data-i="s_title"></h2><p class="sub" data-i="s_sub"></p></div>
+  <div class="tabs reveal" id="tabs" role="tablist" aria-label="Screenshots"></div>
+  <div class="prog reveal" aria-hidden="true"><i id="prog"></i></div>
+  <div class="shotwrap reveal" id="shotwrap"><button class="ib nav prev" id="shPrev" aria-label="Previous"><svg data-ic="chevl"></svg></button><button class="ib nav next" id="shNext" aria-label="Next"><svg data-ic="chevr"></svg></button><div class="win" id="shot" tabindex="0" role="button" aria-label="Open screenshot"><div class="bar2"><i></i><i></i><i></i><span>Material Weather</span></div><img id="shotImg" src="screenshots/image01.png" alt="" width="1280" height="800" loading="lazy" /></div></div>
+  <p class="cap" id="cap"></p>
+</div></section>
+
+<section id="themes"><div class="wrap lab">
+  <div class="reveal">
+    <div class="eyebrow" data-i="nav_themes"></div><h2 data-i="th_title"></h2><p class="sub" data-i="th_sub"></p>
+    <span class="lbl" data-i="th_color"></span><div class="palette" id="palette" role="radiogroup"></div>
+    <span class="lbl" data-i="th_mode"></span><div class="seg" id="segMode" role="radiogroup"><button role="radio" data-theme="light"><span data-i="t_light"></span></button><button role="radio" data-theme="dark"><span data-i="t_dark"></span></button><button role="radio" data-theme="system"><span data-i="t_system"></span></button></div>
+    <span class="lbl" data-i="th_style"></span><div class="seg" id="segStyle" role="radiogroup"><button role="radio" data-style="tonal"><span data-i="st_tonal"></span></button><button role="radio" data-style="vibrant"><span data-i="st_vibrant"></span></button><button role="radio" data-style="expressive"><span data-i="st_expressive"></span></button></div>
+  </div>
+  <div class="mock reveal" style="--d:140ms" aria-hidden="true">
+    <div class="card2"><span class="ico"><svg data-ic="sun"></svg></span><div><b data-i="mk1"></b><span data-i="mk2"></span></div></div>
+    <div class="row"><div class="tile"><span data-i="mk3"></span><b>62%</b></div><div class="tile"><span data-i="mk4"></span><b>12 km/h</b></div><div class="tile"><span data-i="mk5"></span><b>AQI 78</b></div></div>
+    <div class="row"><span class="btn filled" style="pointer-events:none"><svg data-ic="locate"></svg><span data-i="mk6"></span></span><span class="btn tonal" style="pointer-events:none"><span data-i="mk7"></span></span><span class="btn outlined" style="pointer-events:none"><span data-i="mk8"></span></span></div>
+    <div class="row"><span class="sw2"></span><div class="slider"><i></i><b></b></div><span class="fab"><svg data-ic="locate"></svg></span></div>
+    <div class="wave"><svg viewBox="0 0 1200 12" preserveAspectRatio="none"><path d="M0 6 q7.5 -8 15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0 t15 0" fill="none" stroke="var(--p)" stroke-width="3" stroke-linecap="round"/></svg></div>
+  </div>
+</div></section>
+
+<section class="alt"><div class="wrap">
+  <div class="head center reveal"><div class="eyebrow" data-i="how_eyebrow"></div><h2 data-i="how_title"></h2></div>
+  <div class="steps"><div class="step reveal"><h3 data-i="st1"></h3><p data-i="st1d"></p></div><div class="step reveal" style="--d:100ms"><h3 data-i="st2"></h3><p data-i="st2d"></p></div><div class="step reveal" style="--d:200ms"><h3 data-i="st3"></h3><p data-i="st3d"></p></div></div>
+</div></section>
+
+<section id="download"><div class="wrap"><div class="dl reveal">
+  <div class="ver"><span>v1.2.0</span><span>Windows 10/11 · x64</span><span>MIT</span></div>
+  <h2 data-i="d_title"></h2><p class="sub" data-i="d_sub"></p>
+  <a class="btn filled lg" data-dl href="#download" download><svg data-ic="download"></svg><span data-i="dl_btn"></span></a>
+  <ul class="new" id="newList"></ul>
+  <p class="note" id="osNote"></p>
+</div></div></section>
+
+<section id="faq" class="alt"><div class="wrap">
+  <div class="head center reveal"><div class="eyebrow">FAQ</div><h2 data-i="q_title"></h2></div>
+  <div class="faq reveal" id="faqList"></div>
+</div></section>
+</main>
+
+<footer><div class="wrap foot">
+  <div><div class="cred"><b>minhtrong67</b><span>×</span><b>Claude</b></div><p style="margin-top:10px"><span data-i="lic"></span> · <a data-gh href="#" target="_blank" rel="noopener">GitHub</a> · <a href="https://open-meteo.com/" target="_blank" rel="noopener" data-i="data"></a></p></div>
+  <p>© 2026 minhtrong67 · <span data-i="by"></span></p>
+</div></footer>
+
+<button class="top-fab" id="toTop" aria-label="Scroll to top"><svg class="ring" viewBox="0 0 60 60" aria-hidden="true"><circle id="ring" cx="30" cy="30" r="27" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg><svg data-ic="arrowup"></svg></button>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Screenshot"><button class="ib" id="lbX" aria-label="Close"><svg data-ic="x"></svg></button><img id="lbImg" alt="" /></div>
+<noscript><p style="padding:24px;text-align:center">Material Weather — a free, open-source Material 3 Expressive desktop weather app. Enable JavaScript to see the full page, or read the README.</p></noscript>
+<script>
+/* ---------- config (edit these) ---------- */
+const DOWNLOAD_URL = 'download/Material%20Weather_1.2.0_x64-setup.exe';
+const REPO_URL = 'https://github.com/minhtrong67/material-weather';
+
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const IC={
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+ moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/>',monitor:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+ sunmoon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/><path d="M19 2v3M17.5 3.5h3"/>',
+ globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+ palette:'<circle cx="13.5" cy="6.5" r=".6"/><circle cx="17.5" cy="10.5" r=".6"/><circle cx="8.5" cy="7.5" r=".6"/><circle cx="6.5" cy="12.5" r=".6"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.6-.7 1.6-1.6 0-.4-.2-.8-.5-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.6 1.6-1.6H16c3 0 6-2.5 6-5.5C22 6 17.5 2 12 2z"/>',
+ menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',check:'<path d="M20 6 9 17l-5-5"/>',chev:'<path d="m6 9 6 6 6-6"/>',arrowup:'<path d="m5 12 7-7 7 7M12 19V5"/>',
+ download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/>',
+ github:'<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>',
+ shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+ tag:'<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r=".6"/>',
+ sparkle:'<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 3v4M17 5h4"/>',
+ umbrella:'<path d="M12 3a9 9 0 0 0-9 9h18a9 9 0 0 0-9-9zM12 12v6a2 2 0 0 0 4 0"/>',leaf:'<path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14z"/><path d="M5 19c3-4 6-6 10-8"/>',
+ bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',pin:'<path d="M12 17v5M9 3h6l-1 7 3 3v2H7v-2l3-3z"/>',
+ pin2:'<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
+ type:'<path d="M4 7V4h16v3M9 20h6M12 4v16"/>',kbd:'<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/>',
+ locate:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/>',
+ layers:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/>',gauge:'<path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/>',
+ cloud:'<path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9z"/>',
+ rain:'<path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2"/><path d="M16 14v6M8 14v6M12 16v6"/>',
+ snow:'<path d="M2 12h20M12 2v20M20 16l-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4"/>',
+ bolt:'<path d="M6 16.3A4.5 4.5 0 0 1 7.5 7.5a7 7 0 0 1 13.4 2.7 4 4 0 0 1-1.4 6.1"/><path d="m13 11-4 6h6l-4 6"/>',
+ wand:'<path d="m15 4 5 5L9 20l-5-5zM14 5l5 5M5 3v3M3.5 4.5h3M19 15v3M17.5 16.5h3"/>',
+ chevl:'<path d="m15 18-6-6 6-6"/>',chevr:'<path d="m9 18 6-6-6-6"/>',
+ backup:'<path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/>'
+};
+const svgOf=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${IC[n]||''}</svg>`;
+$$('svg[data-ic]').forEach(s=>{s.setAttribute('viewBox','0 0 24 24');s.setAttribute('aria-hidden','true');s.classList.add('i');s.innerHTML=IC[s.dataset.ic]||''});
+$('.wave path').setAttribute('d','M0 6 q7.5 -8 15 0'+' t15 0'.repeat(79));
+
+/* ---------- content (EN / VI) ---------- */
+const L={en:{skip:'Skip to content',nav_features:'Features',nav_screens:'Screenshots',nav_themes:'Themes',nav_download:'Download',nav_faq:'FAQ',dl_short:'Download',
+ t_title:'Appearance',l_title:'Language',c_title:'Theme colour',t_light:'Light',t_dark:'Dark',t_system:'System',
+ chip:'Free & open source · Material 3 Expressive',h1a:'Weather with',h1b:'real personality.',
+ lead:'A fast, beautiful desktop weather app: live forecasts, air quality, smart tips and springy Material 3 Expressive design — in English and Tiếng Việt.',
+ dl_btn:'Download for Windows',gh:'View on GitHub',m1:'No ads · no tracking',m2:'Free · MIT license',m3:'Tauri 2 · tiny & fast',
+ city:'Hà Nội',date:'Sunday, October 25',fl1:'Rain likely at 5 PM',fl2:'Air quality: Moderate',
+ f_title:'Everything you need, with a little extra joy',f_sub:'Thoughtful features, expressive shapes and springy motion — packed in a small native app.',
+ s_title:'See it in action',s_sub:'Light, dark and every colour you can imagine.',
+ th_title:'Your colour. Your style.',th_sub:'Pick any seed colour and the whole interface is rebuilt from Material tonal palettes — surfaces, buttons, charts. Try it live, this page changes too.',
+ th_color:'Seed colour',th_mode:'Appearance',th_style:'Colour style',st_tonal:'Tonal',st_vibrant:'Vibrant',st_expressive:'Expressive',
+ mk1:'Partly cloudy',mk2:'Feels like 37°',mk3:'Humidity',mk4:'Wind',mk5:'Air',mk6:'Use my location',mk7:'Refresh',mk8:'Details',
+ how_eyebrow:'Get started',how_title:'Up and running in three steps',st1:'Download',st1d:'Grab the installer — it is a few MB and available in English and Tiếng Việt.',st2:'Install',st2d:'Run it, pick your language and finish in seconds. No account needed.',st3:'Enjoy',st3d:'Allow location (or search a city) and watch the forecast come alive.',
+ d_title:'Get Material Weather',d_sub:'Free forever. No account, no ads, no tracking. Download the installer and you are ready in seconds.',
+ osNote:'The installer is for Windows 10/11 (x64). On macOS or Linux, build from source with “npm run build”.',osNoteOther:'You are not on Windows — build from source with “npm run build” (see the README on GitHub).',
+ osMissing:'The installer file is not uploaded yet — put it into the “download” folder, or build it yourself with “npm run build”.',
+ q_title:'Frequently asked questions',by:'Created by minhtrong67 with the support of Claude',lic:'Released under the MIT License',data:'Weather data by Open-Meteo.com',
+ tabs:['Home','Dark','Teal','Settings'],stat:['Fonts','Material colours','Languages','Day forecast']},
+ vi:{skip:'Bỏ qua đến nội dung',nav_features:'Tính năng',nav_screens:'Ảnh chụp',nav_themes:'Giao diện',nav_download:'Tải về',nav_faq:'Hỏi đáp',dl_short:'Tải về',
+ t_title:'Giao diện',l_title:'Ngôn ngữ',c_title:'Màu chủ đề',t_light:'Sáng',t_dark:'Tối',t_system:'Hệ thống',
+ chip:'Miễn phí & mã nguồn mở · Material 3 Expressive',h1a:'Thời tiết có',h1b:'cá tính riêng.',
+ lead:'Ứng dụng thời tiết nhanh và đẹp cho máy tính: dự báo trực tiếp, chất lượng không khí, gợi ý thông minh và thiết kế Material 3 Expressive đầy chuyển động — tiếng Anh và tiếng Việt.',
+ dl_btn:'Tải cho Windows',gh:'Xem trên GitHub',m1:'Không quảng cáo · không theo dõi',m2:'Miễn phí · Giấy phép MIT',m3:'Tauri 2 · nhỏ & nhanh',
+ city:'Hà Nội',date:'Chủ nhật, 25 tháng 10',fl1:'Có thể mưa lúc 17h',fl2:'Không khí: Trung bình',
+ f_title:'Đủ mọi thứ bạn cần, thêm chút niềm vui',f_sub:'Tính năng tinh tế, hình khối biểu cảm và chuyển động đàn hồi — trong một ứng dụng native nhỏ gọn.',
+ s_title:'Xem thực tế',s_sub:'Sáng, tối và mọi màu sắc bạn muốn.',
+ th_title:'Màu của bạn. Phong cách của bạn.',th_sub:'Chọn một màu gốc bất kỳ, toàn bộ giao diện — nền, nút, biểu đồ — được tạo lại từ bảng màu Material. Thử trực tiếp, cả trang này cũng đổi theo.',
+ th_color:'Màu gốc',th_mode:'Giao diện',th_style:'Kiểu màu',st_tonal:'Dịu',st_vibrant:'Rực rỡ',st_expressive:'Biểu cảm',
+ mk1:'Có mây rải rác',mk2:'Cảm giác như 37°',mk3:'Độ ẩm',mk4:'Gió',mk5:'Không khí',mk6:'Vị trí của tôi',mk7:'Làm mới',mk8:'Chi tiết',
+ how_eyebrow:'Bắt đầu',how_title:'Sẵn sàng chỉ với ba bước',st1:'Tải về',st1d:'Tải bộ cài — chỉ vài MB, có tiếng Anh và tiếng Việt.',st2:'Cài đặt',st2d:'Chạy file, chọn ngôn ngữ và xong trong vài giây. Không cần tài khoản.',st3:'Tận hưởng',st3d:'Cho phép vị trí (hoặc tìm thành phố) và xem dự báo sống động.',
+ d_title:'Tải Material Weather',d_sub:'Miễn phí mãi mãi. Không tài khoản, không quảng cáo, không theo dõi. Tải bộ cài và dùng ngay sau vài giây.',
+ osNote:'Bộ cài dành cho Windows 10/11 (x64). Trên macOS hoặc Linux, hãy build từ mã nguồn bằng “npm run build”.',osNoteOther:'Bạn không dùng Windows — hãy build từ mã nguồn bằng “npm run build” (xem README trên GitHub).',
+ osMissing:'File bộ cài chưa được tải lên — hãy bỏ vào thư mục “download”, hoặc tự build bằng “npm run build”.',
+ q_title:'Câu hỏi thường gặp',by:'Tác giả minhtrong67 với sự hỗ trợ của Claude',lic:'Phát hành theo giấy phép MIT',data:'Dữ liệu thời tiết bởi Open-Meteo.com',
+ tabs:['Trang chủ','Tối','Xanh ngọc','Cài đặt'],stat:['Phông chữ','Màu Material','Ngôn ngữ','Ngày dự báo']}};
+const FEATS=[
+ ['sun','Live weather','Thời tiết trực tiếp','Temperature, feels-like, humidity, wind, pressure, UV, visibility, dew point and a comparison with yesterday.','Nhiệt độ, cảm giác như, độ ẩm, gió, áp suất, UV, tầm nhìn, điểm sương và so sánh với hôm qua.'],
+ ['gauge','Hourly & 7-day forecast','Dự báo theo giờ & 7 ngày','Animated charts for temperature, rain, wind and humidity.','Biểu đồ chuyển động cho nhiệt độ, mưa, gió, độ ẩm.'],
+ ['leaf','Air quality','Chất lượng không khí','US AQI with PM2.5, PM10, ozone, NO₂, SO₂, CO.','Chỉ số AQI cùng PM2.5, PM10, ôzôn, NO₂, SO₂, CO.'],
+ ['sparkle','Smart tips','Gợi ý thông minh','Umbrella, UV, heat, cold and wind advice from the forecast.','Gợi ý ô, chống nắng, nóng, lạnh, gió từ dự báo.'],
+ ['bell','Weather alerts','Cảnh báo thời tiết','Desktop notifications before rain or thunderstorms.','Thông báo trên máy tính trước khi có mưa hoặc giông.'],
+ ['palette','Dynamic colour','Màu sắc linh hoạt','Light, dark or system · 12 Material colours · custom and adaptive colour · Tonal, Vibrant and Expressive styles.','Sáng, tối hoặc theo hệ thống · 12 màu Material · màu tuỳ chọn và thích ứng · kiểu Dịu, Rực rỡ, Biểu cảm.'],
+ ['wand','Expressive motion','Chuyển động biểu cảm','Shape-morphing buttons, springy transitions, wavy progress and a morphing loader.','Nút biến hình, chuyển động đàn hồi, thanh tiến trình lượn sóng và biểu tượng tải biến hình.'],
+ ['type','Fonts & text size','Phông chữ & cỡ chữ','System font, Roboto, Inter, Open Sans or Be Vietnam Pro in 3 sizes.','Phông hệ thống, Roboto, Inter, Open Sans hoặc Be Vietnam Pro, 3 cỡ chữ.'],
+ ['locate','Location, with permission','Vị trí có xin quyền','Asks first, with an approximate IP fallback.','Hỏi trước khi dùng, có phương án gần đúng theo IP.'],
+ ['layers','Saved places','Địa điểm đã lưu','Search any city, set a home place, Alt+↑/↓ to switch.','Tìm mọi thành phố, đặt nơi mặc định, Alt+↑/↓ để chuyển.'],
+ ['pin','Made for the desktop','Sinh ra cho máy tính','Remember window size or open maximized, always-on-top, single instance, offline cache and one-click settings backup.','Nhớ kích thước cửa sổ hoặc luôn mở tối đa, luôn trên cùng, chỉ một cửa sổ, cache ngoại tuyến và sao lưu cài đặt một chạm.'],
+ ['kbd','Keyboard first','Ưu tiên bàn phím','Ctrl+K search, F5 refresh, Ctrl+, settings, ? help.','Ctrl+K tìm kiếm, F5 làm mới, Ctrl+, cài đặt, ? trợ giúp.']];
+const SPANS=['w8 tint','','','','','w6 tint2','w6','','','','w8 tint',''];
+const SHOTS=[['screenshots/image01.png','Home — current weather and smart tips','Trang chủ — thời tiết hiện tại và gợi ý'],['screenshots/image02.png','Dark mode, Tiếng Việt, Be Vietnam Pro font','Chế độ tối, tiếng Việt, phông Be Vietnam Pro'],['screenshots/image03.png','Teal theme and air-quality details','Giao diện xanh ngọc và chi tiết chất lượng không khí'],['screenshots/image04.png','Settings — theme, colour style, typography, language','Cài đặt — giao diện, kiểu màu, kiểu chữ, ngôn ngữ']];
+const FAQ=[['Is it really free?','Có thật sự miễn phí không?','Yes. Material Weather is open source under the MIT license — no account, ads or tracking.','Có. Material Weather là mã nguồn mở theo giấy phép MIT — không tài khoản, quảng cáo hay theo dõi.'],
+ ['Where does the weather data come from?','Dữ liệu thời tiết lấy từ đâu?','From Open-Meteo.com, a free weather API that needs no key.','Từ Open-Meteo.com, một API thời tiết miễn phí không cần khoá.'],
+ ['Why does it ask for my location?','Vì sao ứng dụng xin vị trí?','To show the forecast where you are. Your location stays on your computer; you can decline and search cities instead, or use an approximate location from your IP.','Để hiển thị dự báo nơi bạn đang ở. Vị trí chỉ nằm trên máy bạn; bạn có thể từ chối và tìm thành phố, hoặc dùng vị trí gần đúng theo IP.'],
+ ['What is Material 3 Expressive?','Material 3 Expressive là gì?','Google’s latest Material Design update: bolder colour, richer shapes that morph, springy motion and emphasized type. Material Weather applies these ideas throughout.','Bản cập nhật Material Design mới nhất của Google: màu đậm hơn, hình khối biến hình, chuyển động đàn hồi và kiểu chữ nhấn mạnh. Material Weather áp dụng xuyên suốt.'],
+ ['Does it work on macOS and Linux?','Có chạy trên macOS và Linux không?','The project builds with Tauri on all three platforms — run “npm install” then “npm run build”. The ready-made installer here is for Windows.','Dự án build được bằng Tauri trên cả ba hệ điều hành — chạy “npm install” rồi “npm run build”. Bộ cài sẵn ở đây dành cho Windows.']];
+const NEW=[['Expressive design, springs & shape morphing','Thiết kế Expressive, spring & biến hình'],['12 colours + Tonal / Vibrant / Expressive','12 màu + kiểu Dịu / Rực rỡ / Biểu cảm'],['Interactive hourly chart','Biểu đồ giờ tương tác'],['Settings backup','Sao lưu cài đặt'],['Single instance','Chỉ một cửa sổ'],['Back-to-top pill','Thanh mini lên đầu trang']];
+const TECH=['Tauri 2','React 18','TypeScript','Tailwind CSS 4','Vite 6','Material 3 Expressive','Lucide Icons','Open-Meteo','English · Tiếng Việt','MIT · Open source'];
+
+/* ---------- language ---------- */
+let lang=localStorage.getItem('mw.lang')||((navigator.language||'en').toLowerCase().startsWith('vi')?'vi':'en'),shot=0,scene=0,downloadOk=true;
+const vi=()=>lang==='vi';
+function applyLang(){const d=L[lang];document.documentElement.lang=lang;
+ $$('[data-i]').forEach(e=>{const v=d[e.dataset.i];if(v!=null)e.textContent=v});
+ $('#bento').innerHTML=FEATS.map((f,i)=>`<article class="card reveal in ${SPANS[i]}" style="--d:${(i%3)*70}ms"><div class="ico">${svgOf(f[0])}</div><h3>${vi()?f[2]:f[1]}</h3><p>${vi()?f[4]:f[3]}</p></article>`).join('');
+ const nums=[5,12,2,7];$('#stats').innerHTML=d.stat.map((s,i)=>`<div class="stat reveal in"><b data-n="${nums[i]}">${nums[i]}</b><span>${s}</span></div>`).join('');
+ observeStats();
+ $('#faqList').innerHTML=FAQ.map((f,i)=>`<div class="q" id="q${i}"><button aria-expanded="false" aria-controls="a${i}">${vi()?f[1]:f[0]}${svgOf('chev')}</button><div class="a" id="a${i}" role="region"><div><p>${vi()?f[3]:f[2]}</p></div></div></div>`).join('');
+ $('#tabs').innerHTML=d.tabs.map((n,i)=>`<button role="tab" aria-selected="${i===shot}" data-s="${i}">${n}</button>`).join('');
+ renderNew();setShot(shot,false);buildScenes();setScene(scene,false);updateNote();
+ $$('#pLang button').forEach(b=>b.setAttribute('aria-checked',b.dataset.lang===lang));
+ document.title=vi()?'Material Weather — Ứng dụng thời tiết Material 3 Expressive cho máy tính':'Material Weather — Material 3 Expressive weather app for desktop';
+ localStorage.setItem('mw.lang',lang);requestAnimationFrame(movePill)}
+function renderNew(){$('#newList').innerHTML=NEW.map(n=>`<li>${svgOf('sparkle')}${vi()?n[1]:n[0]}</li>`).join('')}
+function updateNote(){const d=L[lang];$('#osNote').textContent=!downloadOk?d.osMissing:d[/Windows/i.test(navigator.userAgent)?'osNote':'osNoteOther']}
+$('#newList').innerHTML=''; 
+$('#marq').innerHTML=[...TECH,...TECH].map(t=>`<span>${svgOf('sparkle')}${t}</span>`).join('');
+
+/* ---------- screenshots ---------- */
+function setShot(i,anim=true){shot=i;const img=$('#shotImg'),t=SHOTS[i][vi()?2:1];
+ const apply=()=>{img.src=SHOTS[i][0];img.alt=t;$('#cap').textContent=t;img.classList.remove('fade')};
+ $$('#tabs button').forEach((b,k)=>b.setAttribute('aria-selected',k===i));if(anim&&!reduce){img.classList.add('fade');setTimeout(apply,230)}else apply()}
+const SH_MS=6500;let shTimer=0,shPaused=false,shVisible=false,shUser=false;
+function shRestart(){clearTimeout(shTimer);const p=$('#prog');p.parentElement.classList.remove('run');void p.offsetWidth;
+ if(reduce||shUser||shPaused||!shVisible)return;p.parentElement.style.setProperty('--dur',SH_MS+'ms');p.parentElement.classList.add('run');shTimer=setTimeout(()=>{setShot((shot+1)%SHOTS.length);},SH_MS)}
+const _setShot=setShot;setShot=function(i,anim=true){_setShot(i,anim);shRestart()};
+function userShot(i){shUser=true;setShot((i+SHOTS.length)%SHOTS.length)}
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)userShot(+b.dataset.s)});
+$('#tabs').addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();userShot(shot+(e.key==='ArrowRight'?1:-1));$$('#tabs button')[shot].focus()});
+$('#shPrev').addEventListener('click',()=>userShot(shot-1));$('#shNext').addEventListener('click',()=>userShot(shot+1));
+const sw=$('#shotwrap');let sx=null;sw.addEventListener('pointerdown',e=>{sx=e.clientX});sw.addEventListener('pointerup',e=>{if(sx!=null&&Math.abs(e.clientX-sx)>50){e.preventDefault();userShot(shot+(e.clientX<sx?1:-1));lb.dataset.sw='1'}sx=null});
+sw.addEventListener('pointerenter',()=>{shPaused=true;shRestart()});sw.addEventListener('pointerleave',()=>{shPaused=false;shRestart()});
+new IntersectionObserver(es=>{shVisible=es[0].isIntersecting;shRestart()},{threshold:.35}).observe(sw);
+const lb=$('#lb'),lbImg=$('#lbImg');
+const openLb=()=>{lbImg.src=SHOTS[shot][0];lbImg.alt=SHOTS[shot][vi()?2:1];lb.classList.add('open')},closeLb=()=>lb.classList.remove('open');
+$('#shot').addEventListener('click',()=>{if(lb.dataset.sw){delete lb.dataset.sw;return}openLb()});$('#shot').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openLb()}});
+lb.addEventListener('click',e=>{if(e.target!==lbImg)closeLb()});
+
+/* ---------- Material 3 colour: tonal palettes generated in OKLCH from the seed colour ---------- */
+const PRESETS=['#0B57D0','#6750A4','#7B1FA2','#C2185B','#BA1A1A','#E65100','#F9A825','#2E7D32','#00796B','#00838F','#3949AB','#546E7A'];
+let mode=localStorage.getItem('mw.theme')||'system',seed=localStorage.getItem('mw.seed')||PRESETS[0],style=localStorage.getItem('mw.style')||'vibrant';
+const mq=matchMedia('(prefers-color-scheme: dark)');
+function hex2lch(hex){const lin=c=>{c/=255;return c<=.04045?c/12.92:((c+.055)/1.055)**2.4};
+ const r=lin(parseInt(hex.slice(1,3),16)),g=lin(parseInt(hex.slice(3,5),16)),b=lin(parseInt(hex.slice(5,7),16));
+ const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b),m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b),s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+ const A=1.9779984951*l-2.428592205*m+.4505937099*s,B=.0259040371*l+.7827717662*m-.808675766*s;return{C:Math.hypot(A,B),h:(Math.atan2(B,A)*180/Math.PI+360)%360}}
+const tone=(h,C,t)=>{const k=t>=96?.22:t>=88?.5:t<=12?.5:t<=30?.85:1;return`oklch(${Math.pow(t/100,.8).toFixed(3)} ${(C*k).toFixed(3)} ${(h%360).toFixed(1)})`};
+function applyTheme(){const dark=mode==='dark'||(mode==='system'&&mq.matches),{C,h}=hex2lch(seed),R=document.documentElement.style;
+ const k={tonal:{p:Math.min(C,.13),s:.3,t:.5,ts:60,ss:0},vibrant:{p:Math.min(Math.max(C*1.1,.12),.2),s:.5,t:.8,ts:40,ss:0},expressive:{p:Math.min(Math.max(C*1.1,.12),.2),s:.7,t:.9,ts:130,ss:45}}[style];
+ const hp=h,pC=k.p,hs=h+k.ss,sC=pC*k.s,ht=h+k.ts,tC=pC*k.t,nC=style==='tonal'?.012:.02,T=(a,b,c)=>tone(a,b,c);
+ const set=o=>Object.entries(o).forEach(([a,b])=>R.setProperty('--'+a,b));
+ set(dark?{p:T(hp,pC,80),'on-p':T(hp,pC,20),pc:T(hp,pC,30),'on-pc':T(hp,pC,90),sc:T(hs,sC,30),'on-sc':T(hs,sC,90),tc:T(ht,tC,30),'on-tc':T(ht,tC,90),s:T(h,nC,9),'on-s':T(h,nC,90),'on-sv':T(h,nC*1.4,80),o:T(h,nC*1.4,60),ov:T(h,nC*1.4,30),c0:T(h,nC,6),c1:T(h,nC,12),c2:T(h,nC,14),c3:T(h,nC,19),c4:T(h,nC,24)}
+  :{p:T(hp,pC,40),'on-p':'#fff',pc:T(hp,pC,90),'on-pc':T(hp,pC,15),sc:T(hs,sC,90),'on-sc':T(hs,sC,15),tc:T(ht,tC,90),'on-tc':T(ht,tC,15),s:T(h,nC,98),'on-s':T(h,nC,10),'on-sv':T(h,nC*1.4,30),o:T(h,nC*1.4,50),ov:T(h,nC*1.4,80),c0:'#fff',c1:T(h,nC,96),c2:T(h,nC,94),c3:T(h,nC,92),c4:T(h,nC,90)});
+ R.colorScheme=dark?'dark':'light';
+ $$('[data-theme]').forEach(b=>b.setAttribute('aria-checked',b.dataset.theme===mode));
+ $$('[data-style]').forEach(b=>b.setAttribute('aria-checked',b.dataset.style===style));
+ $$('[data-c]').forEach(b=>b.setAttribute('aria-checked',b.dataset.c.toLowerCase()===seed.toLowerCase()))}
+mq.addEventListener('change',applyTheme);
+function swatches(){const mk=()=>PRESETS.map(c=>`<button data-c="${c}" style="--c:${c}" role="radio" aria-label="${c}">${svgOf('check')}</button>`).join('');
+ $('#swatches').innerHTML=mk()+`<label title="Custom"><input type="color" id="custom" value="${seed}" aria-label="Custom colour"/>${svgOf('palette')}</label>`;$('#palette').innerHTML=mk()}
+const vtApply=()=>{if(document.startViewTransition&&!reduce)document.startViewTransition(applyTheme);else applyTheme()};
+const setSeed=c=>{seed=c;localStorage.setItem('mw.seed',c);vtApply()};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(b)setSeed(b.dataset.c);
+ const t=e.target.closest('[data-theme]');if(t){mode=t.dataset.theme;localStorage.setItem('mw.theme',mode);vtApply();closePops()}
+ const st=e.target.closest('[data-style]');if(st){style=st.dataset.style;localStorage.setItem('mw.style',style);vtApply()}
+ const l=e.target.closest('[data-lang]');if(l){lang=l.dataset.lang;applyLang();closePops()}});
+document.addEventListener('input',e=>{if(e.target.id==='custom')setSeed(e.target.value.toUpperCase())});
+const pops=[['bTheme','pTheme'],['bLang','pLang'],['bColor','pColor']];
+function closePops(){pops.forEach(([b,p])=>{$('#'+p).classList.remove('open');$('#'+b).setAttribute('aria-expanded','false')})}
+pops.forEach(([b,p])=>$('#'+b).addEventListener('click',e=>{e.stopPropagation();const o=$('#'+p).classList.contains('open');closePops();if(!o){$('#'+p).classList.add('open');e.currentTarget.setAttribute('aria-expanded','true')}}));
+const navOpen=v=>{document.body.classList.toggle('nav-open',v);$('#bMenu').setAttribute('aria-expanded',String(v))};
+document.addEventListener('click',e=>{if(!e.target.closest('.pw'))closePops();if(!e.target.closest('#bar'))navOpen(false)});
+$('#bMenu').addEventListener('click',e=>{e.stopPropagation();navOpen(!document.body.classList.contains('nav-open'))});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLb();closePops();navOpen(false)}else if(lb.classList.contains('open')&&(e.key==='ArrowRight'||e.key==='ArrowLeft')){setShot((shot+(e.key==='ArrowRight'?1:3))%4,false);lbImg.src=SHOTS[shot][0]}});
+$('#lbX').addEventListener('click',closeLb);
+
+/* ---------- smooth scrolling, scroll-spy, scroll-to-top ---------- */
+ function goTo(id,push=true){const isHome=id==='#home'||id==='#',el=isHome?document.body:$(id);if(!el)return;
+ if(isHome)window.scrollTo({top:0,behavior:'smooth'});else el.scrollIntoView({behavior:'smooth',block:'start'});
+ if(push)history.pushState(null,'',id==='#'?location.pathname+location.search:id);
+ if(el!==document.body){el.setAttribute('tabindex','-1');el.focus({preventScroll:true})}}
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href');if(a.hasAttribute('data-dl')&&downloadOk&&id!=='#download')return;
+ e.preventDefault();navOpen(false);goTo(id)});
+addEventListener('popstate',()=>goTo(location.hash||'#home',false));
+const secs=['features','screens','themes','download','faq'].map(id=>$('#'+id)),links=$$('#links a'),pill=$('#pill');
+function movePill(){const on=$('#links a.on');if(!on||getComputedStyle(pill).display==='none'){pill.style.opacity=0;return}
+ pill.style.opacity=1;pill.style.width=on.offsetWidth+'px';pill.style.transform=`translateX(${on.offsetLeft}px)`}
+const hdr=$('#top'),fab=$('#toTop'),ring=$('#ring');let tick=false;
+function onScroll(){tick=false;const y=scrollY,max=document.documentElement.scrollHeight-innerHeight;
+ hdr.classList.toggle('scrolled',y>12);fab.classList.toggle('show',y>520);ring.style.strokeDashoffset=100-100*Math.min(1,y/Math.max(1,max));
+ let cur=-1;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=innerHeight*.35)cur=i});
+ links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+(secs[cur]?.id||'')));movePill()}
+addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(onScroll)}},{passive:true});addEventListener('resize',()=>{movePill()});
+fab.addEventListener('click',()=>goTo('#home'));
+
+/* ---------- reveal, counters, faq, ripple, spotlight ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+$$('.reveal:not(.in)').forEach(el=>io.observe(el));
+function observeStats(){const so=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;so.unobserve(e.target);const el=e.target,n=+el.dataset.n;if(reduce){return}let t0;const step=t=>{t0??=t;const k=Math.min((t-t0)/1100,1);el.textContent=Math.round(n*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step)};el.textContent='0';requestAnimationFrame(step)}),{threshold:.6});$$('[data-n]').forEach(b=>so.observe(b))}
+document.addEventListener('click',e=>{const b=e.target.closest('.q>button');if(!b)return;const q=b.parentElement,o=q.classList.toggle('open');b.setAttribute('aria-expanded',String(o))});
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('.btn,.ib,.tabs button,.scenes button');if(!b)return;const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,w=document.createElement('span');w.className='rw';w.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;if(getComputedStyle(b).position==='static')b.style.position='relative';b.style.overflow='hidden';b.appendChild(w);w.addEventListener('animationend',()=>w.remove())});
+let pmRaf=0;document.addEventListener('pointermove',e=>{if(pmRaf)return;const t=e.target,x=e.clientX,y=e.clientY;pmRaf=requestAnimationFrame(()=>{pmRaf=0;const c=t.closest?.('.card');if(!c)return;const r=c.getBoundingClientRect();c.style.setProperty('--mx',x-r.left+'px');c.style.setProperty('--my',y-r.top+'px')})},{passive:true});
+const stage=$('#stage'),demo=$('#demo');
+if(!reduce&&matchMedia('(pointer:fine)').matches&&innerWidth>1020){let tiltRaf=0;stage.addEventListener('pointermove',e=>{if(tiltRaf)return;const cx=e.clientX,cy=e.clientY;tiltRaf=requestAnimationFrame(()=>{tiltRaf=0;const r=stage.getBoundingClientRect(),x=(cx-r.left)/r.width-.5,y=(cy-r.top)/r.height-.5;demo.style.transform=`rotateY(${-7+x*12}deg) rotateX(${3-y*10}deg)`})},{passive:true});stage.addEventListener('pointerleave',()=>{demo.style.transform=''})}
+
+/* ---------- interactive weather demo ---------- */
+const SCENES=[
+ {k:'sun',ic:'sun',g:['#2f80ed','#56ccf2'],t:31,en:'Sunny',vi:'Trời nắng',fx:'sun',p:['High 33°','UV 9','Humidity 58%'],pv:['Cao 33°','UV 9','Độ ẩm 58%']},
+ {k:'cloud',ic:'cloud',g:['#5d7a99','#9db6cc'],t:27,en:'Cloudy',vi:'Nhiều mây',fx:'cloud',p:['High 28°','Wind 14 km/h','Humidity 66%'],pv:['Cao 28°','Gió 14 km/h','Độ ẩm 66%']},
+ {k:'rain',ic:'rain',g:['#36485c','#6a8299'],t:24,en:'Rain',vi:'Có mưa',fx:'rain',p:['Rain 80%','Wind 18 km/h','Humidity 88%'],pv:['Mưa 80%','Gió 18 km/h','Độ ẩm 88%']},
+ {k:'storm',ic:'bolt',g:['#1f2230','#4b4f6b'],t:25,en:'Thunderstorm',vi:'Dông',fx:'storm',p:['Rain 90%','Gusts 46 km/h','Humidity 91%'],pv:['Mưa 90%','Giật 46 km/h','Độ ẩm 91%']},
+ {k:'snow',ic:'snow',g:['#7a93ab','#c9d8e6'],t:-3,en:'Snow',vi:'Có tuyết',fx:'snow',p:['Low -6°','Wind 9 km/h','Humidity 80%'],pv:['Thấp -6°','Gió 9 km/h','Độ ẩm 80%']},
+ {k:'moon',ic:'moon',g:['#0b1230','#243b6b'],t:19,en:'Clear night',vi:'Đêm quang',fx:'stars',p:['Low 16°','Moon 82%','Humidity 60%'],pv:['Thấp 16°','Trăng 82%','Độ ẩm 60%']}];
+function buildScenes(){$('#scenes').innerHTML=SCENES.map((s,i)=>`<button aria-pressed="${i===scene}" data-sc="${i}">${svgOf(s.ic)}${vi()?s.vi:s.en}</button>`).join('')}
+let shown=31;function setScene(i,anim=true){scene=i;const s=SCENES[i];demo.style.setProperty('--g1',s.g[0]);demo.style.background=`linear-gradient(160deg,${s.g[0]},${s.g[1]})`;demo.style.boxShadow=`0 24px 60px ${s.g[0]}55`;
+ $('#demoIcon').innerHTML=IC[s.ic];$('#demoC').textContent=vi()?s.vi:s.en;[1,2,3].forEach((n,k)=>$('#p'+n).textContent=(vi()?s.pv:s.p)[k]);
+ $$('#scenes button').forEach((b,k)=>b.setAttribute('aria-pressed',k===i));fx.set(s.fx);
+ const el=$('#demoT'),from=shown,to=s.t;shown=to;if(!anim||reduce){el.textContent=to;return}let t0;const step=t=>{t0??=t;const k=Math.min((t-t0)/700,1);el.textContent=Math.round(from+(to-from)*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
+let scTimer=0,scUser=false,scVis=true;
+function scLoop(){clearInterval(scTimer);if(reduce||scUser||!scVis)return;scTimer=setInterval(()=>setScene((scene+1)%SCENES.length),4200)}
+$('#scenes').addEventListener('click',e=>{const b=e.target.closest('button');if(b){scUser=true;clearInterval(scTimer);setScene(+b.dataset.sc)}});
+new IntersectionObserver(es=>{scVis=es[0].isIntersecting;scLoop()}).observe($('#demo'));
+const SPR=(()=>{const s=document.createElement('canvas');s.width=s.height=96;const g=s.getContext('2d'),r=g.createRadialGradient(48,48,0,48,48,48);r.addColorStop(0,'#fff');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,96,96);return s})();
+const fx=(()=>{const c=$('#fx'),x=c.getContext('2d');let w=0,h=0,kind='sun',P=[],raf=0,run=false,flash=0,next=0,last=0;
+ const rnd=(a,b)=>a+Math.random()*(b-a);
+ function build(){P=[];const n={rain:110,storm:160,snow:80,stars:60,cloud:0,sun:0}[kind]||0;for(let i=0;i<n;i++)P.push({x:rnd(0,w),y:rnd(0,h),l:rnd(10,22),v:rnd(520,820),r:rnd(1.2,3.2),ph:rnd(0,6.28)});if(kind==='cloud'||kind==='rain'||kind==='storm')for(let i=0;i<5;i++)P.push({cloud:1,x:rnd(-80,w),y:rnd(-10,h*.6),s:rnd(.8,1.5),v:rnd(8,20)})}
+ function size(){const r=c.getBoundingClientRect();if(!r.width)return;const d=1;w=r.width;h=r.height;c.width=w*d;c.height=h*d;x.setTransform(d,0,0,d,0,0);build()}
+ function frame(now){raf=requestAnimationFrame(frame);const dt=Math.min((now-last)/1000,.05);if(dt<.032)return;last=now;const t=now/1000;x.clearRect(0,0,w,h);
+  if(kind==='sun'){const g=x.createRadialGradient(w*.8,h*.2,0,w*.8,h*.2,w*.7);g.addColorStop(0,'rgba(255,236,160,.6)');g.addColorStop(1,'rgba(255,236,160,0)');x.fillStyle=g;x.fillRect(0,0,w,h)}
+  for(const p of P){
+   if(p.cloud){p.x+=p.v*dt;if(p.x>w+120)p.x=-160;const r=70*p.s;x.globalAlpha=.22;x.drawImage(SPR,p.x-r,p.y-r,r*2,r*2);x.globalAlpha=1;continue}
+   if(kind==='rain'||kind==='storm'){p.y+=p.v*dt;p.x-=p.v*dt*.18;if(p.y>h){p.y=-p.l;p.x=rnd(0,w+60)}x.strokeStyle='rgba(255,255,255,.45)';x.lineWidth=1.2;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(p.x+p.l*.18,p.y-p.l);x.stroke()}
+   else if(kind==='snow'){p.y+=(30+p.r*14)*dt;p.x+=Math.sin(t+p.ph)*20*dt;if(p.y>h+5){p.y=-5;p.x=rnd(0,w)}x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.arc(p.x,p.y,p.r,0,6.283);x.fill()}
+   else if(kind==='stars'){x.globalAlpha=.3+.7*Math.abs(Math.sin(t*1.2+p.ph));x.fillStyle='#fff';x.beginPath();x.arc(p.x,p.y*.8,p.r*.5,0,6.283);x.fill();x.globalAlpha=1}}
+  if(kind==='storm'){if(t>next){flash=1;next=t+rnd(2.5,6)}if(flash>.01){x.fillStyle=`rgba(255,255,255,${flash*.35})`;x.fillRect(0,0,w,h);flash*=.86}}}
+ const sync=()=>{const on=!reduce&&!document.hidden&&vis&&w>0;if(on&&!run){run=true;last=performance.now();raf=requestAnimationFrame(frame)}else if(!on&&run){run=false;cancelAnimationFrame(raf)}};let vis=true;
+ new IntersectionObserver(es=>{vis=es[0].isIntersecting;sync()}).observe(c);new ResizeObserver(()=>{size();sync()}).observe(c);document.addEventListener('visibilitychange',sync);
+ return{set(k){kind=k;build();sync()}}})();
+
+/* ---------- download ---------- */
+$$('[data-dl]').forEach(a=>a.href=DOWNLOAD_URL);$$('[data-gh]').forEach(a=>a.href=REPO_URL);
+if(/^https?:$/.test(location.protocol)){fetch(DOWNLOAD_URL,{method:'HEAD'}).then(r=>{if(!r.ok)throw 0}).catch(()=>{downloadOk=false;$$('[data-dl]').forEach(a=>{a.href='#download';a.removeAttribute('download')});updateNote()})}
+
+swatches();applyTheme();applyLang();onScroll();
+addEventListener('load',()=>{onScroll();movePill();if(location.hash&&$(location.hash))setTimeout(()=>goTo(location.hash,false),60)});
+</script>
+</body>
 </html>

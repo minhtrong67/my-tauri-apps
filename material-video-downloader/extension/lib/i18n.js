@@ -32,6 +32,8 @@ const en = {
   step1: "Install Material Video Downloader", step2: "Open the app and keep it running", step3: "Come back and press Retry",
   retry: "Retry", themeColor: "Theme color", about: "About", madeBy: "By minhtrong67 · built with Claude",
   floatBtnShort: "Video overlay button",
+  floatPos: "Button position", posLeft: "Top left", posRight: "Top right", downloadVideo: "Download video",
+  pageEmptyHint: "Use the button above to download this page's video.", untitled: "Untitled video",
 
 };
 const vi = {
@@ -68,13 +70,15 @@ const vi = {
   step1: "Cài đặt Material Video Downloader", step2: "Mở ứng dụng và để nó chạy", step3: "Quay lại và bấm Thử lại",
   retry: "Thử lại", themeColor: "Màu chủ đề", about: "Giới thiệu", madeBy: "Tác giả minhtrong67 · xây dựng cùng Claude",
   floatBtnShort: "Nút tải trên video",
+  floatPos: "Vị trí nút tải", posLeft: "Trên trái", posRight: "Trên phải", downloadVideo: "Tải video này",
+  pageEmptyHint: "Dùng nút phía trên để tải video của trang này.", untitled: "Video chưa đặt tên",
 
 };
 const dict = { en, vi };
 
 export async function getPrefs() {
   const p = (await chrome.storage.local.get("prefs")).prefs || {};
-  return { theme: "system", lang: "system", floatBtn: true, color: "blue", ...p };
+  return { theme: "system", lang: "system", floatBtn: true, floatPos: "right", color: "blue", ...p };
 }
 export async function setPrefs(patch) {
   const next = { ...(await getPrefs()), ...patch };
@@ -97,6 +101,12 @@ export function applyTheme(theme, color = "blue") {
   root.style.colorScheme = dark ? "dark" : "light";
   const pal = (PALETTES[color] || PALETTES.blue)[dark ? "dark" : "light"];
   for (const [k, v] of Object.entries(pal)) root.style.setProperty(`--${k}`, v);
+}
+
+/** Colors the on-page download button reads (it cannot import this module). */
+export function accentFor(color = "blue") {
+  const p = PALETTES[color] || PALETTES.blue;
+  return { light: { bg: p.light.primary, fg: p.light["on-primary"] }, dark: { bg: p.dark.primary, fg: p.dark["on-primary"] } };
 }
 export const SWATCH_IDS = Object.keys(PALETTES);
 export const swatchColor = (id) => PALETTES[id].seed;

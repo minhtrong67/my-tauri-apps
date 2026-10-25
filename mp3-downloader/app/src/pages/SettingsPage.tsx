@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { AppWindow, AudioWaveform, Bell, BellRing, CloudDownload, Cookie as CookieIcon, Crop, Download, FileText, Film, FolderOpen, FolderPen, Gauge, Globe, Languages, Layers, Maximize, Monitor, Moon, MoveDiagonal2, Palette, PanelTop, RefreshCw, RotateCcw, Settings as Gear, ShieldCheck, Sun, SunMoon, Terminal, Type, Wrench, ALargeSmall, Copy, SquareArrowOutUpRight, Check, type LucideIcon } from "lucide-react";
+import { AppWindow, AudioWaveform, Bell, BellRing, CloudDownload, Cookie as CookieIcon, Crop, Download, FileText, Film, FolderOpen, FolderPen, Gauge, Globe, Languages, Layers, Maximize, Monitor, Moon, MoveDiagonal2, Palette, PanelTop, RefreshCw, RotateCcw, Settings as Gear, ShieldCheck, Sun, SunMoon, Terminal, Type, Wrench, ALargeSmall, Copy, SquareArrowOutUpRight, Check, ClipboardPaste, type LucideIcon } from "lucide-react";
 import { open as pickFolder } from "@tauri-apps/plugin-dialog";
 import { toast, useSettings, useTools, type DupPolicy, type NameTpl, type Quality } from "../lib/stores";
 import { FONTS, PRESETS, onColor, type FontSize, type Mode } from "../lib/theme";
@@ -61,6 +61,14 @@ export default function SettingsPage() {
   const [hexBad, setHexBad] = useState(false);
   const [winMode, setWinMode] = useState("remember");
   const [confirmReset, setConfirmReset] = useState(false);
+  const [spy, setSpy] = useState("appearance");
+  // Scrollspy: chip của mục đang xem được tô sáng
+  useEffect(() => {
+    const ids = ["appearance", "downloads", "network", "window", "tools"];
+    const io = new IntersectionObserver((es) => { const v = es.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]; if (v) setSpy(v.target.id.replace("sec-", "")); }, { rootMargin: "-90px 0px -60% 0px" });
+    ids.forEach((id) => { const el = document.getElementById("sec-" + id); if (el) io.observe(el); });
+    return () => io.disconnect();
+  }, []);
   useEffect(() => { invoke<string>("get_window_mode").then(setWinMode).catch(() => {}); }, []);
   useEffect(() => { setHex(s.seed); }, [s.seed]);
 
@@ -92,7 +100,7 @@ export default function SettingsPage() {
       </header>
       <nav className="sticky top-0 z-10 -mx-2 mb-4 flex gap-2 overflow-x-auto bg-surface-low/85 px-2 py-2 backdrop-blur-md" aria-label={t("set.title")}>
         {NAV.map(([id, label, I]) => (
-          <button key={id} type="button" onClick={() => go(id)} onPointerDown={ripple} className="state-layer inline-flex h-9 flex-none items-center gap-1.5 rounded-m3-sm bg-surface-container px-3.5 text-sm font-semibold text-on-surface-variant transition-all duration-300 ease-spring hover:rounded-full active:scale-95"><I className="h-4 w-4" />{label}</button>))}
+          <button key={id} type="button" onClick={() => go(id)} onPointerDown={ripple} className={`state-layer inline-flex h-9 flex-none items-center gap-1.5 px-3.5 text-sm font-semibold transition-all duration-300 ease-spring hover:rounded-full active:scale-95 ${spy === id ? "rounded-full bg-primary text-on-primary" : "rounded-m3-sm bg-surface-container text-on-surface-variant"}`}><I className="h-4 w-4" />{label}</button>))}
       </nav>
 
       
@@ -147,6 +155,7 @@ export default function SettingsPage() {
           <Select label={t("set.speed")} value={s.speed} onChange={(v) => set({ speed: v })} options={[{ value: "", label: t("speed.none") }, ...["500K", "1M", "2M", "5M"].map((v) => ({ value: v, label: v + "B/s" }))]} />
         </Row>
         <Row icon={Crop} title={t("set.crop")} desc={t("set.cropDesc")}><Switch checked={s.crop} onChange={(v) => set({ crop: v })} label={t("set.crop")} /></Row>
+        <Row icon={ClipboardPaste} title={t("set.clipWatch")} desc={t("set.clipWatchDesc")}><Switch checked={s.clipWatch} onChange={(v) => set({ clipWatch: v })} label={t("set.clipWatch")} /></Row>
         <Row icon={s.notify ? BellRing : Bell} title={t("set.notify")} desc={t("set.notifyDesc")}><Switch checked={s.notify} onChange={(v) => set({ notify: v })} label={t("set.notify")} /></Row>
       </Section>
 

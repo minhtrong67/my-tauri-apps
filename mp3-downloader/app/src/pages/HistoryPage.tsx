@@ -12,7 +12,7 @@ import { Cookie } from "../components/ui/Progress";
 
 export default function HistoryPage() {
   const { t, tr, lang } = useI18n();
-  const { items, remove, clear } = useHistory();
+  const { items, remove, clear, restore } = useHistory();
   const add = useQueue((s) => s.add);
   const [q, setQ] = useState("");
   const [del, setDel] = useState<HistoryEntry | null>(null);
@@ -46,7 +46,7 @@ export default function HistoryPage() {
               <IconButton icon={FolderOpen} label={t("act.reveal")} onClick={() => invoke("reveal_file", { path: h.file }).catch((e) => toast.error(tr(e)))} />
               <IconButton icon={RotateCcw} label={t("hi.again")} onClick={() => { if (toolsReady()) { add(h.url, null, h.quality); toast.success(t("toast.added", { n: 1 })); } }} />
               <IconButton icon={Trash2} label={t("hi.delFile")} tone="danger" onClick={() => setDel(h)} />
-              <IconButton icon={X} label={t("hi.remove")} onClick={() => remove(h.id)} />
+              <IconButton icon={X} label={t("hi.remove")} onClick={() => { remove(h.id); toast.info(t("toast.removed"), { action: { label: t("undo"), fn: () => restore(h) } }); }} />
             </li>))}
         </ul>)}
       <ConfirmDialog open={!!del} onClose={() => setDel(null)} destructive icon={Trash2} title={t("cf.delFile.t")} body={t("cf.delFile.b", { name: baseName(del?.file) })} confirmLabel={t("b.delete")} confirmIcon={Trash2}

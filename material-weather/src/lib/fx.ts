@@ -24,26 +24,33 @@ export function createFX(canvas: HTMLCanvasElement) {
   function resize() {
     const r = canvas.getBoundingClientRect();
     if (!r.width || !r.height) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     w = r.width; h = r.height;
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     build();
   }
+  // Clouds are drawn from a pre-rendered soft sprite (cheap drawImage) instead of building gradients every frame.
+  const sprite = document.createElement('canvas');
+  sprite.width = sprite.height = 128;
+  {
+    const sc = sprite.getContext('2d')!, g = sc.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    sc.fillStyle = g; sc.fillRect(0, 0, 128, 128);
+  }
   function drawCloud(c: Cloud) {
     const r = 70 * c.s;
+    ctx.globalAlpha = c.a;
     for (const [dx, dy, k] of [[0, 0, 1], [r * 0.8, r * 0.15, 0.8], [-r * 0.8, r * 0.2, 0.75], [r * 0.35, -r * 0.3, 0.8]]) {
-      const g = ctx.createRadialGradient(c.x + dx, c.y + dy, 0, c.x + dx, c.y + dy, r * k);
-      g.addColorStop(0, `rgba(255,255,255,${c.a})`);
-      g.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(c.x + dx - r * k, c.y + dy - r * k, r * 2 * k, r * 2 * k);
+      const d = r * 2 * k;
+      ctx.drawImage(sprite, c.x + dx - d / 2, c.y + dy - d / 2, d, d);
     }
+    ctx.globalAlpha = 1;
   }
   function frame(now: number) {
     raf = requestAnimationFrame(frame);
     const dt = Math.min((now - last) / 1000, 0.05);
-    if (dt < 0.028) return; // ~35 fps cap keeps CPU low
+    if (dt < 0.032) return; // ~30 fps cap keeps CPU low
     last = now;
     const t = now / 1000;
     ctx.clearRect(0, 0, w, h);

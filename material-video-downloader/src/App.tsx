@@ -42,6 +42,7 @@ export default function App() {
           referer: p.referer ?? p.pageUrl,
           userAgent: p.userAgent,
           cookie: p.cookie,
+          thumbnail: p.thumbnail,
           auto: true,
         });
         if (!core.askQuality) useUi.getState().toast(t("extensionRequest"));

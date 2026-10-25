@@ -30,8 +30,8 @@ A free, open-source desktop app (Tauri + React) with IDM-style segmented downloa
 | <img src="screenshots/image02.png" width="440" alt="New download dialog"> | <img src="screenshots/image04.png" width="440" alt="Settings"> |
 | **Vietnamese interface** | **Responsive layout** |
 | <img src="screenshots/image05.png" width="440" alt="Vietnamese UI"> | <img src="screenshots/image06.png" width="180" alt="Narrow window"> |
-| **Chrome extension (light)** | **Chrome extension (dark)** |
-| <img src="screenshots/image07.png" width="260" alt="Extension popup"> | <img src="screenshots/image08.png" width="260" alt="Extension popup dark"> |
+| **Extension: thumbnails & durations** | **Extension: settings** |
+| <img src="screenshots/image07.png" width="260" alt="Extension popup"> | <img src="screenshots/image08.png" width="260" alt="Extension settings"> |
 
 </div>
 
@@ -45,8 +45,10 @@ A free, open-source desktop app (Tauri + React) with IDM-style segmented downloa
 - **Comfort** – drag & drop links, batch add, clipboard watcher, desktop notifications, search and filters.
 
 **Browser extension (Chrome / Edge / Brave)**
-- Detects MP4 / WebM / MP3 / HLS requests per tab and shows a badge.
-- Floating **Download** button over `<video>` elements, right-click menu on links.
+- Detects MP4 / WebM / MP3 / HLS requests per tab and shows a badge. Byte-range and ad requests are filtered out so only real downloads are listed.
+- **Thumbnails and durations** for every detected video (poster, captured frame, YouTube / page preview), so you can tell which one to download. The thumbnail travels to the desktop app too.
+- Icon-only **Download** button over every `<video>` (Shadow DOM, works inside iframes, overlays, feeds and fullscreen) on YouTube, Facebook, TikTok, Instagram, X, Reddit, Vimeo and more. It resolves the right post link in feeds, can sit top-left or top-right, and follows your theme color.
+- Right-click menu on links.
 - Sends links (with referer, user-agent and cookies) to the app over `127.0.0.1` only.
 - Falls back to the browser's own downloader for plain files when the app is closed.
 

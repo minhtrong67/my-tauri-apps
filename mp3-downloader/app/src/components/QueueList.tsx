@@ -2,11 +2,12 @@ import { useState } from "react";
 import { CheckCircle2, FolderOpen, Music, RotateCcw, Square, Trash2, X } from "lucide-react";
 import { ACTIVE, FINISHED, useQueue } from "../lib/queue";
 import { baseName, invoke } from "../lib/tauri";
-import { toast, type QueueItem } from "../lib/stores";
+import { toast, useSettings, type QueueItem } from "../lib/stores";
 import { useI18n } from "../lib/i18n";
 import { Button, IconButton } from "./ui/Button";
 import { ConfirmDialog } from "./ui/Overlay";
 import { WavyProgress, Cookie } from "./ui/Progress";
+import { ChoiceChips } from "./ui/Controls";
 
 export function Art({ url, size = 56, className = "" }: { url?: string; size?: number; className?: string }) {
   const [bad, setBad] = useState(false);
@@ -52,29 +53,46 @@ function Row({ item, index }: { item: QueueItem; index: number }) {
       <div className="flex flex-none">
         {s === "done" && item.file && <IconButton icon={FolderOpen} label={t("act.reveal")} onClick={() => invoke("reveal_file", { path: item.file }).catch((e) => toast.error(tr(e)))} />}
         {(s === "error" || s === "cancelled") && <IconButton icon={RotateCcw} label={t("act.retry")} onClick={() => q.retry(item.id)} />}
-        {FINISHED.includes(s) ? <IconButton icon={X} label={t("act.remove")} onClick={() => q.remove(item.id)} /> : <IconButton icon={X} label={t("act.cancel")} tone="danger" onClick={() => q.cancel(item.id)} />}
+        {FINISHED.includes(s) ? <IconButton icon={X} label={t("act.remove")} onClick={() => { q.remove(item.id); toast.info(t("toast.removed"), { action: { label: t("undo"), fn: () => q.restore([item]) } }); }} /> : <IconButton icon={X} label={t("act.cancel")} tone="danger" onClick={() => q.cancel(item.id)} />}
       </div>
     </li>
   );
 }
 
 export function QueueList() {
-  const { t } = useI18n();
+  const { t, tr } = useI18n();
   const { items, clearFinished, stopAll } = useQueue();
   const [dlg, setDlg] = useState<"clear" | "stop" | null>(null);
+  const [flt, setFlt] = useState<"all" | "active" | "done" | "failed">("all");
+  const outDir = useSettings((x) => x.s.outDir);
+  const retry = useQueue((x) => x.retry);
   const a = items.filter((i) => ACTIVE.includes(i.stage)).length;
   const w = items.filter((i) => i.stage === "queued").length;
   const d = items.filter((i) => i.stage === "done").length;
   const hasFinished = items.some((i) => FINISHED.includes(i.stage));
+  const failed = items.filter((i) => i.stage === "error" || i.stage === "cancelled");
+  const inFlt = (i: QueueItem) => flt === "all" || (flt === "active" ? ACTIVE.includes(i.stage) || i.stage === "queued" : flt === "done" ? i.stage === "done" : i.stage === "error" || i.stage === "cancelled");
+  const shown = items.filter(inFlt);
   return (
     <section className="mt-10">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div><h2 className="t-headline !text-2xl">{t("dl.queue")}</h2>{items.length > 0 && <p className="t-small text-on-surface-variant">{t("dl.summary", { a, q: w, d })}</p>}</div>
-        <div className="flex gap-1">
+        <div className="flex flex-wrap items-center gap-1">
+          <IconButton icon={FolderOpen} label={t("act.openFolder")} onClick={() => invoke("open_folder", { path: outDir }).catch((e) => toast.error(tr(e)))} />
+          {failed.length > 0 && <Button variant="tonal" size="sm" icon={RotateCcw} onClick={() => failed.forEach((i) => retry(i.id))}>{t("act.retryFailed")}</Button>}
           {(a > 0 || w > 0) && <Button variant="errorTonal" size="sm" icon={Square} onClick={() => setDlg("stop")}>{t("dl.stopAll")}</Button>}
           {hasFinished && <Button variant="tonal" size="sm" icon={Trash2} onClick={() => setDlg("clear")}>{t("dl.clearDone")}</Button>}
         </div>
       </div>
+      {items.length > 2 && (
+        <div className="mb-3">
+          <ChoiceChips label={t("dl.queue")} value={flt} onChange={setFlt} options={[
+            { value: "all", label: `${t("flt.all")} · ${items.length}` },
+            { value: "active", label: `${t("flt.active")} · ${a + w}` },
+            { value: "done", label: `${t("flt.done")} · ${d}` },
+            { value: "failed", label: `${t("flt.failed")} · ${failed.length}` },
+          ]} />
+        </div>)}
       {items.length === 0 ? (
         <div className="animate-pop flex flex-col items-center gap-3 py-10 text-center">
           <div className="relative grid h-24 w-24 place-items-center">
@@ -83,7 +101,7 @@ export function QueueList() {
           </div>
           <p className="t-title">{t("empty.title")}</p><p className="t-body text-on-surface-variant">{t("dl.empty")}</p>
         </div>
-      ) : <ul className="flex flex-col gap-2">{items.map((it, i) => <Row key={it.id} item={it} index={i} />)}</ul>}
+      ) : shown.length === 0 ? <p className="t-body py-6 text-center text-on-surface-variant">{t("hi.noResult")}</p> : <ul className="flex flex-col gap-2">{shown.map((it, i) => <Row key={it.id} item={it} index={i} />)}</ul>}
       <ConfirmDialog open={dlg === "clear"} onClose={() => setDlg(null)} onConfirm={clearFinished} icon={Trash2} destructive title={t("cf.clearDone.t")} body={t("cf.clearDone.b")} confirmLabel={t("b.clear")} confirmIcon={Trash2} />
       <ConfirmDialog open={dlg === "stop"} onClose={() => setDlg(null)} onConfirm={() => { stopAll(); toast.info(t("toast.stopped")); }} icon={Square} destructive title={t("cf.stopAll.t")} body={t("cf.stopAll.b")} confirmLabel={t("dl.stopAll")} confirmIcon={Square} />
     </section>

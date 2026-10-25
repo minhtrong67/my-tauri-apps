@@ -40,6 +40,7 @@ MP3 Downloader turns links (or just a song name) into MP3 files with cover art, 
 - **Safe** — yt-dlp / ffmpeg / Deno downloads are verified with SHA-256, strict CSP, single instance.
 - **Stays current** — warns when yt-dlp is outdated and updates it in one click; desktop notifications.
 - **Make it yours** — light / dark / system, 16 Material theme colours + custom, 5 fonts (system default, Roboto…), 3 text sizes, English & Vietnamese, window mode (remember size / always maximised).
+- **Faster workflow** — drag & drop links onto the window, clipboard link suggestions, keyboard shortcuts (`Ctrl+K`, `Ctrl+V`, `Ctrl+1/2/3`, `?`), undo when removing items, queue filters, overall progress in the title bar.
 - **Polished UI** — custom title bar, tooltips, toasts (info / success / warning / error), custom dropdowns, dialogs and side sheets with labelled, coloured actions.
 
 ## Installation

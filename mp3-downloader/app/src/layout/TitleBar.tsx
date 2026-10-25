@@ -4,11 +4,15 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { inTauri } from "../lib/tauri";
 import { useI18n } from "../lib/i18n";
 import { Tooltip } from "../components/ui/Tooltip";
+import { useActiveCount, useOverallPercent } from "../lib/queue";
+import { LoadingIndicator } from "../components/ui/Progress";
 
 /** Thanh tiêu đề tuỳ chỉnh (cửa sổ không viền) — đổi màu theo giao diện sáng/tối. */
 export function TitleBar() {
   const { t } = useI18n();
   const [max, setMax] = useState(false);
+  const count = useActiveCount();
+  const pct = useOverallPercent();
   useEffect(() => {
     if (!inTauri) return;
     const w = getCurrentWindow();
@@ -28,6 +32,10 @@ export function TitleBar() {
     <header data-tauri-drag-region className="flex h-10 flex-none items-center bg-surface pl-3">
       <img src="/app-icon.png" alt="" width={20} height={20} className="pointer-events-none mr-2 h-5 w-5 rounded-md" />
       <span data-tauri-drag-region className="t-small flex-1 font-semibold text-on-surface-variant">MP3 Downloader</span>
+      {count > 0 && (
+        <span className="animate-pop mr-2 inline-flex h-7 items-center gap-2 rounded-full bg-primary-container pl-2 pr-3 text-xs font-bold text-on-primary-container" role="status">
+          <LoadingIndicator size={16} className="!text-on-primary-container" />{t("tb.active", { n: count })}{pct > 0 ? ` · ${pct}%` : ""}
+        </span>)}
       {inTauri && <>
         <Btn label={t("tb.min")} onClick={() => w().minimize()}><Minus className="h-4 w-4" /></Btn>
         <Btn label={max ? t("tb.restore") : t("tb.max")} onClick={() => w().toggleMaximize()}>{max ? <Copy className="h-3.5 w-3.5 -scale-x-100" /> : <Square className="h-3.5 w-3.5" />}</Btn>

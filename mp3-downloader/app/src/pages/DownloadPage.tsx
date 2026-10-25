@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { AlertCircle, ClipboardPaste, Disc3, Download, ListMusic, ListPlus, Music2, Pencil, PlayCircle, Search, X } from "lucide-react";
+import { AlertCircle, Check, ClipboardPaste, Disc3, Download, ListMusic, ListPlus, Music2, Pencil, PlayCircle, Search, X } from "lucide-react";
 import { fmtTime, invoke, sourceOf, urlsIn, type SearchItem, type TrackInfo } from "../lib/tauri";
-import { toast, useSettings, type Quality } from "../lib/stores";
+import { toast, useIntake, useSettings, type Quality } from "../lib/stores";
 import { toolsReady, useQueue } from "../lib/queue";
 import { useI18n } from "../lib/i18n";
 import { Button, IconButton } from "../components/ui/Button";
 import { ChoiceChips, TextField } from "../components/ui/Controls";
-import { LoadingIndicator } from "../components/ui/Progress";
+import { Cookie, LoadingIndicator } from "../components/ui/Progress";
 import { ToolsBanner } from "../components/ToolsBanner";
 import { PlaylistSheet } from "../components/PlaylistSheet";
 import { Art, QueueList } from "../components/QueueList";
@@ -34,6 +34,32 @@ export default function DownloadPage() {
   const skip = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => setQuality(defaultQ), [defaultQ]);
+
+  // Link đến từ kéo-thả / Ctrl+V toàn cục và lệnh focus ô tìm kiếm
+  const intake = useIntake();
+  useEffect(() => { if (intake.text) setText(intake.text); }, [intake.seq]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { inputRef.current?.focus(); inputRef.current?.select(); }, [intake.focus]);
+
+  // Gợi ý link đã sao chép khi quay lại app
+  const clipWatch = useSettings((s) => s.s.clipWatch);
+  const [clip, setClip] = useState<{ raw: string; url: string } | null>(null);
+  const seenClip = useRef("");
+  useEffect(() => {
+    if (!clipWatch) { setClip(null); return; }
+    const check = async () => {
+      try {
+        const raw = ((await invoke<string>("read_clipboard")) || "").trim();
+        if (!raw || raw === seenClip.current) return;
+        const url = urlsIn(raw).find((u) => sourceOf(u) !== "other");
+        if (url) setClip({ raw, url });
+      } catch { /* ngoài Tauri hoặc clipboard trống */ }
+    };
+    check();
+    addEventListener("focus", check);
+    return () => removeEventListener("focus", check);
+  }, [clipWatch]);
+  const useClip = () => { if (!clip) return; seenClip.current = clip.raw; setText(clip.url); setClip(null); };
+  const dismissClip = () => { if (clip) seenClip.current = clip.raw; setClip(null); };
 
   useEffect(() => {
     if (skip.current) { skip.current = false; return; }
@@ -81,6 +107,7 @@ export default function DownloadPage() {
     toast.success(t("toast.added", { n: mode === "preview" ? 1 : urls.length }));
     token.current++; setText(""); setMode("idle"); setInfo(null);
   };
+  const showClip = !!clip && !text.trim() && mode === "idle";
   const addPlaylist = (items: SearchItem[]) => {
     if (!toolsReady()) return;
     for (const e of items) addToQueue(e.url, { source: "youtube", url: e.url, title: e.title, artist: e.channel, album: "", year: "", thumbnail: e.thumbnail, duration: e.duration }, quality);
@@ -94,22 +121,34 @@ export default function DownloadPage() {
 
   return (
     <div>
-      <header className="mb-6">
-        <h1 className="t-display">{t("dl.title")}</h1>
-        <p className="t-body mt-1 max-w-[62ch] text-on-surface-variant">{t("dl.subtitle")}</p>
-      </header>
       <ToolsBanner />
 
-      <TextField size="lg" label={t("dl.hint")} value={text} onChange={setText} inputRef={inputRef} onEnter={() => canAdd && addAll()}
-        leading={mode === "loading" ? <LoadingIndicator size={24} /> : <Search className="h-6 w-6" />}
-        trailing={<>
-          {text && <IconButton icon={X} label={t("dl.clearInput")} onClick={() => { setText(""); inputRef.current?.focus(); }} />}
-          <IconButton icon={ClipboardPaste} label={t("dl.paste")} onClick={paste} />
-        </>} />
-      <div className="mt-3 flex flex-wrap gap-2">
-        {(["youtube", "tiktok", "spotify"] as const).map((s) => { const I = srcIcon[s]; const on = detected === s; return (
-          <span key={s} className={`inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-all duration-300 ease-spring ${on ? "scale-105 bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant"}`}><I className="h-4 w-4" />{t("src." + s)}</span>); })}
-      </div>
+      {showClip && clip && (
+        <div className="animate-pop mb-4 flex flex-wrap items-center gap-3 rounded-m3-lg bg-tertiary-container p-3 pl-4 text-on-tertiary-container">
+          <ClipboardPaste className="h-5 w-5 flex-none" />
+          <div className="min-w-[160px] flex-1"><p className="t-small font-semibold">{t("clip.found")}</p><p className="selectable truncate text-sm font-medium">{clip.url}</p></div>
+          <Button size="sm" icon={Check} onClick={useClip}>{t("clip.use")}</Button>
+          <IconButton icon={X} label={t("clip.dismiss")} small onClick={dismissClip} />
+        </div>)}
+
+      <section className="relative mb-2 overflow-hidden rounded-m3-2xl bg-primary-container p-6 text-on-primary-container max-sm:p-4">
+        <Cookie size={240} className="pointer-events-none absolute -right-14 -top-16 text-primary/15" style={{ animation: "float 8s ease-in-out infinite" }} />
+        <header className="relative mb-5">
+          <h1 className="t-display max-sm:!text-3xl">{t("dl.title")}</h1>
+          <p className="t-body mt-1 max-w-[56ch] opacity-85">{t("dl.subtitle")}</p>
+        </header>
+        <TextField size="lg" label={t("dl.hint")} value={text} onChange={setText} inputRef={inputRef} onEnter={() => canAdd && addAll()} className="relative !bg-surface shadow-e1"
+          leading={mode === "loading" ? <LoadingIndicator size={24} /> : <Search className="h-6 w-6" />}
+          trailing={<>
+            {text && <IconButton icon={X} label={t("dl.clearInput")} onClick={() => { setText(""); inputRef.current?.focus(); }} />}
+            <IconButton icon={ClipboardPaste} label={t("dl.paste")} onClick={paste} />
+          </>} />
+        <div className="relative mt-3 flex flex-wrap items-center gap-2">
+          {(["youtube", "tiktok", "spotify"] as const).map((s) => { const I = srcIcon[s]; const on = detected === s; return (
+            <span key={s} className={`inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-all duration-300 ease-spring ${on ? "scale-105 bg-primary text-on-primary" : "bg-surface/60 text-on-surface-variant"}`}><I className="h-4 w-4" />{t("src." + s)}</span>); })}
+          <span className="t-small ml-auto opacity-75 max-sm:hidden">{t("dl.heroTip")}</span>
+        </div>
+      </section>
 
       {mode === "loading" && <div className="mt-4 flex items-center gap-3 rounded-m3-lg bg-surface-highest p-4 text-on-surface-variant animate-pop"><div className="skeleton h-16 w-16 rounded-m3-md" /><div className="flex-1 space-y-2"><div className="skeleton h-4 w-2/3 rounded-full" /><div className="skeleton h-3 w-1/3 rounded-full" /></div></div>}
       {mode === "error" && <div className="animate-pop selectable mt-4 flex items-center gap-3 rounded-m3-lg bg-error-container p-4 text-on-error-container"><AlertCircle className="h-5 w-5 flex-none" /><span className="t-body">{err}</span></div>}

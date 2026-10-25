@@ -1,10 +1,10 @@
 import { useEffect, type ReactNode } from 'react';
-import { AppWindow, Bell, Check, Info, Keyboard, Languages, Monitor, Moon, Palette, Pipette, RotateCcw, Ruler, Settings, Sparkles, Sun, Type, type LucideIcon } from 'lucide-react';
+import { AppWindow, Bell, Check, ClipboardCopy, ClipboardPaste, DatabaseBackup, Info, Keyboard, Languages, Monitor, Moon, Palette, Pipette, RotateCcw, Ruler, Settings, Sparkles, Sun, Type, type LucideIcon } from 'lucide-react';
 import { LANGS, useT } from '../lib/i18n';
 import { useStore } from '../lib/store';
 import { ui, useUI } from '../lib/ui';
-import { changeSetting, resetSettingsFlow } from '../lib/actions';
-import { PRESETS } from '../lib/theme';
+import { changeSetting, exportData, importData, resetSettingsFlow } from '../lib/actions';
+import { PALETTES, PRESETS } from '../lib/theme';
 import { FONTS, preloadAllFonts } from '../lib/fonts';
 import type { FontId, FontSize, Settings as S } from '../lib/types';
 import { Dialog, DialogHeader } from './ui/Dialog';
@@ -16,8 +16,8 @@ import { cn } from './ui/cn';
 
 function Section({ icon: Icon, title, children }: { icon: LucideIcon; title: string; children: ReactNode }) {
   return (
-    <section className="rounded-3xl bg-sc-low p-4">
-      <h3 className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary"><Icon size={16} />{title}</h3>
+    <section className="rounded-[28px] bg-sc-low p-4">
+      <h3 className="mb-1 flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-primary"><span className="grid size-7 place-items-center rounded-lg bg-primary-container text-on-primary-container"><Icon size={15} /></span>{title}</h3>
       <div className="flex flex-col">{children}</div>
     </section>
   );
@@ -54,7 +54,7 @@ export function SettingsDialog() {
             <div className={cn('flex flex-wrap gap-2.5 transition-opacity', s.adaptive && 'pointer-events-none opacity-40')}>
               {PRESETS.map((c) => (
                 <button key={c} aria-label={c} onClick={() => up('seed')(c)} style={{ background: c }}
-                  className={cn('grid size-10 place-items-center rounded-full text-white transition-all duration-200 hover:scale-110', s.seed.toLowerCase() === c.toLowerCase() && 'ring-[3px] ring-primary ring-offset-[3px] ring-offset-sc-low')}>
+                  className={cn('press-morph grid size-10 place-items-center text-white hover:scale-110', s.seed.toLowerCase() === c.toLowerCase() ? 'rounded-xl ring-[3px] ring-primary ring-offset-[3px] ring-offset-sc-low' : 'rounded-full')}>
                   <Check size={18} className={cn('transition-transform duration-200', s.seed.toLowerCase() === c.toLowerCase() ? 'scale-100' : 'scale-0')} />
                 </button>
               ))}
@@ -64,6 +64,9 @@ export function SettingsDialog() {
                 <input type="color" value={s.seed} onChange={(e) => up('seed')(e.target.value.toUpperCase())} className="absolute inset-0 size-full cursor-pointer opacity-0" aria-label={t('settings.colorCustom')} />
               </label>
             </div>
+          </Row>
+          <Row label={t('settings.palette')} desc={t('settings.paletteDesc')}>
+            <Segmented<S['palette']> label={t('settings.palette')} value={s.palette} onChange={up('palette')} options={PALETTES.map((p) => ({ value: p, label: t('palette.' + p) }))} />
           </Row>
           <Row label={t('settings.adaptive')} desc={t('settings.adaptiveDesc')}><Switch label={t('settings.adaptive')} checked={s.adaptive} onChange={up('adaptive')} /></Row>
         </Section>
@@ -111,6 +114,15 @@ export function SettingsDialog() {
           </Row>
           <Row label={t('settings.alerts')} desc={t('settings.alertsDesc')}><span className="flex items-center gap-2"><Bell size={16} className="text-on-surface-variant" /><Switch label={t('settings.alerts')} checked={s.alerts} onChange={up('alerts')} /></span></Row>
           <Row label={t('settings.reset')} desc={t('settings.resetDesc')}><Btn variant="error" icon={RotateCcw} onClick={() => void resetSettingsFlow()}>{t('action.reset')}</Btn></Row>
+        </Section>
+
+        <Section icon={DatabaseBackup} title={t('settings.backup')}>
+          <Row label={t('settings.backup')} desc={t('settings.backupDesc')}>
+            <span className="flex shrink-0 gap-2">
+              <Btn variant="tonal" icon={ClipboardCopy} onClick={() => void exportData()}>{t('action.export')}</Btn>
+              <Btn variant="filled" icon={ClipboardPaste} onClick={() => void importData()}>{t('action.import')}</Btn>
+            </span>
+          </Row>
         </Section>
 
         <div className="flex flex-wrap items-center justify-between gap-2 px-1 pt-1">

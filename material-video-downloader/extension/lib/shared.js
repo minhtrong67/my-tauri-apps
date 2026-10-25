@@ -81,3 +81,27 @@ export function fmtBytes(n) {
 /** Sites where the page URL itself should go to yt-dlp (streams are blob/MSE based). */
 export const PAGE_SITES =
   /(youtube\.com\/(watch|shorts)|youtu\.be\/|vimeo\.com\/\d|facebook\.com\/.*(videos|watch|reel)|fb\.watch|tiktok\.com\/|twitter\.com\/.*\/status|x\.com\/.*\/status|instagram\.com\/(p|reel|tv)\/|dailymotion\.com\/video|twitch\.tv\/(videos|clip)|bilibili\.com\/video|reddit\.com\/r\/.*\/comments)/i;
+
+/** Requests that are only pieces of a stream (byte ranges, ad pings): never useful as a download. */
+export function isNoise(url) {
+  try {
+    const u = new URL(url);
+    if (/(^|\.)googlevideo\.com$/.test(u.hostname)) return true;
+    if (/[?&](bytestart|byteend|range|rn|rbuf)=/i.test(u.search)) return true;
+    if (/\/(videoplayback|seg-\d+|fragment)/i.test(u.pathname) && u.search.length > 80) return true;
+  } catch { /* ignore */ }
+  return false;
+}
+
+/** A thumbnail we can derive from the page URL alone (no page access needed). */
+export function siteThumb(url) {
+  const m = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|live\/|embed\/)|youtu\.be\/)([\w-]{11})/i.exec(url || "");
+  return m ? `https://i.ytimg.com/vi/${m[1]}/mqdefault.jpg` : "";
+}
+
+export function fmtDuration(sec) {
+  if (!sec || !isFinite(sec)) return "";
+  const s = Math.round(sec), h = Math.floor(s / 3600), mi = Math.floor((s % 3600) / 60), se = s % 60;
+  const p = (n) => String(n).padStart(2, "0");
+  return h ? `${h}:${p(mi)}:${p(se)}` : `${mi}:${p(se)}`;
+}

@@ -1,7 +1,7 @@
 {
   "name": "material-video-downloader",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Material Design 3 desktop video downloader with a companion Chrome extension.",
   "author": "minhtrong67",
   "license": "MIT",

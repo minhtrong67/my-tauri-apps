@@ -23,6 +23,7 @@ export const defaultSettings = (): Settings => ({
   lang: ((navigator.language || 'en').toLowerCase().startsWith('vi') ? 'vi' : 'en') as Lang,
   theme: 'system',
   seed: '#0B57D0',
+  palette: 'vibrant',
   adaptive: false,
   fontFamily: 'system',
   fontSize: 'md',

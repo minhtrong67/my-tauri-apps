@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStore, getActive } from './lib/store';
 import { useT, wmoKey, t as tt } from './lib/i18n';
 import { adaptiveSeed, applyTheme, onSystemThemeChange } from './lib/theme';
@@ -19,11 +19,18 @@ import { SettingsDialog } from './components/SettingsDialog';
 import { AboutDialog, ConfirmHost, LocationDialog, ShortcutsDialog } from './components/Dialogs';
 import { EmptyState, ErrorState, Skeletons } from './components/States';
 import { Credit } from './components/Credit';
+import { WavyProgress } from './components/ui/Progress';
+import { MiniBar } from './components/MiniBar';
 
 export default function App() {
   const s = useStore((x) => x.settings);
   const model = useStore((x) => x.model);
   const error = useStore((x) => x.error);
+  const loading = useStore((x) => x.loading);
+  const scroller = useRef<HTMLDivElement>(null);
+  const [past, setPast] = useState(false);
+  const onScroll = () => { const y = scroller.current?.scrollTop ?? 0; setPast((p) => (p ? y > 150 : y > 300)); };
+  const toTop = () => scroller.current?.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   const noPlaces = useStore((x) => x.places.length === 0);
   const search = useRef<SearchHandle>(null);
   const first = useRef(true);
@@ -31,10 +38,10 @@ export default function App() {
   /* theme: MD3 palette from the seed (or from the weather when "adaptive colour" is on) */
   const seed = s.adaptive && model ? adaptiveSeed(kindOf(model.now.code), model.now.isDay) : s.seed;
   useEffect(() => {
-    applyTheme(s.theme, seed, !first.current);
+    applyTheme(s.theme, seed, s.palette, !first.current);
     first.current = false;
-    return onSystemThemeChange(() => applyTheme(s.theme, seed, true));
-  }, [s.theme, seed]);
+    return onSystemThemeChange(() => applyTheme(s.theme, seed, s.palette, true));
+  }, [s.theme, seed, s.palette]);
   useEffect(() => void applyFont(s.fontFamily), [s.fontFamily]);
   useEffect(() => applyFontSize(s.fontSize), [s.fontSize]);
   useEffect(() => { document.title = tt('app.name'); }, [s.lang]);
@@ -89,9 +96,11 @@ export default function App() {
   return (
     <div className="flex h-full">
       <Drawer />
-      <main className="flex min-w-0 flex-1 flex-col">
+      <main className="relative flex min-w-0 flex-1 flex-col">
         <TopBar ref={search} />
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 pb-6 pt-1 max-[960px]:px-4">
+        <div className="h-2 shrink-0 px-6 max-[960px]:px-4">{loading && model && <WavyProgress className="animate-fade" />}</div>
+        <MiniBar show={past && !!model} onTop={toTop} />
+        <div ref={scroller} onScroll={onScroll} className="flex-1 overflow-y-auto overflow-x-hidden px-6 pb-6 pt-1 max-[960px]:px-4">
           <div className="mx-auto flex max-w-[1040px] flex-col gap-4">
             {model ? (
               <>

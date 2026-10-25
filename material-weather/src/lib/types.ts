@@ -1,6 +1,7 @@
 export type Lang = 'en' | 'vi';
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type FontId = 'system' | 'roboto' | 'inter' | 'open-sans' | 'be-vietnam-pro';
+export type PaletteStyle = 'tonal' | 'vibrant' | 'expressive';
 export type FontSize = 'sm' | 'md' | 'lg';
 
 export interface Place {
@@ -19,6 +20,7 @@ export interface Settings {
   lang: Lang;
   theme: ThemeMode;
   seed: string;
+  palette: PaletteStyle;
   adaptive: boolean;
   fontFamily: FontId;
   fontSize: FontSize;

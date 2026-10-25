@@ -10,6 +10,8 @@ input, textarea, .selectable { @apply select-text; }
 button { @apply cursor-pointer; }
 button:disabled { @apply cursor-default; }
 :focus-visible { outline: 3px solid rgb(var(--c-primary) / .7); outline-offset: 2px; }
+input:focus, input:focus-visible, textarea:focus, textarea:focus-visible { outline: none !important; }
+html, body { overflow-x: hidden; }
 ::selection { background: rgb(var(--c-primary) / .3); }
 * { scrollbar-width: thin; scrollbar-color: rgb(var(--c-outline-variant)) transparent; }
 [hidden] { display: none !important; }

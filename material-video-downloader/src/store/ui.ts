@@ -15,6 +15,7 @@ export interface DialogSeed {
   referer?: string;
   userAgent?: string;
   cookie?: string;
+  thumbnail?: string;
   auto?: boolean;
 }
 

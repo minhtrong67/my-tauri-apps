@@ -207,6 +207,23 @@ const en: Record<string, string> = {
   'shortcuts.close': `Close dialog or sheet`,
   'action.shortcuts': `Shortcuts (?)`,
   'action.back': `Back`,
+  'settings.palette': `Colour style`,
+  'settings.paletteDesc': `How lively the generated colours are.`,
+  'palette.tonal': `Tonal`,
+  'palette.vibrant': `Vibrant`,
+  'palette.expressive': `Expressive`,
+  'settings.backup': `Backup`,
+  'settings.backupDesc': `Copy your settings and places, or restore them from the clipboard.`,
+  'action.export': `Copy`,
+  'action.import': `Paste`,
+  'toast.exported': `Settings copied to the clipboard.`,
+  'toast.imported': `Settings restored.`,
+  'toast.importFail': `The clipboard does not contain valid Material Weather data.`,
+  'error.title': `Something went wrong`,
+  'error.body': `The app hit an unexpected error. Your places and settings are safe.`,
+  'action.reload': `Reload app`,
+  'hour.pop': `Rain chance`,
+  'action.top': `Back to top`,
 };
 
 export default en;
