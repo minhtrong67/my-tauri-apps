@@ -1,20 +1,36 @@
-import { engine } from '../audio';
-import { tr, setActiveLang, resolveLang, type ActiveLang } from '../i18n';
+import { tr } from '../i18n';
 import * as api from '../tauri';
-import { win } from '../window';
 import { buildM3U, parseM3U } from '../m3u';
-import { basename, natural, shuffled, stripExt, uid, norm } from '../utils';
-import { defaultSettings, type RepeatMode, type Track } from '../types';
-import { pathKey, sortTracksNatural } from './helpers';
+import { basename, stripExt, uid } from '../utils';
 import type { Core } from './core';
-import type { GetFn, SetFn, State, PlaylistSlice } from './types';
+import type { GetFn, SetFn, PlaylistSlice } from './types';
 
 
 export const createPlaylistSlice = (set: SetFn, get: GetFn, core: Core): PlaylistSlice => {
-  const { subscribe, flags, snapshot, fixSettings, retrack, pushTrayLabels, relabelUnknown, snapshotLibrary, snapshotUser, applySnapshot, remapState, mergeTracks, dedupeLibrary, knownFiles, ingest, sortedIds, upsertFolderPlaylist, pruneMissing, addFolder, playCurrentIndex, scheduleSave, syncNext, allowLibrary, syncWatchers } = core;
+  const { mergeTracks, ingest } = core;
   return {
     playlists: [],
     liked: {},
+    smartLists: [],
+
+    saveSmartList: (l) => {
+      const id = l.id ?? uid();
+      set((s) => {
+        const name = l.name.trim() || tr('smartListDefault');
+        const exists = s.smartLists.some((x) => x.id === id);
+        return {
+          smartLists: exists
+            ? s.smartLists.map((x) => (x.id === id ? { ...x, name, rules: l.rules } : x))
+            : [...s.smartLists, { id, name, rules: l.rules, createdAt: Date.now() }],
+        };
+      });
+      return id;
+    },
+    deleteSmartList: (id) => {
+      set((s) => ({ smartLists: s.smartLists.filter((x) => x.id !== id) }));
+      const v = get().view;
+      if (v.name === 'smartlist' && v.id === id) get().nav({ name: 'playlists' });
+    },
 
     toggleLike: (id) =>
       set((s) => {

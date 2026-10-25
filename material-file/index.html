@@ -60,7 +60,7 @@
       --sh1: 0 1px 2px rgb(0 0 0 / .4); --sh2: 0 2px 8px rgb(0 0 0 / .4); --sh3: 0 14px 36px rgb(0 0 0 / .5);
     }
     * { box-sizing: border-box; margin: 0; }
-    html { scroll-behavior: smooth; scroll-padding-top: 90px; -webkit-text-size-adjust: 100%; }
+    html { scroll-padding-top: 90px; -webkit-text-size-adjust: 100%; }
     body { font: 400 16px/1.6 var(--font); background: var(--surface); color: var(--on-surface); -webkit-font-smoothing: antialiased; overflow-x: hidden; transition: background-color .5s, color .5s; }
     img, svg { display: block; max-width: 100%; }
     a { color: inherit; text-decoration: none; }
@@ -78,15 +78,15 @@
     mark { background: none; color: var(--primary); }
 
     /* ============================== buttons (shape-morph) ============================== */
-    .btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 56px; padding: 0 28px; border-radius: 999px; font-weight: 700; font-size: 1rem; white-space: nowrap; isolation: isolate;
+    .btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 56px; padding: 0 28px; border-radius: 28px; font-weight: 700; font-size: 1rem; white-space: nowrap; isolation: isolate;
       transition: border-radius .5s var(--spring), transform .4s var(--spring), box-shadow .3s, background-color .3s; }
     .btn:hover { border-radius: 18px; box-shadow: var(--sh2); } .btn:active { border-radius: 12px; transform: scale(.95); }
     .btn.filled { background: var(--primary); color: var(--on-primary); } .btn.tonal { background: var(--sc); color: var(--on-sc); }
     .btn.outline { box-shadow: inset 0 0 0 2px var(--outline-v); } .btn.outline:hover { box-shadow: inset 0 0 0 2px var(--primary); }
-    .btn.sm { height: 44px; padding: 0 20px; font-size: .9375rem; }
+    .btn.sm { height: 44px; padding: 0 20px; font-size: .9375rem; border-radius: 22px; }
     .btn .rp { position: absolute; border-radius: 50%; background: currentColor; opacity: .25; transform: scale(0); animation: rp .7s var(--emph) forwards; z-index: -1; pointer-events: none; }
     @keyframes rp { to { transform: scale(1); opacity: 0; } }
-    .ib { display: inline-grid; place-items: center; width: 48px; height: 48px; border-radius: 999px; transition: border-radius .45s var(--spring), background-color .2s, transform .3s var(--spring); }
+    .ib { display: inline-grid; place-items: center; width: 48px; height: 48px; border-radius: 24px; transition: border-radius .45s var(--spring), background-color .2s, transform .3s var(--spring); }
     .ib:hover { border-radius: 16px; background: color-mix(in oklab, var(--on-surface) 10%, transparent); } .ib:active { transform: scale(.9); }
 
     /* ============================== floating nav ============================== */
@@ -122,7 +122,7 @@
     .hero h1 .w { display: inline-block; opacity: 0; transform: translateY(.6em) rotate(4deg) scale(.9); animation: wordin .9s var(--spring) forwards; animation-delay: calc(var(--i) * 70ms + 150ms); }
     @keyframes wordin { to { opacity: 1; transform: none; } }
     .cta { display: flex; flex-wrap: wrap; gap: 14px; margin: 30px 0 22px; } .meta { display: flex; flex-wrap: wrap; gap: 8px; }
-    .chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 10px; background: var(--s-high); font-weight: 600; font-size: .8125rem; color: var(--on-variant); transition: border-radius .4s var(--spring), transform .3s var(--spring); } .chip:hover { border-radius: 999px; transform: translateY(-2px); } .chip .i { width: 16px; height: 16px; color: var(--primary); }
+    .chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 10px; background: var(--s-high); font-weight: 600; font-size: .8125rem; color: var(--on-variant); transition: border-radius .4s var(--spring), transform .3s var(--spring); } .chip:hover { border-radius: 17px; transform: translateY(-2px); } .chip .i { width: 16px; height: 16px; color: var(--primary); }
 
     /* ============================== mock app ============================== */
     .stage { perspective: 1400px; position: relative; }
@@ -193,7 +193,7 @@
     .req { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 8px; } .req span { padding: 6px 14px; border-radius: 12px; background: color-mix(in oklab, var(--on-primary) 16%, transparent); font-weight: 600; font-size: .875rem; }
     footer { padding: 56px 0 90px; } .foot { display: flex; flex-wrap: wrap; gap: 28px; justify-content: space-between; align-items: center; padding-top: 32px; border-top: 1px solid var(--outline-v); color: var(--on-variant); } .foot a:hover { color: var(--primary); } .foot .l { display: flex; gap: 20px; flex-wrap: wrap; }
     #top { position: fixed; right: 20px; bottom: 20px; z-index: 80; width: 56px; height: 56px; border-radius: 20px; background: var(--pc); color: var(--on-pc); box-shadow: var(--sh2); display: grid; place-items: center; transform: scale(0) rotate(-40deg); transition: transform .55s var(--spring), border-radius .5s var(--spring); } #top.show { transform: none; } #top:hover { border-radius: 50%; }
-    #toast { position: fixed; left: 50%; bottom: 28px; z-index: 120; translate: -50% 0; padding: 14px 22px; border-radius: 18px; background: var(--inv); color: var(--on-inv); box-shadow: var(--sh3); font-weight: 600; max-width: calc(100% - 30px); transform: translateY(160%); transition: transform .55s var(--spring); } #toast.show { transform: none; }
+    #toast { position: fixed; left: 50%; bottom: max(28px, env(safe-area-inset-bottom)); z-index: 120; padding: 14px 22px; border-radius: 18px; background: var(--inv); color: var(--on-inv); box-shadow: var(--sh3); font-weight: 600; max-width: calc(100% - 30px); transform: translate(-50%, calc(100% + 40px)); opacity: 0; pointer-events: none; transition: transform .55s var(--spring), opacity .2s ease; } #toast.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
 
     /* ============================== reveal ============================== */
     .rv { opacity: 0; transform: translateY(36px) scale(.96); transition: opacity .7s var(--emph), transform .9s var(--spring); transition-delay: calc(var(--i, 0) * 70ms); } .in .rv, .rv.in { opacity: 1; transform: none; }
@@ -201,7 +201,7 @@
     /* ============================== responsive ============================== */
     @media (max-width: 980px) { .hero .wrap, .play { grid-template-columns: 1fr; } .play { padding: 32px 22px; border-radius: 36px; } .bento { grid-template-columns: repeat(2, 1fr); } .tile, .tile.w3, .tile.w4 { grid-column: span 1; } .tile.tall { grid-row: auto; } .stats { grid-template-columns: repeat(2, 1fr); } .links a { padding: 9px 12px; } .f1 { left: 0; } .f2 { right: 0; } }
     @media (max-width: 720px) { section { padding: 64px 0; } .links { display: none; } nav.bar { padding-left: 10px; } .hero { padding-top: 112px; } .bento { grid-template-columns: 1fr; } .tile, .tile.w3, .tile.w4 { grid-column: auto; padding: 24px; } .shots { grid-template-columns: 1fr; } .m-body { grid-template-columns: 1fr; } .m-side { display: none; } .dl { padding: 52px 22px; border-radius: 40px; } .btn { width: 100%; } .cta { width: 100%; } .float { display: none; } #pop { right: 14px; left: 14px; width: auto; } }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } .rv, .m-row, .hero h1 .w { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; } .rv, .m-row, .hero h1 .w { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
@@ -275,7 +275,7 @@
       <p class="lead" data-i18n="hero.lead">Material File is a fast, friendly file manager with tabs, dual pane, colour tags, a command palette and a design that adapts to your colours. Built with Tauri, so it starts instantly and stays light.</p>
       <div class="cta">
         <a class="btn filled mag" href="download/Material-File-Setup.exe" data-dl="setup"><svg class="i"><use href="#i-download"/></svg><span data-i18n="hero.dl">Download for Windows</span></a>
-        <a class="btn outline mag" href="https://github.com/minhtrong67/material-file" target="_blank" rel="noopener"><svg class="i"><use href="#i-github"/></svg><span data-i18n="hero.gh">View on GitHub</span></a>
+        <a class="btn outline mag" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="i"><use href="#i-github"/></svg><span data-i18n="hero.gh">View on GitHub</span></a>
       </div>
       <div class="meta"><span class="chip"><svg class="i"><use href="#i-scale"/></svg>MIT</span><span class="chip"><svg class="i"><use href="#i-shield"/></svg><span data-i18n="chip.notrack">No ads, no tracking</span></span><span class="chip"><svg class="i"><use href="#i-zap"/></svg>v1.1.0</span></div>
     </div>
@@ -376,7 +376,7 @@
     <span class="eyebrow" style="background:color-mix(in oklab,var(--on-primary) 18%,transparent);color:inherit">v1.1.0</span>
     <h2 data-i18n="d.h2">Ready to tidy up?</h2>
     <p class="lead" data-i18n="d.lead">Download Material File and make your folders a nicer place to be. Installs for the current user in seconds.</p>
-    <div class="cta"><a class="btn filled mag" href="download/Material-File-Setup.exe" data-dl="setup"><svg class="i"><use href="#i-download"/></svg><span data-i18n="d.setup">Download installer</span></a><a class="btn outline mag" href="download/Material-File-Portable.exe" data-dl="portable"><svg class="i"><use href="#i-download"/></svg><span data-i18n="d.portable">Portable version</span></a></div>
+    <div class="cta"><a class="btn filled mag" href="download/Material-File-Setup.exe" data-dl="setup"><svg class="i"><use href="#i-download"/></svg><span data-i18n="d.setup">Download installer</span></a></div>
     <div class="req"><span>Windows 10 / 11 · 64-bit</span><span>WebView2</span><span data-i18n="d.size">≈ 10 MB</span></div>
   </div>
 </div></section>
@@ -385,7 +385,7 @@
 <footer><div class="wrap"><div class="foot">
   <a class="brand" href="#top-of-page"><img src="src/assets/logo.svg" alt="" width="32" height="32"><span>Material File</span></a>
   <p><span data-i18n="ft.by">Designed &amp; developed by</span> <b>minhtrong67</b> <span data-i18n="ft.with">with the support of</span> <b>Claude</b> <svg class="i" style="display:inline;color:#e53935;vertical-align:-3px;fill:currentColor"><use href="#i-heart"/></svg></p>
-  <div class="l"><a href="https://github.com/minhtrong67/material-file" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/minhtrong67/material-file/releases" target="_blank" rel="noopener">Releases</a><a href="LICENSE" data-i18n="ft.lic">MIT License</a></div>
+  <div class="l"><a href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/minhtrong67/my-tauri-apps/releases" target="_blank" rel="noopener">Releases</a><a href="LICENSE" data-i18n="ft.lic">MIT License</a></div>
 </div></div></footer>
 
 <button id="top" aria-label="Back to top"><svg class="i"><use href="#i-up"/></svg></button>
@@ -425,7 +425,7 @@
     'q3.q':'Windows cảnh báo khi tôi chạy bộ cài.','q3.a':'Bộ cài chưa được ký số nên SmartScreen hiện cảnh báo. Hãy chọn “Thông tin thêm” rồi “Vẫn chạy”. Bạn cũng có thể tự build từ mã nguồn.',
     'q4.q':'Ứng dụng có thu thập dữ liệu không?','q4.a':'Không theo dõi hay phân tích. Yêu cầu mạng duy nhất là việc kiểm tra bản phát hành mới trên GitHub mỗi ngày một lần (tuỳ chọn), có thể tắt trong Cài đặt.',
     'q5.q':'Làm sao để tự build?','q5.a':'Cài Node.js và Rust, rồi chạy “npm install”, “npm run dev” và “npm run build”. README giải thích từng bước.',
-    'd.h2':'Sẵn sàng dọn dẹp?','d.lead':'Tải Material File và biến thư mục của bạn thành nơi dễ chịu hơn. Cài cho người dùng hiện tại chỉ trong vài giây.','d.setup':'Tải bộ cài','d.portable':'Bản portable','d.size':'≈ 10 MB',
+    'd.h2':'Sẵn sàng dọn dẹp?','d.lead':'Tải Material File và biến thư mục của bạn thành nơi dễ chịu hơn. Cài cho người dùng hiện tại chỉ trong vài giây.','d.setup':'Tải bộ cài','d.size':'≈ 10 MB',
     'ft.by':'Thiết kế & phát triển bởi','ft.with':'với sự hỗ trợ của','ft.lic':'Giấy phép MIT',
     'toast.missing':'Chưa có file setup trong thư mục download/. Hãy chép file vào đó hoặc xem GitHub Releases.','toast.start':'Đang bắt đầu tải về…'
   };
@@ -524,10 +524,28 @@
     anchors.forEach((a, i) => a.classList.toggle('on', i === cur)); const a = anchors[cur];
     if (a) { pill.style.left = a.offsetLeft + 'px'; pill.style.width = a.offsetWidth + 'px'; pill.style.opacity = 1; } else pill.style.opacity = 0;
   }
-  let lastY = 0, tick = false;
-  addEventListener('scroll', () => { if (tick) return; tick = true; requestAnimationFrame(() => { tick = false; const h = document.documentElement; $('#progress').style.transform = `scaleX(${scrollY / Math.max(1, h.scrollHeight - innerHeight)})`; $('#top').classList.toggle('show', scrollY > 700); $('#bar').classList.toggle('hide', scrollY > lastY && scrollY > 500); lastY = scrollY; spy(); $$('.blob').forEach((b, i) => { b.style.translate = `0 ${scrollY * (.08 + i * .05)}px`; }); }); }, { passive: true });
-  addEventListener('resize', spy); $('#top').addEventListener('click', () => scrollTo({ top: 0 }));
+  let lastY = 0, tick = false, autoScroll = false;
+  addEventListener('scroll', () => { if (tick) return; tick = true; requestAnimationFrame(() => { tick = false; const h = document.documentElement; $('#progress').style.transform = `scaleX(${scrollY / Math.max(1, h.scrollHeight - innerHeight)})`; $('#top').classList.toggle('show', scrollY > 700); $('#bar').classList.toggle('hide', !autoScroll && scrollY > lastY && scrollY > 500); lastY = scrollY; spy(); $$('.blob').forEach((b, i) => { b.style.translate = `0 ${scrollY * (.08 + i * .05)}px`; }); }); }, { passive: true });
+  addEventListener('resize', spy);
   $$('.qa button').forEach((b) => b.addEventListener('click', () => { const q = b.parentElement, open = q.classList.toggle('open'); b.setAttribute('aria-expanded', String(open)); }));
+
+  /* smooth, eased scrolling for every in-page link (nav, buttons, back to top) – works even when the OS reduces motion */
+  let raf = 0;
+  const ease = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  function glide(to) {
+    cancelAnimationFrame(raf); const from = scrollY, max = document.documentElement.scrollHeight - innerHeight; to = Math.max(0, Math.min(max, to)); const dist = to - from;
+    if (Math.abs(dist) < 2) return; const dur = Math.min(1100, 380 + Math.abs(dist) * .35), t0 = performance.now(); autoScroll = true;
+    const stop = () => { cancelAnimationFrame(raf); autoScroll = false; removeEventListener('wheel', stop); removeEventListener('touchstart', stop); removeEventListener('keydown', stop); };
+    addEventListener('wheel', stop, { passive: true, once: true }); addEventListener('touchstart', stop, { passive: true, once: true }); addEventListener('keydown', stop, { once: true });
+    (function step(now) { const k = Math.min(1, (now - t0) / dur); scrollTo(0, from + dist * ease(k)); if (k < 1) raf = requestAnimationFrame(step); else stop(); })(t0);
+  }
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest?.('a[href^="#"]'); if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey) return;
+    const id = a.getAttribute('href').slice(1); const el = id && id !== 'top-of-page' ? document.getElementById(id) : null;
+    if (id && id !== 'top-of-page' && !el) return; e.preventDefault(); togglePop(false);
+    glide(el ? el.getBoundingClientRect().top + scrollY - 84 : 0); history.replaceState(null, '', id && el ? '#' + id : location.pathname + location.search);
+  });
+  $('#top').addEventListener('click', () => glide(0));
 
   /* shortcuts: highlight the card when the visitor really presses the key */
   addEventListener('keydown', (e) => {

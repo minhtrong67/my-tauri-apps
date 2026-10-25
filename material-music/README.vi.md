@@ -51,7 +51,7 @@
 
 ## Screenshot
 
-> Các ảnh nằm trong thư mục [`screenshots`](screenshots) và đặt tên `image01.png`, `image02.png`, `image03.png`… Hãy thay từng ảnh giữ chỗ bằng ảnh chụp thật, giữ nguyên tên tệp.
+> Các ảnh nằm trong thư mục [`screenshots`](screenshots) và đặt tên `image01.png` … `image04.png`. Hãy thay từng ảnh giữ chỗ bằng ảnh chụp thật, giữ nguyên tên tệp.
 
 | Trang chủ | Bài hát (danh sách) |
 |:---:|:---:|
@@ -61,9 +61,6 @@
 |:---:|:---:|
 | ![Album](screenshots/image03.png) | ![Đang phát](screenshots/image04.png) |
 
-| Cài đặt |
-|:---:|
-| ![Cài đặt](screenshots/image05.png) |
 
 ## Tính năng
 
@@ -75,10 +72,14 @@
 - Đọc thẻ nhạc (tên, nghệ sĩ, album, năm, thể loại, track) và **ảnh bìa** nhúng bằng `lofty`.
 - Duyệt theo Bài hát, Album, Nghệ sĩ, Playlist, Yêu thích, Gần đây – mọi tab đều có **dạng danh sách / dạng ô**, tìm kiếm không dấu (`Ctrl+F`) và sắp xếp.
 - Danh sách ảo hoá: mượt với hàng chục nghìn bài.
-- Sao lưu / khôi phục thư viện (JSON), xóa tệp bị thiếu.
+- Sao lưu / khôi phục dữ liệu (JSON, được kiểm tra hợp lệ và hỏi xác nhận trước khi thay), xóa tệp bị thiếu.
+- **Lưu trữ an toàn:** ghi file theo kiểu nguyên tử, giữ bản `.bak`, file hỏng được tự khôi phục từ bản đó, và mỗi ngày lưu một bản sao playlist, yêu thích, cài đặt trong `backups/` (giữ 5 bản gần nhất; *Settings → Thư viện → Sao lưu tự động* mở thư mục).
 - **Theo dõi thư mục:** bài bạn thêm, đổi tên hoặc xóa trong các thư mục thư viện tự được cập nhật (có thể tắt).
 - **Sửa thẻ bài hát:** chuột phải vào bài → *Sửa thẻ bài hát* để ghi lại tên, nghệ sĩ, album, nghệ sĩ album, thể loại, năm và số thứ tự thẳng vào tệp.
 - **Playlist thông minh** tự đầy: *Nghe nhiều nhất*, *Mới trong tháng*, *Chưa nghe bao giờ* và *Chất lượng không mất dữ liệu* (FLAC / WAV).
+- **Smart playlist do bạn tự tạo** theo điều kiện (thể loại, năm, bitrate, định dạng, thời lượng, mới thêm, đã / chưa nghe, yêu thích), có xem trước số bài ngay khi chỉnh.
+- **Tìm bài trùng:** gom các bài giống nhau, giữ bản tốt nhất (lossless trước, rồi bitrate) và chuyển lượt nghe, yêu thích, playlist sang bản đó. Chỉ xóa khỏi thư viện, không đụng tới file nhạc.
+- **Thống kê:** bài hát và nghệ sĩ nghe nhiều nhất, thời gian nghe và 7 ngày gần đây. Một bài chỉ được tính sau 30 giây hoặc một nửa thời lượng nên bấm qua bài không làm sai số liệu.
 
 #### Định dạng âm thanh được hỗ trợ
 
@@ -101,8 +102,11 @@ App phát nhạc bằng bộ giải mã media của Microsoft Edge WebView2, nê
 - Playlist: tạo, đổi tên, xóa, sắp xếp, nhập / xuất **M3U / M3U8**.
 - **Equalizer 10 băng tần** có preset và preamp, tốc độ phát 0.5× – 2×.
 - **Lời bài hát đồng bộ** (tệp `.lrc` cạnh bài hoặc nhúng trong thẻ) – bấm vào dòng để tua. Chưa có lời? **Tìm trên mạng** (LRCLIB, chỉ khi bạn bấm nút) rồi lưu thành tệp `.lrc` cạnh bài hát.
-- Visualizer phổ âm thanh, màn hình *Đang phát* toàn khung và **trình phát mini** luôn ở trên cùng.
-- Hẹn giờ tắt (15 – 120 phút hoặc hết bài hiện tại), **phím media toàn cục** (Phát/Tạm dừng, Bài kế, Bài trước, Dừng – hoạt động khi chạy nền và từ khay hệ thống; lớp phủ media của Windows hiển thị ảnh bìa và tiến trình), khôi phục phiên trước.
+- Ba kiểu **visualizer** (cột, sóng, vòng tròn), màn hình *Đang phát* toàn khung và **trình phát mini** luôn ở trên cùng.
+- **Chỉnh độ lệch lời bài hát:** −/+ 0,1 giây cho từng bài khi file `.lrc` bị lệch.
+- **Thiết bị phát âm thanh:** chọn loa / tai nghe dùng để phát nhạc (*Settings → Phát nhạc*).
+- **Lưu hàng đợi thành playlist** chỉ với một cú bấm.
+- Hẹn giờ tắt (15 – 120 phút hoặc hết bài hiện tại) có **giảm âm lượng dần**, **phím tắt toàn hệ thống** tùy chọn (`Ctrl+Alt+Space / ← / → / M / T`), **phím media toàn cục** (Phát/Tạm dừng, Bài kế, Bài trước, Dừng – hoạt động khi chạy nền và từ khay hệ thống; lớp phủ media của Windows hiển thị ảnh bìa và tiến trình), khôi phục phiên trước.
 
 ### Giao diện & ngôn ngữ
 - Chủ đề sáng, tối hoặc theo hệ thống; màu có sẵn + màu tùy chọn; **màu động theo ảnh bìa**.
@@ -122,6 +126,9 @@ App phát nhạc bằng bộ giải mã media của Microsoft Edge WebView2, nê
 - Khay hệ thống có phát / tạm dừng / trước / sau, tùy chọn *đóng xuống khay*, luôn ở trên cùng, chỉ chạy một cửa sổ.
 - Thanh tiêu đề Material tự vẽ.
 
+### Trực tuyến (tùy chọn)
+- **Scrobble lên ListenBrainz:** dán token người dùng trong *Settings → Trực tuyến*; app (phía Rust) gửi các bài bạn thực sự đã nghe và bài *đang phát*. Mặc định tắt.
+
 ### Bảo mật
 - Giao thức asset bắt đầu **rỗng**: web view chỉ đọc được thư mục cache ảnh bìa và các thư mục chứa thư viện của bạn (bỏ ký tự đại diện `**`).
 - Các lệnh về tệp chỉ nhận đường dẫn tuyệt đối tới tệp `.m3u`, `.m3u8`, `.lrc`, `.json`, không ghi vào thư mục dữ liệu của app và giới hạn dung lượng khi đọc.
@@ -139,6 +146,8 @@ App phát nhạc bằng bộ giải mã media của Microsoft Edge WebView2, nê
 | `Ctrl+F` | Tìm kiếm | `F5` | Làm mới thư viện |
 | `Esc` | Đóng cửa sổ | | |
 
+Mọi phím tắt trong app đều đổi được (*Settings → Phát nhạc → Phím tắt*). Khi bật *Phím tắt toàn hệ thống*, `Ctrl+Alt+Space`, `Ctrl+Alt+←`, `Ctrl+Alt+→`, `Ctrl+Alt+M` (trình phát mini) và `Ctrl+Alt+T` (luôn ở trên cùng) dùng được ở mọi ứng dụng.
+
 ## Cài đặt
 
 ### Download
@@ -147,7 +156,7 @@ Tải bộ cài mới nhất ở trang **Releases** của repository này:
 
 | Tệp | Mô tả |
 |---|---|
-| `Material Music_1.2.0_x64-setup.exe` | Bộ cài cho Windows 10 / 11 (64-bit) – khuyên dùng |
+| `Material Music_1.3.0_x64-setup.exe` | Bộ cài cho Windows 10 / 11 (64-bit) – khuyên dùng |
 
 | Yêu cầu hệ thống | |
 |---|---|
@@ -158,12 +167,12 @@ Tải bộ cài mới nhất ở trang **Releases** của repository này:
 
 ### Cài đặt
 
-1. Chạy **`Material Music_1.2.0_x64-setup.exe`**. Bộ cài cài theo từng người dùng nên **không cần quyền quản trị**.
+1. Chạy **`Material Music_1.3.0_x64-setup.exe`**. Bộ cài cài theo từng người dùng nên **không cần quyền quản trị**.
 2. Nếu Windows SmartScreen hiện *"Windows protected your PC"* (bộ cài chưa ký số), bấm **More info → Run anyway**.
 3. Làm theo trình cài đặt rồi mở **Material Music** từ Start menu.
 4. Ứng dụng tự quét thư mục **Music**; thêm thư mục khác bằng *Thêm thư mục* hoặc kéo thả vào cửa sổ.
 
-**Gỡ cài đặt** – *Settings → Apps → Installed apps → Material Music → Uninstall* (hoặc chạy `uninstall.exe` trong thư mục cài đặt). Dữ liệu nằm ở `%APPDATA%\com.minhtrong67.material-music-player`, bộ nhớ đệm ảnh bìa ở `%LOCALAPPDATA%\com.minhtrong67.material-music-player`; xóa hai thư mục này nếu muốn gỡ sạch hoàn toàn.
+**Gỡ cài đặt** – *Settings → Apps → Installed apps → Material Music → Uninstall* (hoặc chạy `uninstall.exe` trong thư mục cài đặt). Dữ liệu nằm ở `%APPDATA%\com.minhtrong67.material-music`, bộ nhớ đệm ảnh bìa ở `%LOCALAPPDATA%\com.minhtrong67.material-music`; xóa hai thư mục này nếu muốn gỡ sạch hoàn toàn.
 
 **Nâng cấp từ "Melodia"** – lần mở đầu tiên app tự nhập thư viện đã lưu của bản Melodia cũ.
 
@@ -192,7 +201,7 @@ Tải bộ cài mới nhất ở trang **Releases** của repository này:
 **Yêu cầu** – Windows 10 / 11 có WebView2, [Node.js](https://nodejs.org) 18+, [Rust](https://rustup.rs) (stable) với *Desktop development with C++* (Visual Studio Build Tools) và [điều kiện của Tauri](https://tauri.app/start/prerequisites/).
 
 ```bash
-cd material-music-player
+cd material-music
 npm install
 npm run dev
 ```
@@ -205,8 +214,13 @@ npm run dev
 | `npm run build` | Đóng gói bộ cài cho Windows |
 | `npm run vite:dev` | Chỉ chạy giao diện trên trình duyệt (tính năng Tauri không dùng được) |
 | `npm run icons` | Tạo lại toàn bộ icon app / setup / uninstall màu `#E91E63` (cần Python + `pip install pillow`) |
-| `npx tsc --noEmit` | Kiểm tra kiểu cho frontend |
-| `cargo check` (trong `src-tauri`) | Kiểm tra backend Rust |
+| `npm run typecheck` | Kiểm tra kiểu cho frontend |
+| `npm run lint` | ESLint |
+| `npm test` | Test đơn vị Vitest (lời bài hát, M3U, smart playlist, bài trùng, thống kê, phím tắt…) |
+| `npm run check:i18n` | Tiếng Anh và tiếng Việt phải có cùng nội dung và placeholder |
+| `cargo test` / `cargo check` (trong `src-tauri`) | Test / kiểm tra kiểu backend Rust |
+| `npm run release -- "ghi chú"` | Bộ cài đã ký + `download/latest.json` cho tự động cập nhật |
+| `npm run portable` | File zip bản portable (sau `npm run build`) |
 
 **Dùng trong workspace Cargo có sẵn** – thêm vào `members`:
 
@@ -214,7 +228,7 @@ npm run dev
 [workspace]
 members = [
   # ...các app hiện có...
-  "material-music-player/src-tauri",
+  "material-music/src-tauri",
 ]
 ```
 
@@ -224,9 +238,11 @@ members = [
 | Danh sách màu / font | `MATERIAL_COLORS` / `FONT_OPTIONS` trong `src/lib/theme.ts` |
 | Thêm ngôn ngữ | thêm từ điển trong `src/lib/i18n.ts` (trình biên dịch kiểm tra đủ khóa dịch) |
 | Kích thước cửa sổ mặc định | `app.windows` trong `src-tauri/tauri.conf.json` |
-| Đuôi âm thanh được hỗ trợ | `AUDIO_EXTS` trong `src-tauri/src/lib.rs` và `src/lib/tauri.ts` |
+| Đuôi âm thanh được hỗ trợ | `AUDIO_EXTS` trong `src-tauri/src/util.rs` và `src/lib/tauri.ts` |
 
-Dữ liệu người dùng: `library.json` (bài hát), `user.json` (playlist, yêu thích, lịch sử, cài đặt, phiên phát), `window.json` (kích thước cửa sổ) và `prefs.json` trong `%APPDATA%\com.minhtrong67.material-music-player`; ảnh bìa lưu đệm ở `%LOCALAPPDATA%\com.minhtrong67.material-music-player\covers`.
+Dữ liệu từ các bản trước (thư mục `com.minhtrong67.material-music-player` và `com.minhtrong67.melodia`) được tự động nhập lại ở lần mở đầu tiên.
+
+Dữ liệu người dùng: `library.json` (bài hát), `user.json` (playlist, yêu thích, lịch sử, cài đặt, phiên phát), `window.json` (kích thước cửa sổ) và `prefs.json` trong `%APPDATA%\com.minhtrong67.material-music`; ảnh bìa lưu đệm ở `%LOCALAPPDATA%\com.minhtrong67.material-music\covers`.
 
 ## Build
 
@@ -237,8 +253,8 @@ npm run build
 
 | Sản phẩm | Đường dẫn (project nằm trong Cargo workspace → `target` ở gốc workspace) |
 |---|---|
-| Bộ cài | `target/release/bundle/nsis/Material Music_1.2.0_x64-setup.exe` |
-| File chạy trực tiếp | `target/release/material-music-player.exe` |
+| Bộ cài | `target/release/bundle/nsis/Material Music_1.3.0_x64-setup.exe` |
+| File chạy trực tiếp | `target/release/material-music.exe` (hoặc `npm run portable` → `download/Material-Music_<version>_x64-portable.zip`) |
 
 - Lần build đầu tải công cụ NSIS nên cần có internet.
 - Muốn đổi phiên bản, sửa `version` ở cả `package.json` và `src-tauri/tauri.conf.json`.
@@ -256,13 +272,15 @@ npm run build
 
 Muốn dùng hình khác, thay `src-tauri/icons/icon.png` (vuông, ≥ 512 px), chạy `npx tauri icon src-tauri/icons/icon.png`, rồi chỉnh `scripts/generate-icons.py` nếu muốn tạo lại icon setup / uninstall tương ứng.
 
-**Landing page** – `index.html` ở thư mục gốc là trang giới thiệu một tệp HTML theo phong cách Material Design (responsive, đủ thẻ meta SEO và chia sẻ mạng xã hội, song ngữ EN/VI). Nút Download trỏ tới `download/Material-Music_1.2.0_x64-setup.exe`; hãy chép bộ cài đã build vào thư mục [`download`](download) với đúng tên này. Mở bằng cách nhấp đúp, hoặc host thư mục gốc (ví dụ GitHub Pages).
+**Landing page** – `index.html` ở thư mục gốc là trang giới thiệu một tệp HTML theo phong cách Material Design (responsive, đủ thẻ meta SEO và chia sẻ mạng xã hội, song ngữ EN/VI). Nút Download trỏ tới `download/Material-Music_1.3.0_x64-setup.exe`; hãy chép bộ cài đã build vào thư mục [`download`](download) với đúng tên này. Mở bằng cách nhấp đúp, hoặc host thư mục gốc (ví dụ GitHub Pages).
 
 ### Tự động cập nhật
 
 App kiểm tra phiên bản mới sau khi mở vài giây và cứ 6 giờ một lần (*Cài đặt → Giới thiệu → Tự động cập nhật*, hoặc bấm **Kiểm tra cập nhật**). App đọc một tệp khai báo nhỏ `download/latest.json` trên website; nếu có bản mới hơn đã được **ký số**, toast và hộp thoại sẽ hiện ra để tải về, xem ghi chú phát hành và thanh tiến trình, cài đặt rồi tự khởi động lại. Mọi bản cập nhật đều được xác minh bằng khóa công khai của bạn trước khi cài.
 
 ### Thiết lập một lần
+> Khóa công khai đã được điền sẵn trong `src-tauri/tauri.conf.json`. Hãy giữ bí mật **khóa riêng** tương ứng (`material-music.key`), đừng commit và nhớ sao lưu: mất khóa là không phát hành cập nhật được nữa. Muốn dùng cặp khóa của bạn thì làm theo các bước dưới.
+
 1. Tạo cặp khóa ký (giữ khóa riêng bí mật, đừng commit, nhớ sao lưu: mất khóa là không phát hành cập nhật được nữa):
    ```powershell
    npx tauri signer generate -w "$env:USERPROFILE\.tauri\material-music.key"
@@ -286,8 +304,8 @@ App kiểm tra phiên bản mới sau khi mở vài giây và cứ 6 giờ một
 ## Cấu trúc project
 
 ```
-material-music-player/
-├─ screenshots/                ảnh chụp dùng trong README (image01.png … image05.png)
+material-music/
+├─ screenshots/                ảnh chụp dùng trong README (image01.png … image04.png)
 ├─ index.html                 landing page (một tệp HTML, Material Design, SEO)
 ├─ download/                  đặt tệp cài đặt .exe vào đây
 ├─ app.html                   điểm vào của ứng dụng (Vite)
@@ -302,7 +320,8 @@ material-music-player/
 │  │  │  ├─ library.ts · player.ts · playlists.ts · ui.ts · app.ts
 │  │  │  └─ derived.ts        hook album / nghệ sĩ / tìm kiếm
 │  │  ├─ audio.ts             bộ máy hai deck: gapless, crossfade, ReplayGain, equalizer, phổ âm thanh
-│  │  ├─ smart.ts             playlist thông minh
+│  │  ├─ smart.ts             playlist thông minh (có sẵn + theo điều kiện)
+│  │  ├─ duplicates.ts · stats.ts · keymap.ts   tìm bài trùng, thống kê, bản đồ phím tắt
 │  │  ├─ components/Expressive.tsx   thanh tua dạng sóng + loading indicator đổi hình
 │  │  ├─ i18n.ts              từ điển English / Tiếng Việt
 │  │  ├─ theme.ts             sinh bảng màu Material 3 từ màu chủ đề
@@ -310,17 +329,21 @@ material-music-player/
 │  │  └─ tauri.ts, window.ts, types.ts, utils.ts
 │  ├─ components/             TitleBar, NavDrawer, PlayerBar, NowPlaying, QueuePanel, MiniPlayer,
 │  │                          Collection, TrackRow, TrackListView, MediaCard, Dialogs, ui (bộ M3) …
-│  └─ views/                  Library (trang chủ, bài hát, album, nghệ sĩ, playlist, tìm kiếm), Settings
+│  └─ views/                  Library (trang chủ, bài hát, album, nghệ sĩ, playlist, tìm kiếm), Settings, Extra (thống kê, bài trùng, smart playlist)
 ├─ scripts/
-│  └─ generate-icons.py       tạo toàn bộ icon (app, setup, uninstall) màu #E91E63
+│  ├─ generate-icons.py       tạo toàn bộ icon (app, setup, uninstall)
+│  ├─ make-update-manifest.mjs · make-portable.mjs · check-i18n.mjs
+├─ tests/                     test đơn vị Vitest
+├─ .github/                   workflow CI + phát hành, mẫu issue
 ├─ src-tauri/                 backend Rust
-│  ├─ src/lib.rs              lệnh: quét song song, thẻ nhạc (đọc / ghi) & ảnh bìa, lời bài hát (cục bộ / trên mạng), trạng thái, khay, phím media, theo dõi thư mục, nhớ cửa sổ
+│  ├─ src/lib.rs              khởi tạo app: plugin, khay hệ thống, đăng ký lệnh
+│  ├─ src/scan.rs · state.rs · window.rs · system.rs · lyrics.rs · watch.rs · scrobble.rs · util.rs   quét & thẻ nhạc, lưu trữ an toàn & sao lưu, ghi nhớ cửa sổ, tiện ích hệ thống, LRCLIB, theo dõi thư mục, ListenBrainz
 │  ├─ src/main.rs
 │  ├─ capabilities/           quyền của Tauri
 │  ├─ icons/                  icon ứng dụng, setup và uninstall
 │  ├─ Cargo.toml
 │  └─ tauri.conf.json         cấu hình ứng dụng, cửa sổ, bộ cài, liên kết tệp
-├─ README.md / README.vi.md
+├─ README.md / README.vi.md · CHANGELOG.md · CONTRIBUTING.md
 ├─ package.json, vite.config.ts, tailwind.config.js, tsconfig.json
 └─ LICENSE
 ```

@@ -1,17 +1,13 @@
 import { engine } from '../audio';
-import { tr, setActiveLang, resolveLang, type ActiveLang } from '../i18n';
-import * as api from '../tauri';
-import { win } from '../window';
-import { buildM3U, parseM3U } from '../m3u';
-import { basename, natural, shuffled, stripExt, uid, norm } from '../utils';
-import { defaultSettings, type RepeatMode, type Track } from '../types';
-import { pathKey, sortTracksNatural } from './helpers';
+import { tr } from '../i18n';
+import { shuffled } from '../utils';
+import { sortTracksNatural } from './helpers';
 import type { Core } from './core';
-import type { GetFn, SetFn, State, PlayerSlice } from './types';
+import type { GetFn, SetFn, PlayerSlice } from './types';
 
 
 export const createPlayerSlice = (set: SetFn, get: GetFn, core: Core): PlayerSlice => {
-  const { subscribe, flags, snapshot, fixSettings, retrack, pushTrayLabels, relabelUnknown, snapshotLibrary, snapshotUser, applySnapshot, remapState, mergeTracks, dedupeLibrary, knownFiles, ingest, sortedIds, upsertFolderPlaylist, pruneMissing, addFolder, playCurrentIndex, scheduleSave, syncNext, allowLibrary, syncWatchers } = core;
+  const { playCurrentIndex } = core;
   return {
     queue: [],
     baseQueue: [],
@@ -44,9 +40,9 @@ export const createPlayerSlice = (set: SetFn, get: GetFn, core: Core): PlayerSli
       const t = s.byId[id];
       if (!t) return;
       playCurrentIndex(i, true);
+      core.beginListen(id);
       set((st) => ({
         isPlaying: true,
-        plays: { ...st.plays, [id]: (st.plays[id] ?? 0) + 1 },
         history: [{ id, at: Date.now() }, ...st.history.filter((h) => h.id !== id)].slice(0, 200),
       }));
     },

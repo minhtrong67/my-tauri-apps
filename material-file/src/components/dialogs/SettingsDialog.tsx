@@ -175,7 +175,7 @@ export function SettingsDialog() {
         <nav className="flex w-60 flex-none flex-col gap-1 bg-surface-container-low p-3 max-sm:w-auto max-sm:flex-row max-sm:overflow-x-auto max-sm:p-2" aria-label={t('settings.title')}>
           <div className="mb-2 flex items-center gap-3 px-2 py-2 max-sm:hidden"><span className="grid size-10 place-items-center rounded-2xl bg-primary text-on-primary"><Gear className="size-5" style={{ animation: open ? 'spin 1.2s var(--ease-emph) 1' : undefined }} /></span><span id="settings-title" className="text-lg font-semibold">{t('settings.title')}</span></div>
           {items.map((i) => (
-            <button key={i.id} type="button" onClick={() => setPanel(i.id)} aria-current={panel === i.id} className={`ripple flex items-center gap-3 rounded-full px-4 py-3 text-left font-medium transition-[background-color,border-radius] duration-300 hover:rounded-2xl max-sm:flex-none ${panel === i.id ? 'bg-secondary-container font-semibold text-on-secondary-container' : 'hover:bg-on-surface/8'}`}>
+            <button key={i.id} type="button" onClick={() => setPanel(i.id)} aria-current={panel === i.id} className={`ripple flex items-center gap-3 rounded-[1.5rem] px-4 py-3 text-left font-medium transition-[background-color,border-radius] duration-300 ease-emph hover:rounded-2xl max-sm:flex-none ${panel === i.id ? 'bg-secondary-container font-semibold text-on-secondary-container' : 'hover:bg-on-surface/8'}`}>
               <i.icon className="size-5" />{i.label}
             </button>
           ))}

@@ -90,16 +90,16 @@ export function NavBar({ id }: { id: PaneId }) {
         items = list.filter((e) => e.isDir && (hidden || !e.hidden)).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })).slice(0, 300).map((e) => ({ label: e.name, icon: FolderClosed, run: () => navigate(id, e.path) }));
       }
     } catch { return; }
-    if (items.length) { const r = el.getBoundingClientRect(); showMenu(items, r.left, r.bottom + 4); }
+    if (items.length) { const r = el.getBoundingClientRect(); showMenu(items, r.left, r.bottom + 4, r.right); }
   };
   const onSearch = (v: string) => { setQ(v); window.clearTimeout(timer.current); timer.current = window.setTimeout(() => setFilter(id, v.trim()), 90); };
   return (
     <div className="flex flex-none items-center gap-1 bg-surface-container px-2 pb-2">
-      <IconButton icon={ArrowLeft} label={t('nav.back')} kbd="Alt+←" disabled={!tab.back.length} onClick={() => void goBack(id)} onContextMenu={(e) => { e.preventDefault(); const it = historyItems(id, 'back'); if (it.length) { const r = e.currentTarget.getBoundingClientRect(); showMenu(it, r.left, r.bottom + 4); } }} />
-      <IconButton icon={ArrowRight} label={t('nav.forward')} kbd="Alt+→" disabled={!tab.fwd.length} onClick={() => void goForward(id)} onContextMenu={(e) => { e.preventDefault(); const it = historyItems(id, 'fwd'); if (it.length) { const r = e.currentTarget.getBoundingClientRect(); showMenu(it, r.left, r.bottom + 4); } }} />
+      <IconButton icon={ArrowLeft} label={t('nav.back')} kbd="Alt+←" disabled={!tab.back.length} onClick={() => void goBack(id)} onContextMenu={(e) => { e.preventDefault(); const it = historyItems(id, 'back'); if (it.length) { const r = e.currentTarget.getBoundingClientRect(); showMenu(it, r.left, r.bottom + 4, r.right); } }} />
+      <IconButton icon={ArrowRight} label={t('nav.forward')} kbd="Alt+→" disabled={!tab.fwd.length} onClick={() => void goForward(id)} onContextMenu={(e) => { e.preventDefault(); const it = historyItems(id, 'fwd'); if (it.length) { const r = e.currentTarget.getBoundingClientRect(); showMenu(it, r.left, r.bottom + 4, r.right); } }} />
       <IconButton icon={ArrowUp} label={t('nav.up')} kbd="Alt+↑" disabled={!path || path === '' || path === HOME} onClick={() => goUp(id)} />
       <IconButton icon={RefreshCw} label={t('nav.refresh')} kbd="F5" onClick={() => void refresh(id)} />
-      <div className="relative mx-1 flex h-10 min-w-0 flex-1 items-center rounded-full bg-surface-highest pr-1 pl-3 transition-[border-radius,box-shadow] duration-300 focus-within:rounded-2xl focus-within:ring-2 focus-within:ring-primary" onClick={(e) => { if (!(e.target as HTMLElement).closest('button') && !editing) beginEdit(); }}>
+      <div className="relative mx-1 flex h-10 min-w-0 flex-1 items-center rounded-[1.25rem] bg-surface-highest pr-1 pl-3 transition-[border-radius,box-shadow] duration-300 focus-within:rounded-2xl focus-within:ring-2 focus-within:ring-primary" onClick={(e) => { if (!(e.target as HTMLElement).closest('button') && !editing) beginEdit(); }}>
         {editing ? (
           <input autoFocus value={text} onChange={(e) => setText(e.target.value)} spellCheck={false} placeholder={t('address.placeholder')} aria-label={t('address.placeholder')}
             className="h-full min-w-0 flex-1 bg-transparent outline-none" onFocus={(e) => e.currentTarget.select()} onBlur={() => setEditing(false)}
@@ -111,14 +111,14 @@ export function NavBar({ id }: { id: PaneId }) {
               crumbs.map((c, i) => (
                 <span key={c.path} className="flex items-center">
                   <button type="button" aria-label="Subfolders" onClick={(e) => void subMenu(e, i === 0 ? '' : crumbs[i - 1].path)} className="ibtn sm !size-6"><ChevronRight className="!size-4" /></button>
-                  <button type="button" data-drop-path={c.path} onClick={() => void navigate(id, c.path)} className="ripple rounded-full px-2 py-0.5 font-medium transition-[border-radius] duration-300 hover:rounded-lg">{c.label}</button>
+                  <button type="button" data-drop-path={c.path} onClick={() => void navigate(id, c.path)} className="ripple rounded-[0.875rem] px-2 py-0.5 font-medium transition-[border-radius] duration-300 hover:rounded-lg">{c.label}</button>
                 </span>
               ))}
           </div>
         )}
         {real && !editing && <IconButton icon={Copy} label={t('cmd.copyPathBtn')} small onClick={() => void copyText(path as string)} />}
       </div>
-      <div className="relative flex h-10 w-[min(17rem,28%)] min-w-[9rem] items-center rounded-full bg-surface-highest pr-1 pl-3 transition-[border-radius,box-shadow,width] duration-300 focus-within:rounded-2xl focus-within:ring-2 focus-within:ring-primary">
+      <div className="relative flex h-10 w-[min(17rem,28%)] min-w-[9rem] items-center rounded-[1.25rem] bg-surface-highest pr-1 pl-3 transition-[border-radius,box-shadow,width] duration-300 focus-within:rounded-2xl focus-within:ring-2 focus-within:ring-primary">
         <Search className="mr-2 size-[1.125rem] flex-none text-on-surface-variant" />
         <input data-search={id} value={q} disabled={!real} onChange={(e) => onSearch(e.target.value)} spellCheck={false}
           placeholder={real ? t('search.in', { folder: baseName(path as string) }) : t('search.placeholder')} aria-label={t('search.placeholder')}
@@ -152,7 +152,7 @@ export function StatusBar({ id }: { id: PaneId }) {
   const drive = real ? drives.filter((d) => samePath(path as string, d.path) || (path as string).toLowerCase().startsWith(d.path.toLowerCase())).sort((a, b) => b.path.length - a.path.length)[0] : undefined;
   return (
     <div className="flex h-9 flex-none items-center gap-3 border-t border-outline-variant/50 bg-surface-container px-4 text-xs text-on-surface-variant">
-      <span className="truncate">{search ? t('status.results', { n: n.toLocaleString() }) : real ? (n === 1 ? t('status.item') : t('status.items', { n: n.toLocaleString() })) : ''}</span>
+      <span className="truncate">{search ? t('status.results', { n: n.toLocaleString() }) : real ? (n === 1 ? t('status.item') : t('status.items', { n: n.toLocaleString() })) : path === HOME ? t('status.hint') : ''}</span>
       {count > 0 && <span className="truncate font-medium text-primary">{t('status.selected', { n: count.toLocaleString() })}{bytes ? ' · ' + fmtSize(bytes, true) : ''}</span>}
       <span className="flex-1" />
       {drive && <span className="mr-1 flex items-center gap-1.5 max-[900px]:hidden" title={drive.path}><HardDrive className="size-3.5" />{t('status.free', { free: fmtSize(drive.free, true) })}</span>}

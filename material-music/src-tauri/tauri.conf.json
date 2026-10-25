@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Material Music",
-  "version": "1.2.0",
-  "identifier": "com.minhtrong67.material-music-player",
+  "version": "1.3.0",
+  "identifier": "com.minhtrong67.material-music",
   "build": {
     "beforeDevCommand": "npm run vite:dev",
     "devUrl": "http://localhost:1420/app.html",
@@ -83,7 +83,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "PASTE_YOUR_PUBLIC_KEY_HERE - see README, section Auto-update",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZGN0FCQjI5OTgzOURGQTIKUldTaTN6bVlLYnQ2L3lVRS9aQ29ITWJtdEhiQnYyMHBNV3NnVW5McktLb3MzVVk0cHgrZ1h5T3AK",
       "endpoints": [
         "https://material-music-player-delta.vercel.app/download/latest.json"
       ],

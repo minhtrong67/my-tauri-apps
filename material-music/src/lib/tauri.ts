@@ -18,7 +18,11 @@ export const findRemoved = (paths: string[]) => invoke<string[]>('find_removed',
 export const getCover = (path: string, wantData = false) =>
   invoke<{ file: string; dataUrl: string | null } | null>('get_cover', { path, wantData });
 export const readLyrics = (path: string) => invoke<string | null>('read_lyrics', { path });
-export const loadState = (name: 'library' | 'user') => invoke<string | null>('load_state', { name });
+/** `recovered` = the main file was damaged: an older copy was used (data may be a little older) */
+export interface LoadedState { data: string | null; recovered: boolean }
+export const loadState = (name: 'library' | 'user') => invoke<LoadedState>('load_state', { name });
+export const getBackupDir = () => invoke<string | null>('get_backup_dir');
+export const openFolder = (path: string) => invoke<void>('open_folder', { path });
 export const saveState = (name: 'library' | 'user', data: string) => invoke<void>('save_state', { name, data });
 export const getCoverDir = () => invoke<string | null>('get_cover_dir');
 export const isDir = (path: string) => invoke<boolean>('is_dir', { path });
@@ -59,10 +63,16 @@ export const setTrayLabels = (labels: string[]) => invoke<void>('set_tray_labels
 /** Allow the asset protocol to serve these folders / files (it serves nothing by default) */
 export const allowPaths = (paths: string[]) => invoke<void>('allow_paths', { paths }).catch(() => undefined);
 export const setMediaKeys = (enabled: boolean) => invoke<void>('set_media_keys', { enabled }).catch(() => undefined);
+export const setGlobalHotkeys = (enabled: boolean) => invoke<boolean>('set_global_hotkeys', { enabled }).catch(() => false);
 export const watchFolders = (paths: string[], enabled: boolean) => invoke<void>('watch_folders', { paths, enabled }).catch(() => undefined);
 
 export interface TagEdit { title: string; artist: string; album: string; albumArtist: string; genre: string; year: number; trackNo: number }
 export const writeTags = (path: string, edit: TagEdit) => invoke<Track>('write_tags', { path, edit });
+
+export interface ListenMeta { title: string; artist: string; album: string; duration: number; listened_at?: number }
+export const scrobbleNowPlaying = (token: string, meta: ListenMeta) => invoke<void>('scrobble_now_playing', { token, meta });
+export const scrobbleListen = (token: string, meta: ListenMeta) => invoke<void>('scrobble_listen', { token, meta });
+export const scrobbleValidate = (token: string) => invoke<string>('scrobble_validate', { token });
 
 export interface OnlineLyrics { synced: string; plain: string }
 export const fetchLyricsOnline = (title: string, artist: string, album: string, duration: number) =>

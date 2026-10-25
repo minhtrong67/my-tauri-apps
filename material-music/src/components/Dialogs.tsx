@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { tr, type Key } from '../lib/i18n';
-import { Button, Chip, Icon, Modal, Slider, Switch } from './ui';
+import { Button, Chip, Icon, IconButton, Modal, Segmented, Select, Slider, Switch } from './ui';
 import { LoadingIndicator, WavySeek } from './Expressive';
 import { installUpdate } from '../lib/updater';
 import { Cover } from './Cover';
 import { useStore } from '../lib/store';
 import { EQ_LABELS, EQ_PRESETS, engine } from '../lib/audio';
 import { fmtSize, fmtTime } from '../lib/utils';
+import { ACTIONS, RESERVED, comboFor, comboFromEvent, conflictFor, prettyCombo, type ActionId } from '../lib/keymap';
+import { defaultRules, ruleTracks, rulesAreEmpty } from '../lib/smart';
+import type { SmartRules } from '../lib/types';
 
 function PromptDialog({ d, onClose }: { d: Extract<NonNullable<ReturnType<typeof useStore.getState>['dialog']>, { type: 'prompt' }>; onClose: () => void }) {
   const [v, setV] = useState(d.initial ?? '');
@@ -236,10 +239,129 @@ function AudioDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
-const SHORTCUTS: [string, Key][] = [
-  ['Space', 'scPlay'], ['Ctrl + ← / →', 'scNextPrev'], ['← / →', 'scSeek'], ['↑ / ↓', 'scVolume'], ['M', 'scMute'], ['S', 'scShuffle'], ['R', 'scRepeat'],
-  ['L', 'scLike'], ['Q', 'scQueue'], ['N', 'scNow'], ['Ctrl + F', 'scSearch'], ['F5', 'scRefresh'], ['Esc', 'scExit'],
-];
+const BITRATES = ['0', '128', '192', '256', '320'];
+const ADDED = ['0', '7', '30', '90', '365'];
+const LENGTHS = ['0', '5', '10', '20'];
+const FORMATS = ['mp3', 'flac', 'wav', 'ogg', 'opus', 'm4a', 'aac'];
+
+function SmartEditor({ id, onClose }: { id?: string; onClose: () => void }) {
+  const existing = useStore((s) => s.smartLists.find((l) => l.id === id));
+  const byId = useStore((s) => s.byId);
+  const plays = useStore((s) => s.plays);
+  const liked = useStore((s) => s.liked);
+  const [name, setName] = useState(existing?.name ?? '');
+  const [r, setR] = useState<SmartRules>(existing?.rules ?? defaultRules());
+  const set = <K extends keyof SmartRules>(k: K, v: SmartRules[K]) => setR((p) => ({ ...p, [k]: v }));
+  const count = useMemo(() => ruleTracks(r, byId, plays, liked).length, [r, byId, plays, liked]);
+  const empty = rulesAreEmpty(r);
+  const num = (v: string) => parseInt(v, 10) || 0;
+  const save = () => {
+    const { saveSmartList, nav, showToast } = useStore.getState();
+    const sid = saveSmartList({ id, name, rules: r });
+    showToast(tr('smartSaved'), undefined, undefined, 'success');
+    nav({ name: 'smartlist', id: sid });
+    onClose();
+  };
+  const opt = (values: string[], any: Key, one: (n: number) => string) => values.map((v) => ({ value: v, label: v === '0' ? tr(any) : one(Number(v)) }));
+  return (
+    <Modal
+      title={id ? tr('smartEditTitle') : tr('smartNewTitle')} wide onClose={onClose}
+      actions={<><Button variant="tonal" icon="close" onClick={onClose}>{tr('cancel')}</Button><Button icon="save" onClick={save} disabled={empty || !name.trim()}>{tr('save')}</Button></>}
+    >
+      <div className="space-y-5 pt-1">
+        <TagField wide label={tr('playlistName')} value={name} onChange={setName} />
+        <div className="grid grid-cols-3 gap-3">
+          <TagField label={tr('smartGenre')} value={r.genre} onChange={(v) => set('genre', v)} />
+          <TagField numeric label={tr('smartYearFrom')} value={r.yearFrom ? String(r.yearFrom) : ''} onChange={(v) => set('yearFrom', num(v))} />
+          <TagField numeric label={tr('smartYearTo')} value={r.yearTo ? String(r.yearTo) : ''} onChange={(v) => set('yearTo', num(v))} />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div><div className="text-label-md text-on-surface-variant mb-1.5">{tr('smartBitrate')}</div><Select className="w-full" minWidth={150} label={tr('smartBitrate')} value={String(r.minBitrate)} onChange={(v) => set('minBitrate', num(v))} options={opt(BITRATES, 'smartAny', (n) => `≥ ${n} kbps`)} /></div>
+          <div><div className="text-label-md text-on-surface-variant mb-1.5">{tr('smartAdded')}</div><Select className="w-full" minWidth={150} label={tr('smartAdded')} value={String(r.addedDays)} onChange={(v) => set('addedDays', num(v))} options={opt(ADDED, 'smartAny', (n) => tr('smartLastDays', { n }))} /></div>
+          <div><div className="text-label-md text-on-surface-variant mb-1.5">{tr('smartLength')}</div><Select className="w-full" minWidth={150} label={tr('smartLength')} value={String(r.maxMinutes)} onChange={(v) => set('maxMinutes', num(v))} options={opt(LENGTHS, 'smartAny', (n) => tr('smartUnderMin', { n }))} /></div>
+        </div>
+        <div>
+          <div className="text-label-md text-on-surface-variant mb-1.5">{tr('smartFormats')}</div>
+          <div className="flex flex-wrap gap-2">{FORMATS.map((f) => <Chip key={f} selected={r.formats.includes(f)} onClick={() => set('formats', r.formats.includes(f) ? r.formats.filter((x) => x !== f) : [...r.formats, f])}>{f.toUpperCase()}</Chip>)}</div>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <Segmented value={r.played} onChange={(v) => set('played', v)} options={[{ value: 'any', label: tr('smartAny') }, { value: 'played', label: tr('smartPlayed'), icon: 'play_arrow' }, { value: 'unplayed', label: tr('smartNotPlayed'), icon: 'eye_off' }]} />
+          <label className="inline-flex items-center gap-3 cursor-pointer select-none text-body-lg"><Switch checked={r.onlyLiked} onChange={(v) => set('onlyLiked', v)} label={tr('smartOnlyLiked')} />{tr('smartOnlyLiked')}</label>
+        </div>
+        <div className={`rounded-2xl px-4 py-3 flex items-center gap-3 transition-colors ${empty ? 'bg-surface-container-highest text-on-surface-variant' : 'bg-primary-container text-on-primary-container'}`}>
+          <Icon name={empty ? 'info' : 'wand'} size={20} />
+          <span className="text-body-md">{empty ? tr('smartNeedRule') : tr('smartPreview', { n: count })}</span>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+const GLOBAL_KEYS: [string, Key][] = [['Ctrl + Alt + Space', 'scPlay'], ['Ctrl + Alt + →', 'scNext'], ['Ctrl + Alt + ←', 'scPrev'], ['Ctrl + Alt + M', 'miniPlayer'], ['Ctrl + Alt + T', 'alwaysOnTop']];
+
+function ShortcutsDialog({ onClose }: { onClose: () => void }) {
+  const keymap = useStore((s) => s.settings.keymap);
+  const update = useStore((s) => s.updateSettings);
+  const toast = useStore((s) => s.showToast);
+  const [rec, setRec] = useState<ActionId | null>(null);
+  useEffect(() => {
+    if (!rec) return;
+    const h = (e: KeyboardEvent) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if (e.key === 'Escape') { setRec(null); return; }
+      const c = comboFromEvent(e);
+      if (!c) return; // only a modifier so far
+      if (RESERVED.includes(c)) { toast(tr('scReserved', { k: prettyCombo(c) }), undefined, undefined, 'warning'); return; }
+      const other = conflictFor(c, keymap, rec);
+      if (other) { toast(tr('scConflict', { k: prettyCombo(c), a: tr(ACTIONS.find((x) => x.id === other)!.label) }), undefined, undefined, 'warning'); return; }
+      const next = { ...keymap };
+      if (c === ACTIONS.find((x) => x.id === rec)!.def) delete next[rec];
+      else next[rec] = c;
+      update({ keymap: next });
+      setRec(null);
+    };
+    window.addEventListener('keydown', h, true);
+    return () => window.removeEventListener('keydown', h, true);
+  }, [rec, keymap, update, toast]);
+  const customized = Object.keys(keymap).length > 0;
+  return (
+    <Modal
+      title={tr('shortcutsTitle')} wide onClose={onClose}
+      actions={<><Button variant="tonal" icon="restart" disabled={!customized} onClick={() => { update({ keymap: {} }); setRec(null); }}>{tr('scResetAll')}</Button><Button icon="check" onClick={onClose}>{tr('done')}</Button></>}
+    >
+      <p className="text-body-md text-on-surface-variant mb-3">{tr('scHelp')}</p>
+      <div className="space-y-0.5" data-recording={rec ? '' : undefined}>
+        {ACTIONS.map((a) => {
+          const on = rec === a.id;
+          const mine = keymap[a.id] !== undefined;
+          return (
+            <div key={a.id} className="h-12 px-2 rounded-xl flex items-center gap-3 hover:bg-on-surface/[.05]">
+              <span className="flex-1 text-body-lg truncate">{tr(a.label)}</span>
+              {mine && <IconButton icon="restart" size="sm" title={tr('scReset')} onClick={() => { const n = { ...keymap }; delete n[a.id]; update({ keymap: n }); }} />}
+              <button
+                type="button" onClick={() => setRec(on ? null : a.id)} aria-label={`${tr(a.label)}: ${prettyCombo(comboFor(a.id, keymap))}`}
+                className={`ripple min-w-[132px] h-9 px-3 rounded-lg text-label-lg tabular-nums border transition-colors focus-ring ${on ? 'border-primary bg-primary-container text-on-primary-container animate-pulse' : mine ? 'border-transparent bg-secondary-container text-on-secondary-container' : 'border-outline-variant bg-surface-container-highest text-on-surface'}`}
+              >
+                {on ? tr('scPress') : prettyCombo(comboFor(a.id, keymap))}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-4 pt-3 border-t border-outline-variant/50 grid grid-cols-[150px_1fr] gap-y-2 text-body-md">
+        <div className="contents"><dt><kbd className="px-2 py-0.5 rounded-md bg-surface-container-highest text-label-md">Ctrl + F</kbd></dt><dd>{tr('scSearch')}</dd></div>
+        <div className="contents"><dt><kbd className="px-2 py-0.5 rounded-md bg-surface-container-highest text-label-md">Esc</kbd></dt><dd>{tr('scExit')}</dd></div>
+      </div>
+      <div className="mt-4 pt-3 border-t border-outline-variant/50">
+        <div className="text-label-lg text-on-surface-variant mb-2">{tr('scGlobal')}</div>
+        <dl className="grid grid-cols-[170px_1fr] gap-y-2 text-body-md">
+          {GLOBAL_KEYS.map(([k, v]) => (<div key={k} className="contents"><dt><kbd className="px-2 py-0.5 rounded-md bg-surface-container-highest text-label-md">{k}</kbd></dt><dd>{tr(v)}</dd></div>))}
+        </dl>
+      </div>
+    </Modal>
+  );
+}
 
 export function Dialogs() {
   const d = useStore((s) => s.dialog);
@@ -259,13 +381,7 @@ export function Dialogs() {
     case 'editTags': return <EditTagsDialog id={d.id} onClose={close} />;
     case 'update': return <UpdateDialog d={d} onClose={close} />;
     case 'audio': return <AudioDialog onClose={close} />;
-    case 'shortcuts':
-      return (
-        <Modal title={tr('shortcutsTitle')} onClose={close} actions={<Button variant="tonal" icon="close" onClick={close}>{tr('close')}</Button>}>
-          <dl className="grid grid-cols-[150px_1fr] gap-y-2 text-body-md">
-            {SHORTCUTS.map(([k, v]) => (<div key={k} className="contents"><dt><kbd className="px-2 py-0.5 rounded-md bg-surface-container-highest text-label-md">{k}</kbd></dt><dd>{tr(v)}</dd></div>))}
-          </dl>
-        </Modal>
-      );
+    case 'shortcuts': return <ShortcutsDialog onClose={close} />;
+    case 'smartEditor': return <SmartEditor id={d.id} onClose={close} />;
   }
 }

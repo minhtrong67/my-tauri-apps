@@ -12,13 +12,16 @@ import type { LucideIcon } from 'lucide-react';
 
 function NavItem({ icon: Icon, label, path, active, onClick, drive, id, depth = 0, folder, trailing }: { icon?: LucideIcon; label: string; path: string; active: boolean; onClick: () => void; drive?: Drive; id: PaneId; depth?: number; folder?: boolean; trailing?: React.ReactNode }) {
   return (
-    <div className={`group/n flex items-center rounded-full transition-[background-color,border-radius] duration-300 hover:rounded-xl ${active ? 'bg-secondary-container text-on-secondary-container font-semibold' : 'hover:bg-on-surface/8'}`} style={{ paddingLeft: depth * 12 }}>
+    <div className={`group/n flex items-center rounded-[1.125rem] transition-[background-color,border-radius] duration-300 ease-emph hover:rounded-xl ${active ? 'bg-secondary-container text-on-secondary-container font-semibold' : 'hover:bg-on-surface/8'}`} style={{ paddingLeft: depth * 12 }}>
       {trailing}
       <button type="button" title={path || label} data-drop-path={path && path !== HOME ? path : undefined} onClick={onClick}
         onContextMenu={(e) => { e.preventDefault(); showMenu(sidebarMenuItems(id, path, drive), e.clientX, e.clientY); }}
-        className="ripple flex h-9 min-w-0 flex-1 items-center gap-3 rounded-[inherit] pr-3 pl-3 text-left">
+        className="ripple flex min-h-9 min-w-0 flex-1 items-center gap-3 rounded-[inherit] py-1 pr-3 pl-3 text-left">
         {folder || !Icon ? <Folder className="size-5" style={{ color: 'var(--folder)', fill: 'color-mix(in oklab, var(--folder) 80%, transparent)' }} /> : <Icon className={`size-5 ${active ? '' : 'text-on-surface-variant'}`} />}
-        <span className="truncate">{label}</span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate">{label}</span>
+          {drive && drive.total > 0 && (() => { const u = Math.round(((drive.total - drive.free) / drive.total) * 100); return <span className="mt-1 block h-1 overflow-hidden rounded-full bg-on-surface/12"><span className={`block h-full rounded-full transition-[width] duration-700 ease-emph ${u >= 90 ? 'bg-error' : 'bg-primary'}`} style={{ width: u + '%' }} /></span>; })()}
+        </span>
       </button>
     </div>
   );

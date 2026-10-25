@@ -1,21 +1,19 @@
 import { engine } from '../audio';
-import { tr, setActiveLang, resolveLang, type ActiveLang } from '../i18n';
+import { tr } from '../i18n';
 import * as api from '../tauri';
-import { win } from '../window';
-import { buildM3U, parseM3U } from '../m3u';
-import { basename, natural, shuffled, stripExt, uid, norm } from '../utils';
-import { defaultSettings, type RepeatMode, type Track } from '../types';
-import { pathKey, sortTracksNatural } from './helpers';
+import { pathKey } from './helpers';
 import type { Core } from './core';
-import type { GetFn, SetFn, State, LibrarySlice } from './types';
+import type { GetFn, SetFn, LibrarySlice } from './types';
 
 
 export const createLibrarySlice = (set: SetFn, get: GetFn, core: Core): LibrarySlice => {
-  const { subscribe, flags, snapshot, fixSettings, retrack, pushTrayLabels, relabelUnknown, snapshotLibrary, snapshotUser, applySnapshot, remapState, mergeTracks, dedupeLibrary, knownFiles, ingest, sortedIds, upsertFolderPlaylist, pruneMissing, addFolder, playCurrentIndex, scheduleSave, syncNext, allowLibrary, syncWatchers } = core;
+  const { flags, remapState, mergeTracks, knownFiles, ingest, sortedIds, upsertFolderPlaylist, pruneMissing, addFolder, playCurrentIndex } = core;
   return {
     byId: {},
     history: [],
     plays: {},
+    listens: [],
+    lyricOffsets: {},
     scanning: null,
     syncing: false,
 
@@ -120,6 +118,35 @@ export const createLibrarySlice = (set: SetFn, get: GetFn, core: Core): LibraryS
       const n = await pruneMissing();
       get().showToast(n ? tr('removedMissing', { n }) : tr('noMissing'), undefined, undefined, n ? 'success' : 'info');
     },
+    setLyricOffset: (id, ms) =>
+      set((s) => {
+        const lyricOffsets = { ...s.lyricOffsets };
+        if (ms === 0) delete lyricOffsets[id];
+        else lyricOffsets[id] = Math.max(-10000, Math.min(10000, Math.round(ms)));
+        return { lyricOffsets };
+      }),
+    mergeDuplicates: (groups) => {
+      const remap: Record<string, string> = {};
+      for (const g of groups) for (const id of g.slice(1)) remap[id] = g[0];
+      const dups = Object.keys(remap);
+      if (!dups.length) return;
+      const s = get();
+      const plays = { ...s.plays };
+      const liked = { ...s.liked };
+      const offsets = { ...s.lyricOffsets };
+      for (const d of dups) {
+        const keep = remap[d];
+        if (plays[d]) plays[keep] = (plays[keep] ?? 0) + plays[d];
+        if (liked[d] && !liked[keep]) liked[keep] = liked[d];
+        if (offsets[d] !== undefined && offsets[keep] === undefined) offsets[keep] = offsets[d];
+        delete plays[d];
+        delete liked[d];
+        delete offsets[d];
+      }
+      const moved = remapState(s, remap);
+      set({ ...moved, plays, liked, lyricOffsets: offsets, listens: s.listens.map((l) => (remap[l.id] ? { ...l, id: remap[l.id] } : l)) });
+      get().removeTracks(dups);
+    },
     removeTracks: (ids) => {
       const rm = new Set(ids);
       set((s) => {
@@ -137,6 +164,7 @@ export const createLibrarySlice = (set: SetFn, get: GetFn, core: Core): LibraryS
           baseQueue: s.baseQueue.filter((x) => !rm.has(x)),
           index,
           history: s.history.filter((h) => !rm.has(h.id)),
+          listens: s.listens.filter((l) => !rm.has(l.id)),
           playlists: s.playlists.map((p) => ({ ...p, trackIds: p.trackIds.filter((x) => !rm.has(x)) })),
         };
       });

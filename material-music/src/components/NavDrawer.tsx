@@ -10,6 +10,7 @@ const getItems = (): { icon: string; label: string; view: View }[] => [
   { icon: 'person', label: tr('navArtists'), view: { name: 'artists' } },
   { icon: 'favorite', label: tr('navLiked'), view: { name: 'liked' } },
   { icon: 'history', label: tr('navRecent'), view: { name: 'recent' } },
+  { icon: 'bar_chart', label: tr('navStats'), view: { name: 'stats' } },
 ];
 
 const activeFor = (v: View, t: View) =>
@@ -21,6 +22,7 @@ export function NavDrawer() {
   const view = useStore((s) => s.view);
   const collapsed = useStore((s) => s.navCollapsed);
   const playlists = useStore((s) => s.playlists);
+  const smartLists = useStore((s) => s.smartLists);
   const nav = useStore((s) => s.nav);
   const st = useStore.getState();
 
@@ -43,6 +45,7 @@ export function NavDrawer() {
         <IconButton icon="add" size="sm" title={tr('createPlaylist')} onClick={() => st.openDialog({ type: 'prompt', title: tr('newPlaylist'), label: tr('playlistName'), confirmLabel: tr('create'), onSubmit: (v) => nav({ name: 'playlist', id: st.createPlaylist(v) }) })} />
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto space-y-1">
+        {smartLists.map((l) => item('wand', l.name, view.name === 'smartlist' && view.id === l.id, () => nav({ name: 'smartlist', id: l.id })))}
         {playlists.map((p) =>
           item(p.folder ? 'folder' : 'queue_music', p.name, view.name === 'playlist' && view.id === p.id, () => nav({ name: 'playlist', id: p.id }),
             <span className="text-body-sm opacity-70">{p.trackIds.length}</span>,

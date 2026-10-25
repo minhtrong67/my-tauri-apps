@@ -1,19 +1,6 @@
-import { engine } from '../audio';
-import { tr, setActiveLang, resolveLang, type ActiveLang } from '../i18n';
-import * as api from '../tauri';
-import { win } from '../window';
-import { buildM3U, parseM3U } from '../m3u';
-import { basename, natural, shuffled, stripExt, uid, norm } from '../utils';
-import { defaultSettings, type RepeatMode, type Track } from '../types';
-import { pathKey, sortTracksNatural } from './helpers';
-import type { Core } from './core';
-import type { GetFn, SetFn, State, UiSlice } from './types';
+import type { GetFn, SetFn, UiSlice } from './types';
 
-/** Re-enable window-size memory shortly after leaving fullscreen / mini player (once the window has settled) */
-let retrackTimer: number | undefined;
-
-export const createUiSlice = (set: SetFn, get: GetFn, core: Core): UiSlice => {
-  const { subscribe, flags, snapshot, fixSettings, retrack, pushTrayLabels, relabelUnknown, snapshotLibrary, snapshotUser, applySnapshot, remapState, mergeTracks, dedupeLibrary, knownFiles, ingest, sortedIds, upsertFolderPlaylist, pruneMissing, addFolder, playCurrentIndex, scheduleSave, syncNext, allowLibrary, syncWatchers } = core;
+export const createUiSlice = (set: SetFn, get: GetFn): UiSlice => {
   return {
     view: { name: 'home' },
     backStack: [],

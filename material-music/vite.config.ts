@@ -31,7 +31,20 @@ export default defineConfig({
   server: { port: 1420, strictPort: true, watch: { ignored: ['**/src-tauri/**'] } },
   build: {
     target: 'es2021',
-    chunkSizeWarningLimit: 1500,
-    rollupOptions: { input: resolve(__dirname, 'app.html') },
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      input: resolve(__dirname, 'app.html'),
+      output: {
+        // vendor code changes rarely, so it gets its own long-lived chunks; the dynamic-colour maths loads only when a theme is applied
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+          if (id.includes('@material/material-color-utilities')) return 'color';
+          if (id.includes('lucide-react')) return 'icons';
+          if (id.includes('@tauri-apps')) return 'tauri';
+          if (/node_modules\/(react|react-dom|scheduler|zustand)\//.test(id)) return 'react';
+          return undefined;
+        },
+      },
+    },
   },
 });

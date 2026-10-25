@@ -1,19 +1,51 @@
 import { engine } from '../audio';
 import { checkForUpdate } from '../updater';
 import { replayGainDb } from './helpers';
-import { tr, setActiveLang, resolveLang, type ActiveLang } from '../i18n';
+import { tr, setActiveLang, resolveLang } from '../i18n';
 import * as api from '../tauri';
-import { win } from '../window';
-import { buildM3U, parseM3U } from '../m3u';
-import { basename, natural, shuffled, stripExt, uid, norm } from '../utils';
-import { defaultSettings, type RepeatMode, type Track } from '../types';
-import { pathKey, sortTracksNatural } from './helpers';
+import { defaultSettings, type RepeatMode } from '../types';
+import { pathKey } from './helpers';
 import type { Core } from './core';
-import type { GetFn, SetFn, State, AppSlice } from './types';
+import type { GetFn, SetFn, AppSlice } from './types';
 
 
 export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => {
-  const { subscribe, flags, snapshot, fixSettings, retrack, pushTrayLabels, relabelUnknown, snapshotLibrary, snapshotUser, applySnapshot, remapState, mergeTracks, dedupeLibrary, knownFiles, ingest, sortedIds, upsertFolderPlaylist, pruneMissing, addFolder, playCurrentIndex, scheduleSave, syncNext, allowLibrary, syncWatchers } = core;
+  const { subscribe, flags, snapshot, pushTrayLabels, relabelUnknown, snapshotLibrary, snapshotUser, applySnapshot, dedupeLibrary, pruneMissing, playCurrentIndex, scheduleSave, syncNext, allowLibrary, syncWatchers } = core;
+  /** Is this parsed JSON a Material Music backup (or a copy of user.json)? */
+  const isBackup = (d: unknown): boolean => {
+    if (!d || typeof d !== 'object' || Array.isArray(d)) return false;
+    const o = d as Record<string, unknown>;
+    if (!['tracks', 'playlists', 'liked', 'settings', 'plays', 'history'].some((k) => k in o)) return false;
+    if ('tracks' in o && !Array.isArray(o.tracks)) return false;
+    if ('playlists' in o && !Array.isArray(o.playlists)) return false;
+    if ('history' in o && !Array.isArray(o.history)) return false;
+    for (const k of ['liked', 'plays', 'settings']) if (k in o && (typeof o[k] !== 'object' || o[k] === null || Array.isArray(o[k]))) return false;
+    return true;
+  };
+
+  const applyBackup = (raw: string) => {
+    try {
+      applySnapshot(raw);
+    } catch {
+      get().showToast(tr('badBackup'), undefined, undefined, 'error');
+      return;
+    }
+    const cfg = get().settings;
+    setActiveLang(cfg.language);
+    pushTrayLabels();
+    void api.setStartMode(cfg.startMode);
+    engine.setVolume(cfg.volume, cfg.muted);
+    engine.setRate(cfg.playbackRate);
+    engine.setEq(cfg.eqEnabled, cfg.eqGains, cfg.preamp);
+    engine.setCrossfade(cfg.crossfade);
+    void api.setMediaKeys(cfg.globalMediaKeys);
+    void allowLibrary();
+    void syncWatchers();
+    engine.pause();
+    set({ queue: [], baseQueue: [], index: -1, isPlaying: false });
+    get().showToast(tr('restored'), undefined, undefined, 'success');
+  };
+
   return {
     ready: false,
     updateInfo: null,
@@ -47,8 +79,12 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
       flags.initPromise = new Promise<void>((r) => (finish = r));
       try {
       let session: { queue?: string[]; baseQueue?: string[]; index?: number; position?: number; shuffle?: boolean; repeat?: RepeatMode } | null = null;
+      let recovered = false;
       try {
-        const [libRaw, userRaw] = await Promise.all([api.loadState('library'), api.loadState('user')]);
+        const [libRes, userRes] = await Promise.all([api.loadState('library'), api.loadState('user')]);
+        const libRaw = libRes.data;
+        const userRaw = userRes.data;
+        recovered = libRes.recovered || userRes.recovered;
         let legacy = false;
         if (libRaw) {
           const d = applySnapshot(libRaw);
@@ -98,10 +134,15 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
       engine.setEq(s.eqEnabled, s.eqGains, s.preamp);
       engine.setCrossfade(s.crossfade);
       void api.setMediaKeys(s.globalMediaKeys);
+      if (s.globalHotkeys) void api.setGlobalHotkeys(true);
+      if (s.audioDevice) void engine.setOutputDevice(s.audioDevice);
       // gapless / crossfade: the next song already started on the other deck, move the queue forward
       engine.onAutoAdvance = () => get().next(true);
 
-      engine.onTime = (t) => set({ position: t });
+      engine.onTime = (t) => {
+        set({ position: t });
+        core.tickListen(t);
+      };
       engine.onPlayState = (p) => set({ isPlaying: p });
       engine.onPlaying = () => {
         flags.errorStreak = 0;
@@ -120,6 +161,8 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
           return;
         }
         if (st.repeat === 'one') {
+          const cur = st.queue[st.index];
+          if (cur) core.beginListen(cur);
           engine.seek(0);
           void engine.play();
           return;
@@ -148,6 +191,7 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
       }
 
       set({ ready: true });
+      if (recovered) window.setTimeout(() => get().showToast(tr('dataRecovered'), undefined, undefined, 'warning'), 600);
       // automatic update check: a few seconds after start, then every 6 hours (not in `npm run dev`)
       if (!import.meta.env.DEV) {
         window.setTimeout(() => get().settings.autoUpdate && void get().checkUpdates(true), 8000);
@@ -169,6 +213,9 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
           st.liked !== prev.liked ||
           st.history !== prev.history ||
           st.plays !== prev.plays ||
+          st.listens !== prev.listens ||
+          st.lyricOffsets !== prev.lyricOffsets ||
+          st.smartLists !== prev.smartLists ||
           st.settings !== prev.settings ||
           st.queue !== prev.queue ||
           st.index !== prev.index ||
@@ -185,7 +232,7 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
     },
 
     backup: async () => {
-      const path = await api.pickSavePath('material-music-player-backup.json', ['json'], tr('backupName'));
+      const path = await api.pickSavePath('material-music-backup.json', ['json'], tr('backupName'));
       if (!path) return;
       await api.writeTextFile(path, snapshot());
       get().showToast(tr('backedUp'), undefined, undefined, 'success');
@@ -193,25 +240,18 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
     restore: async () => {
       const path = await api.pickOne(['json'], tr('backupName'));
       if (!path) return;
+      let raw: string;
       try {
-        applySnapshot(await api.readTextFile(path));
-        const cfg = get().settings;
-        setActiveLang(cfg.language);
-        pushTrayLabels();
-        void api.setStartMode(cfg.startMode);
-        engine.setVolume(cfg.volume, cfg.muted);
-        engine.setRate(cfg.playbackRate);
-        engine.setEq(cfg.eqEnabled, cfg.eqGains, cfg.preamp);
-        engine.setCrossfade(cfg.crossfade);
-        void api.setMediaKeys(cfg.globalMediaKeys);
-        void allowLibrary();
-        void syncWatchers();
-        engine.pause();
-        set({ queue: [], baseQueue: [], index: -1, isPlaying: false });
-        get().showToast(tr('restored'), undefined, undefined, 'success');
+        raw = await api.readTextFile(path);
+        if (!isBackup(JSON.parse(raw))) throw new Error('not a backup');
       } catch {
         get().showToast(tr('badBackup'), undefined, undefined, 'error');
+        return;
       }
+      get().openDialog({
+        type: 'confirm', title: tr('restoreTitle'), text: tr('restoreText'), confirmLabel: tr('restore'), danger: true,
+        onConfirm: () => applyBackup(raw),
+      });
     },
 
     updateSettings: (p) => {
@@ -228,6 +268,19 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
       if ('playbackRate' in p) engine.setRate(settings.playbackRate);
       if ('crossfade' in p) engine.setCrossfade(settings.crossfade);
       if ('globalMediaKeys' in p) void api.setMediaKeys(settings.globalMediaKeys);
+      if ('globalHotkeys' in p) {
+        void api.setGlobalHotkeys(settings.globalHotkeys).then((ok) => {
+          if (settings.globalHotkeys && !ok) {
+            get().showToast(tr('hotkeysFailed'), undefined, undefined, 'warning');
+            set((st) => ({ settings: { ...st.settings, globalHotkeys: false } }));
+          }
+        });
+      }
+      if ('audioDevice' in p) {
+        void engine.setOutputDevice(settings.audioDevice).then((ok) => {
+          if (!ok) get().showToast(tr('deviceFailed'), undefined, undefined, 'warning');
+        });
+      }
       if ('replayGain' in p) {
         const st = get();
         const cur = st.byId[st.queue[st.index]];

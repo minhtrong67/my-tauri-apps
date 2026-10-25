@@ -1,6 +1,8 @@
-import type { KeyboardEvent, ReactNode } from 'react';
+import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { getActiveLang, tr } from '../lib/i18n';
-import { AuthorCredit, Button, Icon, Logo, Segmented, Switch } from '../components/ui';
+import { AuthorCredit, Button, Icon, Logo, Segmented, Select, Switch } from '../components/ui';
+import { engine } from '../lib/audio';
+import { getBackupDir, openFolder, scrobbleValidate } from '../lib/tauri';
 import { FONT_OPTIONS, MATERIAL_COLORS } from '../lib/theme';
 import { useDerived, useStore } from '../lib/store';
 import { fmtSize } from '../lib/utils';
@@ -91,6 +93,54 @@ function Stat({ value, label, icon }: { value: string | number; label: string; i
         <div className="text-body-sm text-on-surface-variant truncate">{label}</div>
       </div>
     </div>
+  );
+}
+
+/** Audio output picker: lists the devices the system offers and follows plug / unplug */
+function OutputDevice() {
+  const device = useStore((st) => st.settings.audioDevice);
+  const update = useStore((st) => st.updateSettings);
+  const [list, setList] = useState<{ id: string; label: string }[]>([]);
+  useEffect(() => {
+    let alive = true;
+    const load = () => void engine.listOutputDevices().then((l) => alive && setList(l));
+    load();
+    navigator.mediaDevices?.addEventListener?.('devicechange', load);
+    return () => { alive = false; navigator.mediaDevices?.removeEventListener?.('devicechange', load); };
+  }, []);
+  const options = list.some((d) => d.id === '') ? list : [{ id: '', label: tr('deviceDefault') }, ...list];
+  // the saved device may be unplugged right now: keep it visible instead of silently showing another one
+  const known = options.some((d) => d.id === device);
+  const all = known ? options : [...options, { id: device, label: tr('deviceMissing') }];
+  return <Select label={tr('audioOutput')} icon="speaker" value={device} onChange={(v) => update({ audioDevice: v })} options={all.map((d) => ({ value: d.id, label: d.label }))} minWidth={260} />;
+}
+
+/** ListenBrainz token field + test button */
+function ScrobbleToken() {
+  const token = useStore((st) => st.settings.scrobbleToken);
+  const update = useStore((st) => st.updateSettings);
+  const [busy, setBusy] = useState(false);
+  const test = async () => {
+    const toast = useStore.getState().showToast;
+    setBusy(true);
+    try {
+      const user = await scrobbleValidate(token);
+      toast(tr('scrobbleOk', { u: user || '✓' }), undefined, undefined, 'success');
+    } catch {
+      toast(tr('scrobbleBad'), undefined, undefined, 'error');
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <input
+        type="password" value={token} onChange={(e) => update({ scrobbleToken: e.target.value.trim() })} placeholder={tr('scrobbleToken')} aria-label={tr('scrobbleToken')}
+        autoComplete="off" spellCheck={false}
+        className="w-[260px] max-w-full h-12 px-4 rounded-xl bg-transparent border border-outline focus:border-2 focus:border-primary outline-none text-body-lg text-on-surface select-text transition-colors"
+      />
+      <Button variant="tonal" icon="check_circle" disabled={busy || !token} onClick={test}>{tr('scrobbleTest')}</Button>
+    </>
   );
 }
 
@@ -203,6 +253,11 @@ export function SettingsView() {
             <Segmented value={s.replayGain} onChange={(v) => update({ replayGain: v })} options={[{ value: 'off', label: tr('rgOff') }, { value: 'track', label: tr('rgTrack') }, { value: 'album', label: tr('rgAlbum') }]} />
           </Row>
           <ToggleRow title={tr('globalMediaKeys')} desc={tr('globalMediaKeysDesc')} checked={s.globalMediaKeys} onChange={(v) => update({ globalMediaKeys: v })} />
+          <ToggleRow title={tr('globalHotkeys')} desc={tr('globalHotkeysDesc')} checked={s.globalHotkeys} onChange={(v) => update({ globalHotkeys: v })} />
+          <Row title={tr('audioOutput')} desc={tr('audioOutputDesc')}>
+            <OutputDevice />
+          </Row>
+          <ToggleRow title={tr('sleepFade')} desc={tr('sleepFadeDesc')} checked={s.sleepFade} onChange={(v) => update({ sleepFade: v })} />
           <Row title={tr('audioEq')} desc={tr('audioEqDesc')}>
             <Button variant="tonal" icon="tune" onClick={() => st.openDialog({ type: 'audio' })}>{tr('open')}</Button>
           </Row>
@@ -235,9 +290,23 @@ export function SettingsView() {
             <Button icon="sync" variant="tonal" onClick={() => st.syncLibrary(false, true)}>{tr('rescanLibrary')}</Button>
             <Button icon="link_off" variant="tonal" onClick={st.removeMissing}>{tr('removeMissing')}</Button>
           </Row>
+          <Row title={tr('dupTitle')} desc={tr('dupDesc')}>
+            <Button icon="merge" variant="tonal" onClick={() => st.nav({ name: 'duplicates' })}>{tr('dupOpen')}</Button>
+          </Row>
+          <Row title={tr('autoBackup')} desc={tr('autoBackupDesc')}>
+            <Button icon="folder_open" variant="tonal" onClick={() => void getBackupDir().then((d) => d ? openFolder(d) : undefined).catch(() => st.showToast(tr('openFolderFail'), undefined, undefined, 'error'))}>{tr('openFolder')}</Button>
+          </Row>
           <Row title={tr('backupGroup')} desc={tr('backupDesc')}>
             <Button icon="download" variant="outlined" onClick={st.backup}>{tr('backup')}</Button>
             <Button icon="upload" variant="outlined" onClick={st.restore}>{tr('restore')}</Button>
+          </Row>
+        </Section>
+
+        {/* Online */}
+        <Section title={tr('scrobbleSection')} icon="radio">
+          <ToggleRow title={tr('scrobbleTitle')} desc={tr('scrobbleDesc')} checked={s.scrobble} onChange={(v) => update({ scrobble: v })} />
+          <Row title={tr('scrobbleToken')} desc={tr('scrobbleTokenDesc')}>
+            <ScrobbleToken />
           </Row>
         </Section>
 

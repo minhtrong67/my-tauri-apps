@@ -1,7 +1,7 @@
 import type { StoreApi } from 'zustand';
 import type { TagEdit } from '../tauri';
 import type { UpdateInfo } from '../updater';
-import type { ToastKind, MenuItem, MenuState, Playlist, RepeatMode, Settings, Toast, ViewMode, Track, View, Dialog } from '../types';
+import type { ToastKind, MenuItem, MenuState, Listen, SmartList, Playlist, RepeatMode, Settings, Toast, ViewMode, Track, View, Dialog } from '../types';
 
 export interface UiSlice {
   view: View;
@@ -31,6 +31,9 @@ export interface LibrarySlice {
   byId: Record<string, Track>;
   history: { id: string; at: number }[];
   plays: Record<string, number>;
+  listens: Listen[];
+  /** lyrics timing correction per song, in milliseconds */
+  lyricOffsets: Record<string, number>;
   scanning: { done: number; total: number } | null;
   syncing: boolean;
   importFolder: () => Promise<void>;
@@ -44,6 +47,9 @@ export interface LibrarySlice {
   clearLibrary: () => void;
   setTrackCover: (id: string, file: string) => void;
   editTags: (id: string, edit: TagEdit) => Promise<boolean>;
+  setLyricOffset: (id: string, ms: number) => void;
+  /** each group: the first id is kept, the others are removed from the library (plays / favorites / playlists move to it) */
+  mergeDuplicates: (groups: string[][]) => void;
 }
 
 export interface PlayerSlice {
@@ -78,6 +84,9 @@ export interface PlayerSlice {
 export interface PlaylistSlice {
   playlists: Playlist[];
   liked: Record<string, number>;
+  smartLists: SmartList[];
+  saveSmartList: (l: Omit<SmartList, 'id' | 'createdAt'> & { id?: string }) => string;
+  deleteSmartList: (id: string) => void;
   toggleLike: (id: string) => void;
   createPlaylist: (name: string, ids?: string[]) => string;
   renamePlaylist: (id: string, name: string) => void;

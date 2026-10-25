@@ -6,6 +6,7 @@ import {
   SkipBack, SkipForward, SlidersHorizontal, SlidersVertical, Sparkles, Square, Sun, SunMoon, Trash2, Unlink, Upload, User, Volume1, Volume2,
   VolumeX, X, Languages, Type, Power, Pin, HardDrive, Wrench, ShieldAlert, Headphones, AppWindow, TriangleAlert, Eraser, DatabaseBackup, ArchiveRestore,
   CircleCheck, CircleAlert, CloudDownload, TrendingUp, Gem, EyeOff, Save, Gauge,
+  ChartColumn, MonitorSpeaker, Merge, WandSparkles, Timer, Waves, Activity, RadioTower, RotateCcw, Trophy, CalendarDays, ListFilter, Circle, CopyCheck, Flame,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -114,6 +115,21 @@ export const ICONS: Record<string, LucideIcon> = {
   eraser: Eraser,
   backup: DatabaseBackup,
   restore: ArchiveRestore,
+  bar_chart: ChartColumn,
+  speaker: MonitorSpeaker,
+  merge: Merge,
+  wand: WandSparkles,
+  timer: Timer,
+  waves: Waves,
+  activity: Activity,
+  radio: RadioTower,
+  restart: RotateCcw,
+  trophy: Trophy,
+  calendar: CalendarDays,
+  filter: ListFilter,
+  circle: Circle,
+  copy_check: CopyCheck,
+  flame: Flame,
 };
 
 /** Icons that look right when filled (active / playing states) */

@@ -58,6 +58,10 @@ class Engine {
   private pendingStart = 0;
   private wantPlay = false;
   private freq = new Uint8Array(0);
+  private wave = new Uint8Array(0);
+  /** Extra volume factor (sleep-timer fade-out) */
+  private master = 1;
+  private sinkId = '';
   private vol = 0.8;
   private muted = false;
   private rate = 1;
@@ -335,6 +339,8 @@ class Engine {
       this.filters = filters;
       this.analyser = analyser;
       this.freq = new Uint8Array(analyser.frequencyBinCount);
+      this.wave = new Uint8Array(analyser.fftSize);
+      void this.applySink();
       this.applyEq();
       this.applyVolumes();
     } catch {
@@ -347,8 +353,59 @@ class Engine {
       // with Web Audio the ReplayGain lives in a GainNode (can boost); without it only attenuation is possible
       const viaNode = !!d.rg;
       if (d.rg) d.rg.gain.value = d.rgLin;
-      d.audio.volume = Math.min(1, Math.max(0, this.vol * d.fade * (viaNode ? 1 : Math.min(1, d.rgLin))));
+      d.audio.volume = Math.min(1, Math.max(0, this.vol * this.master * d.fade * (viaNode ? 1 : Math.min(1, d.rgLin))));
       d.audio.muted = this.muted;
+    }
+  }
+
+  /** 0..1 multiplier on top of the volume (used to fade out for the sleep timer) */
+  setMaster(v: number) {
+    const m = Math.min(1, Math.max(0, v));
+    if (m === this.master) return;
+    this.master = m;
+    this.applyVolumes();
+  }
+
+  // ---------- output device ----------
+
+  private async applySink(): Promise<boolean> {
+    const id = this.sinkId;
+    let ok = true;
+    const ctx = this.ctx as (AudioContext & { setSinkId?: (id: string) => Promise<void> }) | null;
+    try {
+      if (ctx?.setSinkId) await ctx.setSinkId(id);
+    } catch {
+      ok = false;
+    }
+    for (const d of this.decks) {
+      const a = d.audio as HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> };
+      try {
+        if (a.setSinkId) await a.setSinkId(id);
+      } catch {
+        ok = false;
+      }
+    }
+    return ok;
+  }
+
+  /** '' = system default. Resolves false when the device cannot be used (it was unplugged, not supported...) */
+  async setOutputDevice(id: string): Promise<boolean> {
+    this.sinkId = id === 'default' ? '' : id;
+    return this.applySink();
+  }
+
+  /** Audio outputs the system offers (labels can be empty until the web view is allowed to see them) */
+  async listOutputDevices(): Promise<{ id: string; label: string }[]> {
+    try {
+      const all = await navigator.mediaDevices.enumerateDevices();
+      const outs = all.filter((d) => d.kind === 'audiooutput' && d.deviceId !== 'communications');
+      let n = 0;
+      return outs.map((d) => ({
+        id: d.deviceId === 'default' ? '' : d.deviceId,
+        label: d.deviceId === 'default' ? tr('deviceDefault') : d.label.replace(/^Default - /, '') || tr('deviceN', { n: ++n }),
+      }));
+    } catch {
+      return [];
     }
   }
 
@@ -409,6 +466,13 @@ class Engine {
     if (!this.ctx || !this.preamp) return;
     this.preamp.gain.value = this.eqEnabled ? Math.pow(10, this.preampDb / 20) : 1;
     this.filters.forEach((f, i) => (f.gain.value = this.eqEnabled ? this.eqGains[i] ?? 0 : 0));
+  }
+
+  /** Time-domain samples (0..255, 128 = silence) for the wave visualizer */
+  getWave(): Uint8Array | null {
+    if (!this.analyser || this.active.audio.paused) return null;
+    this.analyser.getByteTimeDomainData(this.wave);
+    return this.wave;
   }
 
   getSpectrum(): Uint8Array | null {

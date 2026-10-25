@@ -16,6 +16,9 @@ import { AlbumView, AlbumsView, ArtistView, ArtistsView, HomeView, LikedView, Pl
 
 // heavy screens are loaded on demand so the app opens faster
 const SettingsView = lazy(() => import('./views/Settings').then((m) => ({ default: m.SettingsView })));
+const StatsView = lazy(() => import('./views/Extra').then((m) => ({ default: m.StatsView })));
+const DuplicatesView = lazy(() => import('./views/Extra').then((m) => ({ default: m.DuplicatesView })));
+const SmartListView = lazy(() => import('./views/Extra').then((m) => ({ default: m.SmartListView })));
 const NowPlaying = lazy(() => import('./components/NowPlaying').then((m) => ({ default: m.NowPlaying })));
 const Dialogs = lazy(() => import('./components/Dialogs').then((m) => ({ default: m.Dialogs })));
 import { useCurrent, useStore } from './lib/store';
@@ -25,6 +28,7 @@ import { runThemeTransition } from './lib/themeTransition';
 import { seedFromCover } from './lib/cover';
 import { launchArgs, setCloseToTray } from './lib/tauri';
 import { enterMini, exitMini, win } from './lib/window';
+import { comboFromEvent, matchAction } from './lib/keymap';
 
 let booted = false;
 
@@ -44,6 +48,9 @@ function CurrentView() {
     case 'liked': return <LikedView />;
     case 'recent': return <RecentView />;
     case 'smart': return <SmartView id={view.id} />;
+    case 'smartlist': return <Suspense fallback={null}><SmartListView id={view.id} /></Suspense>;
+    case 'stats': return <Suspense fallback={null}><StatsView /></Suspense>;
+    case 'duplicates': return <Suspense fallback={null}><DuplicatesView /></Suspense>;
     case 'settings': return <Suspense fallback={null}><SettingsView /></Suspense>;
   }
 }
@@ -128,7 +135,7 @@ export default function App() {
           }, 700);
         });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [mini]);
 
   // Sự kiện từ hệ thống: kéo thả, mở bằng, khay hệ thống, tiến trình quét
@@ -147,6 +154,8 @@ export default function App() {
       else if (e.payload === 'next') st.next(false);
       else if (e.payload === 'prev') st.prev();
       else if (e.payload === 'stop') { engine.pause(); st.seek(0); }
+      else if (e.payload === 'mini') { const m = useStore.getState().miniMode; st.set({ miniMode: !m }); }
+      else if (e.payload === 'ontop') { const cur = useStore.getState().settings; st.updateSettings({ alwaysOnTop: !cur.alwaysOnTop }); }
     }));
     // files added / removed / renamed inside the watched library folders
     unsubs.push(listen('library-changed', () => { void useStore.getState().syncLibrary(true); }));
@@ -158,14 +167,21 @@ export default function App() {
 
   // Hẹn giờ tắt nhạc & lưu vị trí định kỳ
   useEffect(() => {
+    const FADE_MS = 20000;
     const i = window.setInterval(() => {
       const s = useStore.getState();
-      if (s.sleepAt && Date.now() >= s.sleepAt) {
-        engine.pause();
-        s.set({ sleepAt: null, isPlaying: false });
-        s.showToast(tr('sleepDone'), undefined, undefined, 'success');
-      }
-    }, 1000);
+      if (s.sleepAt) {
+        const left = s.sleepAt - Date.now();
+        if (left <= 0) {
+          engine.pause();
+          engine.setMaster(1);
+          s.set({ sleepAt: null, isPlaying: false });
+          s.showToast(tr('sleepDone'), undefined, undefined, 'success');
+        } else if (s.settings.sleepFade && left < FADE_MS) {
+          engine.setMaster(left / FADE_MS); // fade out over the last seconds
+        } else engine.setMaster(1);
+      } else engine.setMaster(1);
+    }, 250);
     const save = window.setInterval(() => {
       if (useStore.getState().isPlaying) useStore.getState().saveSession();
     }, 15000);
@@ -206,30 +222,38 @@ export default function App() {
     }
   }, [current?.id, isPlaying, duration]);
 
-  // Phím tắt
+  // Phím tắt (the user can change them in Settings → Keyboard shortcuts)
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === 'INPUT' && (e.target as HTMLInputElement).type !== 'range') return;
       if (tag === 'TEXTAREA') return;
       const st = useStore.getState();
-      const k = e.key.toLowerCase();
-      const ctrl = e.ctrlKey || e.metaKey;
-      if (e.key === 'F5') { e.preventDefault(); void st.syncLibrary(false, true); }
-      else if (e.key === ' ') { e.preventDefault(); if (tag === 'BUTTON') (e.target as HTMLElement).blur(); st.togglePlay(); }
-      else if (ctrl && e.key === 'ArrowRight') { e.preventDefault(); st.next(false); }
-      else if (ctrl && e.key === 'ArrowLeft') { e.preventDefault(); st.prev(); }
-      else if (!ctrl && e.key === 'ArrowRight' && tag !== 'INPUT') st.seek(Math.min(engine.audio.duration || 0, engine.audio.currentTime + 5));
-      else if (!ctrl && e.key === 'ArrowLeft' && tag !== 'INPUT') st.seek(Math.max(0, engine.audio.currentTime - 5));
-      else if (e.key === 'ArrowUp' && tag !== 'INPUT') { e.preventDefault(); st.setVolume(Math.min(1, st.settings.volume + 0.05)); }
-      else if (e.key === 'ArrowDown' && tag !== 'INPUT') { e.preventDefault(); st.setVolume(Math.max(0, st.settings.volume - 0.05)); }
-      else if (!ctrl && k === 'm') st.toggleMute();
-      else if (!ctrl && k === 's') st.toggleShuffle();
-      else if (!ctrl && k === 'r') st.cycleRepeat();
-      else if (!ctrl && k === 'l') { const id = st.queue[st.index]; if (id) st.toggleLike(id); }
-      else if (!ctrl && k === 'q') st.set({ showQueue: !st.showQueue });
-      else if (!ctrl && k === 'n') st.set({ showNowPlaying: !st.showNowPlaying });
-      else if (e.key === 'Escape' && st.showNowPlaying) st.set({ showNowPlaying: false });
+      if (e.key === 'Escape' && st.showNowPlaying) { st.set({ showNowPlaying: false }); return; }
+      if ((e.target as HTMLElement)?.closest?.('[data-recording]')) return; // the shortcut editor is listening
+      const combo = comboFromEvent(e);
+      const action = matchAction(combo, st.settings.keymap);
+      if (!action) return;
+      // bare arrow keys belong to a focused slider
+      if (tag === 'INPUT' && combo.startsWith('Arrow')) return;
+      e.preventDefault();
+      const v = st.settings.volume;
+      switch (action) {
+        case 'play': if (tag === 'BUTTON') (e.target as HTMLElement).blur(); st.togglePlay(); break;
+        case 'next': st.next(false); break;
+        case 'prev': st.prev(); break;
+        case 'seekFwd': st.seek(Math.min(engine.audio.duration || 0, engine.audio.currentTime + 5)); break;
+        case 'seekBack': st.seek(Math.max(0, engine.audio.currentTime - 5)); break;
+        case 'volUp': st.setVolume(Math.min(1, v + 0.05)); break;
+        case 'volDown': st.setVolume(Math.max(0, v - 0.05)); break;
+        case 'mute': st.toggleMute(); break;
+        case 'shuffle': st.toggleShuffle(); break;
+        case 'repeat': st.cycleRepeat(); break;
+        case 'like': { const id = st.queue[st.index]; if (id) st.toggleLike(id); break; }
+        case 'queue': st.set({ showQueue: !st.showQueue }); break;
+        case 'now': st.set({ showNowPlaying: !st.showNowPlaying }); break;
+        case 'refresh': void st.syncLibrary(false, true); break;
+      }
     };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);

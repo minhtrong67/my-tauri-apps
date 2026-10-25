@@ -36,7 +36,7 @@ export function Select<T extends string>({ value, options, onChange, width = 220
       </button>
       {open && rect && createPortal(
         <div ref={list} data-select-pop role="listbox" className="anim-menu fixed z-[260] overflow-y-auto rounded-2xl bg-surface-high p-1.5 shadow-[var(--shadow-3)] ring-1 ring-outline-variant/60"
-          style={{ left: rect.left, width: Math.max(rect.width, width), maxHeight: 280, ...(up ? { bottom: innerHeight - rect.top + 8, transformOrigin: 'bottom left' } : { top: rect.bottom + 8 }) }}>
+          style={{ left: Math.max(8, Math.min(rect.left, innerWidth - Math.min(Math.max(rect.width, width), innerWidth - 16) - 8)), width: Math.min(Math.max(rect.width, width), innerWidth - 16), maxHeight: 280, ...(up ? { bottom: innerHeight - rect.top + 8, transformOrigin: 'bottom left' } : { top: rect.bottom + 8 }) }}>
           {options.map((o, i) => (
             <button key={o.value} data-i={i} type="button" role="option" aria-selected={o.value === value}
               onMouseEnter={() => setHi(i)} onClick={() => { onChange(o.value); setOpen(false); btn.current?.focus(); }}

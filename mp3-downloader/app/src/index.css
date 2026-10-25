@@ -1,0 +1,51 @@
+@import "./assets/fonts/fonts.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --font: system-ui, "Segoe UI", Arial, sans-serif; }
+html, body, #root { height: 100%; }
+body { @apply bg-surface text-on-surface font-sans antialiased overflow-hidden select-none; letter-spacing: .01em; transition: background-color .35s, color .35s; }
+input, textarea, .selectable { @apply select-text; }
+button { @apply cursor-pointer; }
+button:disabled { @apply cursor-default; }
+:focus-visible { outline: 3px solid rgb(var(--c-primary) / .7); outline-offset: 2px; }
+::selection { background: rgb(var(--c-primary) / .3); }
+* { scrollbar-width: thin; scrollbar-color: rgb(var(--c-outline-variant)) transparent; }
+[hidden] { display: none !important; }
+
+@layer utilities {
+  .t-display { font-size: 2.5rem; line-height: 2.75rem; font-weight: 700; letter-spacing: -.02em; }
+  .t-headline { font-size: 1.75rem; line-height: 2.25rem; font-weight: 700; letter-spacing: -.01em; }
+  .t-title { font-size: 1rem; line-height: 1.5rem; font-weight: 600; }
+  .t-body { font-size: .875rem; line-height: 1.25rem; }
+  .t-small { font-size: .75rem; line-height: 1rem; letter-spacing: .02em; }
+  .state-layer { position: relative; overflow: hidden; }
+  .state-layer::after { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity .15s; pointer-events: none; }
+  .state-layer:hover::after { opacity: .08; }
+  .state-layer:active::after { opacity: .12; }
+  .state-layer:disabled::after { display: none; }
+}
+
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+.ripple { position: absolute; border-radius: 50%; background: currentColor; opacity: .22; transform: scale(0); animation: ripple .6s cubic-bezier(.2,0,0,1) forwards; pointer-events: none; }
+@keyframes page-in { from { opacity: 0; transform: translateY(14px) scale(.99); } to { opacity: 1; transform: none; } }
+.animate-page { animation: page-in .45s cubic-bezier(.2,0,0,1) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.animate-rise { animation: rise .55s cubic-bezier(.34,1.3,.64,1) both; }
+@keyframes pop { from { opacity: 0; transform: scale(.94) translateY(8px); } to { opacity: 1; transform: none; } }
+.animate-pop { animation: pop .35s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes tip { from { opacity: 0; transform: translate(-50%, -100%) scale(.9); } to { opacity: 1; } }
+.animate-tip { animation: tip .14s ease-out both; transform-origin: bottom center; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(40px) scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes toast-out { to { opacity: 0; transform: translateX(40px) scale(.92); } }
+@keyframes toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes wave-move { to { -webkit-mask-position-x: -48px; mask-position-x: -48px; } }
+@keyframes cookie-spin { 0% { transform: rotate(0) scale(1); } 50% { transform: rotate(180deg) scale(.86); } 100% { transform: rotate(360deg) scale(1); } }
+@keyframes float { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(6deg); } }
+@keyframes shimmer { to { background-position: -200% 0; } }
+.skeleton { background: linear-gradient(90deg, rgb(var(--c-surface-high)) 25%, rgb(var(--c-surface-highest)) 50%, rgb(var(--c-surface-high)) 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+.wavy { height: 10px; background: rgb(var(--c-primary)); -webkit-mask: var(--wave) repeat-x left center / 24px 10px; mask: var(--wave) repeat-x left center / 24px 10px; animation: wave-move 1.6s linear infinite; }
+.sheet-enter { transition: transform .38s cubic-bezier(.2,0,0,1), opacity .25s; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; } }

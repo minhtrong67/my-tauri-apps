@@ -57,7 +57,7 @@ export function useCover(t: Track | undefined, enabled = true): string | null {
     return () => {
       alive = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [t?.id, enabled, direct]);
   if (!t) return null;
   if (direct !== undefined) return direct;

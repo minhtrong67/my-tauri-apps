@@ -2,9 +2,12 @@ import { engine } from '../audio';
 import { tr, type ActiveLang } from '../i18n';
 import * as api from '../tauri';
 import { basename, uid } from '../utils';
-import { defaultSettings, type Playlist, type Settings, type Track } from '../types';
+import { defaultSettings, type Listen, type Settings, type Track } from '../types';
 import { normalize, pathKey, replayGainDb, sortTracksNatural } from './helpers';
 import type { GetFn, SetFn, State, SubscribeFn } from './types';
+
+/** Counted listens kept for the statistics page (newest first) */
+export const MAX_LISTENS = 3000;
 
 let saveTimer: number | undefined;
 let libSaveTimer: number | undefined;
@@ -20,6 +23,9 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
       liked: s.liked,
       history: s.history,
       plays: s.plays,
+      listens: s.listens,
+      lyricOffsets: s.lyricOffsets,
+      smartLists: s.smartLists,
       settings: s.settings,
       session: {
         queue: s.queue,
@@ -58,6 +64,47 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
     });
   };
 
+  // ---------- listen counting ----------
+  // A song only counts (play count, statistics, scrobble) once it was really heard: 30 s or half of it, whichever is shorter.
+  const listen = { id: '', acc: 0, last: -1, counted: false, start: 0 };
+
+  const listenMeta = (t: Track, at?: number): api.ListenMeta => ({ title: t.title, artist: t.artist, album: t.album, duration: t.duration, listened_at: at });
+  const unknownArtist = () => [tr('unknownArtist', undefined, 'en'), tr('unknownArtist', undefined, 'vi')];
+
+  /** Call when a song starts (or restarts, e.g. repeat one) */
+  const beginListen = (id: string) => {
+    Object.assign(listen, { id, acc: 0, last: -1, counted: false, start: Math.floor(Date.now() / 1000) });
+    const s = get();
+    const t = s.byId[id];
+    if (t && s.settings.scrobble && s.settings.scrobbleToken && !unknownArtist().includes(t.artist)) {
+      api.scrobbleNowPlaying(s.settings.scrobbleToken, listenMeta(t)).catch(() => undefined);
+    }
+  };
+
+  /** Call with the playback position while a song plays */
+  const tickListen = (pos: number) => {
+    if (!listen.id || listen.counted) return;
+    if (listen.last >= 0) {
+      const d = pos - listen.last;
+      if (d > 0 && d < 2.5) listen.acc += d; // seeking does not count
+    }
+    listen.last = pos;
+    const s = get();
+    const dur = s.duration || s.byId[listen.id]?.duration || 0;
+    if (listen.acc < (dur > 0 ? Math.min(30, dur * 0.5) : 30)) return;
+    listen.counted = true;
+    const id = listen.id;
+    const t = s.byId[id];
+    if (!t) return;
+    set((st) => ({
+      plays: { ...st.plays, [id]: (st.plays[id] ?? 0) + 1 },
+      listens: [{ id, at: Date.now(), sec: Math.round(dur || t.duration || 0) }, ...st.listens].slice(0, MAX_LISTENS),
+    }));
+    if (s.settings.scrobble && s.settings.scrobbleToken && !unknownArtist().includes(t.artist)) {
+      api.scrobbleListen(s.settings.scrobbleToken, listenMeta(t, listen.start)).catch(() => undefined);
+    }
+  };
+
   /** Library file: tracks only (rewritten rarely) */
   const snapshotLibrary = () => JSON.stringify({ v: 2, tracks: Object.values(get().byId) });
 
@@ -70,6 +117,9 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
       liked: s.liked,
       history: s.history,
       plays: s.plays,
+      listens: s.listens,
+      lyricOffsets: s.lyricOffsets,
+      smartLists: s.smartLists,
       settings: s.settings,
       session: { queue: s.queue, baseQueue: s.baseQueue, index: s.index, position: engine.audio.currentTime || 0, shuffle: s.shuffle, repeat: s.repeat },
       navCollapsed: s.navCollapsed,
@@ -90,6 +140,9 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
     if (d.liked !== undefined) patch.liked = d.liked ?? {};
     if (d.history !== undefined) patch.history = d.history ?? [];
     if (d.plays !== undefined) patch.plays = d.plays ?? {};
+    if (Array.isArray(d.listens)) patch.listens = d.listens.filter((l: Listen) => l && typeof l.id === 'string' && typeof l.at === 'number').slice(0, MAX_LISTENS);
+    if (d.lyricOffsets && typeof d.lyricOffsets === 'object') patch.lyricOffsets = d.lyricOffsets;
+    if (Array.isArray(d.smartLists)) patch.smartLists = d.smartLists;
     if (d.settings !== undefined) patch.settings = fixSettings({ ...defaultSettings, ...(d.settings ?? {}) });
     if (d.navCollapsed !== undefined) patch.navCollapsed = !!d.navCollapsed;
     if (d.viewModes !== undefined) patch.viewModes = d.viewModes ?? {};
@@ -112,6 +165,8 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
       playlists: s.playlists.map((p) => ({ ...p, trackIds: [...new Set(p.trackIds.map(r))] })),
       liked: remapKeys(s.liked),
       plays: remapKeys(s.plays),
+      listens: s.listens.map((l) => ({ ...l, id: r(l.id) })),
+      lyricOffsets: remapKeys(s.lyricOffsets),
       history: s.history.map((h) => ({ ...h, id: r(h.id) })).filter((h) => (seen.has(h.id) ? false : (seen.add(h.id), true))),
     };
   };
@@ -301,7 +356,7 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
   }
 
   return {
-    subscribe, flags, snapshot, fixSettings, retrack, pushTrayLabels, relabelUnknown, snapshotLibrary, snapshotUser, applySnapshot, remapState,
+    subscribe, flags, snapshot, beginListen, tickListen, fixSettings, retrack, pushTrayLabels, relabelUnknown, snapshotLibrary, snapshotUser, applySnapshot, remapState,
     mergeTracks, dedupeLibrary, knownFiles, ingest, sortedIds, upsertFolderPlaylist, pruneMissing, addFolder, playCurrentIndex, scheduleSave,
     syncNext, allowLibrary, syncWatchers,
   };

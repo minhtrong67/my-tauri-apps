@@ -12,7 +12,12 @@ import { engine } from '../lib/audio';
 import { fetchLyricsOnline, readLyrics, writeTextFile } from '../lib/tauri';
 import { activeLine, parseLyrics, type Lyrics } from '../lib/lrc';
 
-export function Visualizer() {
+type VizStyle = 'bars' | 'wave' | 'circle';
+
+/** Spectrum -> 0..1 level for band i of n (log-ish spread so the bass does not hog the whole width) */
+const band = (spec: Uint8Array, i: number, n: number) => spec[Math.min(spec.length - 1, Math.floor(Math.pow(i / n, 1.4) * spec.length * 0.85))] / 255;
+
+export function Visualizer({ mode }: { mode: VizStyle }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const c = ref.current!;
@@ -27,33 +32,89 @@ export function Visualizer() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       const rgb = getComputedStyle(document.documentElement).getPropertyValue('--md-primary').trim().split(' ').join(',');
-      const n = 48;
-      const gap = 6;
-      const bw = (w - gap * (n - 1)) / n;
       const spec = engine.getSpectrum();
-      phase += 0.06;
       const playing = !engine.audio.paused;
-      for (let i = 0; i < n; i++) {
-        let v: number;
-        if (spec) v = spec[Math.min(spec.length - 1, Math.floor(Math.pow(i / n, 1.4) * spec.length * 0.85))] / 255;
-        else v = playing ? 0.25 + 0.2 * Math.sin(phase + i * 0.5) + 0.15 * Math.sin(phase * 1.7 + i * 0.2) : 0.04;
-        const bh = Math.max(6, v * h);
-        ctx.fillStyle = `rgba(${rgb}, ${0.35 + v * 0.65})`;
+      phase += 0.06;
+      // without Web Audio data the bars idle with a soft sine so the screen is never frozen
+      const level = (i: number, n: number) => (spec ? band(spec, i, n) : playing ? 0.25 + 0.2 * Math.sin(phase + i * 0.5) + 0.15 * Math.sin(phase * 1.7 + i * 0.2) : 0.04);
+      if (mode === 'bars') {
+        const n = 48, gap = 6;
+        const bw = (w - gap * (n - 1)) / n;
+        for (let i = 0; i < n; i++) {
+          const v = level(i, n);
+          const bh = Math.max(6, v * h);
+          ctx.fillStyle = `rgba(${rgb}, ${0.35 + v * 0.65})`;
+          ctx.beginPath();
+          ctx.roundRect(i * (bw + gap), h - bh, bw, bh, Math.min(bw / 2, 6));
+          ctx.fill();
+        }
+      } else if (mode === 'wave') {
+        const data = engine.getWave();
+        const n = 96;
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = `rgba(${rgb}, 0.95)`;
+        ctx.shadowColor = `rgba(${rgb}, 0.55)`;
+        ctx.shadowBlur = 14;
         ctx.beginPath();
-        ctx.roundRect(i * (bw + gap), h - bh, bw, bh, Math.min(bw / 2, 6));
-        ctx.fill();
+        for (let i = 0; i <= n; i++) {
+          const x = (i / n) * w;
+          const v = data ? (data[Math.min(data.length - 1, Math.floor((i / n) * data.length))] - 128) / 128 : playing ? 0.35 * Math.sin(phase + i * 0.18) * Math.sin(phase * 0.5 + i * 0.05) : 0;
+          const y = h / 2 + v * h * 0.42;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      } else {
+        const n = 72;
+        const cx = w / 2, cy = h / 2;
+        const r0 = Math.min(w, h) * 0.22;
+        const rMax = Math.min(w, h) * 0.5 - 6;
+        ctx.lineCap = 'round';
+        ctx.lineWidth = Math.max(3, (2 * Math.PI * r0) / n - 3);
+        for (let i = 0; i < n; i++) {
+          // mirror the spectrum so the ring is symmetric
+          const k = i < n / 2 ? i : n - 1 - i;
+          const v = level(k, n / 2);
+          const a = (i / n) * Math.PI * 2 - Math.PI / 2 + phase * 0.02;
+          const r1 = r0 + 4 + v * (rMax - r0);
+          ctx.strokeStyle = `rgba(${rgb}, ${0.35 + v * 0.65})`;
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+          ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+          ctx.stroke();
+        }
       }
       raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [mode]);
   return <canvas ref={ref} className="w-full h-full" />;
+}
+
+/** − / + 0.1 s correction for the timing of the lyrics (saved per song) */
+function OffsetControl({ id }: { id: string }) {
+  const ms = useStore((s) => s.lyricOffsets[id] ?? 0);
+  const setOffset = useStore((s) => s.setLyricOffset);
+  const label = `${ms > 0 ? '+' : ''}${(ms / 1000).toFixed(1)}s`;
+  return (
+    <div className="inline-flex items-center gap-0.5 h-10 pl-3 pr-1 rounded-full bg-surface-container-high text-label-lg animate-fade-in">
+      <Icon name="timer" size={18} className="text-on-surface-variant mr-1" />
+      <IconButton icon="remove" size="sm" title={tr('lyricsEarlier')} onClick={() => setOffset(id, ms - 100)} />
+      <span className="tabular-nums w-12 text-center" aria-live="polite">{label}</span>
+      <IconButton icon="add" size="sm" title={tr('lyricsLater')} onClick={() => setOffset(id, ms + 100)} />
+      <IconButton icon="restart" size="sm" title={tr('lyricsOffsetReset')} disabled={ms === 0} onClick={() => setOffset(id, 0)} />
+    </div>
+  );
 }
 
 function LyricsPane() {
   const t = useCurrent();
   const position = useStore((s) => s.position);
+  const offsetMs = useStore((s) => (t ? s.lyricOffsets[t.id] ?? 0 : 0));
   const seek = useStore((s) => s.seek);
   const [lyrics, setLyrics] = useState<Lyrics | null>(null);
   const [loading, setLoading] = useState(false);
@@ -106,7 +167,7 @@ function LyricsPane() {
     return () => { alive = false; };
   }, [t?.id]);
 
-  const active = useMemo(() => (lyrics?.synced ? activeLine(lyrics.lines, position) : -1), [lyrics, position]);
+  const active = useMemo(() => (lyrics?.synced ? activeLine(lyrics.lines, position + offsetMs / 1000) : -1), [lyrics, position, offsetMs]);
   useEffect(() => {
     // scroll only the lyrics box: scrollIntoView would also scroll the (overflow: hidden) page around it and push the whole screen up
     const box = scroller.current;
@@ -130,12 +191,15 @@ function LyricsPane() {
     );
   return (
     <div ref={scroller} className="h-full overflow-y-auto overflow-x-hidden overscroll-contain text-center [mask-image:linear-gradient(to_bottom,black_calc(100%-96px),transparent)]">
-      {online && (
+      {(online || (lyrics.synced && t)) && (
         <div className="sticky top-0 z-10 h-0">
-          <div className="absolute top-3 right-4 flex items-center gap-2 animate-fade-in">
-            <span className="px-3 h-8 inline-flex items-center rounded-full bg-surface-container-high text-label-md text-on-surface-variant">{tr('lyricsFromOnline')}</span>
-            {!online.saved && <Button variant="tonal" icon="save" onClick={saveLrc}>{tr('lyricsSaveLrc')}</Button>}
-          </div>
+          {lyrics.synced && t && <div className="absolute top-3 left-4"><OffsetControl id={t.id} /></div>}
+          {online && (
+            <div className="absolute top-3 right-4 flex items-center gap-2 animate-fade-in">
+              <span className="px-3 h-8 inline-flex items-center rounded-full bg-surface-container-high text-label-md text-on-surface-variant">{tr('lyricsFromOnline')}</span>
+              {!online.saved && <Button variant="tonal" icon="save" onClick={saveLrc}>{tr('lyricsSaveLrc')}</Button>}
+            </div>
+          )}
         </div>
       )}
       <div className="px-10 pt-16 pb-[60vh]">
@@ -156,6 +220,19 @@ function LyricsPane() {
         );
       })}
       </div>
+    </div>
+  );
+}
+
+function VizTab() {
+  const mode = useStore((s) => s.settings.visualizer);
+  const update = useStore((s) => s.updateSettings);
+  return (
+    <div className="h-full p-8 flex flex-col gap-6">
+      <div className="flex justify-center">
+        <Segmented value={mode} onChange={(v) => update({ visualizer: v })} options={[{ value: 'bars', label: tr('vizBars'), icon: 'bar_chart' }, { value: 'wave', label: tr('vizWave'), icon: 'waves' }, { value: 'circle', label: tr('vizCircle'), icon: 'circle' }]} />
+      </div>
+      <div className="flex-1 min-h-0 flex items-end"><div className={`w-full ${mode === 'bars' ? 'h-[70%]' : 'h-full'}`}><Visualizer mode={mode} /></div></div>
     </div>
   );
 }
@@ -200,7 +277,7 @@ export function NowPlaying() {
           </div>
           <div className="flex-1 min-h-0">
             {tab === 'lyrics' && <LyricsPane />}
-            {tab === 'viz' && <div className="h-full p-10 flex items-end"><div className="w-full h-[70%]"><Visualizer /></div></div>}
+            {tab === 'viz' && <VizTab />}
             {tab === 'queue' && <QueuePanel embedded />}
           </div>
         </div>

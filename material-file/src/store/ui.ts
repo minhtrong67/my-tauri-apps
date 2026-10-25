@@ -27,7 +27,7 @@ interface OpState { title: string; name: string; done: number; total: number; vi
 
 interface UI {
   toasts: ToastItem[];
-  menu: { x: number; y: number; items: MenuItem[] } | null;
+  menu: { x: number; y: number; alignRight?: number; items: MenuItem[] } | null;
   dialog: DialogSpec | null;
   modals: Partial<Record<ModalName, unknown>>;
   op: OpState | null;
@@ -55,7 +55,8 @@ export const dismissToast = (id: number) => {
   window.setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), 240);
 };
 
-export const showMenu = (items: MenuItem[], x: number, y: number) => set({ menu: { items, x, y } });
+/** alignRight: x of the anchor's right edge - when the menu would overflow the window it opens right-aligned to it. */
+export const showMenu = (items: MenuItem[], x: number, y: number, alignRight?: number) => set({ menu: { items, x, y, alignRight } });
 export const closeMenu = () => { if (get().menu) set({ menu: null }); };
 
 export const openModal = (name: ModalName, payload: unknown = true) => set((s) => ({ modals: { ...s.modals, [name]: payload } }));

@@ -26,8 +26,9 @@ export function fmtTime(s: number) {
 }
 
 export function fmtLong(s: number) {
-  const h = Math.floor(s / 3600);
-  const m = Math.round((s % 3600) / 60);
+  const total = Math.round(s / 60); // round first, so 1 h 59 min 40 s is "2 h 0 min", never "1 h 60 min"
+  const h = Math.floor(total / 60);
+  const m = total % 60;
   if (h > 0) return tr('hoursMinutes', { h, m });
   return tr('minutesOnly', { m: Math.max(1, m) });
 }

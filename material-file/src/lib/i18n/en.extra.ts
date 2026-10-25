@@ -167,4 +167,12 @@ export const enExtra: Record<string, string> = {
   "search.saveLabel": "Name",
   "settings.tags": "Tag names",
   "status.free": "{free} free",
+  "home.greetMorning": "Good morning",
+  "home.greetAfternoon": "Good afternoon",
+  "home.greetEvening": "Good evening",
+  "home.palette": "Search everything",
+  "home.openFolder": "Show in folder",
+  "home.drivesFree": "{n} drives · {free} free",
+  "home.recentCount": "{n} recent files",
+  "status.hint": "Press Ctrl+K to open the command palette",
 };

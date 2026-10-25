@@ -10,7 +10,7 @@ import type { State } from './types';
 export const useStore = create<State>((set, get, api) => {
   const core = createCore(set, get, api.subscribe);
   return {
-    ...createUiSlice(set, get, core),
+    ...createUiSlice(set, get),
     ...createLibrarySlice(set, get, core),
     ...createPlayerSlice(set, get, core),
     ...createPlaylistSlice(set, get, core),

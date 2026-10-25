@@ -1,95 +1,78 @@
 <div align="center">
 
-<img src="src/app-icon.png" width="112" height="112" alt="MP3 Downloader icon" />
+<img src="assets/icon-512.png" width="120" alt="MP3 Downloader icon">
 
 # MP3 Downloader
 
-**Turn YouTube, TikTok and Spotify links into perfectly tagged MP3 files.**
+**Search or paste a link — get a tagged MP3 from YouTube, TikTok and Spotify.**
+A free, open-source desktop app built with Tauri, React and Material 3 Expressive.
 
-Free · Open source · Material Design 3 · English & Tiếng Việt
+[Download](download/) · [Landing page](index.html) · [Tiếng Việt](README.vi.md)
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-8BC34A.svg)](LICENSE)
-![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
-
-[English](README.md) · [Tiếng Việt](README.vi.md)
+![License](https://img.shields.io/badge/license-MIT-4CAF50) ![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB) ![React](https://img.shields.io/badge/React-18-61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6)
 
 </div>
 
 ## Introduction
 
-MP3 Downloader is a lightweight desktop app built with [Tauri 2](https://tauri.app). Paste a link, pick a quality and get an MP3 with **cover art, title, artist, album and year** already embedded — ready for Windows Explorer, your phone or any music player.
-
-The interface follows **Material Design 3**: light / dark / system themes, 16 Material theme colors plus any custom color, a choice of popular fonts, and smooth animations. It speaks **English and Vietnamese** and picks the language of your device automatically.
-
-> Please only download content you have the right to use.
+MP3 Downloader turns links (or just a song name) into MP3 files with cover art, title, artist, album and year embedded. It wraps [yt-dlp](https://github.com/yt-dlp/yt-dlp) and [ffmpeg](https://ffmpeg.org) in a calm, colourful interface that follows **Material 3 Expressive (2026)**: cookie-shaped icons, shape-morphing buttons, spring motion and wavy progress bars.
 
 ## Screenshots
 
-| | | |
-|:--:|:--:|:--:|
-| ![Download page](screenshots/image01.png) | ![Settings](screenshots/image02.png) | ![Dark theme](screenshots/image03.png) |
-| Download page | Settings | Dark theme |
+| | |
+|---|---|
+| ![Download](screenshots/image01.png) | ![Playlist & tags](screenshots/image02.png) |
+| ![History](screenshots/image03.png) | ![Settings](screenshots/image04.png) |
+
+> Put four screenshots named `image01.png` … `image04.png` in [`screenshots/`](screenshots/) (Download, Playlist/Tags, History, Settings).
 
 ## Features
 
-- **Three sources** — YouTube, TikTok and Spotify tracks (`open.spotify.com/track/…`).
-  Spotify is DRM-protected, so the app reads the track info from Spotify and finds the matching audio on YouTube Music / YouTube (matched by duration).
-- **Tags & cover art** — title, artist, album, year and cover (optionally cropped to a square). File names look like `Artist - Title.mp3`.
-- **Quality** — Best (VBR V0), 320, 256, 192 or 128 kbps.
-- **Smart queue** — paste several links at once; two downloads run in parallel with speed, ETA, retry and cancel.
-- **Resilient downloads** — on HTTP 403 the app automatically tries other YouTube clients / methods. Tagging problems never lose your MP3.
-- **One-click tools** — installs `yt-dlp`, `ffmpeg` and `Deno` for you on Windows.
-- **Material Design 3** — light / dark / system, 16 Material colors + custom color, fonts (Roboto, Inter, Open Sans, Be Vietnam Pro, Nunito, system, serif, mono).
-- **English & Tiếng Việt** — detected from your device, changeable in Settings.
-- **Window behavior** — either *remember the window size* or *always open maximized*.
-- **Tidy settings** — grouped into Appearance, Downloads, Window and Tools.
-
-## Download
-
-Get the Windows installer from the [`download/`](download/) folder (or from the project's Releases page):
-
-```
-download/MP3 Downloader_0.4.0_x64-setup.exe
-```
-
-A landing page for the app is available in [`index.html`](index.html) (open it in a browser or host it on GitHub Pages).
+- **Three sources** — YouTube, TikTok and Spotify tracks (Spotify is matched to the best audio on YouTube and tagged from Spotify's metadata). Many links at once.
+- **Search by name** — type a song title, pick a result.
+- **Playlists** — open a playlist, tick the tracks, queue them.
+- **Edit tags** before downloading (title, artist, album, year).
+- **Smart queue** — parallel downloads (1–4), speed limit, automatic retries on HTTP 403, wavy live progress, stop all.
+- **History** — search, reveal, download again, delete file.
+- **File naming** — four templates, optional per-artist folders, duplicate policy (keep both / skip / replace).
+- **Quality** — best or 320 / 256 / 192 / 128 kbps, optional square cover crop.
+- **Network** — browser cookies (for "sign in" errors) and proxy.
+- **Safe** — yt-dlp / ffmpeg / Deno downloads are verified with SHA-256, strict CSP, single instance.
+- **Stays current** — warns when yt-dlp is outdated and updates it in one click; desktop notifications.
+- **Make it yours** — light / dark / system, 16 Material theme colours + custom, 5 fonts (system default, Roboto…), 3 text sizes, English & Vietnamese, window mode (remember size / always maximised).
+- **Polished UI** — custom title bar, tooltips, toasts (info / success / warning / error), custom dropdowns, dialogs and side sheets with labelled, coloured actions.
 
 ## Installation
 
-1. Run the installer and follow the steps (the setup and uninstaller use the app's own icons).
-2. Start **MP3 Downloader**.
-3. On first launch click **Install automatically** to get `yt-dlp`, `ffmpeg` and `Deno` (Windows).
-   On macOS / Linux install `ffmpeg` (and optionally `deno`) with your package manager:
+1. Download `MP3 Downloader_<version>_x64-setup.exe` from [`download/`](download/) (Windows 10/11, 64-bit).
+2. Run it. If SmartScreen warns, choose **More info → Run anyway** (the installer is not code-signed).
+3. On first launch the app offers to download **yt-dlp**, **ffmpeg** and (recommended) **Deno** for you.
 
-   ```bash
-   brew install ffmpeg deno          # macOS
-   sudo apt install ffmpeg           # Debian / Ubuntu
-   ```
+macOS / Linux: build from source (see below) and install `yt-dlp` and `ffmpeg` yourself (e.g. with your package manager).
 
 ## Tech stack
 
-| Area | Technology |
+| Layer | Technology |
 |---|---|
-| Shell | [Tauri 2](https://tauri.app) (Rust) |
-| Backend | Rust, `tokio`, `reqwest` (rustls), `regex`, `zip`, `arboard` |
-| Frontend | Plain HTML / CSS / JavaScript — no bundler |
-| Design | Material Design 3, [material-color-utilities](https://github.com/material-foundation/material-color-utilities) |
-| Icons | [Lucide](https://lucide.dev) |
-| Fonts | [Fontsource](https://fontsource.org) (Roboto, Inter, Open Sans, Be Vietnam Pro, Nunito) — bundled offline |
-| Engines | [yt-dlp](https://github.com/yt-dlp/yt-dlp), [FFmpeg](https://ffmpeg.org), [Deno](https://deno.com) |
+| Shell | Tauri 2 (Rust) + plugins: dialog, opener, notification, single-instance |
+| UI | React 18, TypeScript, Vite 5, Tailwind CSS 3 |
+| Design | Material 3 Expressive, `@material/material-color-utilities` (Expressive scheme) |
+| Icons | [lucide-react](https://lucide.dev) |
+| State | Zustand (persisted settings & history) |
+| Engines | yt-dlp, ffmpeg, Deno (optional) |
 
 ## Development
 
-Requirements: [Node.js](https://nodejs.org) 18+, [Rust](https://rustup.rs) (stable) and the [Tauri prerequisites](https://tauri.app/start/prerequisites/) for your OS.
+Requirements: [Node.js 18+](https://nodejs.org), [Rust](https://rustup.rs) and the [Tauri prerequisites](https://tauri.app/start/prerequisites/).
 
-This project lives inside a Cargo workspace whose root `Cargo.toml` contains `members = ["*/src-tauri"]`, so every subfolder with a `src-tauri/Cargo.toml` is picked up automatically and all projects share one `target` cache. No extra setup needed.
+This project lives in a **Cargo workspace** (the root `Cargo.toml` has `members = ["*/src-tauri"]`), so every Tauri project in the folder shares one `target/` cache.
 
 ```bash
-cd mp3-downloader
 npm install
 npm run dev
 ```
+
+`npm run dev` starts Vite and the Tauri window with hot reload.
 
 ## Build
 
@@ -97,40 +80,31 @@ npm run dev
 npm run build
 ```
 
-Installers are written to the workspace's shared `target` folder, e.g. `target/release/bundle/nsis/MP3 Downloader_0.4.0_x64-setup.exe`. Copy the installer into [`download/`](download/) to make the landing page's **Download** button work.
+The installer is written to the workspace's shared `target/release/bundle/nsis/` folder. Copy it into [`download/`](download/) so the landing page's **Download** button works (the link expects `MP3 Downloader_0.5.0_x64-setup.exe`).
+
+Regenerate every icon (app, setup, uninstall, NSIS images, favicon, social image) with `pip install pillow && python scripts/generate-icons.py`.
 
 ## Project structure
 
 ```
 mp3-downloader/
-├─ index.html                landing page (single file, Material Design)
-├─ og-image.png              social sharing image
-├─ download/                 put the installer here
-├─ screenshots/              image01.png, image02.png, …
-├─ LICENSE
-├─ package.json
-├─ src/                      app UI (no bundler)
+├─ index.html              # Landing page (single file, Material 3 Expressive)
+├─ assets/                 # Landing page assets (icons, favicon, og-image)
+├─ download/               # Put the installer (.exe) here
+├─ screenshots/            # image01.png … image04.png
+├─ scripts/generate-icons.py
+├─ app/                    # Vite root of the desktop UI
 │  ├─ index.html
-│  ├─ styles.css
-│  ├─ app.js                 UI logic
-│  ├─ i18n.js                English / Vietnamese strings
-│  ├─ app-icon.png
-│  ├─ fonts/                 bundled fonts
-│  └─ vendor/mcu.js          material-color-utilities
-└─ src-tauri/
-   ├─ Cargo.toml
-   ├─ tauri.conf.json
-   ├─ capabilities/
-   ├─ icons/                 app icon, installer.ico, uninstaller.ico
-   └─ src/
-      ├─ main.rs
-      └─ lib.rs              backend: downloads, tools, window state
+│  ├─ public/
+│  └─ src/
+│     ├─ components/       # ui primitives (Button, Select, Overlay, Toast…) + feature components
+│     ├─ layout/           # TitleBar, NavRail
+│     ├─ pages/            # Download, History, Settings
+│     └─ lib/              # theme, i18n, stores, queue, tools, tauri bridge
+└─ src-tauri/              # Rust backend, config, capabilities, icons
 ```
 
 ## License
 
-Released under the [MIT License](LICENSE) © 2026 **minhtrong67**.
-
-Built by **minhtrong67** with the support of **Claude** (Anthropic).
-
-Third-party: Lucide (ISC), Fontsource fonts (OFL / Apache-2.0), material-color-utilities (Apache-2.0). `yt-dlp`, `ffmpeg` and `Deno` are downloaded separately and keep their own licenses.
+[MIT](LICENSE) © 2026 **minhtrong67** — made with the help of **Claude** (Anthropic).
+Only download content you own or have permission to use.

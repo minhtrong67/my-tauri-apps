@@ -29,7 +29,7 @@ export function VirtualList<T>({
     if (initialIndex != null && initialIndex > 0 && ref.current) {
       ref.current.scrollTop = Math.max(0, initialIndex * rowHeight - rowHeight * 2);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   const rel = scrollTop - headH;

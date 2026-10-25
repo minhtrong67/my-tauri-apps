@@ -10,7 +10,7 @@ import { Button, Icon, openMenuBelow } from '../components/ui';
 import { Cover } from '../components/Cover';
 import { searchLibrary, sortTracksNatural, useDerived, useStore, useTrackList, useViewMode } from '../lib/store';
 import { greeting, natural } from '../lib/utils';
-import { SMART_ICON, SMART_IDS, smartTracks } from '../lib/smart';
+import { SMART_ICON, SMART_IDS, ruleTracks, smartTracks } from '../lib/smart';
 import type { Album, SmartId, Track } from '../lib/types';
 import type { Key } from '../lib/i18n';
 
@@ -210,9 +210,23 @@ export function PlaylistsView() {
           onOpen: () => nav({ name: 'smart', id }), onPlay: list.length ? () => playTracks(list.map((t) => t.id), 0) : undefined,
         };
       }),
-    [byId, plays], // eslint-disable-line react-hooks/exhaustive-deps
+    [byId, plays],  
   );
-  const items: Entity[] = [...smart, ...playlists.map((p) => ({
+  const smartLists = useStore((s) => s.smartLists);
+  const liked = useStore((s) => s.liked);
+  const mine: Entity[] = useMemo(
+    () =>
+      smartLists.map((l) => {
+        const list = ruleTracks(l.rules, byId, plays, liked);
+        return {
+          key: `smartlist:${l.id}`, track: list[0], title: l.name, subtitle: `${tr('nSongs', { n: list.length })} • ${tr('smartTag')}`,
+          meta: tr('smartTag'), icon: 'wand',
+          onOpen: () => nav({ name: 'smartlist', id: l.id }), onPlay: list.length ? () => playTracks(list.map((t) => t.id), 0) : undefined,
+        };
+      }),
+    [smartLists, byId, plays, liked],  
+  );
+  const items: Entity[] = [...smart, ...mine, ...playlists.map((p) => ({
     key: p.id, track: byId[p.trackIds[0]], title: p.name, subtitle: `${tr('nSongs', { n: p.trackIds.length })}${p.folder ? ` • ${tr('folderTag')}` : ''}`,
     meta: p.folder ? tr('fromFolder') : tr('playlist'), icon: p.folder ? 'folder' : 'queue_music',
     onOpen: () => nav({ name: 'playlist', id: p.id }), onPlay: () => playTracks(p.trackIds, 0),
@@ -220,6 +234,7 @@ export function PlaylistsView() {
   return (
     <div className="h-full flex flex-col">
       <PageHeader title={tr('playlists')} subtitle={`${playlists.length} ${tr('playlists').toLowerCase()}`}>
+        <Button variant="tonal" icon="wand" onClick={() => openDialog({ type: 'smartEditor' })}>{tr('smartNewBtn')}</Button>
         <Button variant="tonal" icon="upload_file" onClick={importPlaylistFile}>{tr('importM3U')}</Button>
         <Button variant="tonal" icon="create_new_folder" onClick={importFolder}>{tr('importFolder')}</Button>
         <Button icon="add" onClick={() => openDialog({ type: 'prompt', title: tr('newPlaylist'), label: tr('playlistName'), confirmLabel: tr('create'), onSubmit: (v) => nav({ name: 'playlist', id: createPlaylist(v) }) })}>{tr('createPlaylist')}</Button>

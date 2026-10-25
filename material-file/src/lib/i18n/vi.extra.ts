@@ -167,4 +167,12 @@ export const viExtra: Record<string, string> = {
   "search.saveLabel": "Tên",
   "settings.tags": "Tên thẻ",
   "status.free": "Còn trống {free}",
+  "home.greetMorning": "Chào buổi sáng",
+  "home.greetAfternoon": "Chào buổi chiều",
+  "home.greetEvening": "Chào buổi tối",
+  "home.palette": "Tìm mọi thứ",
+  "home.openFolder": "Hiện trong thư mục",
+  "home.drivesFree": "{n} ổ đĩa · còn trống {free}",
+  "home.recentCount": "{n} tệp gần đây",
+  "status.hint": "Nhấn Ctrl+K để mở bảng lệnh",
 };

@@ -1,4 +1,4 @@
-import { ArrowDownUp, ChevronDown, ClipboardPaste, Copy, FolderInput, FolderOutput, LayoutGrid, MoreHorizontal, Pencil, Plus, Scissors, Trash2, Undo2, Filter as FilterIcon } from 'lucide-react';
+import { ArrowDownUp, ChevronDown, ClipboardPaste, Copy, FolderInput, FolderOutput, LayoutGrid, List, MoreHorizontal, Pencil, Plus, Scissors, Trash2, Undo2, Filter as FilterIcon } from 'lucide-react';
 import { useExplorer, copyToClipboard, pasteClipboard, renameSelection, deleteSelection, undoLast, copyToOtherPane } from '../store/explorer';
 import { useSettings } from '../store/settings';
 import { showMenu } from '../store/ui';
@@ -15,7 +15,7 @@ export function CommandBar() {
   const kind = useExplorer((s) => s.panes[s.activePane].kind);
   const dual = useSettings((s) => s.dualPane); const S = useSettings(); const L = layoutOf(S, path);
   const real = path !== null && !isVirtual(path); const has = nSel > 0;
-  const menuAt = (items: ReturnType<typeof sortMenuItems>) => (e: React.MouseEvent<HTMLElement>) => { const r = e.currentTarget.getBoundingClientRect(); showMenu(items, r.left, r.bottom + 4); };
+  const menuAt = (items: ReturnType<typeof sortMenuItems>) => (e: React.MouseEvent<HTMLElement>) => { const r = e.currentTarget.getBoundingClientRect(); showMenu(items, r.left, r.bottom + 4, r.right); };
   const chev = <ChevronDown className="!size-3.5 opacity-70" />;
   return (
     <div className="flex-none bg-surface-container px-2.5 pt-2 pb-1.5"><div role="toolbar" aria-label={t('toolbar.aria')} className="toolbar-float flex h-12 items-center gap-0.5 overflow-x-auto px-2 [scrollbar-width:none]">
@@ -32,7 +32,7 @@ export function CommandBar() {
         <CmdButton icon={FolderOutput} label={t('cmd.moveOther')} hideLabel disabled={!has} onClick={() => void copyToOtherPane(id, true)} /></>}
       <span className="flex-1" />
       <CmdButton icon={ArrowDownUp} label={t('cmd.sort')} disabled={!real} onClick={menuAt(sortMenuItems(id))} extra={chev} />
-      <CmdButton icon={LayoutGrid} label={t('cmd.view')} onClick={menuAt(viewMenuItems(id))} extra={chev} className={L.view === 'details' ? '' : ''} />
+      <CmdButton icon={L.view === 'details' ? List : LayoutGrid} label={t('cmd.view')} onClick={menuAt(viewMenuItems(id))} extra={chev} />
       <CmdButton icon={FilterIcon} label={t('cmd.filter')} disabled={!real} onClick={menuAt(filterMenuItems(id))} extra={chev} className={kind !== 'all' ? '!bg-secondary-container !text-on-secondary-container' : ''} />
       <CmdButton icon={MoreHorizontal} label={t('cmd.more')} hideLabel onClick={menuAt(moreMenuItems(id))} />
     </div></div>

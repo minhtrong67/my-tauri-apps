@@ -1,136 +1,110 @@
 <div align="center">
 
-<img src="src/app-icon.png" width="112" height="112" alt="Icon MP3 Downloader" />
+<img src="assets/icon-512.png" width="120" alt="Biểu tượng MP3 Downloader">
 
 # MP3 Downloader
 
-**Biến link YouTube, TikTok và Spotify thành tệp MP3 đầy đủ thông tin.**
+**Tìm theo tên hoặc dán link — nhận file MP3 đầy đủ thông tin từ YouTube, TikTok và Spotify.**
+Ứng dụng desktop miễn phí, mã nguồn mở, xây dựng bằng Tauri, React và Material 3 Expressive.
 
-Miễn phí · Mã nguồn mở · Material Design 3 · English & Tiếng Việt
+[Tải về](download/) · [Landing page](index.html) · [English](README.md)
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-8BC34A.svg)](LICENSE)
-![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
-
-[English](README.md) · [Tiếng Việt](README.vi.md)
+![License](https://img.shields.io/badge/license-MIT-4CAF50) ![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB) ![React](https://img.shields.io/badge/React-18-61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6)
 
 </div>
 
 ## Giới thiệu
 
-MP3 Downloader là ứng dụng desktop nhẹ xây dựng bằng [Tauri 2](https://tauri.app). Dán link, chọn chất lượng và nhận về tệp MP3 đã gắn sẵn **ảnh bìa, tên bài, nghệ sĩ, album và năm phát hành** — dùng ngay trong Windows Explorer, điện thoại hay bất kỳ trình phát nhạc nào.
-
-Giao diện theo **Material Design 3**: sáng / tối / theo hệ thống, 16 màu chủ đề Material cùng màu tuỳ chỉnh, nhiều phông chữ phổ biến và hiệu ứng mượt mà. App hỗ trợ **tiếng Anh và tiếng Việt**, tự nhận diện ngôn ngữ của thiết bị.
-
-> Chỉ tải nội dung bạn có quyền sử dụng.
+MP3 Downloader biến link (hoặc chỉ một tên bài hát) thành file MP3 có sẵn ảnh bìa, tên bài, nghệ sĩ, album và năm. Ứng dụng bọc [yt-dlp](https://github.com/yt-dlp/yt-dlp) và [ffmpeg](https://ffmpeg.org) trong giao diện **Material 3 Expressive (2026)**: icon hình "cookie", nút biến hình, chuyển động lò xo và thanh tiến độ gợn sóng.
 
 ## Ảnh chụp màn hình
 
-| | | |
-|:--:|:--:|:--:|
-| ![Trang tải về](screenshots/image01.png) | ![Cài đặt](screenshots/image02.png) | ![Giao diện tối](screenshots/image03.png) |
-| Trang tải về | Cài đặt | Giao diện tối |
+| | |
+|---|---|
+| ![Tải xuống](screenshots/image01.png) | ![Playlist & thông tin](screenshots/image02.png) |
+| ![Lịch sử](screenshots/image03.png) | ![Cài đặt](screenshots/image04.png) |
+
+> Hãy chụp 4 ảnh và đặt tên `image01.png` … `image04.png` trong thư mục [`screenshots/`](screenshots/) (Tải xuống, Playlist/Thông tin, Lịch sử, Cài đặt).
 
 ## Tính năng
 
-- **Ba nguồn** — YouTube, TikTok và bài hát Spotify (`open.spotify.com/track/…`).
-  Spotify có DRM nên app đọc thông tin bài hát từ Spotify rồi tìm bản âm thanh khớp trên YouTube Music / YouTube (khớp theo thời lượng).
-- **Thẻ tag & ảnh bìa** — tên bài, nghệ sĩ, album, năm và ảnh bìa (có thể cắt vuông). Tên tệp dạng `Nghệ sĩ - Tên bài.mp3`.
-- **Chất lượng** — Tốt nhất (VBR V0), 320, 256, 192 hoặc 128 kbps.
-- **Hàng đợi thông minh** — dán nhiều link cùng lúc; tải song song 2 bài với tốc độ, thời gian còn lại, thử lại và huỷ.
-- **Tải bền bỉ** — gặp HTTP 403 app tự thử các client/cách tải khác của YouTube. Lỗi gắn thẻ không làm mất tệp MP3.
-- **Cài công cụ một chạm** — tự cài `yt-dlp`, `ffmpeg` và `Deno` trên Windows.
-- **Material Design 3** — sáng / tối / hệ thống, 16 màu Material + màu tuỳ chỉnh, phông chữ (Roboto, Inter, Open Sans, Be Vietnam Pro, Nunito, hệ thống, có chân, đơn cách).
-- **English & Tiếng Việt** — tự nhận theo thiết bị, đổi được trong Cài đặt.
-- **Cửa sổ khi mở app** — *ghi nhớ kích thước* hoặc *luôn phóng to tối đa*.
-- **Cài đặt gọn gàng** — chia nhóm Giao diện, Tải xuống, Cửa sổ và Công cụ.
-
-## Tải về
-
-Lấy bộ cài đặt Windows trong thư mục [`download/`](download/) (hoặc trang Releases của dự án):
-
-```
-download/MP3 Downloader_0.4.0_x64-setup.exe
-```
-
-Trang giới thiệu (landing page) nằm ở [`index.html`](index.html) — mở bằng trình duyệt hoặc đưa lên GitHub Pages.
+- **Ba nguồn nhạc** — YouTube, TikTok và Spotify (Spotify được ghép với âm thanh tốt nhất trên YouTube và gắn thẻ theo dữ liệu Spotify). Hỗ trợ dán nhiều link.
+- **Tìm theo tên** — gõ tên bài hát rồi chọn kết quả.
+- **Playlist** — mở playlist, tick các bài cần tải rồi thêm vào hàng đợi.
+- **Sửa thông tin bài hát** trước khi tải (tên, nghệ sĩ, album, năm).
+- **Hàng đợi thông minh** — tải song song (1–4), giới hạn tốc độ, tự thử lại khi gặp HTTP 403, tiến độ gợn sóng, dừng tất cả.
+- **Lịch sử** — tìm kiếm, mở thư mục, tải lại, xoá tệp.
+- **Đặt tên tệp** — 4 mẫu, thư mục theo nghệ sĩ, xử lý trùng tên (giữ cả hai / bỏ qua / ghi đè).
+- **Chất lượng** — tốt nhất hoặc 320 / 256 / 192 / 128 kbps, cắt ảnh bìa vuông tuỳ chọn.
+- **Mạng** — cookie trình duyệt (cho lỗi "yêu cầu đăng nhập") và proxy.
+- **An toàn** — công cụ tải về được kiểm tra SHA-256, CSP nghiêm ngặt, chỉ chạy một cửa sổ.
+- **Luôn cập nhật** — cảnh báo khi yt-dlp cũ và cập nhật một chạm; thông báo trên màn hình.
+- **Của riêng bạn** — sáng / tối / hệ thống, 16 màu Material + màu tuỳ chỉnh, 5 font (mặc định theo hệ thống, có Roboto…), 3 cỡ chữ, tiếng Anh & tiếng Việt, chế độ cửa sổ (nhớ kích thước / luôn phóng to).
+- **Giao diện chỉn chu** — thanh tiêu đề tuỳ chỉnh, tooltip, toast (info / success / warning / error), dropdown riêng, dialog và side sheet có nút kèm nhãn, icon và màu.
 
 ## Cài đặt
 
-1. Chạy bộ cài đặt và làm theo hướng dẫn (setup và uninstall dùng icon riêng của app).
-2. Mở **MP3 Downloader**.
-3. Lần đầu bấm **Cài đặt tự động** để cài `yt-dlp`, `ffmpeg` và `Deno` (Windows).
-   Trên macOS / Linux hãy cài `ffmpeg` (và tuỳ chọn `deno`) bằng trình quản lý gói:
+1. Tải `MP3 Downloader_<phiên bản>_x64-setup.exe` trong thư mục [`download/`](download/) (Windows 10/11 64-bit).
+2. Chạy bộ cài. Nếu SmartScreen cảnh báo, chọn **Thông tin thêm → Vẫn chạy** (bộ cài chưa được ký số).
+3. Lần đầu mở app, ứng dụng sẽ đề nghị tải giúp **yt-dlp**, **ffmpeg** và (nên có) **Deno**.
 
-   ```bash
-   brew install ffmpeg deno          # macOS
-   sudo apt install ffmpeg           # Debian / Ubuntu
-   ```
+macOS / Linux: build từ mã nguồn (xem bên dưới) và tự cài `yt-dlp`, `ffmpeg` (ví dụ bằng trình quản lý gói).
 
 ## Công nghệ
 
-| Phần | Công nghệ |
+| Lớp | Công nghệ |
 |---|---|
-| Khung ứng dụng | [Tauri 2](https://tauri.app) (Rust) |
-| Backend | Rust, `tokio`, `reqwest` (rustls), `regex`, `zip`, `arboard` |
-| Frontend | HTML / CSS / JavaScript thuần — không cần bundler |
-| Thiết kế | Material Design 3, [material-color-utilities](https://github.com/material-foundation/material-color-utilities) |
-| Icon | [Lucide](https://lucide.dev) |
-| Phông chữ | [Fontsource](https://fontsource.org) (Roboto, Inter, Open Sans, Be Vietnam Pro, Nunito) — nhúng sẵn, chạy offline |
-| Công cụ tải | [yt-dlp](https://github.com/yt-dlp/yt-dlp), [FFmpeg](https://ffmpeg.org), [Deno](https://deno.com) |
+| Vỏ ứng dụng | Tauri 2 (Rust) + plugin: dialog, opener, notification, single-instance |
+| Giao diện | React 18, TypeScript, Vite 5, Tailwind CSS 3 |
+| Thiết kế | Material 3 Expressive, `@material/material-color-utilities` (bảng màu Expressive) |
+| Icon | [lucide-react](https://lucide.dev) |
+| State | Zustand (lưu cài đặt & lịch sử) |
+| Engine | yt-dlp, ffmpeg, Deno (tuỳ chọn) |
 
 ## Phát triển
 
-Yêu cầu: [Node.js](https://nodejs.org) 18+, [Rust](https://rustup.rs) (stable) và [các thành phần phụ thuộc của Tauri](https://tauri.app/start/prerequisites/) cho hệ điều hành của bạn.
+Yêu cầu: [Node.js 18+](https://nodejs.org), [Rust](https://rustup.rs) và [các điều kiện cần của Tauri](https://tauri.app/start/prerequisites/).
 
-Dự án nằm trong một Cargo workspace có `Cargo.toml` gốc chứa `members = ["*/src-tauri"]`, nên mọi thư mục con có `src-tauri/Cargo.toml` đều được nhận tự động và dùng chung một bộ nhớ đệm `target`. Không cần cấu hình thêm.
+Dự án nằm trong **Cargo workspace** (`Cargo.toml` ở thư mục gốc có `members = ["*/src-tauri"]`), nên mọi project Tauri trong thư mục dùng chung một bộ nhớ đệm `target/`.
 
 ```bash
-cd mp3-downloader
 npm install
 npm run dev
 ```
 
-## Đóng gói
+`npm run dev` chạy Vite và cửa sổ Tauri với hot reload.
+
+## Build
 
 ```bash
 npm run build
 ```
 
-Bộ cài đặt nằm trong thư mục `target` dùng chung của workspace, ví dụ `target/release/bundle/nsis/MP3 Downloader_0.4.0_x64-setup.exe`. Chép bộ cài vào [`download/`](download/) để nút **Tải về** của landing page hoạt động.
+Bộ cài nằm trong `target/release/bundle/nsis/` của workspace. Chép vào [`download/`](download/) để nút **Tải về** của landing page hoạt động (link trỏ tới `MP3 Downloader_0.5.0_x64-setup.exe`).
 
-## Cấu trúc project
+Tạo lại toàn bộ icon (app, cài đặt, gỡ cài đặt, ảnh NSIS, favicon, ảnh chia sẻ): `pip install pillow && python scripts/generate-icons.py`.
+
+## Cấu trúc dự án
 
 ```
 mp3-downloader/
-├─ index.html                landing page (1 file, Material Design)
-├─ og-image.png              ảnh chia sẻ mạng xã hội
-├─ download/                 đặt file cài đặt vào đây
-├─ screenshots/              image01.png, image02.png, …
-├─ LICENSE
-├─ package.json
-├─ src/                      giao diện app (không cần bundler)
+├─ index.html              # Landing page (1 file, Material 3 Expressive)
+├─ assets/                 # Tài nguyên landing page (icon, favicon, og-image)
+├─ download/               # Đặt file cài đặt (.exe) vào đây
+├─ screenshots/            # image01.png … image04.png
+├─ scripts/generate-icons.py
+├─ app/                    # Thư mục gốc Vite của giao diện desktop
 │  ├─ index.html
-│  ├─ styles.css
-│  ├─ app.js                 logic giao diện
-│  ├─ i18n.js                chuỗi tiếng Anh / tiếng Việt
-│  ├─ app-icon.png
-│  ├─ fonts/                 phông chữ nhúng sẵn
-│  └─ vendor/mcu.js          material-color-utilities
-└─ src-tauri/
-   ├─ Cargo.toml
-   ├─ tauri.conf.json
-   ├─ capabilities/
-   ├─ icons/                 icon app, installer.ico, uninstaller.ico
-   └─ src/
-      ├─ main.rs
-      └─ lib.rs              backend: tải nhạc, công cụ, trạng thái cửa sổ
+│  ├─ public/
+│  └─ src/
+│     ├─ components/       # thành phần ui (Button, Select, Overlay, Toast…) + thành phần tính năng
+│     ├─ layout/           # TitleBar, NavRail
+│     ├─ pages/            # Tải xuống, Lịch sử, Cài đặt
+│     └─ lib/              # theme, i18n, stores, queue, tools, cầu nối tauri
+└─ src-tauri/              # Backend Rust, cấu hình, quyền, icon
 ```
 
 ## Giấy phép
 
-Phát hành theo [Giấy phép MIT](LICENSE) © 2026 **minhtrong67**.
-
-Tác giả **minhtrong67**, với sự hỗ trợ phát triển của **Claude** (Anthropic).
-
-Bên thứ ba: Lucide (ISC), phông Fontsource (OFL / Apache-2.0), material-color-utilities (Apache-2.0). `yt-dlp`, `ffmpeg`, `Deno` được tải riêng và giữ giấy phép của chúng.
+[MIT](LICENSE) © 2026 **minhtrong67** — với sự hỗ trợ của **Claude** (Anthropic).
+Chỉ tải nội dung bạn sở hữu hoặc được phép sử dụng.

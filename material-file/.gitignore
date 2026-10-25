@@ -5,6 +5,4 @@
 node_modules
 *.log
 .DS_Store
-# installers are built locally or published as GitHub Releases
-/download/*.exe
-/download/*.msi
+

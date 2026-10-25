@@ -19,6 +19,7 @@ export function QueuePanel({ embedded = false }: { embedded?: boolean }) {
       <div className="h-16 shrink-0 flex items-center justify-between pl-6 pr-2">
         <div><div className="text-title-lg">{tr('queue')}</div><div className="text-body-sm text-on-surface-variant -mt-1">{tr('nSongs', { n: queue.length })}</div></div>
         <div className="flex items-center">
+          <IconButton icon="playlist_add" title={tr('saveQueue')} disabled={!queue.length} onClick={() => st.openDialog({ type: 'prompt', title: tr('saveQueue'), label: tr('playlistName'), initial: tr('queueDefaultName'), confirmLabel: tr('save'), onSubmit: (v) => { st.createPlaylist(v, [...queue]); st.showToast(tr('playlistCreated', { name: v }), undefined, undefined, 'success'); } })} />
           <Button variant="text" onClick={st.clearQueue} disabled={queue.length < 2}>{tr('clearQueue')}</Button>
           {!embedded && <IconButton icon="close" title={tr('close')} onClick={() => st.set({ showQueue: false })} />}
         </div>

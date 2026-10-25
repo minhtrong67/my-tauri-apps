@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type MouseEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { tr } from '../lib/i18n';
 import { useStore } from '../lib/store';
 import type { MenuItem } from '../lib/types';
@@ -292,4 +293,105 @@ export function installRipple() {
     el.appendChild(w);
     w.addEventListener('animationend', () => w.remove());
   }, { passive: true });
+}
+
+/**
+ * Custom dropdown (the native <select> ignores the app theme). The list is capped in height and scrolls,
+ * flips above the button when there is no room below, and works with the keyboard (↑ ↓ Enter Esc).
+ */
+export function Select<T extends string>({
+  value, options, onChange, label, icon, className = '', minWidth = 220,
+}: {
+  value: T; options: { value: T; label: string; hint?: string }[]; onChange: (v: T) => void; label: string; icon?: string; className?: string; minWidth?: number;
+}) {
+  const btn = useRef<HTMLButtonElement>(null);
+  const list = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ left: number; width: number; top?: number; bottom?: number; maxH: number } | null>(null);
+  const [hi, setHi] = useState(0);
+  const cur = options.find((o) => o.value === value);
+  const open = pos !== null;
+
+  const show = () => {
+    const r = btn.current!.getBoundingClientRect();
+    const below = window.innerHeight - r.bottom - 12;
+    const above = r.top - 12;
+    const up = below < 200 && above > below;
+    const width = Math.max(r.width, minWidth);
+    setPos({
+      left: Math.max(8, Math.min(r.left, window.innerWidth - width - 8)), width,
+      top: up ? undefined : r.bottom + 4, bottom: up ? window.innerHeight - r.top + 4 : undefined,
+      maxH: Math.max(120, Math.min(264, up ? above : below)),
+    });
+    setHi(Math.max(0, options.findIndex((o) => o.value === value)));
+  };
+  const close = () => setPos(null);
+  const pick = (v: T) => { onChange(v); close(); btn.current?.focus(); };
+
+  useEffect(() => {
+    if (!open) return;
+    const down = (e: PointerEvent) => {
+      const t = e.target as Node;
+      if (!list.current?.contains(t) && !btn.current?.contains(t)) close();
+    };
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); btn.current?.focus(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); e.stopPropagation(); setHi((h) => Math.min(options.length - 1, h + 1)); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); e.stopPropagation(); setHi((h) => Math.max(0, h - 1)); }
+      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); if (options[hi]) pick(options[hi].value); }
+    };
+    const away = (e: Event) => { if (!list.current?.contains(e.target as Node)) close(); };
+    window.addEventListener('pointerdown', down, true);
+    window.addEventListener('keydown', key, true);
+    window.addEventListener('resize', close);
+    window.addEventListener('scroll', away, true);
+    return () => {
+      window.removeEventListener('pointerdown', down, true);
+      window.removeEventListener('keydown', key, true);
+      window.removeEventListener('resize', close);
+      window.removeEventListener('scroll', away, true);
+    };
+     
+  }, [open, hi, options]);
+
+  useLayoutEffect(() => {
+    if (open) list.current?.querySelector<HTMLElement>(`[data-i="${hi}"]`)?.scrollIntoView({ block: 'nearest' });
+  }, [open, hi]);
+
+  return (
+    <>
+      <button
+        ref={btn} type="button" aria-haspopup="listbox" aria-expanded={open} aria-label={label} onClick={() => (open ? close() : show())}
+        style={{ minWidth }}
+        className={`ripple h-12 px-4 rounded-xl border bg-transparent inline-flex items-center justify-between gap-3 text-body-lg text-on-surface transition-colors focus-ring ${open ? 'border-primary' : 'border-outline hover:bg-on-surface/[.06]'} ${className}`}
+      >
+        <span className="inline-flex items-center gap-2.5 min-w-0">
+          {icon && <Icon name={icon} size={20} className="text-on-surface-variant" />}
+          <span className="truncate">{cur?.label ?? ''}</span>
+        </span>
+        <Icon name="expand_more" size={20} className={`text-on-surface-variant transition-transform duration-300 ease-emphasized ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && createPortal(
+        <div
+          ref={list} role="listbox" aria-label={label}
+          style={{ position: 'fixed', left: pos.left, width: pos.width, top: pos.top, bottom: pos.bottom, maxHeight: pos.maxH }}
+          className="z-[120] overflow-y-auto overscroll-contain rounded-2xl bg-surface-container-high text-on-surface py-1.5 shadow-xl ring-1 ring-outline-variant/40 animate-scale-in origin-top"
+        >
+          {options.map((o, i) => (
+            <button
+              key={o.value} type="button" role="option" aria-selected={o.value === value} data-i={i}
+              onMouseEnter={() => setHi(i)} onClick={() => pick(o.value)}
+              className={`w-full min-h-11 px-4 py-2 flex items-center gap-3 text-left text-body-lg transition-colors ${i === hi ? 'bg-on-surface/[.08]' : ''} ${o.value === value ? 'text-primary' : ''}`}
+            >
+              <span className="w-5 shrink-0">{o.value === value && <Icon name="check" size={20} />}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate">{o.label}</span>
+                {o.hint && <span className="block truncate text-body-sm text-on-surface-variant">{o.hint}</span>}
+              </span>
+            </button>
+          ))}
+        </div>,
+        document.body,
+      )}
+    </>
+  );
 }

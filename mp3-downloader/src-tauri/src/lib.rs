@@ -10,6 +10,7 @@ use futures_util::StreamExt;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use sha2::{Digest, Sha256};
 use tauri::{AppHandle, Emitter, LogicalSize, Manager, State};
 use tauri_plugin_opener::OpenerExt;
 use tokio::{
@@ -157,6 +158,85 @@ async fn download_file(app: &AppHandle, tool: &str, url: &str, dest: &Path) -> R
     Ok(())
 }
 
+// ───────────────────────── Kiểm tra toàn vẹn (SHA-256) ─────────────────────────
+
+fn sha256_file(path: &Path) -> Result<String, String> {
+    use std::io::Read;
+    let mut f = std::fs::File::open(path).map_err(es)?;
+    let mut h = Sha256::new();
+    let mut buf = [0u8; 65536];
+    loop {
+        let n = f.read(&mut buf).map_err(es)?;
+        if n == 0 {
+            break;
+        }
+        h.update(&buf[..n]);
+    }
+    Ok(h.finalize().iter().map(|b| format!("{b:02x}")).collect())
+}
+
+/// Lấy mã SHA-256 mong đợi từ tệp checksum do nhà phát hành công bố (dạng "hash  tên-tệp" hoặc chỉ "hash").
+async fn expected_sha(sums_url: &str, asset: &str) -> Option<String> {
+    let client = reqwest::Client::builder().user_agent("mp3-downloader").timeout(Duration::from_secs(20)).build().ok()?;
+    let text = client.get(sums_url).send().await.ok()?.error_for_status().ok()?.text().await.ok()?;
+    let lines: Vec<&str> = text.lines().map(str::trim).filter(|l| !l.is_empty()).collect();
+    for l in &lines {
+        let mut p = l.split_whitespace();
+        if let (Some(h), Some(n)) = (p.next(), p.next()) {
+            if n.trim_start_matches('*') == asset && h.len() == 64 {
+                return Some(h.to_lowercase());
+            }
+        }
+    }
+    if lines.len() == 1 {
+        let h = lines[0].split_whitespace().next()?;
+        if h.len() == 64 {
+            return Some(h.to_lowercase());
+        }
+    }
+    None
+}
+
+/// Đối chiếu tệp vừa tải với checksum công bố. Sai mã → xoá tệp và báo lỗi.
+/// (Nếu không lấy được tệp checksum thì bỏ qua bước này để việc cài đặt không bị chặn.)
+async fn verify_download(path: &Path, sums_url: &str, asset: &str) -> Result<(), String> {
+    let Some(expected) = expected_sha(sums_url, asset).await else { return Ok(()) };
+    let p = path.to_path_buf();
+    let actual = tokio::task::spawn_blocking(move || sha256_file(&p)).await.map_err(es)??;
+    if actual != expected {
+        let _ = tokio::fs::remove_file(path).await;
+        return Err("@sha_mismatch".into());
+    }
+    Ok(())
+}
+
+#[derive(Serialize)]
+struct UpdateInfo {
+    current: String,
+    latest: String,
+    outdated: bool,
+}
+
+/// So phiên bản yt-dlp đang dùng với bản phát hành mới nhất trên GitHub.
+#[tauri::command]
+async fn check_ytdlp_update(app: AppHandle) -> Result<UpdateInfo, String> {
+    let current = tool_version(&app, "yt-dlp", "--version", None).await.ok_or_else(|| "@ytdlp_run|yt-dlp".to_string())?;
+    let client = reqwest::Client::builder().user_agent("mp3-downloader").timeout(Duration::from_secs(15)).build().map_err(es)?;
+    let v: Value = client
+        .get("https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest")
+        .send()
+        .await
+        .and_then(|r| r.error_for_status())
+        .map_err(|e| format!("@update_check|{e}"))?
+        .json()
+        .await
+        .map_err(|e| format!("@update_check|{e}"))?;
+    let latest = v.get("tag_name").and_then(|x| x.as_str()).unwrap_or("").trim().to_string();
+    // Phiên bản dạng ngày (2025.09.26[.hhmmss]) so sánh theo chuỗi là đúng
+    let outdated = !latest.is_empty() && current.as_str() < latest.as_str();
+    Ok(UpdateInfo { current, latest, outdated })
+}
+
 #[tauri::command]
 async fn install_ytdlp(app: AppHandle) -> Result<(), String> {
     let asset = if cfg!(windows) {
@@ -170,6 +250,7 @@ async fn install_ytdlp(app: AppHandle) -> Result<(), String> {
     let dest = bin_dir(&app).join(exe_name("yt-dlp"));
     let tmp = dest.with_extension("download");
     download_file(&app, "ytdlp", &url, &tmp).await?;
+    verify_download(&tmp, "https://github.com/yt-dlp/yt-dlp/releases/latest/download/SHA2-256SUMS", asset).await?;
     let _ = tokio::fs::remove_file(&dest).await;
     tokio::fs::rename(&tmp, &dest).await.map_err(es)?;
     #[cfg(unix)]
@@ -207,6 +288,7 @@ async fn install_ffmpeg(app: AppHandle) -> Result<(), String> {
     if !ok {
         return Err(format!("@ffmpeg_download|{last_err}"));
     }
+    verify_download(&zip_path, "https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/checksums.sha256", "ffmpeg-master-latest-win64-gpl.zip").await?;
     let (zp, d2) = (zip_path.clone(), dir.clone());
     tokio::task::spawn_blocking(move || unzip_flat(&zp, &d2, &["ffmpeg.exe", "ffprobe.exe"]))
         .await
@@ -242,6 +324,7 @@ async fn install_deno(app: AppHandle) -> Result<(), String> {
     let dir = bin_dir(&app);
     let zip_path = dir.join("deno.zip");
     download_file(&app, "deno", &url, &zip_path).await.map_err(|e| format!("@deno_download|{e}"))?;
+    verify_download(&zip_path, &format!("{url}.sha256sum"), &format!("deno-{arch}-pc-windows-msvc.zip")).await?;
     let (zp, d2) = (zip_path.clone(), dir.clone());
     tokio::task::spawn_blocking(move || unzip_flat(&zp, &d2, &["deno.exe"]))
         .await
@@ -507,6 +590,23 @@ struct DownloadReq {
     quality: String, // "best" | "320" | "256" | "192" | "128"
     crop_thumb: bool,
     info: Option<TrackInfo>,
+    /// Người dùng đã sửa thông tin bài hát → ghi lại thẻ ID3 kể cả với YouTube/TikTok
+    #[serde(default)]
+    edited: bool,
+    /// "artist-title" | "title" | "title-artist" | "artist-album-title"
+    #[serde(default)]
+    name_tpl: String,
+    #[serde(default)]
+    artist_folder: bool,
+    /// "rename" | "skip" | "overwrite"
+    #[serde(default)]
+    dup: String,
+    #[serde(default)]
+    speed_limit: String,
+    #[serde(default)]
+    cookies_browser: String,
+    #[serde(default)]
+    proxy: String,
 }
 
 #[derive(Serialize, Clone)]
@@ -573,7 +673,25 @@ fn safe_name(s: &str) -> String {
     let joined = cleaned.split_whitespace().collect::<Vec<_>>().join(" ");
     let short: String = joined.chars().take(120).collect();
     // Windows không cho tên tệp kết thúc bằng dấu chấm hoặc khoảng trắng
-    short.trim_end_matches(|c: char| c == '.' || c == ' ').to_string()
+    let name = short.trim_end_matches(|c: char| c == '.' || c == ' ').to_string();
+    // ...và cấm các tên thiết bị dành riêng (CON, NUL, COM1, LPT1…)
+    let up = name.to_uppercase();
+    let reserved = matches!(up.as_str(), "CON" | "PRN" | "AUX" | "NUL")
+        || ((up.starts_with("COM") || up.starts_with("LPT")) && up.len() == 4 && up.as_bytes()[3].is_ascii_digit());
+    if reserved { format!("_{name}") } else { name }
+}
+
+/// Đặt tên tệp theo mẫu người dùng chọn; mẫu mặc định dùng logic "Nghệ sĩ - Tên bài hát" ở trên.
+fn named_stem(info: &TrackInfo, spotify: bool, tpl: &str) -> String {
+    let (a, t, al) = (info.artist.trim(), info.title.trim(), info.album.trim());
+    let full = match tpl {
+        "title" => t.to_string(),
+        "title-artist" if !a.is_empty() => format!("{t} - {a}"),
+        "artist-album-title" => [a, al, t].iter().copied().filter(|x| !x.is_empty()).collect::<Vec<_>>().join(" - "),
+        _ => return file_stem_for(info, spotify),
+    };
+    let name = safe_name(&full);
+    if name.is_empty() { "audio".to_string() } else { name }
 }
 
 /// Tên tệp: "Nghệ sĩ - Tên bài hát". Với Spotify, "(feat. X)" được đổi thành "ft. X"
@@ -638,7 +756,8 @@ async fn tag_with_ffmpeg(app: &AppHandle, path: &Path, info: &TrackInfo, cover: 
     if let Some(cv) = cover {
         c.arg("-i").arg(cv);
     }
-    c.args(["-map", "0:a"]);
+    // Không có ảnh bìa mới → giữ nguyên mọi luồng (kể cả ảnh bìa đã nhúng sẵn)
+    c.args(["-map", if cover.is_some() { "0:a" } else { "0" }]);
     if cover.is_some() {
         c.args(["-map", "1:v"]);
     }
@@ -818,15 +937,39 @@ async fn run_download(app: &AppHandle, req: DownloadReq, mut rx: oneshot::Receiv
 
     let result = download_into(app, &req, &tmp_dir, &mut rx).await;
     let moved = match result {
-        Ok(Some((src, warn))) => {
+        Ok(Some((src, warn, artist))) => {
             let stem = src.file_stem().map(|s| s.to_string_lossy().to_string()).unwrap_or_else(|| "audio".into());
-            let mut dest = out_dir.join(format!("{stem}.mp3"));
-            let mut n = 1;
-            while dest.exists() {
-                dest = out_dir.join(format!("{stem} ({n}).mp3"));
-                n += 1;
+            // Thư mục con theo nghệ sĩ (lấy nghệ sĩ đầu tiên nếu có nhiều người)
+            let mut dir = out_dir.clone();
+            if req.artist_folder {
+                let sub = safe_name(artist.split(',').next().unwrap_or("").trim());
+                if !sub.is_empty() {
+                    dir = out_dir.join(sub);
+                }
             }
-            if std::fs::rename(&src, &dest).is_err() {
+            std::fs::create_dir_all(&dir).map_err(|e| format!("@mkdir_out|{e}"))?;
+            let mut dest = dir.join(format!("{stem}.mp3"));
+            let mut warn = warn;
+            let mut skip = false;
+            if dest.exists() {
+                match req.dup.as_str() {
+                    "skip" => {
+                        skip = true;
+                        warn = "@w_skipped".into();
+                    }
+                    "overwrite" => {
+                        let _ = std::fs::remove_file(&dest);
+                    }
+                    _ => {
+                        let mut n = 1;
+                        while dest.exists() {
+                            dest = dir.join(format!("{stem} ({n}).mp3"));
+                            n += 1;
+                        }
+                    }
+                }
+            }
+            if !skip && std::fs::rename(&src, &dest).is_err() {
                 std::fs::copy(&src, &dest).map_err(|e| format!("@save_file|{e}")).map(|_| ())?;
             }
             Ok(Some((dest.to_string_lossy().to_string(), warn)))
@@ -885,8 +1028,9 @@ fn variants_for(target: &str) -> Vec<Vec<String>> {
     }
 }
 
-async fn download_into(app: &AppHandle, req: &DownloadReq, tmp_dir: &Path, rx: &mut oneshot::Receiver<()>) -> Result<Option<(PathBuf, String)>, String> {
+async fn download_into(app: &AppHandle, req: &DownloadReq, tmp_dir: &Path, rx: &mut oneshot::Receiver<()>) -> Result<Option<(PathBuf, String, String)>, String> {
     let id = req.id.clone();
+    let mut artist_out = String::new();
     let is_spotify = detect_source(&req.url) == "spotify";
     let tmp_str = tmp_dir.to_string_lossy().replace('%', "%%");
 
@@ -911,7 +1055,8 @@ async fn download_into(app: &AppHandle, req: &DownloadReq, tmp_dir: &Path, rx: &
             attempts.push((format!("ytsearch8:{plain} audio"), Some(filter)));
         }
         attempts.push((format!("ytsearch1:{plain} audio"), None));
-        out_tpl = format!("{tmp_str}/{}.%(ext)s", file_stem_for(&info, true));
+        out_tpl = format!("{tmp_str}/{}.%(ext)s", named_stem(&info, true, &req.name_tpl));
+        artist_out = info.artist.clone();
         spotify = Some(info);
     } else {
         // Đặt tên "Nghệ sĩ - Tên bài hát" nếu lấy được thông tin, nếu không thì dùng tiêu đề video
@@ -922,8 +1067,11 @@ async fn download_into(app: &AppHandle, req: &DownloadReq, tmp_dir: &Path, rx: &
                 Some(r) => r.ok(),
             },
         };
+        if let Some(i) = &info {
+            artist_out = i.artist.clone();
+        }
         out_tpl = match info {
-            Some(i) if !i.title.is_empty() => format!("{tmp_str}/{}.%(ext)s", file_stem_for(&i, false)),
+            Some(i) if !i.title.is_empty() => format!("{tmp_str}/{}.%(ext)s", named_stem(&i, false, &req.name_tpl)),
             _ => format!("{tmp_str}/%(title).100s.%(ext)s"),
         };
         attempts.push((req.url.clone(), None));
@@ -934,7 +1082,7 @@ async fn download_into(app: &AppHandle, req: &DownloadReq, tmp_dir: &Path, rx: &
         _ => "0".to_string(),
     };
     // Tuỳ chọn cốt lõi: chỉ cần tải và chuyển MP3
-    let core: Vec<String> = vec![
+    let mut core: Vec<String> = vec![
         "-f".into(), "bestaudio/best".into(),
         "-x".into(), "--audio-format".into(), "mp3".into(),
         "--audio-quality".into(), quality,
@@ -946,6 +1094,15 @@ async fn download_into(app: &AppHandle, req: &DownloadReq, tmp_dir: &Path, rx: &
         "--progress-template".into(),
         "download:[PROG]%(progress._percent_str)s|%(progress._speed_str)s|%(progress._eta_str)s".into(),
     ];
+    if !req.speed_limit.trim().is_empty() {
+        core.extend(["--limit-rate".into(), req.speed_limit.trim().to_string()]);
+    }
+    if !req.cookies_browser.trim().is_empty() {
+        core.extend(["--cookies-from-browser".into(), req.cookies_browser.trim().to_string()]);
+    }
+    if !req.proxy.trim().is_empty() {
+        core.extend(["--proxy".into(), req.proxy.trim().to_string()]);
+    }
     // Tuỳ chọn thêm: metadata + ảnh bìa. Nếu phần này lỗi thì tải lại bản không có nó.
     let mut extras: Vec<String> = vec!["--embed-metadata".into()];
     if !is_spotify {
@@ -1041,8 +1198,99 @@ async fn download_into(app: &AppHandle, req: &DownloadReq, tmp_dir: &Path, rx: &
         if r.is_err() {
             warn = "@w_tags".into();
         }
+    } else if req.edited {
+        // Người dùng đã sửa thông tin bài hát → ghi đè thẻ ID3 (giữ nguyên ảnh bìa có sẵn)
+        if let Some(info) = req.info.clone() {
+            emit(app, &id, "tagging", 100.0, "", "", "@m_tagging", None);
+            if tag_with_ffmpeg(app, &file, &info, None).await.is_err() {
+                warn = "@w_tags".into();
+            }
+        }
     }
-    Ok(Some((file, warn)))
+    Ok(Some((file, warn, artist_out)))
+}
+
+// ───────────────────────── Tìm kiếm & playlist ─────────────────────────
+
+#[derive(Serialize)]
+struct SearchItem {
+    id: String,
+    url: String,
+    title: String,
+    channel: String,
+    duration: u64,
+    thumbnail: String,
+}
+
+#[derive(Serialize)]
+struct PlaylistData {
+    title: String,
+    entries: Vec<SearchItem>,
+}
+
+fn parse_entries(v: &Value) -> Vec<SearchItem> {
+    let Some(arr) = v.get("entries").and_then(|e| e.as_array()) else { return Vec::new() };
+    arr.iter()
+        .filter_map(|e| {
+            let id = e.get("id")?.as_str()?.to_string();
+            let title = e.get("title").and_then(|x| x.as_str()).unwrap_or("").to_string();
+            if title.is_empty() || title == "[Private video]" || title == "[Deleted video]" {
+                return None;
+            }
+            let channel = ["channel", "uploader", "artist"]
+                .iter()
+                .find_map(|k| e.get(*k).and_then(|x| x.as_str()).filter(|s| !s.is_empty()))
+                .unwrap_or("")
+                .to_string();
+            let duration = e.get("duration").and_then(|x| x.as_f64()).unwrap_or(0.0) as u64;
+            let url = e
+                .get("url")
+                .and_then(|x| x.as_str())
+                .filter(|u| u.starts_with("http"))
+                .map(|s| s.to_string())
+                .unwrap_or_else(|| format!("https://www.youtube.com/watch?v={id}"));
+            let thumbnail = format!("https://i.ytimg.com/vi/{id}/mqdefault.jpg");
+            Some(SearchItem { id, url, title, channel, duration, thumbnail })
+        })
+        .collect()
+}
+
+async fn ytdlp_json(app: &AppHandle, args: &[&str]) -> Result<Value, String> {
+    let out = make_cmd(app, "yt-dlp").args(args).output().await.map_err(|e| format!("@ytdlp_run|{e}"))?;
+    if !out.status.success() {
+        return Err(clean_error(&String::from_utf8_lossy(&out.stderr)));
+    }
+    serde_json::from_str(&String::from_utf8_lossy(&out.stdout)).map_err(es)
+}
+
+/// Tìm bài hát theo tên trên YouTube (10 kết quả đầu).
+#[tauri::command]
+async fn search_tracks(app: AppHandle, query: String) -> Result<Vec<SearchItem>, String> {
+    let q = format!("ytsearch10:{}", query.trim());
+    let v = ytdlp_json(&app, &["-J", "--flat-playlist", "--no-warnings", q.as_str()]).await?;
+    Ok(parse_entries(&v))
+}
+
+/// Đọc danh sách bài trong một playlist (tối đa 300 bài).
+#[tauri::command]
+async fn fetch_playlist(app: AppHandle, url: String) -> Result<PlaylistData, String> {
+    let url = url.trim().to_string();
+    if !url.starts_with("http") {
+        return Err("@url_invalid".into());
+    }
+    let v = ytdlp_json(&app, &["-J", "--flat-playlist", "--no-warnings", "--playlist-end", "300", url.as_str()]).await?;
+    let title = v.get("title").and_then(|x| x.as_str()).unwrap_or("").to_string();
+    Ok(PlaylistData { title, entries: parse_entries(&v) })
+}
+
+/// Xoá một tệp MP3 đã tải (chỉ chấp nhận đuôi .mp3 để tránh xoá nhầm).
+#[tauri::command]
+fn delete_file(path: String) -> Result<(), String> {
+    let p = PathBuf::from(&path);
+    if !p.extension().map(|x| x.eq_ignore_ascii_case("mp3")).unwrap_or(false) {
+        return Err("@delete_failed|not an mp3".into());
+    }
+    std::fs::remove_file(&p).map_err(|e| format!("@delete_failed|{e}"))
 }
 
 // ───────────────────────── Tiện ích ─────────────────────────
@@ -1156,9 +1404,73 @@ fn show_main(window: tauri::WebviewWindow) {
     let _ = window.set_focus();
 }
 
+// ───────────────────────── Di chuyển dữ liệu từ identifier cũ ─────────────────────────
+
+const LEGACY_ID: &str = "com.myproject.mp3downloader";
+
+fn legacy_sibling(p: &Path) -> Option<PathBuf> {
+    let old = p.parent()?.join(LEGACY_ID);
+    old.exists().then_some(old)
+}
+
+fn copy_dir(src: &Path, dst: &Path) {
+    if std::fs::create_dir_all(dst).is_err() {
+        return;
+    }
+    if let Ok(rd) = std::fs::read_dir(src) {
+        for e in rd.flatten() {
+            let (p, t) = (e.path(), dst.join(e.file_name()));
+            if p.is_dir() {
+                copy_dir(&p, &t);
+            } else if !t.exists() {
+                let _ = std::fs::copy(&p, &t);
+            }
+        }
+    }
+}
+
+/// Giữ lại công cụ đã tải (yt-dlp, ffmpeg, Deno) và tuỳ chọn cửa sổ từ bản cũ để người dùng không phải cài lại.
+fn migrate_legacy(app: &AppHandle) {
+    if let Ok(new_local) = app.path().app_local_data_dir() {
+        if !new_local.join("bin").exists() {
+            if let Some(old) = legacy_sibling(&new_local) {
+                if old.join("bin").exists() {
+                    copy_dir(&old.join("bin"), &new_local.join("bin"));
+                }
+            }
+        }
+    }
+    if let Ok(new_cfg) = app.path().app_config_dir() {
+        let f = new_cfg.join("window.json");
+        if !f.exists() {
+            if let Some(old) = legacy_sibling(&new_cfg) {
+                let of = old.join("window.json");
+                if of.exists() {
+                    let _ = std::fs::create_dir_all(&new_cfg);
+                    let _ = std::fs::copy(of, f);
+                }
+            }
+        }
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default();
+    // Chỉ cho chạy một cửa sổ: mở lần hai sẽ đưa cửa sổ đang chạy lên trước
+    // (đồng thời tránh việc bản thứ hai dọn mất tệp tạm của bản thứ nhất).
+    #[cfg(desktop)]
+    {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            if let Some(w) = app.get_webview_window("main") {
+                let _ = w.unminimize();
+                let _ = w.show();
+                let _ = w.set_focus();
+            }
+        }));
+    }
+    builder
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .manage(AppState::default())
@@ -1166,6 +1478,7 @@ pub fn run() {
             let handle = app.handle().clone();
             // Dọn các tệp tải dở còn sót từ lần chạy trước
             let _ = std::fs::remove_dir_all(tmp_root(&handle));
+            migrate_legacy(&handle);
 
             let prefs = load_prefs(&handle);
             app.manage(WinState { prefs: StdMutex::new(prefs.clone()) });
@@ -1211,6 +1524,10 @@ pub fn run() {
             install_ytdlp,
             install_ffmpeg,
             install_deno,
+            check_ytdlp_update,
+            search_tracks,
+            fetch_playlist,
+            delete_file,
             fetch_info,
             start_download,
             cancel_download,

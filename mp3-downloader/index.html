@@ -1,483 +1,408 @@
 <!doctype html>
-<!--
-  MP3 Downloader — landing page (1 file, Material Design 3)
-  Tác giả: minhtrong67 · Hỗ trợ phát triển: Claude
-
-  Cần chỉnh khi xuất bản:
-   1) SITE_URL: đổi "https://minhtrong67.github.io/mp3-downloader/" ở các thẻ canonical / og:* / twitter:* / JSON-LD
-      sang địa chỉ thật nơi bạn đăng trang này.
-   2) File cài đặt: bỏ vào thư mục  download/  rồi sửa DOWNLOAD_FILE (thẻ <a id="dl-btn"> và <a id="dl-btn2">) nếu tên khác.
-      Tên mặc định do `npm run build` tạo ra: "MP3 Downloader_0.4.0_x64-setup.exe"
--->
-<html lang="en">
+<html lang="en" data-scheme="light">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>MP3 Downloader — Download MP3 from YouTube, TikTok &amp; Spotify with cover art</title>
-  <meta name="description" content="MP3 Downloader is a free, open-source desktop app that saves YouTube, TikTok and Spotify links as MP3 files with cover art, artist, album and year embedded. Material Design, dark mode, English and Vietnamese." />
-  <meta name="keywords" content="mp3 downloader, youtube to mp3, tiktok to mp3, spotify to mp3, download mp3, music downloader, tauri app, material design, open source, tải nhạc mp3" />
-  <meta name="author" content="minhtrong67" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
-  <meta name="theme-color" content="#fdfcf5" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#1b1c18" media="(prefers-color-scheme: dark)" />
-  <meta name="color-scheme" content="light dark" />
-  <link rel="canonical" href="https://minhtrong67.github.io/mp3-downloader/" />
-  <link rel="icon" type="image/png" href="src/app-icon.png" />
-  <link rel="apple-touch-icon" href="src/app-icon.png" />
-
-  <!-- Open Graph (Facebook, Zalo, Telegram, LinkedIn…) -->
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="MP3 Downloader" />
-  <meta property="og:title" content="MP3 Downloader — YouTube, TikTok &amp; Spotify to MP3" />
-  <meta property="og:description" content="Free, open-source desktop app: paste a link and get a perfectly tagged MP3 with cover art. Material Design, dark mode, English &amp; Tiếng Việt." />
-  <meta property="og:url" content="https://minhtrong67.github.io/mp3-downloader/" />
-  <meta property="og:image" content="https://minhtrong67.github.io/mp3-downloader/og-image.png" />
-  <meta property="og:image:type" content="image/png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="MP3 Downloader app icon on a light green background" />
-  <meta property="og:locale" content="en_US" />
-  <meta property="og:locale:alternate" content="vi_VN" />
-
-  <!-- Twitter / X -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="MP3 Downloader — YouTube, TikTok &amp; Spotify to MP3" />
-  <meta name="twitter:description" content="Free, open-source desktop app: paste a link and get a perfectly tagged MP3 with cover art." />
-  <meta name="twitter:image" content="https://minhtrong67.github.io/mp3-downloader/og-image.png" />
-  <meta name="twitter:image:alt" content="MP3 Downloader app icon on a light green background" />
-
-  <!-- Dữ liệu có cấu trúc (SEO) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "MP3 Downloader",
-    "applicationCategory": "MultimediaApplication",
-    "operatingSystem": "Windows 10, Windows 11",
-    "softwareVersion": "0.4.0",
-    "description": "Free, open-source desktop app that saves YouTube, TikTok and Spotify links as MP3 files with cover art and tags.",
-    "url": "https://minhtrong67.github.io/mp3-downloader/",
-    "image": "https://minhtrong67.github.io/mp3-downloader/og-image.png",
-    "inLanguage": ["en", "vi"],
-    "license": "https://opensource.org/licenses/MIT",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Person", "name": "minhtrong67" }
-  }
-  </script>
-
-  <style>
-    /* ───────── Material 3 tokens (seed #8BC34A) ───────── */
-    :root {
-      --primary:#3e6a00; --on-primary:#fff; --primary-container:#b9f474; --on-primary-container:#0f2000;
-      --secondary-container:#dbe7c8; --on-secondary-container:#151e0b;
-      --tertiary-container:#bbece8; --on-tertiary-container:#00201e;
-      --surface:#fdfcf5; --on-surface:#1b1c18; --on-surface-variant:#44483d;
-      --outline:#75796c; --outline-variant:#c5c8ba;
-      --sc-low:#f8f7ef; --sc:#f2f1e9; --sc-high:#ecebe4; --sc-highest:#e6e6de;
-      --inverse-surface:#30312c; --inverse-on-surface:#f2f1e9;
-      --shadow: 0 1px 3px 1px rgb(0 0 0 / .12), 0 1px 2px rgb(0 0 0 / .2);
-      --shadow-lg: 0 10px 40px rgb(30 60 0 / .18), 0 2px 8px rgb(0 0 0 / .08);
-      --ease: cubic-bezier(.2, 0, 0, 1);
-      --font: "Roboto", system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-      color-scheme: light;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) {
-        --primary:#9ed75b; --on-primary:#1e3700; --primary-container:#2e4f00; --on-primary-container:#b9f474;
-        --secondary-container:#404a33; --on-secondary-container:#dbe7c8;
-        --tertiary-container:#1f4e4b; --on-tertiary-container:#bbece8;
-        --surface:#1b1c18; --on-surface:#e3e3db; --on-surface-variant:#c5c8ba;
-        --outline:#8e9285; --outline-variant:#44483d;
-        --sc-low:#1f201c; --sc:#292a26; --sc-high:#343530; --sc-highest:#3f403b;
-        --inverse-surface:#e3e3db; --inverse-on-surface:#30312c;
-        --shadow-lg: 0 10px 40px rgb(0 0 0 / .45), 0 2px 8px rgb(0 0 0 / .3);
-        color-scheme: dark;
-      }
-    }
-    :root[data-theme="dark"] {
-      --primary:#9ed75b; --on-primary:#1e3700; --primary-container:#2e4f00; --on-primary-container:#b9f474;
-      --secondary-container:#404a33; --on-secondary-container:#dbe7c8;
-      --tertiary-container:#1f4e4b; --on-tertiary-container:#bbece8;
-      --surface:#1b1c18; --on-surface:#e3e3db; --on-surface-variant:#c5c8ba;
-      --outline:#8e9285; --outline-variant:#44483d;
-      --sc-low:#1f201c; --sc:#292a26; --sc-high:#343530; --sc-highest:#3f403b;
-      --inverse-surface:#e3e3db; --inverse-on-surface:#30312c;
-      --shadow-lg: 0 10px 40px rgb(0 0 0 / .45), 0 2px 8px rgb(0 0 0 / .3);
-      color-scheme: dark;
-    }
-
-    /* Font nhúng: đặt `fonts` cạnh trang nếu muốn dùng Roboto; không có thì dùng font hệ thống */
-    @font-face { font-family: "Roboto"; font-weight: 100 900; font-display: swap; src: local("Roboto"), url("src/fonts/roboto-latin-wght-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122; }
-    @font-face { font-family: "Roboto"; font-weight: 100 900; font-display: swap; src: local("Roboto"), url("src/fonts/roboto-vietnamese-wght-normal.woff2") format("woff2"); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
-
-    * { box-sizing: border-box; margin: 0; }
-    html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
-    body { font-family: var(--font); font-size: 16px; line-height: 24px; letter-spacing: .15px; background: var(--surface); color: var(--on-surface); -webkit-font-smoothing: antialiased; transition: background-color .3s var(--ease), color .3s var(--ease); overflow-x: hidden; }
-    a { color: inherit; text-decoration: none; }
-    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
-    :focus-visible { outline: 3px solid color-mix(in srgb, var(--primary) 70%, transparent); outline-offset: 3px; border-radius: 8px; }
-    .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
-    .icon { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .wrap { width: min(1120px, 100% - 48px); margin-inline: auto; }
-    .muted { color: var(--on-surface-variant); }
-    h1, h2, h3 { font-weight: 400; letter-spacing: 0; }
-    .skip { position: absolute; left: 12px; top: -60px; z-index: 100; padding: 10px 16px; border-radius: 999px; background: var(--primary); color: var(--on-primary); transition: top .2s; }
-    .skip:focus { top: 12px; }
-
-    /* ───────── Nút ───────── */
-    .btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 40px; padding: 0 24px; border-radius: 999px; font-size: 14px; font-weight: 500; letter-spacing: .1px; white-space: nowrap; transition: box-shadow .2s var(--ease), transform .15s var(--ease), background-color .2s; }
-    .btn::after { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity .15s; }
-    .btn:hover::after { opacity: .08; } .btn:active::after { opacity: .12; }
-    .btn:active { transform: scale(.98); }
-    .btn .icon { width: 18px; height: 18px; }
-    .btn.filled { background: var(--primary); color: var(--on-primary); }
-    .btn.filled:hover { box-shadow: var(--shadow); }
-    .btn.tonal { background: var(--secondary-container); color: var(--on-secondary-container); }
-    .btn.lg { height: 56px; padding: 0 32px; font-size: 16px; }
-    .btn.lg .icon { width: 22px; height: 22px; }
-    .icon-btn { position: relative; overflow: hidden; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; color: var(--on-surface-variant); }
-    .icon-btn::after { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity .15s; }
-    .icon-btn:hover::after { opacity: .08; }
-    .ripple { position: absolute; border-radius: 50%; background: currentColor; opacity: .2; transform: scale(0); animation: ripple .6s var(--ease) forwards; pointer-events: none; }
-    @keyframes ripple { to { transform: scale(1); opacity: 0; } }
-
-    /* ───────── Thanh trên cùng ───────── */
-    .appbar { position: sticky; top: 0; z-index: 50; background: var(--surface); transition: background-color .3s, box-shadow .25s; }
-    .appbar.scrolled { background: var(--sc); box-shadow: 0 2px 10px rgb(0 0 0 / .12); }
-    .appbar .wrap { display: flex; align-items: center; gap: 8px; height: 64px; }
-    .brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 500; margin-right: auto; }
-    .brand img { width: 36px; height: 36px; border-radius: 10px; }
-    .nav { display: flex; gap: 4px; }
-    .nav a { padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 500; color: var(--on-surface-variant); transition: background-color .2s, color .2s; }
-    .nav a:hover { background: color-mix(in srgb, var(--on-surface) 8%, transparent); color: var(--on-surface); }
-    .lang-btn { height: 40px; min-width: 48px; padding: 0 12px; border-radius: 999px; font-size: 13px; font-weight: 600; letter-spacing: .5px; color: var(--on-secondary-container); background: var(--secondary-container); }
-    .moon { display: none; } [data-theme="dark"] .sun { display: none; } [data-theme="dark"] .moon { display: block; }
-    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sun { display: none; } :root:not([data-theme="light"]) .moon { display: block; } }
-
-    /* ───────── Hero ───────── */
-    .hero { position: relative; padding: 56px 0 88px; overflow: clip; }
-    .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; z-index: -1; animation: drift 14s ease-in-out infinite alternate; }
-    .hero::before { width: 520px; height: 520px; right: -120px; top: -140px; background: var(--primary-container); }
-    .hero::after { width: 420px; height: 420px; left: -160px; bottom: -120px; background: var(--tertiary-container); animation-delay: -6s; }
-    @keyframes drift { to { transform: translate(40px, 30px) scale(1.08); } }
-    .hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 48px; }
-    .badge { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 14px 0 10px; border-radius: 10px; background: var(--tertiary-container); color: var(--on-tertiary-container); font-size: 13px; font-weight: 500; }
-    .badge .icon { width: 16px; height: 16px; }
-    h1 { margin: 20px 0 16px; font-size: clamp(36px, 5.2vw, 60px); line-height: 1.08; font-weight: 500; letter-spacing: -.5px; }
-    h1 em { font-style: normal; color: var(--primary); }
-    .lead { font-size: 18px; line-height: 28px; max-width: 52ch; }
-    .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 32px; }
-    .meta { margin-top: 16px; font-size: 13px; }
-
-    /* Mô phỏng cửa sổ app */
-    .mock { border-radius: 20px; background: var(--sc-low); box-shadow: var(--shadow-lg); border: 1px solid var(--outline-variant); overflow: hidden; transform: perspective(1400px) rotateY(-6deg) rotateX(2deg); transition: transform .5s var(--ease); animation: float 6s ease-in-out infinite; }
-    .mock:hover { transform: perspective(1400px) rotateY(0) rotateX(0); }
-    @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
-    .mock-bar { display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; background: var(--sc-high); font-size: 12px; color: var(--on-surface-variant); }
-    .mock-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--outline-variant); }
-    .mock-bar span { margin-left: 8px; }
-    .mock-body { display: grid; grid-template-columns: 58px 1fr; min-height: 330px; }
-    .mock-rail { display: flex; flex-direction: column; gap: 14px; align-items: center; padding-top: 18px; background: var(--surface); }
-    .mock-rail span { display: grid; place-items: center; width: 38px; height: 26px; border-radius: 13px; color: var(--on-surface-variant); }
-    .mock-rail span.on { background: var(--secondary-container); color: var(--on-secondary-container); }
-    .mock-rail .icon { width: 18px; height: 18px; }
-    .mock-main { padding: 18px; background: var(--sc-low); display: flex; flex-direction: column; gap: 12px; }
-    .mock-field { height: 42px; border-radius: 4px 4px 0 0; background: var(--sc-highest); border-bottom: 2px solid var(--primary); padding: 0 12px; display: flex; align-items: center; font-size: 12px; color: var(--on-surface-variant); white-space: nowrap; overflow: hidden; }
-    .mock-field b { display: inline-block; width: 1px; height: 16px; background: var(--primary); margin-left: 2px; animation: blink 1s steps(1) infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
-    .mock-preview { display: flex; gap: 12px; padding: 10px; border-radius: 12px; background: var(--sc-highest); animation: pop .8s var(--ease) both .4s; }
-    @keyframes pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-    .mock-art { width: 64px; height: 64px; border-radius: 10px; flex: none; display: grid; place-items: center; color: #1b3a04; background: linear-gradient(135deg, #b9f474, #8bc34a 55%, #5fa022); }
-    .mock-art .icon { width: 26px; height: 26px; }
-    .mock-t { font-size: 13px; font-weight: 500; line-height: 18px; }
-    .mock-s { font-size: 11px; line-height: 16px; color: var(--on-surface-variant); }
-    .mock-tags { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
-    .mock-tags i { font-style: normal; font-size: 10px; line-height: 18px; height: 18px; padding: 0 7px; border-radius: 6px; background: var(--secondary-container); color: var(--on-secondary-container); }
-    .mock-tags i.src { background: var(--primary); color: var(--on-primary); }
-    .mock-row { display: flex; gap: 6px; align-items: center; justify-content: space-between; }
-    .mock-chips { display: flex; gap: 5px; }
-    .mock-chips i { font-style: normal; font-size: 10px; height: 22px; line-height: 20px; padding: 0 9px; border-radius: 6px; border: 1px solid var(--outline); color: var(--on-surface-variant); }
-    .mock-chips i.on { background: var(--secondary-container); border-color: transparent; color: var(--on-secondary-container); }
-    .mock-btn { height: 28px; padding: 0 14px; border-radius: 14px; background: var(--primary); color: var(--on-primary); font-size: 11px; font-weight: 500; display: inline-flex; align-items: center; }
-    .mock-item { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 10px; background: var(--sc); }
-    .mock-item .mock-art { width: 38px; height: 38px; border-radius: 8px; }
-    .mock-item .mock-art .icon { width: 18px; height: 18px; }
-    .bar { height: 4px; margin-top: 5px; border-radius: 2px; background: var(--secondary-container); overflow: hidden; }
-    .bar span { display: block; height: 100%; width: 0; border-radius: 2px; background: var(--primary); animation: fill 5s var(--ease) infinite; }
-    @keyframes fill { 0% { width: 4%; } 85%, 100% { width: 100%; } }
-
-    /* ───────── Mục chung ───────── */
-    section.block { padding: 72px 0; }
-    .head { text-align: center; max-width: 640px; margin: 0 auto 48px; }
-    .head h2 { font-size: clamp(28px, 3.6vw, 40px); line-height: 1.15; font-weight: 500; }
-    .head p { margin-top: 12px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-    .card { position: relative; padding: 24px; border-radius: 20px; background: var(--sc); transition: transform .3s var(--ease), box-shadow .3s var(--ease), background-color .3s; }
-    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow); background: var(--sc-high); }
-    .card .ic { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; margin-bottom: 16px; background: var(--primary-container); color: var(--on-primary-container); transition: transform .3s var(--ease); }
-    .card:hover .ic { transform: rotate(-6deg) scale(1.08); }
-    .card h3 { font-size: 18px; line-height: 26px; font-weight: 500; margin-bottom: 6px; }
-    .card p { font-size: 14px; line-height: 21px; color: var(--on-surface-variant); }
-
-    .steps { counter-reset: s; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-    .step { position: relative; padding: 28px 24px 24px; border-radius: 28px; background: var(--sc-low); border: 1px solid var(--outline-variant); }
-    .step .num { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: var(--on-primary); font-weight: 600; margin-bottom: 16px; }
-    .step h3 { font-size: 20px; font-weight: 500; margin-bottom: 6px; }
-    .step p { font-size: 14px; line-height: 21px; color: var(--on-surface-variant); }
-    .step .icon.bg { position: absolute; right: 18px; top: 18px; width: 40px; height: 40px; opacity: .14; }
-
-    .download .box { position: relative; overflow: hidden; display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; padding: 40px; border-radius: 36px; background: var(--primary-container); color: var(--on-primary-container); }
-    .download .box > img { width: 112px; height: 112px; border-radius: 28px; box-shadow: 0 8px 24px rgb(0 0 0 / .2); animation: float 5s ease-in-out infinite; }
-    .download h2 { font-size: clamp(26px, 3.4vw, 36px); line-height: 1.15; font-weight: 500; }
-    .download p { margin-top: 8px; max-width: 56ch; opacity: .9; }
-    .download .btn.filled { background: var(--on-primary-container); color: var(--primary-container); }
-    .download .small { margin-top: 14px; font-size: 13px; opacity: .8; }
-
-    footer { padding: 40px 0 56px; border-top: 1px solid var(--outline-variant); margin-top: 40px; }
-    footer .wrap { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; justify-content: space-between; }
-    .credit { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; }
-    .hl { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px 3px 8px; border-radius: 999px; font-weight: 600; }
-    .hl .icon { width: 16px; height: 16px; }
-    .hl.a { background: var(--primary-container); color: var(--on-primary-container); }
-    .hl.b { background: var(--tertiary-container); color: var(--on-tertiary-container); }
-
-    /* Hiệu ứng xuất hiện khi cuộn */
-    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: var(--d, 0s); }
-    .reveal.in { opacity: 1; transform: none; }
-    .no-js .reveal { opacity: 1; transform: none; }
-
-    /* ───────── Responsive ───────── */
-    @media (max-width: 900px) {
-      .hero { padding: 32px 0 64px; }
-      .hero .wrap { grid-template-columns: 1fr; gap: 40px; }
-      .mock { transform: none; max-width: 520px; margin-inline: auto; }
-      .nav { display: none; }
-      .download .box { grid-template-columns: 1fr; padding: 28px 24px; text-align: center; justify-items: center; }
-    }
-    @media (max-width: 560px) {
-      .wrap { width: calc(100% - 32px); }
-      .brand span { font-size: 18px; }
-      .cta .btn { width: 100%; }
-      .cta { flex-direction: column; align-items: stretch; }
-      section.block { padding: 48px 0; }
-      .mock-body { grid-template-columns: 48px 1fr; }
-      footer .wrap { flex-direction: column; align-items: flex-start; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-      .reveal { opacity: 1; transform: none; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MP3 Downloader — Download MP3 from YouTube, TikTok &amp; Spotify | Free desktop app</title>
+<meta name="description" content="MP3 Downloader is a free, open-source desktop app that saves music from YouTube, TikTok and Spotify links as MP3 with cover art and tags. Search by name, download playlists, bilingual EN/VI, Material 3 Expressive design.">
+<meta name="keywords" content="mp3 downloader, youtube to mp3, tiktok to mp3, spotify to mp3, tải nhạc mp3, yt-dlp, tauri, desktop app, open source, material 3 expressive">
+<meta name="author" content="minhtrong67">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#4CAF50">
+<meta name="color-scheme" content="light dark">
+<link rel="canonical" href="https://minhtrong67.github.io/mp3-downloader/">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="256x256" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MP3 Downloader">
+<meta property="og:title" content="MP3 Downloader — YouTube, TikTok &amp; Spotify to MP3">
+<meta property="og:description" content="Free and open-source desktop app: search or paste a link, get a tagged MP3. Material 3 Expressive design, English &amp; Vietnamese.">
+<meta property="og:url" content="https://minhtrong67.github.io/mp3-downloader/">
+<meta property="og:image" content="https://minhtrong67.github.io/mp3-downloader/assets/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="MP3 Downloader green cookie-shaped app icon with a music note and download badge">
+<meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="vi_VN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MP3 Downloader — YouTube, TikTok &amp; Spotify to MP3">
+<meta name="twitter:description" content="Free, open-source desktop app with tags, playlists and Material 3 Expressive design.">
+<meta name="twitter:image" content="https://minhtrong67.github.io/mp3-downloader/assets/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"MP3 Downloader","operatingSystem":"Windows 10, Windows 11","applicationCategory":"MultimediaApplication","softwareVersion":"0.5.0","description":"Free open-source desktop app that saves music from YouTube, TikTok and Spotify links as tagged MP3 files.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"minhtrong67"},"license":"https://opensource.org/licenses/MIT","image":"https://minhtrong67.github.io/mp3-downloader/assets/og-image.png"}</script>
+<script>/* áp dụng giao diện trước khi vẽ để không bị nháy */
+(function(){try{var s=JSON.parse(localStorage.getItem("mp3dl.site")||"{}");var m=s.mode||"auto";var d=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.scheme=d?"dark":"light";if(s.h!=null){document.documentElement.style.setProperty("--h",s.h);document.documentElement.style.setProperty("--c",s.c)}var l=s.lang||((navigator.language||"en").toLowerCase().indexOf("vi")===0?"vi":"en");document.documentElement.lang=l}catch(e){}})();
+</script>
+<style>
+:root{--h:145;--c:.15;--font:system-ui,-apple-system,"Segoe UI Variable Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--spring:cubic-bezier(.34,1.56,.64,1);--emph:cubic-bezier(.2,0,0,1);--hdr:72px}
+html[data-scheme=light]{
+ --primary:oklch(.5 var(--c) var(--h));--on-primary:#fff;--pc:oklch(.91 calc(var(--c)*.55) var(--h));--on-pc:oklch(.25 var(--c) var(--h));
+ --sc:oklch(.92 calc(var(--c)*.22) var(--h));--on-sc:oklch(.28 calc(var(--c)*.3) var(--h));
+ --tc:oklch(.92 calc(var(--c)*.42) calc(var(--h) + 60));--on-tc:oklch(.28 calc(var(--c)*.5) calc(var(--h) + 60));--tertiary:oklch(.5 calc(var(--c)*.8) calc(var(--h) + 60));
+ --surface:oklch(.985 .006 var(--h));--s1:oklch(.968 .01 var(--h));--s2:oklch(.952 .013 var(--h));--s3:oklch(.935 .016 var(--h));--s4:oklch(.92 .019 var(--h));
+ --on-surface:oklch(.22 .012 var(--h));--on-var:oklch(.45 .02 var(--h));--outline:oklch(.6 .02 var(--h));--ov:oklch(.86 .015 var(--h));--shadow:0 1px 3px rgb(0 0 0/.12),0 6px 24px rgb(0 0 0/.08)}
+html[data-scheme=dark]{
+ --primary:oklch(.8 calc(var(--c)*.9) var(--h));--on-primary:oklch(.28 var(--c) var(--h));--pc:oklch(.4 calc(var(--c)*.8) var(--h));--on-pc:oklch(.93 calc(var(--c)*.35) var(--h));
+ --sc:oklch(.34 calc(var(--c)*.2) var(--h));--on-sc:oklch(.9 calc(var(--c)*.25) var(--h));
+ --tc:oklch(.38 calc(var(--c)*.42) calc(var(--h) + 60));--on-tc:oklch(.92 calc(var(--c)*.3) calc(var(--h) + 60));--tertiary:oklch(.8 calc(var(--c)*.7) calc(var(--h) + 60));
+ --surface:oklch(.18 .012 var(--h));--s1:oklch(.21 .015 var(--h));--s2:oklch(.235 .017 var(--h));--s3:oklch(.26 .019 var(--h));--s4:oklch(.285 .021 var(--h));
+ --on-surface:oklch(.93 .008 var(--h));--on-var:oklch(.78 .02 var(--h));--outline:oklch(.6 .02 var(--h));--ov:oklch(.38 .02 var(--h));--shadow:0 1px 3px rgb(0 0 0/.4),0 8px 28px rgb(0 0 0/.35)}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hdr) + 12px);-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--surface);color:var(--on-surface);line-height:1.6;overflow-x:hidden;transition:background .4s,color .4s}
+section[id]{scroll-margin-top:calc(var(--hdr) + 8px)}
+a{color:inherit;text-decoration:none}img,svg{display:block;max-width:100%}
+:focus-visible{outline:3px solid color-mix(in oklab,var(--primary) 70%,transparent);outline-offset:3px;border-radius:12px}
+::selection{background:color-mix(in oklab,var(--primary) 30%,transparent)}
+.wrap{width:min(1180px,100% - 40px);margin-inline:auto}
+.ic{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.skip{position:absolute;left:-999px}.skip:focus{left:12px;top:12px;z-index:200;background:var(--primary);color:var(--on-primary);padding:10px 16px;border-radius:99px}
+/* nút Expressive: pill → bo vuông khi nhấn */
+.btn{--bg:var(--s3);--fg:var(--on-surface);position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 26px;border:0;border-radius:999px;background:var(--bg);color:var(--fg);font:600 15px/1 var(--font);cursor:pointer;transition:border-radius .35s var(--spring),transform .35s var(--spring),box-shadow .3s,background .3s}
+.btn:hover{box-shadow:var(--shadow)}.btn:active{border-radius:16px;transform:scale(.96)}
+.btn::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .2s}.btn:hover::after{opacity:.08}
+.btn.fill{--bg:var(--primary);--fg:var(--on-primary)}.btn.tonal{--bg:var(--pc);--fg:var(--on-pc)}.btn.lg{height:60px;padding:0 34px;font-size:17px}
+.btn.out{--bg:transparent;box-shadow:inset 0 0 0 1.5px var(--outline);--fg:var(--primary)}
+.fab[data-tip]::before{top:auto;bottom:calc(100% + 10px);left:auto;right:0;transform:translate(0,4px) scale(.9)}.fab[data-tip]:hover::before{transform:none}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}}
+.rip{position:absolute;border-radius:50%;background:currentColor;opacity:.25;transform:scale(0);animation:rip .6s var(--emph) forwards;pointer-events:none}@keyframes rip{to{transform:scale(1);opacity:0}}
+.ibtn{display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:var(--on-var);cursor:pointer;position:relative;transition:border-radius .35s var(--spring),background .2s,transform .3s var(--spring)}
+.ibtn:hover{background:color-mix(in oklab,var(--on-surface) 10%,transparent)}.ibtn:active{border-radius:12px;transform:scale(.9)}
+.ibtn .ic{width:22px;height:22px}
+/* tooltip tuỳ chỉnh */
+[data-tip]{position:relative}
+[data-tip]::before{content:attr(data-tip);position:absolute;top:calc(100% + 8px);left:50%;transform:translate(-50%,-4px) scale(.9);white-space:nowrap;background:var(--on-surface);color:var(--surface);font:600 12px/1 var(--font);padding:8px 12px;border-radius:10px;opacity:0;pointer-events:none;transition:.18s var(--emph);z-index:60}
+[data-tip]:hover::before,[data-tip]:focus-visible::before{opacity:1;transform:translate(-50%,0) scale(1);transition-delay:.35s}
+/* header */
+header.top{position:fixed;inset:0 0 auto 0;z-index:50;height:var(--hdr);display:flex;align-items:center;transition:background .35s,box-shadow .35s,height .3s}
+header.top.sc{background:color-mix(in oklab,var(--surface) 82%,transparent);backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 1px 0 var(--ov);--hdr:64px}
+header.top .wrap{display:flex;align-items:center;gap:8px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:19px;letter-spacing:-.01em;margin-right:auto}.brand img{width:40px;height:40px;transition:transform .6s var(--spring)}.brand:hover img{transform:rotate(18deg) scale(1.1)}
+nav.links{display:flex;gap:4px;margin-right:12px}
+nav.links a{padding:9px 16px;border-radius:12px;font-weight:600;font-size:14.5px;color:var(--on-var);transition:all .35s var(--spring)}
+nav.links a:hover{background:color-mix(in oklab,var(--on-surface) 8%,transparent)}nav.links a.on{background:var(--sc);color:var(--on-sc);border-radius:99px}
+.progress{position:fixed;top:0;left:0;height:4px;width:100%;transform-origin:left;transform:scaleX(0);background:var(--primary);z-index:90;border-radius:0 4px 4px 0}
+.menu-btn{display:none}
+.pop{position:absolute;right:0;top:calc(100% + 10px);width:min(320px,calc(100vw - 32px));background:var(--s3);border-radius:28px;padding:18px;box-shadow:var(--shadow);opacity:0;transform:translateY(-10px) scale(.94);transform-origin:top right;pointer-events:none;transition:.3s var(--spring)}
+.pop.open{opacity:1;transform:none;pointer-events:auto}
+.pop h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--on-var);margin:0 0 10px}
+.sw{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}.sw button{aspect-ratio:1;border:0;border-radius:50%;cursor:pointer;display:grid;place-items:center;color:#fff;transition:all .35s var(--spring)}
+.sw button:hover{transform:scale(1.15)}.sw button.on{border-radius:10px;box-shadow:0 0 0 3px var(--s3),0 0 0 5px var(--primary)}.sw button svg{width:16px;height:16px;transform:scale(0);transition:.3s var(--spring)}.sw button.on svg{transform:scale(1)}
+.seg{display:flex;gap:2px;background:var(--s4);padding:4px;border-radius:99px;margin-bottom:16px}.seg button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:38px;border:0;border-radius:10px;background:transparent;color:var(--on-var);font:600 13px var(--font);cursor:pointer;transition:all .35s var(--spring)}
+.seg button.on{background:var(--primary);color:var(--on-primary);border-radius:99px}
+.pop label.cc{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:13px;font-weight:600;color:var(--on-var)}.pop input[type=color]{width:44px;height:32px;border:0;border-radius:10px;background:none;padding:0;cursor:pointer}
+.rel{position:relative}
+/* hero */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;padding:calc(var(--hdr) + 40px) 0 80px;overflow:hidden;isolation:isolate}
+.hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center}
+.glow{position:absolute;inset:0;z-index:-1;background:radial-gradient(600px circle at var(--mx,70%) var(--my,30%),color-mix(in oklab,var(--primary) 22%,transparent),transparent 60%)}
+.blob{position:absolute;z-index:-1;color:var(--pc);opacity:.7;animation:float 9s ease-in-out infinite}.blob svg{width:100%;height:100%;animation:spin 40s linear infinite}
+@keyframes float{50%{transform:translateY(-22px) rotate(8deg)}}@keyframes spin{to{transform:rotate(360deg)}}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--tc);color:var(--on-tc);padding:8px 16px 8px 12px;border-radius:99px;font-weight:700;font-size:13px}
+h1{font-size:clamp(2.6rem,6.2vw,5rem);line-height:1.02;letter-spacing:-.035em;font-weight:800;margin:20px 0}
+h1 em{font-style:normal;background:linear-gradient(100deg,var(--primary),var(--tertiary),var(--primary));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}@keyframes shine{to{background-position:-200% 0}}
+.lead{font-size:clamp(1.05rem,1.6vw,1.25rem);color:var(--on-var);max-width:52ch}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin:32px 0 22px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{display:inline-flex;align-items:center;gap:6px;background:var(--s3);padding:7px 14px;border-radius:10px;font-size:13px;font-weight:600;transition:all .35s var(--spring)}.chip:hover{border-radius:99px;background:var(--sc)}
+/* mock app */
+.stage{perspective:1200px}.mock{background:var(--s1);border-radius:32px;box-shadow:0 30px 80px color-mix(in oklab,var(--primary) 25%,transparent),var(--shadow);overflow:hidden;transform:rotateY(var(--ry,-6deg)) rotateX(var(--rx,3deg));transition:transform .25s ease-out;border:1px solid var(--ov)}
+.mock .tb{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:12px;font-weight:700;color:var(--on-var)}.mock .tb img{width:18px;height:18px}.mock .tb i{margin-left:auto;display:flex;gap:6px}.mock .tb i b{width:10px;height:10px;border-radius:50%;background:var(--ov)}
+.mock .body{display:grid;grid-template-columns:56px 1fr;background:var(--surface);border-radius:28px 0 0 0;margin-left:0;min-height:340px}
+.mock .rail{display:flex;flex-direction:column;align-items:center;gap:14px;padding:16px 0}.mock .rail span{width:34px;height:26px;border-radius:9px;background:var(--ov);transition:.4s var(--spring)}.mock .rail span:first-child{width:46px;border-radius:99px;background:var(--sc)}
+.mock .main{padding:18px 18px 22px;background:var(--s1);border-radius:28px 0 0 0}
+.fld{height:48px;border-radius:20px;background:var(--s4);display:flex;align-items:center;gap:10px;padding:0 14px;font-size:13px;color:var(--on-var)}.fld .caret{width:2px;height:18px;background:var(--primary);animation:blink 1s steps(1) infinite;margin-left:-8px}@keyframes blink{50%{opacity:0}}
+.row{display:flex;align-items:center;gap:10px;background:var(--s3);border-radius:20px;padding:10px;margin-top:10px;animation:rise .8s var(--spring) both}.row:nth-of-type(2){animation-delay:.15s}.row:nth-of-type(3){animation-delay:.3s}
+.row .art{width:40px;height:40px;border-radius:12px;background:var(--pc);display:grid;place-items:center;color:var(--on-pc);flex:none}.row .t{flex:1;min-width:0;font-size:12.5px;font-weight:700}.row .t small{display:block;font-weight:500;color:var(--on-var)}
+.wavy{height:8px;background:var(--primary);-webkit-mask:var(--w) repeat-x left center/20px 8px;mask:var(--w) repeat-x left center/20px 8px;animation:wm 1.6s linear infinite;margin-top:6px;border-radius:4px}
+@keyframes wm{to{-webkit-mask-position-x:-40px;mask-position-x:-40px}}
+.tag{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:8px;background:var(--primary);color:var(--on-primary)}
+.toast-mock{position:absolute;right:-14px;bottom:26px;background:oklch(.92 .08 150);color:oklch(.28 .08 150);border-radius:18px;padding:12px 16px;font-size:12px;font-weight:700;display:flex;gap:8px;align-items:center;box-shadow:var(--shadow);animation:bob 4s ease-in-out infinite}
+html[data-scheme=dark] .toast-mock{background:oklch(.35 .08 150);color:oklch(.92 .08 150)}@keyframes bob{50%{transform:translateY(-8px)}}
+/* sections */
+section.s{padding:112px 0}.sh{max-width:720px;margin:0 auto 56px;text-align:center}.sh .eyebrow{background:var(--pc);color:var(--on-pc)}
+h2{font-size:clamp(2rem,4.4vw,3.2rem);line-height:1.08;letter-spacing:-.03em;font-weight:800;margin:16px 0 14px}.sh p{color:var(--on-var);font-size:1.1rem}
+.strip{overflow:hidden;background:var(--sc);color:var(--on-sc);padding:20px 0;mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}.strip div{display:flex;gap:56px;width:max-content;animation:mq 28s linear infinite}.strip span{display:flex;align-items:center;gap:12px;font-weight:800;font-size:1.25rem;white-space:nowrap}@keyframes mq{to{transform:translateX(-50%)}}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.card{position:relative;background:var(--s2);border-radius:32px;padding:28px;overflow:hidden;transition:border-radius .5s var(--spring),transform .5s var(--spring),background .3s;grid-column:span 2}
+.card:hover{border-radius:56px 20px 56px 20px;transform:translateY(-6px);background:var(--s3)}
+.card.w3{grid-column:span 3}.card.w4{grid-column:span 4}
+.card .ico{width:56px;height:56px;border-radius:18px;background:var(--pc);color:var(--on-pc);display:grid;place-items:center;margin-bottom:18px;transition:all .5s var(--spring)}.card:hover .ico{border-radius:50%;transform:rotate(-8deg) scale(1.08);background:var(--primary);color:var(--on-primary)}
+.card .ico .ic{width:26px;height:26px}.card h3{font-size:1.2rem;letter-spacing:-.01em;margin-bottom:8px}.card p{color:var(--on-var);font-size:.97rem}
+.card.hl{background:var(--primary);color:var(--on-primary)}.card.hl p{color:inherit;opacity:.88}.card.hl .ico{background:color-mix(in oklab,var(--on-primary) 20%,transparent);color:var(--on-primary)}.card.hl:hover{background:var(--primary)}
+.card .big{position:absolute;right:-30px;bottom:-40px;width:170px;opacity:.12;color:currentColor}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
+.step{background:var(--s2);border-radius:36px;padding:32px;position:relative;transition:all .5s var(--spring)}.step:nth-child(2){margin-top:32px}.step:nth-child(3){margin-top:64px}
+.step:hover{border-radius:60px 24px 60px 24px;background:var(--s3)}
+.step b{display:grid;place-items:center;width:64px;height:64px;font-size:1.6rem;background:var(--primary);color:var(--on-primary);margin-bottom:20px;clip-path:polygon(50% 0,63% 8%,79% 6%,85% 20%,98% 28%,94% 43%,100% 57%,90% 69%,89% 85%,74% 89%,63% 100%,50% 94%,37% 100%,26% 89%,11% 85%,10% 69%,0 57%,6% 43%,2% 28%,15% 20%,21% 6%,37% 8%);transition:transform .8s var(--spring)}.step:hover b{transform:rotate(90deg) scale(1.1)}
+.step h3{font-size:1.25rem;margin-bottom:8px}.step p{color:var(--on-var)}
+.custom{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;background:var(--s2);border-radius:56px;padding:48px}
+.custom .sw{grid-template-columns:repeat(8,1fr);max-width:420px;margin:20px 0}.custom .seg{max-width:380px}
+.pv{background:var(--surface);border-radius:32px;padding:20px;box-shadow:var(--shadow)}.pv .fld{margin-bottom:12px}.pv .bt{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.pv .bt span{padding:10px 18px;border-radius:99px;font-weight:700;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:20px}.stat{text-align:center;padding:28px 12px;background:var(--tc);color:var(--on-tc);border-radius:28px;transition:all .5s var(--spring)}.stat:nth-child(odd){background:var(--pc);color:var(--on-pc)}.stat:hover{border-radius:50px;transform:scale(1.04)}
+.stat strong{display:block;font-size:2.6rem;line-height:1;font-weight:800}.stat span{font-weight:600;font-size:.9rem}
+.dl{position:relative;background:var(--primary);color:var(--on-primary);border-radius:64px;padding:64px 40px;text-align:center;overflow:hidden;isolation:isolate}
+.dl .blob{color:#fff;opacity:.12;z-index:-1}.dl h2{margin-top:0}.dl p{opacity:.9;max-width:56ch;margin:0 auto 28px}
+.dl .btn.fill{--bg:var(--on-primary);--fg:var(--primary)}.dl .meta{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:22px}.dl .meta span{background:color-mix(in oklab,var(--on-primary) 16%,transparent);padding:7px 14px;border-radius:10px;font-size:13px;font-weight:600}
+pre.code{margin:40px auto 0;max-width:640px;text-align:left;background:var(--s1);color:var(--on-surface);border-radius:28px;padding:22px 24px;font:500 14px/1.9 ui-monospace,Consolas,monospace;position:relative;overflow-x:auto}
+pre.code .cm{color:var(--on-var)}pre.code .cp{position:absolute;top:10px;right:10px}
+.faq{max-width:820px;margin:auto;display:grid;gap:10px}details{background:var(--s2);border-radius:28px;transition:all .4s var(--spring);overflow:hidden}details[open]{background:var(--s3);border-radius:32px}
+summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:20px 24px;font-weight:700;font-size:1.05rem}summary::-webkit-details-marker{display:none}summary .ic{margin-left:auto;transition:transform .45s var(--spring)}details[open] summary .ic{transform:rotate(180deg)}
+details .a{padding:0 24px 22px;color:var(--on-var);animation:rise .5s var(--emph)}
+footer{padding:56px 0 40px;background:var(--s1);margin-top:112px;border-radius:56px 56px 0 0}footer .wrap{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+.by{display:flex;gap:8px;flex-wrap:wrap;align-items:center;color:var(--on-var);font-size:.95rem}.by b{background:var(--pc);color:var(--on-pc);padding:4px 12px;border-radius:99px}.by b.ai{background:var(--tc);color:var(--on-tc)}
+.fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom));width:60px;height:60px;border:0;border-radius:20px;background:var(--pc);color:var(--on-pc);display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);z-index:55;opacity:0;transform:translateY(24px) scale(.6);pointer-events:none;transition:all .45s var(--spring)}
+.fab.show{opacity:1;transform:none;pointer-events:auto}.fab:hover{border-radius:50%;background:var(--primary);color:var(--on-primary)}.fab:active{transform:scale(.9)}.fab .ic{width:26px;height:26px}
+.rv{opacity:0;transform:translateY(34px) scale(.97);transition:opacity .7s var(--emph),transform .8s var(--spring);transition-delay:var(--d,0s)}.rv.in{opacity:1;transform:none}
+@media(max-width:960px){.hero .wrap{grid-template-columns:1fr}.stage{max-width:520px;margin:20px auto 0}.bento{grid-template-columns:repeat(2,1fr)}.card,.card.w3,.card.w4{grid-column:span 1}.card.w4{grid-column:span 2}.steps{grid-template-columns:1fr}.step:nth-child(n){margin-top:0}.custom{grid-template-columns:1fr;padding:28px;border-radius:40px}.stats{grid-template-columns:repeat(2,1fr)}nav.links{position:fixed;inset:var(--hdr) 12px auto 12px;flex-direction:column;background:var(--s3);border-radius:28px;padding:12px;box-shadow:var(--shadow);opacity:0;transform:translateY(-12px) scale(.96);pointer-events:none;transition:.3s var(--spring);margin:0}nav.links.open{opacity:1;transform:none;pointer-events:auto}nav.links a{padding:14px 18px}.menu-btn{display:grid}.dl{padding:48px 22px;border-radius:44px}section.s{padding:80px 0}}
+@media(max-width:560px){.bento{grid-template-columns:1fr}.card.w4{grid-column:span 1}.toast-mock{display:none}.cta .btn{flex:1}.brand span{display:none}.pop{right:-60px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}.rv{opacity:1;transform:none}}
+</style>
 </head>
-<body class="no-js">
-  <svg class="sprite" aria-hidden="true" focusable="false">
-    <symbol id="i-app-window" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/> <path d="M10 4v4"/> <path d="M2 8h20"/> <path d="M6 4v4"/></symbol>
-    <symbol id="i-audio-waveform" viewBox="0 0 24 24"><path d="M2 13a2 2 0 0 0 2-2V7a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0V4a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0v-4a2 2 0 0 1 2-2"/></symbol>
-    <symbol id="i-clipboard-paste" viewBox="0 0 24 24"><path d="M11 14h10"/> <path d="M16 4h2a2 2 0 0 1 2 2v1.344"/> <path d="m17 18 4-4-4-4"/> <path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"/> <rect x="8" y="2" width="8" height="4" rx="1"/></symbol>
-    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 15V3"/> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/> <path d="m7 10 5 5 5-5"/></symbol>
-    <symbol id="i-folder-open" viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></symbol>
-    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/> <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/> <path d="M2 12h20"/></symbol>
-    <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/> <circle cx="9" cy="9" r="2"/> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
-    <symbol id="i-languages" viewBox="0 0 24 24"><path d="m5 8 6 6"/> <path d="m4 14 6-6 2-3"/> <path d="M2 5h12"/> <path d="M7 2h1"/> <path d="m22 22-5-10-5 10"/> <path d="M14 18h6"/></symbol>
-    <symbol id="i-list-checks" viewBox="0 0 24 24"><path d="M13 5h8"/> <path d="M13 12h8"/> <path d="M13 19h8"/> <path d="m3 17 2 2 4-4"/> <path d="m3 7 2 2 4-4"/></symbol>
-    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol>
-    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/> <circle cx="6" cy="18" r="3"/> <circle cx="18" cy="16" r="3"/></symbol>
-    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/> <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
-    <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"/> <path d="m19 8 3 8a5 5 0 0 1-6 0zV7"/> <path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"/> <path d="m5 8 3 8a5 5 0 0 1-6 0zV7"/> <path d="M7 21h10"/></symbol>
-    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/> <circle cx="12" cy="12" r="3"/></symbol>
-    <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/> <path d="m9 12 2 2 4-4"/></symbol>
-    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/> <path d="M20 2v4"/> <path d="M22 4h-4"/> <circle cx="4" cy="20" r="2"/></symbol>
-    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/> <path d="M12 2v2"/> <path d="M12 20v2"/> <path d="m4.93 4.93 1.41 1.41"/> <path d="m17.66 17.66 1.41 1.41"/> <path d="M2 12h2"/> <path d="M20 12h2"/> <path d="m6.34 17.66-1.41 1.41"/> <path d="m19.07 4.93-1.41 1.41"/></symbol>
-    <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/> <circle cx="12" cy="7" r="4"/></symbol>
-  </svg>
-  <a class="skip" href="#main" data-vi="Bỏ qua điều hướng">Skip to content</a>
+<body>
+<a class="skip" href="#main" data-i="skip">Skip to content</a>
+<div class="progress" id="prog" aria-hidden="true"></div>
 
-  <header class="appbar" id="appbar">
-    <div class="wrap">
-      <a class="brand" href="#top" aria-label="MP3 Downloader"><img src="src/app-icon.png" alt="" width="36" height="36" /><span>MP3 Downloader</span></a>
-      <nav class="nav" aria-label="Main">
-        <a href="#features" data-vi="Tính năng">Features</a>
-        <a href="#how" data-vi="Cách dùng">How it works</a>
-        <a href="#download" data-vi="Tải về">Download</a>
-      </nav>
-      <button class="lang-btn" id="lang-btn" type="button" aria-label="Change language" title="English / Tiếng Việt">EN</button>
-      <button class="icon-btn" id="theme-btn" type="button" aria-label="Toggle dark mode" title="Light / dark">
-        <svg class="icon sun"><use href="#i-sun"/></svg><svg class="icon moon"><use href="#i-moon"/></svg>
-      </button>
-    </div>
-  </header>
+<header class="top" id="top">
+ <div class="wrap">
+  <a class="brand" href="#home" aria-label="MP3 Downloader"><img src="assets/icon.png" alt="" width="40" height="40"><span>MP3 Downloader</span></a>
+  <nav class="links" id="links" aria-label="Main">
+   <a href="#features" data-i="n_feat">Features</a><a href="#how" data-i="n_how">How it works</a><a href="#customize" data-i="n_cust">Customize</a><a href="#download" data-i="n_dl">Download</a><a href="#faq" data-i="n_faq">FAQ</a>
+  </nav>
+  <div class="rel">
+   <button class="ibtn" id="btnTheme" data-tip="Theme" data-tipi="tip_theme" aria-haspopup="true" aria-expanded="false" aria-controls="popTheme"><svg class="ic" viewBox="0 0 24 24"><use href="#i-palette"/></svg></button>
+   <div class="pop" id="popTheme" role="dialog" aria-label="Theme">
+    <h4 data-i="mode">Appearance</h4>
+    <div class="seg" id="segMode" role="radiogroup"><button data-m="auto"><svg class="ic" viewBox="0 0 24 24"><use href="#i-monitor"/></svg><span data-i="m_auto">System</span></button><button data-m="light"><svg class="ic" viewBox="0 0 24 24"><use href="#i-sun"/></svg><span data-i="m_light">Light</span></button><button data-m="dark"><svg class="ic" viewBox="0 0 24 24"><use href="#i-moon"/></svg><span data-i="m_dark">Dark</span></button></div>
+    <h4 data-i="color">Theme color</h4><div class="sw" id="swPop"></div>
+    <label class="cc"><input type="color" id="cpPop" value="#4caf50" aria-label="Custom color"><span data-i="custom">Custom color</span></label>
+   </div>
+  </div>
+  <button class="ibtn" id="btnLang" data-tip="Language" data-tipi="tip_lang" aria-label="Language"><svg class="ic" viewBox="0 0 24 24"><use href="#i-globe"/></svg></button>
+  <button class="ibtn menu-btn" id="btnMenu" data-tip="Menu" data-tipi="tip_menu" aria-label="Menu" aria-expanded="false" aria-controls="links"><svg class="ic" viewBox="0 0 24 24"><use href="#i-menu"/></svg></button>
+ </div>
+</header>
 
-  <main id="main">
-    <!-- Hero -->
-    <section class="hero" id="top">
-      <div class="wrap">
-        <div>
-          <span class="badge reveal"><svg class="icon"><use href="#i-sparkles"/></svg><span data-vi="Miễn phí · Mã nguồn mở">Free · Open source</span></span>
-          <h1 class="reveal" style="--d:.05s"><span data-vi="Biến mọi link thành tệp">Turn any link into a perfectly tagged</span> <em data-vi="MP3 chuẩn thẻ tag">MP3</em></h1>
-          <p class="lead muted reveal" style="--d:.1s" data-vi="Dán link YouTube, TikTok hoặc Spotify — MP3 Downloader lưu bài hát kèm ảnh bìa, nghệ sĩ, album và năm phát hành, sẵn sàng cho mọi trình phát nhạc.">Paste a YouTube, TikTok or Spotify link and MP3 Downloader saves it with cover art, artist, album and year — ready for any player.</p>
-          <div class="cta reveal" style="--d:.15s">
-            <a class="btn filled lg" id="dl-btn" href="download/MP3%20Downloader_0.4.0_x64-setup.exe" download><svg class="icon"><use href="#i-download"/></svg><span data-vi="Tải về cho Windows">Download for Windows</span></a>
-            <a class="btn tonal lg" href="#features"><svg class="icon"><use href="#i-sparkles"/></svg><span data-vi="Xem tính năng">See features</span></a>
-          </div>
-          <p class="meta muted reveal" style="--d:.2s" data-vi="Phiên bản 0.4.0 · Windows 10/11 · 64-bit">Version 0.4.0 · Windows 10/11 · 64-bit</p>
-        </div>
+<main id="main">
+<section class="hero" id="home">
+ <div class="glow" id="glow"></div>
+ <div class="blob" style="width:420px;height:420px;right:-120px;top:60px"><svg viewBox="0 0 100 100" data-cookie="10"></svg></div>
+ <div class="blob" style="width:260px;height:260px;left:-80px;bottom:40px;animation-delay:-4s;color:var(--tc)"><svg viewBox="0 0 100 100" data-cookie="8"></svg></div>
+ <div class="wrap">
+  <div>
+   <span class="eyebrow rv"><svg class="ic" viewBox="0 0 24 24"><use href="#i-heart"/></svg><span data-i="eyebrow">Free &amp; open source desktop app</span></span>
+   <h1 class="rv" style="--d:.08s"><span data-i="h1a">Any song.</span><br><em data-i="h1b">One click to MP3.</em></h1>
+   <p class="lead rv" style="--d:.16s" data-i="lead">Paste a link or just type a song name. MP3 Downloader grabs YouTube, TikTok and Spotify tracks as tagged MP3 files with cover art — fast, tidy and beautifully designed.</p>
+   <div class="cta rv" style="--d:.24s">
+    <a class="btn fill lg" href="download/MP3%20Downloader_0.5.0_x64-setup.exe" download><svg class="ic" viewBox="0 0 24 24"><use href="#i-download"/></svg><span data-i="dl_btn">Download for Windows</span></a>
+    <a class="btn tonal lg" href="#features"><svg class="ic" viewBox="0 0 24 24"><use href="#i-arrow"/></svg><span data-i="see">Explore features</span></a>
+   </div>
+   <div class="chips rv" style="--d:.32s"><span class="chip"><svg class="ic" viewBox="0 0 24 24"><use href="#i-shield"/></svg><span data-i="c1">MIT licensed</span></span><span class="chip"><svg class="ic" viewBox="0 0 24 24"><use href="#i-lock"/></svg><span data-i="c2">Runs locally</span></span><span class="chip"><svg class="ic" viewBox="0 0 24 24"><use href="#i-globe"/></svg>EN · VI</span><span class="chip"><svg class="ic" viewBox="0 0 24 24"><use href="#i-zap"/></svg>v0.5.0</span></div>
+  </div>
+  <div class="stage rv" style="--d:.2s" id="stage">
+   <div class="rel">
+   <div class="mock" id="mock" aria-hidden="true">
+    <div class="tb"><img src="assets/icon.png" alt="">MP3 Downloader<i><b></b><b></b><b></b></i></div>
+    <div class="body"><div class="rail"><span></span><span></span><span></span></div>
+     <div class="main"><div class="fld"><svg class="ic" viewBox="0 0 24 24"><use href="#i-search"/></svg><span id="typed"></span><i class="caret"></i></div>
+      <div class="row"><div class="art"><svg class="ic" viewBox="0 0 24 24"><use href="#i-music"/></svg></div><div class="t">Lofi Hip Hop Radio<small>Lofi Girl · 3:42</small><div class="wavy" style="width:62%"></div></div><span class="tag">62%</span></div>
+      <div class="row"><div class="art"><svg class="ic" viewBox="0 0 24 24"><use href="#i-music"/></svg></div><div class="t">Midnight City<small>M83 · 4:03</small><div class="wavy" style="width:28%"></div></div><span class="tag">28%</span></div>
+      <div class="row"><div class="art"><svg class="ic" viewBox="0 0 24 24"><use href="#i-check"/></svg></div><div class="t">Blinding Lights<small>The Weeknd · 3:20 · 320 kbps</small></div><span class="tag" style="background:var(--tc);color:var(--on-tc)">MP3</span></div>
+     </div></div>
+   </div>
+   <div class="toast-mock"><svg class="ic" viewBox="0 0 24 24"><use href="#i-check"/></svg><span data-i="toast">Downloaded: Blinding Lights</span></div>
+   </div>
+  </div>
+ </div>
+</section>
 
-        <div class="mock reveal" style="--d:.15s" aria-hidden="true">
-          <div class="mock-bar"><i></i><i></i><i></i><span>MP3 Downloader</span></div>
-          <div class="mock-body">
-            <div class="mock-rail">
-              <span class="on"><svg class="icon"><use href="#i-download"/></svg></span>
-              <span><svg class="icon"><use href="#i-settings"/></svg></span>
-            </div>
-            <div class="mock-main">
-              <div class="mock-field">https://youtu.be/midnight-drive<b></b></div>
-              <div class="mock-preview">
-                <div class="mock-art"><svg class="icon"><use href="#i-music"/></svg></div>
-                <div>
-                  <div class="mock-t">Midnight Drive</div>
-                  <div class="mock-s">Nova Echo</div>
-                  <div class="mock-tags"><i class="src">YouTube</i><i>Album: Neon Roads</i><i>2024</i><i>3:42</i></div>
-                </div>
-              </div>
-              <div class="mock-row">
-                <div class="mock-chips"><i class="on">✓ Best</i><i>320</i><i>256</i><i>192</i></div>
-                <span class="mock-btn">Download MP3</span>
-              </div>
-              <div class="mock-item">
-                <div class="mock-art"><svg class="icon"><use href="#i-music"/></svg></div>
-                <div style="flex:1;min-width:0"><div class="mock-t">Nova Echo - Midnight Drive</div><div class="bar"><span></span></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+<div class="strip" aria-hidden="true"><div id="mq"></div></div>
 
-    <!-- Tính năng -->
-    <section class="block" id="features">
-      <div class="wrap">
-        <div class="head reveal">
-          <h2 data-vi="Mọi thứ bạn cần, không thừa một thứ nào">Everything you need, nothing you don't</h2>
-          <p class="muted" data-vi="Một ứng dụng desktop nhẹ, đẹp và dễ dùng để lưu nhạc yêu thích.">A light, beautiful and easy desktop app for saving the music you love.</p>
-        </div>
-        <div class="grid">
-          <article class="card reveal"><div class="ic"><svg class="icon"><use href="#i-image"/></svg></div><h3 data-vi="Ảnh bìa & thẻ tag">Cover art &amp; tags</h3><p data-vi="Nghệ sĩ, tên bài, album, năm và ảnh bìa vuông được gắn sẵn vào từng tệp.">Artist, title, album, year and square cover art are embedded in every file.</p></article>
-          <article class="card reveal" style="--d:.05s"><div class="ic"><svg class="icon"><use href="#i-globe"/></svg></div><h3 data-vi="YouTube, TikTok & Spotify">YouTube, TikTok &amp; Spotify</h3><p data-vi="Dán link từ bất kỳ nguồn nào. Bài hát Spotify được ghép với bản âm thanh khớp nhất trên YouTube.">Paste a link from any of them. Spotify tracks are matched to the best audio on YouTube.</p></article>
-          <article class="card reveal" style="--d:.1s"><div class="ic"><svg class="icon"><use href="#i-audio-waveform"/></svg></div><h3 data-vi="Tới 320 kbps">Up to 320 kbps</h3><p data-vi="Chọn Tốt nhất (VBR V0) hoặc 320, 256, 192, 128 kbps.">Choose Best (VBR V0) or 320, 256, 192 and 128 kbps.</p></article>
-          <article class="card reveal" style="--d:.15s"><div class="ic"><svg class="icon"><use href="#i-list-checks"/></svg></div><h3 data-vi="Hàng đợi thông minh">Smart queue</h3><p data-vi="Dán nhiều link cùng lúc. Tải 2 bài song song, có tiến trình, thử lại và huỷ.">Paste several links at once. Downloads run two at a time with progress, retry and cancel.</p></article>
-          <article class="card reveal"><div class="ic"><svg class="icon"><use href="#i-palette"/></svg></div><h3 data-vi="Giao diện Material You">Material You themes</h3><p data-vi="Sáng, tối hoặc theo hệ thống, với 16 màu Material và màu tuỳ chỉnh tuỳ ý.">Light, dark or system, with 16 Material colors and any custom color.</p></article>
-          <article class="card reveal" style="--d:.05s"><div class="ic"><svg class="icon"><use href="#i-languages"/></svg></div><h3 data-vi="Ngôn ngữ của bạn">Your language</h3><p data-vi="Tiếng Anh và Tiếng Việt, tự nhận diện theo ngôn ngữ thiết bị.">English and Tiếng Việt, picked automatically from your device.</p></article>
-          <article class="card reveal" style="--d:.1s"><div class="ic"><svg class="icon"><use href="#i-app-window"/></svg></div><h3 data-vi="Nhớ cửa sổ của bạn">Remembers your window</h3><p data-vi="Mở lại đúng kích thước lần trước, hoặc luôn phóng to tối đa.">Reopen at your last size, or always start maximized.</p></article>
-          <article class="card reveal" style="--d:.15s"><div class="ic"><svg class="icon"><use href="#i-shield-check"/></svg></div><h3 data-vi="Miễn phí & mã nguồn mở">Free &amp; open source</h3><p data-vi="Giấy phép MIT. Không quảng cáo, không cần tài khoản.">MIT licensed. No ads, no accounts.</p></article>
-        </div>
-      </div>
-    </section>
+<section class="s" id="features"><div class="wrap">
+ <div class="sh rv"><span class="eyebrow" data-i="n_feat">Features</span><h2 data-i="f_h">Everything you need, nothing you don't</h2><p data-i="f_p">A focused downloader with the polish of a modern desktop app.</p></div>
+ <div class="bento">
+  <article class="card w4 hl rv"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><use href="#i-download"/></svg></div><h3 data-i="f1t">YouTube, TikTok & Spotify</h3><p data-i="f1d">Paste one link or many. Spotify tracks are matched to the best audio source automatically, then tagged with title, artist, album, year and cover.</p><svg class="big" viewBox="0 0 100 100" data-cookie="10"></svg></article>
+  <article class="card rv" style="--d:.06s"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><use href="#i-search"/></svg></div><h3 data-i="f2t">Search by name</h3><p data-i="f2d">No link? Type the song title and pick from the results.</p></article>
+  <article class="card rv"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><use href="#i-list"/></svg></div><h3 data-i="f3t">Playlists</h3><p data-i="f3d">Open a playlist, tick the tracks you want and queue them all.</p></article>
+  <article class="card rv" style="--d:.06s"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><use href="#i-pencil"/></svg></div><h3 data-i="f4t">Edit tags</h3><p data-i="f4d">Fix title, artist, album and year before downloading.</p></article>
+  <article class="card rv" style="--d:.12s"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><use href="#i-layers"/></svg></div><h3 data-i="f5t">Smart queue</h3><p data-i="f5d">Parallel downloads, speed limit, retries and wavy live progress.</p></article>
+  <article class="card w3 rv"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><use href="#i-history"/></svg></div><h3 data-i="f6t">History & file naming</h3><p data-i="f6d">Search past downloads, re-download in one tap, choose name templates and per-artist folders.</p></article>
+  <article class="card w3 rv" style="--d:.06s"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><use href="#i-palette"/></svg></div><h3 data-i="f7t">Make it yours</h3><p data-i="f7d">Light, dark or system, 16 theme colors plus custom, 5 fonts, 3 text sizes, English & Vietnamese.</p></article>
+  <article class="card w3 rv"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><use href="#i-shield"/></svg></div><h3 data-i="f8t">Safe by design</h3><p data-i="f8d">Tools are verified with SHA-256, a strict content-security policy is on, and nothing leaves your PC except the download itself.</p></article>
+  <article class="card w3 rv" style="--d:.06s"><div class="ico"><svg class="ic" viewBox="0 0 24 24"><use href="#i-refresh"/></svg></div><h3 data-i="f9t">Stays up to date</h3><p data-i="f9d">Warns you when yt-dlp is outdated and updates it in a click. Notifications tell you when songs are ready.</p></article>
+ </div>
+</div></section>
 
-    <!-- Cách dùng -->
-    <section class="block" id="how">
-      <div class="wrap">
-        <div class="head reveal">
-          <h2 data-vi="Chỉ ba bước">Just three steps</h2>
-          <p class="muted" data-vi="Từ link đến tệp MP3 chỉ trong vài giây.">From link to MP3 in seconds.</p>
-        </div>
-        <div class="steps">
-          <div class="step reveal"><svg class="icon bg"><use href="#i-clipboard-paste"/></svg><div class="num">1</div><h3 data-vi="Dán link">Paste a link</h3><p data-vi="Sao chép link YouTube, TikTok hoặc Spotify rồi dán vào — app tự đọc thông tin bài hát.">Copy a YouTube, TikTok or Spotify link and paste it — the app reads the track info.</p></div>
-          <div class="step reveal" style="--d:.08s"><svg class="icon bg"><use href="#i-audio-waveform"/></svg><div class="num">2</div><h3 data-vi="Chọn chất lượng">Pick a quality</h3><p data-vi="Chọn Tốt nhất hoặc một mức bitrate cố định. App tải và chuyển sang MP3.">Choose Best or a fixed bitrate. The app downloads and converts to MP3.</p></div>
-          <div class="step reveal" style="--d:.16s"><svg class="icon bg"><use href="#i-folder-open"/></svg><div class="num">3</div><h3 data-vi="Thưởng thức">Enjoy your music</h3><p data-vi="Mở thư mục ngay từ thông báo. Ảnh bìa hiện trong Explorer và trình phát nhạc.">Open the folder from the notification. Cover art shows up in Explorer and your player.</p></div>
-        </div>
-      </div>
-    </section>
+<section class="s" id="how" style="background:var(--s1);border-radius:56px"><div class="wrap">
+ <div class="sh rv"><span class="eyebrow" data-i="n_how">How it works</span><h2 data-i="h_h">Three steps. That's it.</h2><p data-i="h_p">From link to library in under a minute.</p></div>
+ <div class="steps">
+  <div class="step rv"><b>1</b><h3 data-i="s1t">Paste or search</h3><p data-i="s1d">Drop in a YouTube, TikTok or Spotify link — or type the song name.</p></div>
+  <div class="step rv" style="--d:.1s"><b>2</b><h3 data-i="s2t">Check & tweak</h3><p data-i="s2d">Preview the cover, edit tags if you like and pick a quality up to 320 kbps.</p></div>
+  <div class="step rv" style="--d:.2s"><b>3</b><h3 data-i="s3t">Download</h3><p data-i="s3d">Watch the wavy progress, get a notification and open the file from the app.</p></div>
+ </div>
+</div></section>
 
-    <!-- Tải về -->
-    <section class="block download" id="download">
-      <div class="wrap">
-        <div class="box reveal">
-          <img src="src/app-icon.png" alt="MP3 Downloader" width="112" height="112" />
-          <div>
-            <h2 data-vi="Sẵn sàng thử chưa?">Ready to try it?</h2>
-            <p data-vi="Tải bộ cài đặt cho Windows. Lần đầu mở app có thể tự cài yt-dlp, ffmpeg và Deno giúp bạn.">Get the Windows installer. On first launch the app can install yt-dlp, ffmpeg and Deno for you.</p>
-            <div class="cta">
-              <a class="btn filled lg" id="dl-btn2" href="download/MP3%20Downloader_0.4.0_x64-setup.exe" download><svg class="icon"><use href="#i-download"/></svg><span data-vi="Tải về cho Windows">Download for Windows</span></a>
-            </div>
-            <p class="small" data-vi="Phiên bản 0.4.0 · Windows 10/11 · 64-bit · Chỉ tải nội dung bạn có quyền sử dụng.">Version 0.4.0 · Windows 10/11 · 64-bit · Only download content you have the right to use.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+<section class="s" id="customize"><div class="wrap">
+ <div class="custom rv">
+  <div>
+   <span class="eyebrow" style="background:var(--tc);color:var(--on-tc)" data-i="n_cust">Customize</span>
+   <h2 data-i="c_h">Your colors, your app</h2><p style="color:var(--on-var)" data-i="c_p">Pick a color and this whole page — and the app — repaints itself with a matching Material 3 Expressive palette. Try it now.</p>
+   <div class="sw" id="swPage"></div>
+   <div class="seg" id="segPage"><button data-m="auto"><svg class="ic" viewBox="0 0 24 24"><use href="#i-monitor"/></svg><span data-i="m_auto">System</span></button><button data-m="light"><svg class="ic" viewBox="0 0 24 24"><use href="#i-sun"/></svg><span data-i="m_light">Light</span></button><button data-m="dark"><svg class="ic" viewBox="0 0 24 24"><use href="#i-moon"/></svg><span data-i="m_dark">Dark</span></button></div>
+  </div>
+  <div class="pv" aria-hidden="true"><div class="fld"><svg class="ic" viewBox="0 0 24 24"><use href="#i-search"/></svg><span data-i="pv_in">Paste a link or type a song name</span></div>
+   <div class="row" style="animation:none"><div class="art"><svg class="ic" viewBox="0 0 24 24"><use href="#i-music"/></svg></div><div class="t">Summer Vibes<small>Artist · 3:12</small><div class="wavy" style="width:70%"></div></div><span class="tag">70%</span></div>
+   <div class="bt"><span style="background:var(--primary);color:var(--on-primary)" data-i="pv_b1">Download</span><span style="background:var(--pc);color:var(--on-pc)" data-i="pv_b2">Edit tags</span><span style="background:var(--tc);color:var(--on-tc)" data-i="pv_b3">History</span></div></div>
+ </div>
+ <div class="stats"><div class="stat rv"><strong data-n="3">0</strong><span data-i="st1">sources</span></div><div class="stat rv" style="--d:.06s"><strong data-n="16">0</strong><span data-i="st2">theme colors</span></div><div class="stat rv" style="--d:.12s"><strong data-n="320">0</strong><span data-i="st3">kbps max</span></div><div class="stat rv" style="--d:.18s"><strong data-n="2">0</strong><span data-i="st4">languages</span></div></div>
+</div></section>
 
-  <footer>
-    <div class="wrap">
-      <div class="credit">
-        <span class="muted" data-vi="Tạo bởi">Made by</span>
-        <span class="hl a"><svg class="icon"><use href="#i-user"/></svg>minhtrong67</span>
-        <span class="muted" data-vi="với sự hỗ trợ của">with the support of</span>
-        <span class="hl b"><svg class="icon"><use href="#i-sparkles"/></svg>Claude</span>
-      </div>
-      <div class="muted credit"><svg class="icon" style="width:16px;height:16px"><use href="#i-scale"/></svg><span data-vi="Giấy phép MIT · © 2026 minhtrong67">MIT License · © 2026 minhtrong67</span></div>
-    </div>
-  </footer>
+<section class="s" id="download" style="padding-top:40px"><div class="wrap">
+ <div class="dl rv">
+  <div class="blob" style="width:380px;height:380px;right:-100px;top:-120px"><svg viewBox="0 0 100 100" data-cookie="10"></svg></div>
+  <img src="assets/icon-512.png" alt="" width="104" height="104" style="margin:0 auto 18px;animation:float 6s ease-in-out infinite">
+  <h2 data-i="d_h">Get MP3 Downloader</h2><p data-i="d_p">Free forever. Install, open and start downloading — the app sets up the tools it needs on first launch.</p>
+  <a class="btn fill lg" href="download/MP3%20Downloader_0.5.0_x64-setup.exe" download><svg class="ic" viewBox="0 0 24 24"><use href="#i-download"/></svg><span data-i="dl_btn">Download for Windows</span></a>
+  <div class="meta"><span>v0.5.0</span><span>Windows 10 / 11 · 64-bit</span><span data-i="d_m1">Installer · EN / VI</span><span>MIT</span></div>
+  <pre class="code" id="code"><button class="ibtn cp" id="cp" aria-label="Copy"><svg class="ic" viewBox="0 0 24 24"><use href="#i-copy"/></svg></button><span class="cm"># <span data-i="d_src">Build from source (Node 18+, Rust, Tauri prerequisites)</span></span>
+npm install
+npm run dev
+npm run build</pre>
+ </div>
+</div></section>
 
-  <script>
-    (function () {
-      var de = document.documentElement, body = document.body;
-      body.classList.remove("no-js");
+<section class="s" id="faq" style="padding-top:40px"><div class="wrap">
+ <div class="sh rv"><span class="eyebrow" data-i="n_faq">FAQ</span><h2 data-i="q_h">Good to know</h2></div>
+ <div class="faq">
+  <details class="rv"><summary data-i="q1">How does Spotify work?<svg class="ic" viewBox="0 0 24 24"><use href="#i-down"/></svg></summary><div class="a" data-i="a1">Spotify doesn't allow direct downloads. The app reads the track info (title, artist, album, cover) from the link and finds matching audio on YouTube, then tags the MP3 for you.</div></details>
+  <details class="rv"><summary data-i="q2">Windows says "unrecognized app" (SmartScreen)<svg class="ic" viewBox="0 0 24 24"><use href="#i-down"/></svg></summary><div class="a" data-i="a2">The installer isn't code-signed yet, which is normal for small open-source apps. Click "More info" → "Run anyway". You can also read and build the source yourself.</div></details>
+  <details class="rv"><summary data-i="q3">A download fails with HTTP 403 or "sign in"<svg class="ic" viewBox="0 0 24 24"><use href="#i-down"/></svg></summary><div class="a" data-i="a3">Update yt-dlp in Settings → Tools, install Deno, or choose "Use browser cookies" under Network. These fix almost every YouTube error.</div></details>
+  <details class="rv"><summary data-i="q4">Is it legal?<svg class="ic" viewBox="0 0 24 24"><use href="#i-down"/></svg></summary><div class="a" data-i="a4">Only download content you own or have permission to use, and respect the terms of each platform and your local laws. The app is a tool; responsibility is yours.</div></details>
+  <details class="rv"><summary data-i="q5">Where are my files?<svg class="ic" viewBox="0 0 24 24"><use href="#i-down"/></svg></summary><div class="a" data-i="a5">In your Downloads folder by default. Change it, add per-artist folders and name templates in Settings → Downloads.</div></details>
+ </div>
+</div></section>
+</main>
 
-      /* Ngôn ngữ: tự nhận diện theo trình duyệt, có nút chuyển EN / VI */
-      var STORE = "mp3dl.landing";
-      var title = { en: document.title, vi: "MP3 Downloader — Tải nhạc MP3 từ YouTube, TikTok & Spotify kèm ảnh bìa" };
-      var descEl = document.querySelector('meta[name="description"]');
-      var desc = { en: descEl.content, vi: "MP3 Downloader là ứng dụng desktop miễn phí, mã nguồn mở: lưu link YouTube, TikTok, Spotify thành tệp MP3 có ảnh bìa, nghệ sĩ, album, năm. Giao diện Material, chế độ tối, tiếng Anh và tiếng Việt." };
-      var nodes = [].slice.call(document.querySelectorAll("[data-vi]"));
-      nodes.forEach(function (n) { n.setAttribute("data-en", n.textContent); });
-      var saved = null; try { saved = JSON.parse(localStorage.getItem(STORE) || "{}"); } catch (e) { saved = {}; }
-      function detect() {
-        var l = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "en"];
-        for (var i = 0; i < l.length; i++) { var c = String(l[i]).toLowerCase(); if (c.indexOf("vi") === 0) return "vi"; if (c.indexOf("en") === 0) return "en"; }
-        return "en";
-      }
-      var lang = saved.lang || detect();
-      function setLang(l) {
-        lang = l; de.lang = l;
-        nodes.forEach(function (n) { var v = n.getAttribute("data-" + l); if (v !== null && v !== "") n.textContent = v; else if (l === "en") n.textContent = n.getAttribute("data-en"); });
-        document.title = title[l]; descEl.content = desc[l];
-        document.getElementById("lang-btn").textContent = l === "vi" ? "VI" : "EN";
-      }
-      document.getElementById("lang-btn").addEventListener("click", function () {
-        var next = lang === "vi" ? "en" : "vi"; setLang(next);
-        try { localStorage.setItem(STORE, JSON.stringify({ lang: next, theme: saved.theme })); saved.lang = next; } catch (e) {}
-      });
-      setLang(lang);
+<footer><div class="wrap">
+ <div><a class="brand" href="#home" style="margin:0 0 10px"><img src="assets/icon.png" alt="" width="40" height="40"><span>MP3 Downloader</span></a><div class="by"><span data-i="by">Made by</span><b>minhtrong67</b><span data-i="with">with the help of</span><b class="ai">Claude</b></div></div>
+ <div class="by"><span data-i="lic">MIT License · open source</span><span>© 2026</span></div>
+</div></footer>
 
-      /* Giao diện sáng / tối */
-      if (saved.theme) de.setAttribute("data-theme", saved.theme);
-      document.getElementById("theme-btn").addEventListener("click", function () {
-        var dark = de.getAttribute("data-theme") === "dark" || (!de.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
-        var next = dark ? "light" : "dark"; de.setAttribute("data-theme", next);
-        try { localStorage.setItem(STORE, JSON.stringify({ lang: saved.lang, theme: next })); saved.theme = next; } catch (e) {}
-      });
+<button class="fab" id="fab" data-tip="Back to top" data-tipi="tip_top" aria-label="Back to top"><svg class="ic" viewBox="0 0 24 24"><use href="#i-up"/></svg></button>
 
-      /* Thanh trên cùng đổ bóng khi cuộn */
-      var bar = document.getElementById("appbar");
-      function onScroll() { bar.classList.toggle("scrolled", window.scrollY > 8); }
-      window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<g id="i-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></g>
+<g id="i-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></g>
+<g id="i-list"><path d="M21 15V6"/><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/><path d="M12 12H3"/><path d="M16 6H3"/><path d="M12 18H3"/></g>
+<g id="i-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></g>
+<g id="i-history"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></g>
+<g id="i-palette"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/></g>
+<g id="i-globe"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></g>
+<g id="i-shield"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></g>
+<g id="i-layers"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></g>
+<g id="i-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></g>
+<g id="i-moon"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></g>
+<g id="i-monitor"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/></g>
+<g id="i-up"><path d="m18 15-6-6-6 6"/></g><g id="i-down"><path d="m6 9 6 6 6-6"/></g>
+<g id="i-menu"><path d="M4 12h16M4 6h16M4 18h16"/></g><g id="i-x"><path d="M18 6 6 18M6 6l12 12"/></g>
+<g id="i-arrow"><path d="M5 12h14m-7-7 7 7-7 7"/></g><g id="i-check"><path d="M20 6 9 17l-5-5"/></g>
+<g id="i-heart"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></g>
+<g id="i-music"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></g>
+<g id="i-refresh"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></g>
+<g id="i-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></g>
+<g id="i-lock"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></g>
+<g id="i-copy"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></g>
+</defs></svg>
 
-      /* Hiệu ứng xuất hiện khi cuộn */
-      var rv = [].slice.call(document.querySelectorAll(".reveal"));
-      if ("IntersectionObserver" in window) {
-        var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { threshold: .12, rootMargin: "0px 0px -40px 0px" });
-        rv.forEach(function (n) { io.observe(n); });
-      } else { rv.forEach(function (n) { n.classList.add("in"); }); }
-
-      /* Ripple cho nút */
-      document.addEventListener("pointerdown", function (e) {
-        var h = e.target.closest(".btn, .icon-btn, .lang-btn"); if (!h) return;
-        var r = h.getBoundingClientRect(), s = Math.max(r.width, r.height) * 2, sp = document.createElement("span");
-        sp.className = "ripple"; sp.style.width = sp.style.height = s + "px";
-        sp.style.left = e.clientX - r.left - s / 2 + "px"; sp.style.top = e.clientY - r.top - s / 2 + "px";
-        h.appendChild(sp); sp.addEventListener("animationend", function () { sp.remove(); });
-      }, { passive: true });
-    })();
-  </script>
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return(r||document).querySelector(s)},$$=function(s,r){return[].slice.call((r||document).querySelectorAll(s))};
+var root=document.documentElement,reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* ─── icon <use> ─── */
+$$("svg.ic use").forEach(function(u){}); 
+/* ─── i18n ─── */
+var T={en:{skip:"Skip to content",n_feat:"Features",n_how:"How it works",n_cust:"Customize",n_dl:"Download",n_faq:"FAQ",tip_theme:"Theme",tip_lang:"Language",tip_menu:"Menu",tip_copy:"Copy",tip_top:"Back to top",mode:"Appearance",m_auto:"System",m_light:"Light",m_dark:"Dark",color:"Theme color",custom:"Custom color",
+eyebrow:"Free & open source desktop app",h1a:"Any song.",h1b:"One click to MP3.",lead:"Paste a link or just type a song name. MP3 Downloader grabs YouTube, TikTok and Spotify tracks as tagged MP3 files with cover art — fast, tidy and beautifully designed.",dl_btn:"Download for Windows",see:"Explore features",c1:"MIT licensed",c2:"Runs locally",toast:"Downloaded: Blinding Lights",
+f_h:"Everything you need, nothing you don't",f_p:"A focused downloader with the polish of a modern desktop app.",f1t:"YouTube, TikTok & Spotify",f1d:"Paste one link or many. Spotify tracks are matched to the best audio source automatically, then tagged with title, artist, album, year and cover.",f2t:"Search by name",f2d:"No link? Type the song title and pick from the results.",f3t:"Playlists",f3d:"Open a playlist, tick the tracks you want and queue them all.",f4t:"Edit tags",f4d:"Fix title, artist, album and year before downloading.",f5t:"Smart queue",f5d:"Parallel downloads, speed limit, retries and wavy live progress.",f6t:"History & file naming",f6d:"Search past downloads, re-download in one tap, choose name templates and per-artist folders.",f7t:"Make it yours",f7d:"Light, dark or system, 16 theme colors plus custom, 5 fonts, 3 text sizes, English & Vietnamese.",f8t:"Safe by design",f8d:"Tools are verified with SHA-256, a strict content-security policy is on, and nothing leaves your PC except the download itself.",f9t:"Stays up to date",f9d:"Warns you when yt-dlp is outdated and updates it in a click. Notifications tell you when songs are ready.",
+h_h:"Three steps. That's it.",h_p:"From link to library in under a minute.",s1t:"Paste or search",s1d:"Drop in a YouTube, TikTok or Spotify link — or type the song name.",s2t:"Check & tweak",s2d:"Preview the cover, edit tags if you like and pick a quality up to 320 kbps.",s3t:"Download",s3d:"Watch the wavy progress, get a notification and open the file from the app.",
+c_h:"Your colors, your app",c_p:"Pick a color and this whole page — and the app — repaints itself with a matching Material 3 Expressive palette. Try it now.",pv_in:"Paste a link or type a song name",pv_b1:"Download",pv_b2:"Edit tags",pv_b3:"History",st1:"sources",st2:"theme colors",st3:"kbps max",st4:"languages",
+d_h:"Get MP3 Downloader",d_p:"Free forever. Install, open and start downloading — the app sets up the tools it needs on first launch.",d_m1:"Installer · EN / VI",d_src:"Build from source (Node 18+, Rust, Tauri prerequisites)",
+q_h:"Good to know",q1:"How does Spotify work?",a1:"Spotify doesn't allow direct downloads. The app reads the track info (title, artist, album, cover) from the link and finds matching audio on YouTube, then tags the MP3 for you.",q2:"Windows says \"unrecognized app\" (SmartScreen)",a2:"The installer isn't code-signed yet, which is normal for small open-source apps. Click \"More info\" → \"Run anyway\". You can also read and build the source yourself.",q3:"A download fails with HTTP 403 or \"sign in\"",a3:"Update yt-dlp in Settings → Tools, install Deno, or choose \"Use browser cookies\" under Network. These fix almost every YouTube error.",q4:"Is it legal?",a4:"Only download content you own or have permission to use, and respect the terms of each platform and your local laws. The app is a tool; responsibility is yours.",q5:"Where are my files?",a5:"In your Downloads folder by default. Change it, add per-artist folders and name templates in Settings → Downloads.",
+by:"Made by",with:"with the help of",lic:"MIT License · open source",
+title:"MP3 Downloader — Download MP3 from YouTube, TikTok & Spotify | Free desktop app",desc:"MP3 Downloader is a free, open-source desktop app that saves music from YouTube, TikTok and Spotify links as MP3 with cover art and tags. Search by name, download playlists, bilingual EN/VI, Material 3 Expressive design."},
+vi:{skip:"Bỏ qua đến nội dung",n_feat:"Tính năng",n_how:"Cách dùng",n_cust:"Tuỳ biến",n_dl:"Tải về",n_faq:"Hỏi đáp",tip_theme:"Giao diện",tip_lang:"Ngôn ngữ",tip_menu:"Menu",tip_copy:"Sao chép",tip_top:"Lên đầu trang",mode:"Chế độ hiển thị",m_auto:"Hệ thống",m_light:"Sáng",m_dark:"Tối",color:"Màu chủ đề",custom:"Màu tuỳ chỉnh",
+eyebrow:"Ứng dụng desktop miễn phí & mã nguồn mở",h1a:"Bài hát nào cũng được.",h1b:"Một chạm ra MP3.",lead:"Dán link hoặc chỉ cần gõ tên bài hát. MP3 Downloader tải nhạc từ YouTube, TikTok và Spotify thành file MP3 có ảnh bìa và thông tin đầy đủ — nhanh, gọn và đẹp mắt.",dl_btn:"Tải cho Windows",see:"Khám phá tính năng",c1:"Giấy phép MIT",c2:"Chạy cục bộ",toast:"Đã tải xong: Blinding Lights",
+f_h:"Đủ mọi thứ bạn cần, không thừa thứ nào",f_p:"Một trình tải nhạc gọn gàng với độ hoàn thiện của ứng dụng desktop hiện đại.",f1t:"YouTube, TikTok & Spotify",f1d:"Dán một hoặc nhiều link. Bài Spotify được tự động ghép với nguồn âm thanh tốt nhất rồi gắn tên bài, nghệ sĩ, album, năm và ảnh bìa.",f2t:"Tìm theo tên",f2d:"Không có link? Gõ tên bài hát rồi chọn trong danh sách kết quả.",f3t:"Playlist",f3d:"Mở playlist, tick các bài muốn tải và thêm tất cả vào hàng đợi.",f4t:"Sửa thông tin",f4d:"Chỉnh tên bài, nghệ sĩ, album và năm trước khi tải.",f5t:"Hàng đợi thông minh",f5d:"Tải song song, giới hạn tốc độ, tự thử lại và thanh tiến độ gợn sóng.",f6t:"Lịch sử & đặt tên tệp",f6d:"Tìm lại bài đã tải, tải lại một chạm, chọn mẫu tên tệp và thư mục theo nghệ sĩ.",f7t:"Của riêng bạn",f7d:"Sáng, tối hoặc theo hệ thống, 16 màu chủ đề + tuỳ chỉnh, 5 font chữ, 3 cỡ chữ, tiếng Anh & tiếng Việt.",f8t:"An toàn từ thiết kế",f8d:"Công cụ được xác minh bằng SHA-256, bật chính sách bảo mật nội dung nghiêm ngặt và không gửi dữ liệu nào ra ngoài ngoài lượt tải.",f9t:"Luôn cập nhật",f9d:"Cảnh báo khi yt-dlp đã cũ và cập nhật chỉ với một cú nhấp. Có thông báo khi bài hát tải xong.",
+h_h:"Chỉ ba bước.",h_p:"Từ link đến thư viện nhạc trong chưa đầy một phút.",s1t:"Dán hoặc tìm kiếm",s1d:"Thả link YouTube, TikTok hoặc Spotify — hoặc gõ tên bài hát.",s2t:"Kiểm tra & chỉnh sửa",s2d:"Xem trước ảnh bìa, sửa thông tin nếu muốn và chọn chất lượng đến 320 kbps.",s3t:"Tải xuống",s3d:"Theo dõi thanh tiến độ gợn sóng, nhận thông báo và mở tệp ngay trong app.",
+c_h:"Màu của bạn, app của bạn",c_p:"Chọn một màu, cả trang này — và cả ứng dụng — sẽ tự đổi sang bảng màu Material 3 Expressive tương ứng. Thử ngay nhé.",pv_in:"Dán link hoặc gõ tên bài hát",pv_b1:"Tải xuống",pv_b2:"Sửa thông tin",pv_b3:"Lịch sử",st1:"nguồn nhạc",st2:"màu chủ đề",st3:"kbps tối đa",st4:"ngôn ngữ",
+d_h:"Tải MP3 Downloader",d_p:"Miễn phí mãi mãi. Cài đặt, mở lên và tải nhạc — app tự thiết lập các công cụ cần thiết ở lần chạy đầu tiên.",d_m1:"Bộ cài · EN / VI",d_src:"Build từ mã nguồn (Node 18+, Rust, yêu cầu của Tauri)",
+q_h:"Điều nên biết",q1:"Spotify hoạt động thế nào?",a1:"Spotify không cho tải trực tiếp. App đọc thông tin bài hát (tên, nghệ sĩ, album, ảnh bìa) từ link rồi tìm âm thanh khớp trên YouTube và gắn thẻ cho file MP3.",q2:"Windows báo \"ứng dụng không nhận dạng được\" (SmartScreen)",a2:"Bộ cài chưa được ký số, điều này bình thường với ứng dụng mã nguồn mở nhỏ. Hãy bấm \"Thông tin thêm\" → \"Vẫn chạy\". Bạn cũng có thể tự đọc và build mã nguồn.",q3:"Tải lỗi HTTP 403 hoặc yêu cầu \"đăng nhập\"",a3:"Hãy cập nhật yt-dlp trong Cài đặt → Công cụ, cài Deno, hoặc chọn \"Dùng cookie trình duyệt\" ở mục Mạng. Cách này khắc phục gần như mọi lỗi YouTube.",q4:"Có hợp pháp không?",a4:"Chỉ tải nội dung bạn sở hữu hoặc được phép sử dụng, đồng thời tuân thủ điều khoản của từng nền tảng và luật tại nơi bạn sống. App chỉ là công cụ; trách nhiệm thuộc về người dùng.",q5:"File nằm ở đâu?",a5:"Mặc định trong thư mục Downloads. Bạn có thể đổi nơi lưu, bật thư mục theo nghệ sĩ và mẫu tên tệp trong Cài đặt → Tải xuống.",
+by:"Tạo bởi",with:"với sự hỗ trợ của",lic:"Giấy phép MIT · mã nguồn mở",
+title:"MP3 Downloader — Tải nhạc MP3 từ YouTube, TikTok & Spotify | Ứng dụng desktop miễn phí",desc:"MP3 Downloader là ứng dụng desktop miễn phí, mã nguồn mở giúp tải nhạc từ link YouTube, TikTok, Spotify thành MP3 kèm ảnh bìa và thông tin bài hát. Tìm theo tên, tải playlist, song ngữ EN/VI, thiết kế Material 3 Expressive."}};
+var S={mode:"auto",h:145,c:.15,hex:"#4CAF50",lang:root.lang==="vi"?"vi":"en"};
+try{var sv=JSON.parse(localStorage.getItem("mp3dl.site")||"{}");for(var k in sv)S[k]=sv[k]}catch(e){}
+function save(){try{localStorage.setItem("mp3dl.site",JSON.stringify(S))}catch(e){}}
+function applyLang(){var d=T[S.lang]||T.en;root.lang=S.lang;
+ $$("[data-i]").forEach(function(e){var v=d[e.dataset.i];if(v!=null){var t=e.firstChild&&e.firstChild.nodeType===3&&e.children.length?e.firstChild:null;if(e.tagName==="SUMMARY"){e.firstChild.nodeValue=v}else e.textContent=v}});
+ $$("[data-tipi]").forEach(function(e){e.dataset.tip=d[e.dataset.tipi];e.setAttribute("aria-label",d[e.dataset.tipi])});
+ document.title=d.title;$('meta[name=description]').content=d.desc;$('meta[property="og:locale"]').content=S.lang==="vi"?"vi_VN":"en_US";
+ $("#btnLang").dataset.tip=S.lang==="vi"?"English":"Tiếng Việt";
+ startTyping()}
+/* ─── theme (OKLCH từ màu gốc) ─── */
+var PRE=["#F44336","#E91E63","#9C27B0","#673AB7","#3F51B5","#2196F3","#00BCD4","#009688","#4CAF50","#8BC34A","#CDDC39","#FFC107","#FF9800","#FF5722","#795548","#607D8B"];
+function lin(v){v/=255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4)}
+function hexToLch(hex){var n=parseInt(hex.slice(1),16),r=lin(n>>16&255),g=lin(n>>8&255),b=lin(n&255);
+ var l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b),m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b),s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+ var L=.2104542553*l+.793617785*m-.0040720468*s,A=1.9779984951*l-2.428592205*m+.4505937099*s,B=.0259040371*l+.7827717662*m-.808675766*s;
+ var h=Math.atan2(B,A)*180/Math.PI;if(h<0)h+=360;return{h:h,c:Math.hypot(A,B)}}
+function setSeed(hex){var x=hexToLch(hex);S.hex=hex;S.h=+x.h.toFixed(1);S.c=+Math.min(.17,Math.max(.07,x.c)).toFixed(3);paint()}
+function dark(){return S.mode==="dark"||(S.mode==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches)}
+function paint(){root.style.setProperty("--h",S.h);root.style.setProperty("--c",S.c);root.dataset.scheme=dark()?"dark":"light";$('meta[name=theme-color]').content=S.hex;
+ $$("#segMode button,#segPage button").forEach(function(b){var on=b.dataset.m===S.mode;b.classList.toggle("on",on);b.setAttribute("aria-checked",on)});
+ $$(".sw button").forEach(function(b){b.classList.toggle("on",b.dataset.hex.toLowerCase()===S.hex.toLowerCase())});$("#cpPop").value=S.hex.toLowerCase();save()}
+function swatches(el){PRE.forEach(function(h){var b=document.createElement("button");b.type="button";b.style.background=h;b.dataset.hex=h;b.setAttribute("aria-label",h);b.innerHTML='<svg viewBox="0 0 24 24" class="ic"><use href="#i-check"/></svg>';b.onclick=function(){setSeed(h)};el.appendChild(b)})}
+swatches($("#swPop"));swatches($("#swPage"));
+$$("#segMode button,#segPage button").forEach(function(b){b.onclick=function(){S.mode=b.dataset.m;paint()}});
+$("#cpPop").addEventListener("input",function(e){setSeed(e.target.value.toUpperCase())});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){if(S.mode==="auto")paint()});
+var pop=$("#popTheme"),bt=$("#btnTheme");function tp(o){pop.classList.toggle("open",o);bt.setAttribute("aria-expanded",o)}
+bt.onclick=function(e){e.stopPropagation();tp(!pop.classList.contains("open"))};pop.onclick=function(e){e.stopPropagation()};
+document.addEventListener("click",function(){tp(false)});document.addEventListener("keydown",function(e){if(e.key==="Escape"){tp(false);menu(false)}});
+$("#btnLang").onclick=function(){S.lang=S.lang==="vi"?"en":"vi";save();applyLang()};
+/* ─── cookie shapes ─── */
+function cookie(n){var p=[],R=46/1.05;for(var i=0;i<=120;i++){var a=i/120*Math.PI*2,r=R*(1+.05*Math.cos(n*a));p.push((i?"L":"M")+(50+r*Math.cos(a)).toFixed(2)+" "+(50+r*Math.sin(a)).toFixed(2))}return p.join("")+"Z"}
+$$("svg[data-cookie]").forEach(function(s){s.innerHTML='<path fill="currentColor" d="'+cookie(+s.dataset.cookie)+'"/>'});
+/* ─── marquee ─── */
+var names=["YouTube","TikTok","Spotify","SoundCloud","MP3 320 kbps","Cover art","ID3 tags","Playlists","Material 3 Expressive"],mq="";for(var r=0;r<2;r++)names.forEach(function(n){mq+='<span><svg class="ic" viewBox="0 0 24 24"><use href="#i-music"/></svg>'+n+"</span>"});$("#mq").innerHTML=mq;
+/* ─── wavy mask ─── */
+var wave='url("data:image/svg+xml,'+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='20' height='8' viewBox='0 0 20 8'><path d='M-2 4 Q3 -1 10 4 T22 4' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'/></svg>")+'")';root.style.setProperty("--w",wave);
+/* ─── header, progress, fab, scrollspy ─── */
+var hdr=$("#top"),prog=$("#prog"),fab=$("#fab"),links=$$("nav.links a"),secs=links.map(function(a){return $(a.getAttribute("href"))});
+var tick=false;function onScroll(){if(tick)return;tick=true;requestAnimationFrame(function(){tick=false;var y=scrollY,h=document.documentElement.scrollHeight-innerHeight;
+ hdr.classList.toggle("sc",y>20);prog.style.transform="scaleX("+(h>0?y/h:0)+")";fab.classList.toggle("show",y>600);
+ var cur=-1;secs.forEach(function(s,i){if(s&&s.getBoundingClientRect().top<innerHeight*.4)cur=i});links.forEach(function(a,i){a.classList.toggle("on",i===cur)})})}
+addEventListener("scroll",onScroll,{passive:true});onScroll();
+function goto(id){var el=$(id);if(!el)return;var y=id==="#home"?0:el.getBoundingClientRect().top+scrollY-(hdr.offsetHeight+8);scrollTo({top:y,behavior:reduce?"auto":"smooth"});try{history.replaceState(null,"",id==="#home"?location.pathname:id)}catch(e){}}
+$$('a[href^="#"]').forEach(function(a){a.addEventListener("click",function(e){var id=a.getAttribute("href");if(id.length>1){e.preventDefault();goto(id);menu(false)}})});
+fab.onclick=function(){scrollTo({top:0,behavior:reduce?"auto":"smooth"});try{history.replaceState(null,"",location.pathname)}catch(e){}};
+var nav=$("#links"),mb=$("#btnMenu");function menu(o){nav.classList.toggle("open",o);mb.setAttribute("aria-expanded",o);mb.firstChild.firstElementChild.setAttribute("href",o?"#i-x":"#i-menu")}
+mb.onclick=function(e){e.stopPropagation();menu(!nav.classList.contains("open"))};document.addEventListener("click",function(e){if(!nav.contains(e.target))menu(false)});
+/* ─── reveal + count-up ─── */
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);var n=$("[data-n]",e.target);if(n)count(n)}})},{threshold:.15,rootMargin:"0px 0px -40px 0px"});
+$$(".rv").forEach(function(e){io.observe(e)});
+function count(el){var to=+el.dataset.n,t0=performance.now(),d=1200;if(reduce){el.textContent=to;return}(function f(t){var p=Math.min(1,(t-t0)/d),e=1-Math.pow(1-p,4);el.textContent=Math.round(to*e);if(p<1)requestAnimationFrame(f)})(t0)}
+/* ─── ripple trên nút ─── */
+document.addEventListener("pointerdown",function(e){var b=e.target.closest(".btn");if(!b)return;var r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,i=document.createElement("span");i.className="rip";i.style.cssText="width:"+s+"px;height:"+s+"px;left:"+(e.clientX-r.left-s/2)+"px;top:"+(e.clientY-r.top-s/2)+"px";b.appendChild(i);setTimeout(function(){i.remove()},650)});
+/* ─── hero: glow theo chuột + nghiêng mock ─── */
+var hero=$("#home"),mock=$("#mock");
+if(!reduce&&matchMedia("(pointer:fine)").matches)hero.addEventListener("pointermove",function(e){var r=hero.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;hero.style.setProperty("--mx",x*100+"%");hero.style.setProperty("--my",y*100+"%");mock.style.setProperty("--ry",(x-.5)*-14+"deg");mock.style.setProperty("--rx",(y-.5)*10+"deg")});
+/* ─── gõ chữ trong mock ─── */
+var typedEl=$("#typed"),tt;function startTyping(){clearTimeout(tt);var words=S.lang==="vi"?["nhạc lofi chill","tên bài hát bất kỳ","Sơn Tùng M-TP"]:["lofi hip hop radio","any song title","blinding lights"],w=0,i=0,del=false;
+ if(reduce){typedEl.textContent=words[0];return}
+ (function step(){var s=words[w];typedEl.textContent=s.slice(0,i);if(!del&&i<s.length){i++;tt=setTimeout(step,70)}else if(!del){del=true;tt=setTimeout(step,1600)}else if(i>0){i--;tt=setTimeout(step,35)}else{del=false;w=(w+1)%words.length;tt=setTimeout(step,300)}})()}
+/* ─── copy ─── */
+$("#cp").onclick=function(){var txt="npm install\nnpm run dev\nnpm run build";(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).catch(function(){var t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()});var u=this.querySelector("use");u.setAttribute("href","#i-check");setTimeout(function(){u.setAttribute("href","#i-copy")},1600)};
+/* ─── init ─── */
+if(S.hex&&S.h==null)setSeed(S.hex);paint();applyLang();
+})();
+</script>
 </body>
 </html>

@@ -51,7 +51,7 @@ English · [Tiếng Việt](README.vi.md)
 
 ## Screenshots
 
-> The images live in the [`screenshots`](screenshots) folder and are named `image01.png`, `image02.png`, `image03.png`… Replace each placeholder with a real screenshot using the same file name.
+> The images live in the [`screenshots`](screenshots) folder and are named `image01.png` … `image04.png`. Replace each image with a fresh screenshot using the same file name.
 
 | Home | Songs (list) |
 |:---:|:---:|
@@ -61,9 +61,6 @@ English · [Tiếng Việt](README.vi.md)
 |:---:|:---:|
 | ![Albums](screenshots/image03.png) | ![Now Playing](screenshots/image04.png) |
 
-| Settings |
-|:---:|
-| ![Settings](screenshots/image05.png) |
 
 ## Features
 
@@ -75,10 +72,13 @@ English · [Tiếng Việt](README.vi.md)
 - Tags (title, artist, album, year, genre, track) and embedded **cover art** via `lofty`.
 - Browse by Songs, Albums, Artists, Playlists, Favorites and Recent – with **list / grid view** on every tab, accent-insensitive search (`Ctrl+F`) and sorting.
 - Virtualized lists: smooth with tens of thousands of songs.
-- Back up / restore the library (JSON), remove missing files.
+- Back up / restore your data (JSON, validated and confirmed before it replaces anything), remove missing files.
+- **Safe storage:** files are written atomically, a `.bak` copy is kept, a damaged file is restored from it automatically, and a daily copy of your playlists, favorites and settings is saved in `backups/` (the last 5 are kept; *Settings → Library → Automatic backups* opens the folder).
 - **Folder watching:** songs you add, rename or delete inside the library folders show up automatically (can be turned off).
 - **Edit tags:** right-click a song → *Edit tags* to rewrite title, artist, album, album artist, genre, year and track number inside the file itself.
-- **Smart playlists** that fill themselves: *Most played*, *New this month*, *Never played* and *Lossless* (FLAC / WAV).
+- **Smart playlists** that fill themselves: *Most played*, *New this month*, *Never played* and *Lossless* (FLAC / WAV) – plus **your own rule-based smart playlists** (genre, year, bitrate, format, length, recently added, played / not played, favorites) with a live preview.
+- **Duplicate finder:** groups the same song, keeps the best copy (lossless first, then bitrate) and moves play counts, favorites and playlists to it. Only the library entry is removed – never your files.
+- **Statistics:** most played songs and artists, listening time and the last 7 days. A song counts after 30 s or half of its length, so skipping does not inflate the numbers.
 
 #### Supported audio formats
 
@@ -101,8 +101,11 @@ Playback uses the Microsoft Edge WebView2 media stack, so a file plays if WebVie
 - Playlists: create, rename, delete, reorder, import / export **M3U / M3U8**.
 - **10-band equalizer** with presets and preamp, playback speed 0.5× – 2×.
 - **Synced lyrics** (`.lrc` next to the song or embedded in the tags) – click a line to seek. No lyrics yet? **Search online** (LRCLIB, only when you press the button) and save them as a `.lrc` next to the song.
-- Spectrum visualizer, full-window *Now Playing* view and a **mini player** that stays on top.
-- Sleep timer (15 – 120 minutes or after the current song), **global media keys** (Play/Pause, Next, Previous, Stop – work in the background and from the tray; the Windows media overlay shows the cover and progress), restore of the previous session.
+- Three **visualizer styles** (bars, wave, circle), a full-window *Now Playing* view and a **mini player** that stays on top.
+- **Lyrics offset:** −/+ 0.1 s per song when the timing of an `.lrc` is off.
+- **Audio output:** pick the speakers / headphones the music plays on (*Settings → Playback*).
+- **Save the queue as a playlist** with one click.
+- Sleep timer (15 – 120 minutes or after the current song) with an optional **fade-out**, optional **global hotkeys** (`Ctrl+Alt+Space / ← / → / M / T`), **global media keys** (Play/Pause, Next, Previous, Stop – work in the background and from the tray; the Windows media overlay shows the cover and progress), restore of the previous session.
 
 ### Appearance & languages
 - Light, dark or system theme; **18 Material theme colors** + custom color (default theme = `material-theme-blue.json`); optional **dynamic color from the cover art**; **font picker** with popular fonts.
@@ -123,6 +126,9 @@ Playback uses the Microsoft Edge WebView2 media stack, so a file plays if WebVie
 - System tray with play / pause / previous / next, optional *close to tray*, always on top, single instance.
 - Frameless Material title bar.
 
+### Online (optional)
+- **ListenBrainz scrobbling:** paste your user token in *Settings → Online*; songs you really listened to (and *now playing*) are sent by the Rust side. Off by default.
+
 ### Security
 - The asset protocol starts **empty**: only the cover cache and the folders that hold your library are readable by the web view (no more `**` wildcard).
 - File commands accept only absolute paths to `.m3u`, `.m3u8`, `.lrc` and `.json` files, never write into the app's own data folder and cap the size of what they read.
@@ -140,6 +146,8 @@ Playback uses the Microsoft Edge WebView2 media stack, so a file plays if WebVie
 | `Ctrl+F` | Search | `F5` | Refresh library |
 | `Esc` | Close dialog | | |
 
+Every in-app shortcut can be changed (*Settings → Playback → Keyboard shortcuts*). With *Global hotkeys* on, `Ctrl+Alt+Space`, `Ctrl+Alt+←`, `Ctrl+Alt+→`, `Ctrl+Alt+M` (mini player) and `Ctrl+Alt+T` (always on top) work in any app.
+
 ## Installation
 
 ### Download
@@ -148,7 +156,7 @@ Download the latest installer from the **Releases** page of this repository:
 
 | File | Description |
 |---|---|
-| `Material Music_1.2.0_x64-setup.exe` | Installer for Windows 10 / 11 (64-bit) – recommended |
+| `Material Music_1.3.0_x64-setup.exe` | Installer for Windows 10 / 11 (64-bit) – recommended |
 
 | System requirements | |
 |---|---|
@@ -159,12 +167,12 @@ Supported audio: **MP3, FLAC, WAV, OGG, Opus, M4A, AAC** (playback uses the WebV
 
 ### Install
 
-1. Run **`Material Music_1.2.0_x64-setup.exe`**. It installs per user, so **no administrator rights** are needed.
+1. Run **`Material Music_1.3.0_x64-setup.exe`**. It installs per user, so **no administrator rights** are needed.
 2. If Windows SmartScreen shows *"Windows protected your PC"* (the installer is not code-signed), click **More info → Run anyway**.
 3. Follow the wizard and launch **Material Music** from the Start menu.
 4. The app scans your **Music** folder automatically; add more with *Add folder* or by dragging folders into the window.
 
-**Uninstall** – *Settings → Apps → Installed apps → Material Music → Uninstall* (or run `uninstall.exe` in the install folder). Data lives in `%APPDATA%\com.minhtrong67.material-music-player` and cover cache in `%LOCALAPPDATA%\com.minhtrong67.material-music-player`; delete them for a completely clean removal.
+**Uninstall** – *Settings → Apps → Installed apps → Material Music → Uninstall* (or run `uninstall.exe` in the install folder). Data lives in `%APPDATA%\com.minhtrong67.material-music` and cover cache in `%LOCALAPPDATA%\com.minhtrong67.material-music`; delete them for a completely clean removal.
 
 **Upgrading from "Melodia"** – the first launch automatically imports the library saved by the old Melodia build.
 
@@ -193,7 +201,7 @@ Supported audio: **MP3, FLAC, WAV, OGG, Opus, M4A, AAC** (playback uses the WebV
 **Prerequisites** – Windows 10 / 11 with WebView2, [Node.js](https://nodejs.org) 18+, [Rust](https://rustup.rs) (stable) with *Desktop development with C++* (Visual Studio Build Tools), and the [Tauri prerequisites](https://tauri.app/start/prerequisites/).
 
 ```bash
-cd material-music-player
+cd material-music
 npm install
 npm run dev
 ```
@@ -206,8 +214,13 @@ npm run dev
 | `npm run build` | Build the Windows installer |
 | `npm run vite:dev` | UI only in a browser (Tauri features are unavailable) |
 | `npm run icons` | Regenerate every app / setup / uninstall icon in `#E91E63` (needs Python + `pip install pillow`) |
-| `npx tsc --noEmit` | Type-check the frontend |
-| `cargo check` (inside `src-tauri`) | Type-check the Rust backend |
+| `npm run typecheck` | Type-check the frontend |
+| `npm run lint` | ESLint |
+| `npm test` | Vitest unit tests (lyrics, M3U, smart rules, duplicates, statistics, shortcuts…) |
+| `npm run check:i18n` | English and Vietnamese must have the same texts and placeholders |
+| `cargo test` / `cargo check` (inside `src-tauri`) | Test / type-check the Rust backend |
+| `npm run release -- "notes"` | Signed installer + `download/latest.json` for auto-update |
+| `npm run portable` | Zip with the portable executable (after `npm run build`) |
 
 **Using it inside an existing Cargo workspace** – add it to the workspace members:
 
@@ -215,7 +228,7 @@ npm run dev
 [workspace]
 members = [
   # ...your existing apps...
-  "material-music-player/src-tauri",
+  "material-music/src-tauri",
 ]
 ```
 
@@ -225,9 +238,11 @@ members = [
 | Theme colors / fonts offered | `MATERIAL_COLORS` / `FONT_OPTIONS` in `src/lib/theme.ts` |
 | Add a language | add a dictionary in `src/lib/i18n.ts` (the compiler checks every key is translated) |
 | Default window size | `app.windows` in `src-tauri/tauri.conf.json` |
-| Supported audio extensions | `AUDIO_EXTS` in `src-tauri/src/lib.rs` and `src/lib/tauri.ts` |
+| Supported audio extensions | `AUDIO_EXTS` in `src-tauri/src/util.rs` and `src/lib/tauri.ts` |
 
-User data: `library.json` (tracks), `user.json` (playlists, favorites, history, settings, session), `window.json` (window geometry) and `prefs.json` in `%APPDATA%\com.minhtrong67.material-music-player`; cover cache in `%LOCALAPPDATA%\com.minhtrong67.material-music-player\covers`.
+Data from earlier builds (folders `com.minhtrong67.material-music-player` and `com.minhtrong67.melodia`) is imported automatically on the first start.
+
+User data: `library.json` (tracks), `user.json` (playlists, favorites, history, settings, session), `window.json` (window geometry) and `prefs.json` in `%APPDATA%\com.minhtrong67.material-music`; cover cache in `%LOCALAPPDATA%\com.minhtrong67.material-music\covers`.
 
 ## Build
 
@@ -238,8 +253,8 @@ npm run build
 
 | Artifact | Path (project inside a Cargo workspace → `target` at the workspace root) |
 |---|---|
-| Installer | `target/release/bundle/nsis/Material Music_1.2.0_x64-setup.exe` |
-| Portable executable | `target/release/material-music-player.exe` |
+| Installer | `target/release/bundle/nsis/Material Music_1.3.0_x64-setup.exe` |
+| Portable executable | `target/release/material-music.exe` (or `npm run portable` → `download/Material-Music_<version>_x64-portable.zip`) |
 
 - The first build downloads the NSIS tooling, so an internet connection is required.
 - To change the version, edit `version` in both `package.json` and `src-tauri/tauri.conf.json`.
@@ -257,13 +272,15 @@ npm run build
 
 To use your own artwork replace `src-tauri/icons/icon.png` (square, ≥ 512 px), run `npx tauri icon src-tauri/icons/icon.png`, and update `scripts/generate-icons.py` if you also want matching setup / uninstall icons.
 
-**Landing page** – `index.html` at the project root is a single-file Material Design landing page (responsive, SEO + social meta tags, EN/VI). Its Download button points to `download/Material-Music_1.2.0_x64-setup.exe`; copy your built installer into the [`download`](download) folder with that name. Open it by double-clicking, or host the repository root (e.g. GitHub Pages).
+**Landing page** – `index.html` at the project root is a single-file Material Design landing page (responsive, SEO + social meta tags, EN/VI). Its Download button points to `download/Material-Music_1.3.0_x64-setup.exe`; copy your built installer into the [`download`](download) folder with that name. Open it by double-clicking, or host the repository root (e.g. GitHub Pages).
 
 ### Auto-update
 
 The app checks for a new version a few seconds after it starts and every 6 hours (*Settings → About → Automatic updates*, or press **Check for updates**). It reads a small manifest, `download/latest.json`, from the website; if a newer, **signed** version is listed, a toast and a dialog offer to download it, show the release notes and a progress bar, install it and restart the app. Every update is verified with your public key before it is installed.
 
 ### One-time setup
+> The public key is already set in `src-tauri/tauri.conf.json`. Keep the matching **private key** (`material-music.key`) secret – never commit it – and back it up: without it you can not publish updates. To use your own keys instead, follow the steps below.
+
 1. Create the signing key pair (keep the private key secret, never commit it, and back it up: without it you can not publish updates):
    ```powershell
    npx tauri signer generate -w "$env:USERPROFILE\.tauri\material-music.key"
@@ -287,8 +304,8 @@ The app checks for a new version a few seconds after it starts and every 6 hours
 ## Project Structure
 
 ```
-material-music-player/
-├─ screenshots/                README screenshots (image01.png … image05.png)
+material-music/
+├─ screenshots/                README screenshots (image01.png … image04.png)
 ├─ index.html                 landing page (single HTML file, Material Design, SEO)
 ├─ download/                  put the setup .exe here (linked from the landing page)
 ├─ app.html                   app entry (Vite)
@@ -303,7 +320,8 @@ material-music-player/
 │  │  │  ├─ library.ts · player.ts · playlists.ts · ui.ts · app.ts
 │  │  │  └─ derived.ts        albums / artists / search hooks
 │  │  ├─ audio.ts             two-deck engine: gapless, crossfade, ReplayGain, equalizer, spectrum
-│  │  ├─ smart.ts             smart playlists
+│  │  ├─ smart.ts             smart playlists (built-in + rule-based)
+│  │  ├─ duplicates.ts · stats.ts · keymap.ts   duplicate finder, statistics, shortcut map
 │  │  ├─ components/Expressive.tsx   wavy seek bar + morphing loading indicator
 │  │  ├─ i18n.ts              English / Vietnamese dictionaries
 │  │  ├─ theme.ts             Material 3 palette generation from a seed color
@@ -311,17 +329,21 @@ material-music-player/
 │  │  └─ tauri.ts, window.ts, types.ts, utils.ts
 │  ├─ components/             TitleBar, NavDrawer, PlayerBar, NowPlaying, QueuePanel, MiniPlayer,
 │  │                          Collection, TrackRow, TrackListView, MediaCard, Dialogs, ui (M3 kit) …
-│  └─ views/                  Library (home, songs, albums, artists, playlists, search), Settings
+│  └─ views/                  Library (home, songs, albums, artists, playlists, search), Settings, Extra (statistics, duplicates, smart playlist)
 ├─ scripts/
-│  └─ generate-icons.py       generates every icon (app, setup, uninstall) in #E91E63
+│  ├─ generate-icons.py       generates every icon (app, setup, uninstall)
+│  ├─ make-update-manifest.mjs · make-portable.mjs · check-i18n.mjs
+├─ tests/                     Vitest unit tests
+├─ .github/                   CI + release workflows, issue templates
 ├─ src-tauri/                 Rust backend
-│  ├─ src/lib.rs              commands: parallel scan, tags (read / write) & covers, lyrics (local / online), state, tray, media keys, folder watcher, window memory
+│  ├─ src/lib.rs              app setup: plugins, tray, command registration
+│  ├─ src/scan.rs · state.rs · window.rs · system.rs · lyrics.rs · watch.rs · scrobble.rs · util.rs   scan & tags, safe storage & backups, window memory, OS helpers, LRCLIB, folder watcher, ListenBrainz
 │  ├─ src/main.rs
 │  ├─ capabilities/           Tauri permissions
 │  ├─ icons/                  app, setup and uninstall icons
 │  ├─ Cargo.toml
 │  └─ tauri.conf.json         app, window, installer and file-association config
-├─ README.md / README.vi.md
+├─ README.md / README.vi.md · CHANGELOG.md · CONTRIBUTING.md
 ├─ package.json, vite.config.ts, tailwind.config.js, tsconfig.json
 └─ LICENSE
 ```

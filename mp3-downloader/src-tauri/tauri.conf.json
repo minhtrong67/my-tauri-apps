@@ -1,13 +1,16 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "MP3 Downloader",
-  "version": "0.4.0",
-  "identifier": "com.myproject.mp3downloader",
+  "version": "0.5.0",
+  "identifier": "com.minhtrong67.mp3downloader",
   "build": {
-    "frontendDist": "../src"
+    "beforeDevCommand": "npm run web:dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run web:build",
+    "frontendDist": "../dist"
   },
   "app": {
-    "withGlobalTauri": true,
+    "withGlobalTauri": false,
     "windows": [
       {
         "label": "main",
@@ -17,11 +20,13 @@
         "minWidth": 720,
         "minHeight": 560,
         "center": true,
-        "visible": false
+        "visible": false,
+        "decorations": false
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost",
+      "devCsp": "default-src 'self' http://127.0.0.1:1420; script-src 'self' 'unsafe-inline' http://127.0.0.1:1420; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https: http://127.0.0.1:1420; font-src 'self' data: http://127.0.0.1:1420; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:1420 ws://127.0.0.1:1420"
     }
   },
   "bundle": {
@@ -32,7 +37,7 @@
     "license": "MIT",
     "licenseFile": "../LICENSE",
     "shortDescription": "Download MP3 from YouTube, TikTok and Spotify",
-    "longDescription": "MP3 Downloader saves music from YouTube, TikTok and Spotify links as MP3 files with cover art, artist, album and year embedded.",
+    "longDescription": "MP3 Downloader saves music from YouTube, TikTok and Spotify links as MP3 files with cover art, artist, album and year embedded. Search by name, download playlists, edit tags.",
     "targets": "all",
     "icon": [
       "icons/32x32.png",
@@ -45,7 +50,15 @@
     "windows": {
       "nsis": {
         "installerIcon": "icons/installer.ico",
-        "uninstallerIcon": "icons/uninstaller.ico"
+        "uninstallerIcon": "icons/uninstaller.ico",
+        "headerImage": "icons/nsis-header.bmp",
+        "sidebarImage": "icons/nsis-sidebar.bmp",
+        "languages": [
+          "English",
+          "Vietnamese"
+        ],
+        "displayLanguageSelector": true,
+        "installMode": "currentUser"
       }
     }
   }
