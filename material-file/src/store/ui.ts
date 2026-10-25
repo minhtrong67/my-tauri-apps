@@ -22,7 +22,7 @@ export interface DialogSpec {
   resolve: (v: { id: string; value?: string }) => void;
 }
 
-export type ModalName = 'settings' | 'about' | 'props' | 'dupes' | 'usage' | 'search' | 'palette' | 'lightbox' | 'update';
+export type ModalName = 'settings' | 'about' | 'props' | 'dupes' | 'usage' | 'search' | 'palette' | 'lightbox' | 'update' | 'rename';
 interface OpState { title: string; name: string; done: number; total: number; visible: boolean }
 
 interface UI {

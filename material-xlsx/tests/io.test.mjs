@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { Book } from "../src/js/model.js";
-const code = readFileSync(new URL("../src/vendor/exceljs.min.js", import.meta.url), "utf8");
+const code = readFileSync(new URL("../src/public/vendor/exceljs.min.js", import.meta.url), "utf8");
 const mod = { exports: {} }; new Function("module", "exports", code)(mod, mod.exports); globalThis.ExcelJS = mod.exports;
 const { importXlsx, exportXlsx } = await import("../src/js/io.js");
 let fail = 0; const ok = (n, c) => { if (!c) { fail++; console.log("FAIL", n); } };
@@ -37,3 +37,19 @@ const native = await importXlsx(new Uint8Array(await wbn.xlsx.writeBuffer())); c
 ok("native cf count", nc.length === 2); ok("native between", nc[0].type === "cell" && nc[0].op === "between" && nc[0].v1 === "1" && nc[0].v2 === "9" && nc[0].style.bg === "#00ff00");
 ok("native text->expr", nc[1].type === "expr" && /SEARCH/.test(nc[1].expr));
 console.log(fail ? "FAILURES " + fail : "io: all passed");
+// ── JSON / TSV (1.2) ──
+{
+  const { importJSON, toJSON, toCSV } = await import("../src/js/io.js");
+  const r = importJSON('[{"name":"Tea","qty":3,"ok":true,"tags":["a","b"]},{"name":"Coffee","qty":5.5,"extra":null}]', "Menu", "en");
+  const bk = new Book(); bk.reset(r.sheets, r.styles); const s = bk.sheet;
+  ok("json header", bk.value(s, 0, 0) === "name" && bk.value(s, 0, 1) === "qty" && bk.value(s, 0, 3) === "tags" && bk.value(s, 0, 4) === "extra");
+  ok("json values", bk.value(s, 1, 1) === 3 && bk.value(s, 2, 1) === 5.5 && bk.value(s, 1, 2) === true && bk.value(s, 1, 3) === '["a","b"]' && bk.value(s, 2, 4) === null);
+  ok("json sheet name", s.name === "Menu");
+  const back = JSON.parse(toJSON(bk, s)); ok("json roundtrip", back.length === 2 && back[0].name === "Tea" && back[1].qty === 5.5);
+  const w = importJSON('{"data":[[1,2],[3,"=x"]]}', "W", "vi"); const b2 = new Book(); b2.reset(w.sheets, w.styles);
+  ok("json wrapped arrays", b2.value(b2.sheet, 1, 0) === 3 && b2.value(b2.sheet, 1, 1) === "=x");
+  let bad = false; try { importJSON("42", "x", "en"); } catch { bad = true; } ok("json rejects scalars", bad);
+  const tsv = toCSV(bk, s, "\t"); ok("tsv export", tsv.split("\r\n")[1].startsWith("Tea\t3\tTRUE"));
+  const { canOpen, extOf } = await import("../src/js/formats.js");
+  ok("formats", canOpen("a.XLSM") && canOpen("x.json") && canOpen("t.xltx") && !canOpen("old.xls") && !canOpen("a.ods") && extOf("A.B.CSV") === "csv");
+}

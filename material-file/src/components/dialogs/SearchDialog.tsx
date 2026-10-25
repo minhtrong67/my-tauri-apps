@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Regex, Search, X } from 'lucide-react';
+import { Bookmark, BookmarkPlus, Regex, Search, X } from 'lucide-react';
 import { closeModal, useUI } from '../../store/ui';
 import { useT } from '../../lib/i18n';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Buttons';
 import { Select } from '../ui/Select';
 import { Switch } from '../ui/Controls';
-import { deepSearch, useExplorer } from '../../store/explorer';
+import { deepSearch, promptDialog, useExplorer } from '../../store/explorer';
+import { useSettings, type SavedSearch } from '../../store/settings';
 import { extsForKind } from '../../lib/fileTypes';
 import type { Kind } from '../../lib/types';
 import { baseName } from '../../lib/paths';
@@ -25,12 +26,22 @@ export function SearchDialog() {
     closeModal('search');
     void deepSearch(id, q.trim(), { regex, exts: extsForKind(kind), minSize: min ? +min * +minU : undefined, maxSize: max ? +max * +maxU : undefined, after: dayMs(after, false), before: dayMs(before, true) });
   };
+  const saved = useSettings((s) => s.savedSearches);
+  const snapshot = (name: string): SavedSearch => ({ name, q, regex, kind, min, max, minU, maxU, after, before });
+  const save = async () => {
+    const name = await promptDialog({ title: t('search.saveTitle'), label: t('search.saveLabel'), value: q.trim().slice(0, 30), icon: BookmarkPlus, okLabel: t('common.save') });
+    if (name) useSettings.getState().set({ savedSearches: [...saved.filter((s) => s.name !== name), snapshot(name)].slice(-12) });
+  };
+  const apply = (s: SavedSearch) => { setQ(s.q); setRegex(s.regex); setKind(s.kind as Kind); setMin(s.min || ''); setMax(s.max || ''); setMinU(s.minU || '1048576'); setMaxU(s.maxU || '1048576'); setAfter(s.after || ''); setBefore(s.before || ''); };
   const reset = () => { setQ(''); setRegex(false); setKind('all'); setMin(''); setMax(''); setAfter(''); setBefore(''); };
   const L = ({ children, label }: { children: React.ReactNode; label: string }) => <label className="block"><span className="mb-1.5 block text-xs font-semibold text-on-surface-variant">{label}</span>{children}</label>;
   return (
     <Modal open={open} onClose={() => closeModal('search')} title={t('search.advanced')} icon={Search} width={560}
-      footer={<><Button tone="text" icon={X} label={t('common.reset')} onClick={reset} /><Button tone="filled" icon={Search} label={t('search.run')} onClick={submit} /></>}>
+      footer={<><Button tone="text" icon={X} label={t('common.reset')} onClick={reset} /><Button tone="tonal" icon={BookmarkPlus} label={t('common.save')} onClick={() => void save()} /><Button tone="filled" icon={Search} label={t('search.run')} onClick={submit} /></>}>
       <form className="space-y-4 px-6 pb-2" onSubmit={(e) => { e.preventDefault(); submit(); }}>
+        {saved.length > 0 && <div className="flex flex-wrap gap-2">{saved.map((s) => (
+          <span key={s.name} className="chip on !pr-1"><button type="button" className="flex items-center gap-1.5" onClick={() => apply(s)}><Bookmark />{s.name}</button>
+            <button type="button" aria-label={t('common.delete')} className="ibtn sm !size-6" onClick={() => useSettings.getState().set({ savedSearches: saved.filter((x) => x.name !== s.name) })}><X className="!size-3.5" /></button></span>))}</div>}
         <p className="text-on-surface-variant">{t('search.scope', { folder: path ? baseName(path) : '—' })}</p>
         <L label={t('search.name')}><input data-autofocus className="field" value={q} onChange={(e) => setQ(e.target.value)} spellCheck={false} placeholder={regex ? '^IMG_\\d+\\.(jpg|png)$' : t('search.namePh')} /></L>
         <div className="flex items-center justify-between rounded-2xl bg-surface-container-high px-4 py-2.5"><span className="flex items-center gap-2 font-medium"><Regex className="size-5 text-primary" />{t('search.regex')}</span><Switch label={t('search.regex')} checked={regex} onChange={setRegex} /></div>

@@ -22,7 +22,7 @@ export function Thumb({
   const Icon = audio ? FileAudio : kind === "hls" ? Radio : kind === "ytdlp" ? Film : Globe;
   return (
     <div
-      className={`relative shrink-0 overflow-hidden rounded-xl ${className}`}
+      className={`relative shrink-0 overflow-hidden rounded-[22px] transition-[border-radius] duration-500 ease-spring group-hover:rounded-[34px] ${className}`}
       style={{ background: `linear-gradient(135deg, oklch(0.78 0.09 ${hue}), oklch(0.6 0.12 ${hue + 40}))` }}
     >
       {src ? (

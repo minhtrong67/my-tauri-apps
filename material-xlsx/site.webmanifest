@@ -10,6 +10,12 @@
   "lang": "en",
   "icons": [
     {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
       "src": "src-tauri/icons/128x128.png",
       "sizes": "128x128",
       "type": "image/png"

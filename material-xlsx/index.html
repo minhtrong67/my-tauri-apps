@@ -31,6 +31,7 @@
 <link rel="manifest" href="site.webmanifest" />
 
 <!-- Icons & app/PWA hints -->
+<link rel="icon" type="image/svg+xml" href="icon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="src-tauri/icons/32x32.png" />
 <link rel="icon" type="image/png" sizes="128x128" href="src-tauri/icons/128x128.png" />
 <link rel="shortcut icon" href="src-tauri/icons/icon.ico" />
@@ -129,10 +130,10 @@
    "applicationCategory": "BusinessApplication",
    "applicationSubCategory": "Spreadsheet",
    "operatingSystem": "Windows 10, Windows 11",
-   "softwareVersion": "1.1.0",
+   "softwareVersion": "1.2.0",
    "description": "Free, open-source desktop spreadsheet editor with .xlsx support, 200+ formulas, charts, conditional formatting and Material Design 3 themes.",
    "url": "https://minhtrong67.github.io/material-xlsx/",
-   "downloadUrl": "https://minhtrong67.github.io/material-xlsx/download/Material%20Xlsx_1.1.0_x64-setup.exe",
+   "downloadUrl": "https://minhtrong67.github.io/material-xlsx/download/Material%20Xlsx_1.2.0_x64-setup.exe",
    "installUrl": "https://minhtrong67.github.io/material-xlsx/#download",
    "image": "https://minhtrong67.github.io/material-xlsx/og-image.png",
    "screenshot": [
@@ -577,6 +578,89 @@ html { scroll-behavior: smooth; }
 @keyframes numberGlow { from { opacity: .35; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } [data-r] { opacity: 1; transform: none; } }
+
+/* ═════════ Material 3 Expressive layer ═════════ */
+:root { --spring: cubic-bezier(.34, 1.45, .64, 1); --spring-soft: cubic-bezier(.3, 1.2, .5, 1); --r-lg: 32px; }
+@supports (transition-timing-function: linear(0, 1)) { :root {
+  --spring: linear(0, .009, .035 2.1%, .141, .281 6.7%, .723 12.9%, .938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, .991, .977 51%, .974 53.8%, .975 57.1%, .997 69.8%, 1.003 76.9%, 1.004 83.8%, 1);
+  --spring-soft: linear(0, .02 1.6%, .1 3.6%, .33 7.9%, .62 12.1%, .86 16.3%, 1.01 20.8%, 1.07 25.4%, 1.08 29.4%, 1.05 36%, 1.01 44%, .995 52%, 1); } }
+.btn { transition: border-radius .45s var(--spring), transform .45s var(--spring), box-shadow .3s ease, background-color .2s ease, color .2s ease; }
+.btn:hover { border-radius: 18px; }
+.btn:active:not([aria-disabled]) { border-radius: 12px; transform: scale(.95); }
+.icon-btn { transition: border-radius .45s var(--spring), transform .45s var(--spring), background-color .2s ease; }
+.icon-btn:hover { border-radius: 14px; } .icon-btn:active { border-radius: 10px; transform: scale(.9); }
+.sw { transition: border-radius .45s var(--spring), transform .45s var(--spring), box-shadow .3s ease; }
+.sw.on { border-radius: 18px; transform: scale(1.08); }
+.modes button { transition: border-radius .45s var(--spring), background-color .2s ease, color .2s ease, transform .3s var(--spring); }
+.modes button.on { border-radius: 999px; } .modes button:active { transform: scale(.94); }
+html.reveal::view-transition-old(root), html.reveal::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+html.reveal::view-transition-new(root) { z-index: 2; }
+
+/* morphing hero shapes */
+.morph { position: absolute; z-index: -1; pointer-events: none; background: linear-gradient(135deg, var(--primary-c), color-mix(in srgb, var(--primary) 26%, transparent)); opacity: .55; will-change: border-radius, transform;
+  animation: e-morph 16s var(--spring-soft) infinite alternate, e-spin 48s linear infinite; }
+.morph.m1 { width: min(44vw, 540px); aspect-ratio: 1; right: -8%; top: 4%; }
+.morph.m2 { width: min(20vw, 240px); aspect-ratio: 1; left: 42%; bottom: 2%; opacity: .4; animation-duration: 11s, 36s; animation-direction: alternate-reverse, reverse; background: linear-gradient(135deg, var(--tertiary-c), transparent); }
+@keyframes e-morph { 0% { border-radius: 62% 38% 30% 70% / 60% 30% 70% 40%; } 50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } 100% { border-radius: 48% 52% 40% 60% / 40% 62% 38% 60%; } }
+@keyframes e-spin { to { rotate: 360deg; } }
+
+/* what's new */
+.wn { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 36px; }
+.wn-i { position: relative; padding: 26px; background: var(--surface-1); border: 1px solid var(--outline-v); border-radius: 44px 14px 44px 14px; transition: border-radius .6s var(--spring), transform .5s var(--spring); }
+.wn-i:nth-child(even) { border-radius: 14px 44px 14px 44px; }
+.wn-i:hover { border-radius: 30px; transform: translateY(-6px); }
+.wn-ico { width: 60px; height: 60px; display: grid; place-items: center; margin-bottom: 18px; background: var(--primary-c); color: var(--on-primary-c); border-radius: 50% 30% 50% 30%; transition: border-radius .7s var(--spring), transform .7s var(--spring); }
+.wn-i:hover .wn-ico { border-radius: 30% 50% 30% 50%; transform: rotate(8deg) scale(1.08); }
+.wn-i h3 { margin: 0 0 8px; font-size: 18px; letter-spacing: -.01em; } .wn-i p { margin: 0; color: var(--on-surface-v); font-size: 14.5px; line-height: 1.6; }
+@media (max-width: 1020px) { .wn { grid-template-columns: repeat(2, 1fr); } } @media (max-width: 560px) { .wn { grid-template-columns: 1fr; } }
+
+
+/* back-to-top: circular FAB with a scroll-progress ring that morphs to a squircle on hover */
+#top { border-radius: 50%; transition: border-radius .5s var(--spring), transform .5s var(--spring), opacity .3s ease, visibility .3s; }
+#top:hover { border-radius: 18px; }
+#top::before { content: ""; position: absolute; inset: -5px; border-radius: 50%; pointer-events: none; background: conic-gradient(var(--primary) calc(var(--p, 0) * 1%), color-mix(in srgb, var(--primary) 16%, transparent) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px)); }
+
+/* supported formats */
+.fmt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
+.fmt-c { padding: 26px; background: var(--surface-1); border: 1px solid var(--outline-v); border-radius: 32px; transition: border-radius .6s var(--spring), transform .5s var(--spring); }
+.fmt-c:hover { border-radius: 44px 16px 44px 16px; transform: translateY(-5px); }
+.fmt-c h3 { margin: 0 0 14px; font-size: 18px; letter-spacing: -.01em; display: flex; align-items: center; gap: 10px; }
+.fmt-c h3 svg { width: 22px; height: 22px; fill: none; stroke: var(--primary); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.fmt-ch { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.fc { padding: 7px 14px; border-radius: 999px; background: var(--primary-c); color: var(--on-primary-c); font: 600 14px ui-monospace, Consolas, monospace; transition: border-radius .4s var(--spring), transform .4s var(--spring); }
+.fc:hover { border-radius: 10px; transform: translateY(-2px) rotate(-2deg); }
+.fmt-c.no .fc { background: var(--surface-3); color: var(--on-surface-v); text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.fmt-c p { margin: 0; color: var(--on-surface-v); font-size: 14.5px; line-height: 1.6; }
+@media (max-width: 1020px) { .fmt { grid-template-columns: 1fr; } }
+
+/* never scroll sideways on phones */
+html { overflow-x: clip; } .preview, .stage, .wn-i, .fmt-c { min-width: 0; max-width: 100%; }
+@media (max-width: 560px) { .morph.m1 { right: -22%; width: 70vw; } }
+/* floating theme customiser */
+#pal { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 90; }
+#palBtn { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 20px; background: var(--primary-c); color: var(--on-primary-c); box-shadow: var(--shadow-2); transition: border-radius .5s var(--spring), transform .5s var(--spring), background-color .25s ease; }
+#palBtn:hover { border-radius: 50%; transform: rotate(-12deg) scale(1.06); }
+#palBtn[aria-expanded="true"] { border-radius: 50%; background: var(--primary); color: var(--on-primary); transform: rotate(90deg); }
+#palBtn svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+#palPanel { position: absolute; left: 0; bottom: 70px; width: min(344px, calc(100vw - 36px)); padding: 20px; border-radius: 32px; background: var(--surface-1); border: 1px solid var(--outline-v); box-shadow: var(--shadow-2); transform-origin: 0 100%; transform: scale(.55) translateY(24px); opacity: 0; visibility: hidden; transition: transform .55s var(--spring), opacity .2s ease, visibility 0s .55s; }
+#pal.open #palPanel { transform: none; opacity: 1; visibility: visible; transition: transform .55s var(--spring), opacity .2s ease, visibility 0s; }
+#palPanel h3 { margin: 0 0 14px; font-size: 17px; letter-spacing: -.01em; }
+#palPanel .lbl { display: block; margin: 16px 0 8px; font-size: 12.5px; font-weight: 600; color: var(--on-surface-v); letter-spacing: .02em; text-transform: uppercase; }
+.pal-sw { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px 0; justify-items: center; }
+.pal-sw .sw { width: 44px; height: 44px; }
+.sw.custom { position: relative; display: grid; place-items: center; background: conic-gradient(#f44, #fb3, #4d6, #3cf, #84f, #f4a, #f44); color: #fff; cursor: pointer; }
+.sw.custom input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.sw.custom svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; filter: drop-shadow(0 1px 2px rgb(0 0 0 / .5)); opacity: 1; }
+.pal-hex { display: flex; gap: 10px; align-items: center; }
+.pal-hex input[type=text] { flex: 1; min-width: 0; height: 44px; padding: 0 16px; border-radius: 16px; border: 1px solid var(--outline); background: transparent; color: var(--on-surface); font: 600 15px ui-monospace, Consolas, monospace; text-transform: uppercase; }
+.pal-hex input[type=text]:focus { outline: 2px solid var(--primary); border-color: transparent; }
+.pal-hex input[type=text].bad { outline: 2px solid #b3261e; }
+.pal-act { display: flex; gap: 10px; margin-top: 16px; } .pal-act .btn { flex: 1; height: 42px; font-size: 14px; }
+.pal-act .btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+#palModes { width: 100%; } #palModes button { flex: 1; justify-content: center; padding: 0 8px; gap: 6px; min-width: 0; }
+@media (max-width: 560px) { #pal { left: 12px; } }
+@media (prefers-reduced-motion: reduce) { .morph { animation: none; } #palPanel, #palBtn, .wn-i, .wn-ico { transition-duration: .01s; } }
 </style>
 </head>
 <body>
@@ -632,14 +716,14 @@ html { scroll-behavior: smooth; }
 <span id="top-anchor"></span>
 <!-- ───────────── hero ───────────── -->
 <section class="hero" style="padding-bottom:96px">
-  <i class="blob a"></i><i class="blob b"></i><i class="blob c"></i>
+  <i class="morph m1" aria-hidden="true"></i><i class="morph m2" aria-hidden="true"></i><i class="blob a"></i><i class="blob b"></i><i class="blob c"></i>
   <div class="wrap grid">
     <div>
-      <span class="chip" data-r="z"><svg class="i"><use href="#i-spark"/></svg><span data-i18n="hero.chip">New in 1.1 — charts, conditional formatting & more</span></span>
+      <span class="chip" data-r="z"><svg class="i"><use href="#i-spark"/></svg><span data-i18n="hero.chip">New in 1.2 — crash recovery, faster files &amp; Material 3 Expressive</span></span>
       <h1 data-r style="--d:80"><span data-i18n="hero.h1a">Spreadsheets,</span> <span class="grad" data-i18n="hero.h1b">the Material way.</span></h1>
       <p class="lead" data-r style="--d:160" data-i18n="hero.lead">A fast, beautiful and fully offline desktop app to open, edit and save .xlsx files. Built with Tauri and Material Design 3 — free and open source.</p>
       <div class="cta" data-r style="--d:240">
-        <a class="btn filled big" id="dlMain" href="download/Material%20Xlsx_1.1.0_x64-setup.exe" download><svg class="i"><use href="#i-dl"/></svg><span class="t"><span data-i18n="hero.dl">Download for Windows</span><small id="dlVer">v1.1.0 · 64-bit · .exe</small></span></a>
+        <a class="btn filled big" id="dlMain" href="download/Material%20Xlsx_1.2.0_x64-setup.exe" download><svg class="i"><use href="#i-dl"/></svg><span class="t"><span data-i18n="hero.dl">Download for Windows</span><small id="dlVer">v1.2.0 · 64-bit · .exe</small></span></a>
         <a class="btn outline big" href="https://github.com/minhtrong67/material-xlsx" target="_blank" rel="noopener"><svg class="i"><use href="#i-gh"/></svg><span>GitHub</span></a>
       </div>
       <div class="badges" data-r style="--d:320"><span class="badge">MIT</span><span class="badge">Tauri 2</span><span class="badge" data-i18n="hero.b1">100% offline</span><span class="badge" data-i18n="hero.b2">English · Tiếng Việt</span><span class="badge" data-i18n="hero.b3">Light · Dark · Any colour</span></div>
@@ -695,6 +779,27 @@ html { scroll-behavior: smooth; }
 </div></section>
 
 <!-- ───────────── screenshots ───────────── -->
+<!-- ───────────── what's new ───────────── -->
+<section id="new"><div class="wrap">
+  <div data-r><span class="eyebrow" data-i18n="new.eyebrow">What's new</span><h2 data-i18n="new.h2">Fresh in version 1.2</h2><p class="sub" data-i18n="new.sub">Safer, faster and more expressive — without losing the simplicity.</p></div>
+  <div class="wn">
+    <article class="wn-i" data-r style="--d:0"><div class="wn-ico"><svg class="i"><use href="#i-ok"/></svg></div><h3 data-i18n="n1.t">Crash recovery</h3><p data-i18n="n1.d">An automatic backup every 45 seconds — a power cut or crash no longer costs you your sheet.</p></article>
+    <article class="wn-i" data-r style="--d:80"><div class="wn-ico"><svg class="i"><use href="#i-dl"/></svg></div><h3 data-i18n="n2.t">Faster open &amp; save</h3><p data-i18n="n2.d">Binary transfer replaces base64, so large workbooks open quicker and use less memory.</p></article>
+    <article class="wn-i" data-r style="--d:160"><div class="wn-ico"><svg class="i"><use href="#i-auto"/></svg></div><h3 data-i18n="n3.t">One window, open anywhere</h3><p data-i18n="n3.d">Double-click an .xlsx or .csv and it opens in the running window. Drag &amp; drop works too.</p></article>
+    <article class="wn-i" data-r style="--d:240"><div class="wn-ico"><svg class="i"><use href="#i-spark"/></svg></div><h3 data-i18n="n4.t">Material 3 Expressive</h3><p data-i18n="n4.d">Spring motion, shapes that morph as you touch them, and connected button groups.</p></article>
+  </div>
+</div></section>
+
+<!-- ───────────── supported formats ───────────── -->
+<section id="formats"><div class="wrap">
+  <div data-r><span class="eyebrow" data-i18n="fmt.eyebrow">File formats</span><h2 data-i18n="fmt.h2">Opens what you already have</h2><p class="sub" data-i18n="fmt.sub">Excel workbooks, CSV and JSON — and it tells you plainly when a format isn't supported.</p></div>
+  <div class="fmt">
+    <article class="fmt-c" data-r style="--d:0"><h3><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span data-i18n="fmt.open">Open</span></h3><div class="fmt-ch"><span class="fc">.xlsx</span><span class="fc">.xlsm</span><span class="fc">.xltx</span><span class="fc">.xltm</span><span class="fc">.csv</span><span class="fc">.tsv</span><span class="fc">.txt</span><span class="fc">.json</span></div><p data-i18n="fmt.openNote">Macros in .xlsm / .xltm aren't run and are dropped on save. Templates open as a new workbook. CSV delimiters (, ; tab |) are detected automatically.</p></article>
+    <article class="fmt-c" data-r style="--d:80"><h3><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span data-i18n="fmt.save">Save &amp; export</span></h3><div class="fmt-ch"><span class="fc">.xlsx</span><span class="fc">.csv</span><span class="fc">.tsv</span><span class="fc">.json</span><span class="fc">PDF</span></div><p data-i18n="fmt.saveNote">Save always writes .xlsx. Export the active sheet as CSV, TSV or JSON, or print to PDF. Your original CSV or JSON is never overwritten.</p></article>
+    <article class="fmt-c no" data-r style="--d:160"><h3><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg><span data-i18n="fmt.no">Not supported yet</span></h3><div class="fmt-ch"><span class="fc">.xls</span><span class="fc">.xlsb</span><span class="fc">.ods</span><span class="fc">.numbers</span></div><p data-i18n="fmt.noNote">Open these in Excel or LibreOffice and save as .xlsx first — Material Xlsx shows a clear message instead of guessing.</p></article>
+  </div>
+</div></section>
+
 <section id="screens" class="gallery"><div class="wrap">
   <div class="head c" data-r><span class="eyebrow" data-i18n="s.eyebrow">Screenshots</span><h2 data-i18n="s.h2">See it in action</h2><p class="sub" data-i18n="s.sub">A calm, focused workspace in light and dark.</p></div>
   <div class="stage" id="stage" data-r="z" role="group" aria-label="Screenshots"><span class="cap" id="cap"></span><button class="arrow l" id="prev" aria-label="Previous"><svg class="i"><use href="#i-l"/></svg></button><button class="arrow r" id="next" aria-label="Next"><svg class="i"><use href="#i-r"/></svg></button></div>
@@ -717,9 +822,9 @@ html { scroll-behavior: smooth; }
 <section id="download" class="dl"><div class="wrap">
   <div class="dl-card" data-r="z">
     <div style="position:relative;z-index:1"><span class="eyebrow" data-i18n="d.eyebrow">Download</span><h2 data-i18n="d.h2">Get Material Xlsx for Windows</h2><p class="sub" data-i18n="d.sub">One small installer. Free forever, no sign-up.</p>
-      <div class="cta" style="margin-bottom:0"><a class="btn filled big" id="dlBtn2" href="download/Material%20Xlsx_1.1.0_x64-setup.exe" download><svg class="i"><use href="#i-dl"/></svg><span class="t"><span data-i18n="hero.dl">Download for Windows</span><small id="dlVer2">v1.1.0 · 64-bit · .exe</small></span></a></div>
+      <div class="cta" style="margin-bottom:0"><a class="btn filled big" id="dlBtn2" href="download/Material%20Xlsx_1.2.0_x64-setup.exe" download><svg class="i"><use href="#i-dl"/></svg><span class="t"><span data-i18n="hero.dl">Download for Windows</span><small id="dlVer2">v1.2.0 · 64-bit · .exe</small></span></a></div>
       <ol class="steps"><li data-i18n="d.s1">Download the installer.</li><li data-i18n="d.s2">Run it and follow the wizard.</li><li data-i18n="d.s3">Open any .xlsx file and start working.</li></ol>
-      <div class="meta"><div><span data-i18n="d.m1">Version</span><b id="metaVer">1.1.0</b></div><div><span data-i18n="d.m2">Requires</span><b>Windows 10 / 11 · 64-bit</b></div><div><span data-i18n="d.m3">License</span><b>MIT</b></div></div></div>
+      <div class="meta"><div><span data-i18n="d.m1">Version</span><b id="metaVer">1.2.0</b></div><div><span data-i18n="d.m2">Requires</span><b>Windows 10 / 11 · 64-bit</b></div><div><span data-i18n="d.m3">License</span><b>MIT</b></div></div></div>
     <div style="position:relative;z-index:1"><h3 style="font-size:20px;margin-bottom:6px" data-i18n="d.src">Build from source</h3><p class="sub" style="font-size:15px;margin-bottom:16px" data-i18n="d.srcd">Prefer to compile it yourself? You only need Node.js and Rust.</p>
       <div class="code" id="code"><button id="copy" aria-label="Copy"><svg class="i"><use href="#i-copy"/></svg></button><span class="c"># install</span><br />npm install<br /><span class="c"># develop</span><br />npm run dev<br /><span class="c"># create the installer</span><br />npm run build</div>
       <p class="note" data-i18n="d.mac">macOS and Linux users can build the app from source with the same commands.</p></div>
@@ -752,15 +857,29 @@ html { scroll-behavior: smooth; }
 <div id="lb" role="dialog" aria-modal="true"><img alt="" /><button aria-label="Close" title="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
 <div id="toast" role="status" aria-live="polite"></div>
 
+<!-- theme customiser -->
+<div id="pal">
+  <div id="palPanel" role="dialog" aria-labelledby="palT">
+    <h3 id="palT" data-i18n="pal.title">Customise theme</h3>
+    <span class="lbl" data-i18n="pal.color">Theme colour</span><div class="pal-sw" id="palSw"></div>
+    <span class="lbl" data-i18n="pal.hex">Custom colour</span>
+    <div class="pal-hex"><input type="text" id="palHex" maxlength="7" spellcheck="false" aria-label="Hex colour" placeholder="#1B6B3A" /></div>
+    <span class="lbl" data-i18n="pal.mode">Mode</span>
+    <div class="modes" id="palModes" role="group"><button data-m="light"><svg class="i"><use href="#i-sun"/></svg><span data-i18n="t.light">Light</span></button><button data-m="dark"><svg class="i"><use href="#i-moon"/></svg><span data-i18n="t.dark">Dark</span></button><button data-m="system"><svg class="i"><use href="#i-auto"/></svg><span data-i18n="pal.sys">System</span></button></div>
+    <div class="pal-act"><button class="btn tonal" id="palRnd" type="button"><svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg><span data-i18n="pal.random">Random</span></button><button class="btn outline" id="palRst" type="button"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg><span data-i18n="pal.reset">Reset</span></button></div>
+  </div>
+  <button id="palBtn" type="button" aria-expanded="false" aria-controls="palPanel" aria-label="Customise theme" title="Customise theme"><svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".6"/><circle cx="17.5" cy="10.5" r=".6"/><circle cx="8.5" cy="7.5" r=".6"/><circle cx="6.5" cy="12.5" r=".6"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.83-.44-1.12-.29-.29-.44-.65-.44-1.13a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.55-2.5 5.55-5.55C21.97 6.01 17.46 2 12 2z"/></svg></button>
+</div>
+
 <script>
 "use strict";
 /* ── edit these when you publish a new version ── */
-const APP = { version: "1.1.0", file: "Material Xlsx_1.1.0_x64-setup.exe", folder: "download/" };
+const APP = { version: "1.2.0", file: "Material Xlsx_1.2.0_x64-setup.exe", folder: "download/" };
 
 const I18N = {
   vi: {
     skip: "Bỏ qua tới nội dung", "aria.language": "Ngôn ngữ: Tiếng Việt", "aria.theme": "Giao diện: hệ thống", "aria.menu.open": "Mở menu", "aria.menu.close": "Đóng menu", "aria.top": "Về đầu trang", "aria.close": "Đóng", "aria.prev": "Ảnh trước", "aria.next": "Ảnh sau", "nav.features": "Tính năng", "nav.screens": "Ảnh chụp", "nav.themes": "Giao diện", "nav.download": "Tải về", "nav.faq": "Hỏi đáp",
-    "hero.chip": "Mới ở 1.1 — biểu đồ, định dạng có điều kiện và hơn thế nữa", "hero.h1a": "Bảng tính,", "hero.h1b": "theo phong cách Material.",
+    "hero.chip": "Mới ở 1.2 — tự khôi phục, mở tệp nhanh hơn &amp; Material 3 Expressive", "hero.h1a": "Bảng tính,", "hero.h1b": "theo phong cách Material.",
     "hero.lead": "Ứng dụng desktop nhanh, đẹp và hoàn toàn offline để mở, chỉnh sửa và lưu tệp .xlsx. Xây dựng bằng Tauri và Material Design 3 — miễn phí và mã nguồn mở.",
     "hero.dl": "Tải cho Windows", "hero.b1": "100% offline", "hero.b2": "English · Tiếng Việt", "hero.b3": "Sáng · Tối · Mọi màu",
     "st.fn": "hàm & công thức", "st.ch": "loại biểu đồ", "st.rows": "hàng mỗi sheet", "st.lang": "ngôn ngữ giao diện",
@@ -916,6 +1035,112 @@ if (matchMedia("(hover: hover) and (prefers-reduced-motion: no-preference)").mat
 $("#yr").textContent = new Date().getFullYear();
 
 applyTheme(); setLang(lang); restart();
+</script>
+<script>
+/* ── Material 3 Expressive customiser: colour presets, custom hex / picker, random, reset, circular reveal ── */
+(() => {
+  const VI = { "pal.title": "Tuỳ chỉnh giao diện", "pal.color": "Màu chủ đề", "pal.hex": "Màu tuỳ chọn", "pal.mode": "Chế độ", "pal.sys": "Hệ thống", "pal.random": "Ngẫu nhiên", "pal.reset": "Đặt lại",
+    "new.eyebrow": "Có gì mới", "new.h2": "Mới trong phiên bản 1.2", "new.sub": "An toàn hơn, nhanh hơn và biểu cảm hơn — vẫn giữ sự đơn giản.",
+    "n1.t": "Tự khôi phục", "n1.d": "Sao lưu tự động mỗi 45 giây — mất điện hay treo máy cũng không mất bảng tính.",
+    "n2.t": "Mở & lưu nhanh hơn", "n2.d": "Truyền dữ liệu nhị phân thay cho base64: tệp lớn mở nhanh hơn và tốn ít bộ nhớ hơn.",
+    "n3.t": "Một cửa sổ, mở từ mọi nơi", "n3.d": "Nhấp đúp tệp .xlsx hoặc .csv sẽ mở trong cửa sổ đang chạy. Hỗ trợ kéo & thả.",
+    "fmt.eyebrow": "Định dạng tệp", "fmt.h2": "Mở được những gì bạn đang có", "fmt.sub": "Bảng tính Excel, CSV và JSON — và báo rõ ràng khi gặp định dạng chưa hỗ trợ.",
+    "fmt.open": "Mở", "fmt.openNote": "Macro trong .xlsm / .xltm không được chạy và sẽ bị bỏ khi lưu. Mẫu (template) mở thành bảng tính mới. Tự nhận dấu phân cách CSV (, ; tab |).",
+    "fmt.save": "Lưu & xuất", "fmt.saveNote": "Lưu luôn ghi .xlsx. Xuất sheet đang chọn ra CSV, TSV hoặc JSON, hoặc in ra PDF. Tệp CSV / JSON gốc không bao giờ bị ghi đè.",
+    "fmt.no": "Chưa hỗ trợ", "fmt.noNote": "Hãy mở bằng Excel hoặc LibreOffice rồi lưu thành .xlsx trước — Material Xlsx sẽ báo rõ thay vì đoán sai.",
+    "n4.t": "Material 3 Expressive", "n4.d": "Chuyển động lò xo, hình khối biến đổi khi chạm và nhóm nút liền mạch." };
+  Object.assign(I18N.vi, VI);
+  $$("[data-i18n^='pal.'],[data-i18n^='new.'],[data-i18n^='n1.'],[data-i18n^='n2.'],[data-i18n^='n3.'],[data-i18n^='n4.'],[data-i18n^='fmt.']").forEach((e) => { EN[e.dataset.i18n] = e.textContent; });
+  const PRESETS = ["#1b6b3a", "#0b6bcb", "#6750a4", "#006a60", "#b3261e", "#8a5100", "#984061", "#4a5568", "#b5451b"];
+  const reduce = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const HEX = /^#[0-9a-f]{6}$/i, root = document.documentElement;
+  const pal = $("#pal"), btn = $("#palBtn"), hex = $("#palHex");
+
+  function reveal(ev, fn) {
+    if (!document.startViewTransition || reduce() || !ev) { fn(); return; }
+    const x = ev.clientX, y = ev.clientY, r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    root.classList.add("reveal");
+    const vt = document.startViewTransition(fn);
+    vt.ready.then(() => root.animate({ clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] }, { duration: 650, easing: "cubic-bezier(.2,0,0,1)", pseudoElement: "::view-transition-new(root)" })).catch(() => {});
+    vt.finished.finally(() => root.classList.remove("reveal"));
+  }
+  function setSeed(c, ev) {
+    c = c.toLowerCase(); if (c === seed) return;
+    seed = c; try { localStorage.setItem("mx-seed", c); } catch { /* private mode */ }
+    reveal(ev, applyTheme);
+  }
+  function mkSwatch(c, host) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "sw"; b.style.setProperty("--c", c); b.dataset.c = c; b.setAttribute("aria-label", c);
+    b.innerHTML = '<svg class="i"><use href="#i-ok"/></svg>'; b.onclick = (e) => setSeed(c, e); host.appendChild(b);
+  }
+  function mkCustom(host) {
+    const l = document.createElement("label"); l.className = "sw custom"; l.dataset.c = ""; l.title = "Custom colour";
+    l.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><input type="color" aria-label="Custom colour">';
+    const inp = l.querySelector("input"); inp.value = seed;
+    inp.addEventListener("input", (e) => { const r = inp.getBoundingClientRect(); setSeed(inp.value, { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 }); });
+    host.appendChild(l);
+  }
+  PRESETS.forEach((c) => mkSwatch(c, $("#palSw"))); mkCustom($("#palSw")); mkCustom($("#swatches"));
+
+  function syncPal() {
+    const known = PRESETS.includes(seed.toLowerCase()) || ["#0b6bcb", "#b3261e"].includes(seed.toLowerCase());
+    $$(".sw.custom").forEach((l) => { l.classList.toggle("on", !known); l.querySelector("input").value = seed; });
+    if (document.activeElement !== hex) { hex.value = seed.toUpperCase(); hex.classList.remove("bad"); }
+    $$("#palModes button").forEach((b) => b.classList.toggle("on", b.dataset.m === mode));
+  }
+  const _apply = applyTheme; window.applyTheme = function () { _apply(); syncPal(); };
+  syncPal();
+
+  hex.addEventListener("input", () => { let v = hex.value.trim(); if (v && v[0] !== "#") v = "#" + v; const ok = HEX.test(v); hex.classList.toggle("bad", !ok && v.length >= 7); if (ok) { const r = hex.getBoundingClientRect(); setSeed(v, { clientX: r.left + 20, clientY: r.top }); } });
+  hex.addEventListener("blur", syncPal);
+  $$("#palModes button").forEach((b) => (b.onclick = () => setMode(b.dataset.m)));
+  $("#palRnd").onclick = (e) => {
+    const h = Math.random() * 360, s = .62, l = .42, a = s * Math.min(l, 1 - l), f = (n) => { const k = (n + h / 30) % 12; return Math.round(255 * (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)))).toString(16).padStart(2, "0"); };
+    setSeed("#" + f(0) + f(8) + f(4), e);
+  };
+  $("#palRst").onclick = (e) => { setSeed("#1b6b3a", e); setMode("system"); };
+
+  const setOpen = (on) => { pal.classList.toggle("open", on); btn.setAttribute("aria-expanded", on); if (on) setTimeout(() => $("#palSw .sw", pal).focus({ preventScroll: true }), 120); };
+  btn.onclick = () => setOpen(!pal.classList.contains("open"));
+  document.addEventListener("pointerdown", (e) => { if (pal.classList.contains("open") && !pal.contains(e.target)) setOpen(false); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && pal.classList.contains("open")) { setOpen(false); btn.focus(); } });
+
+  /* parallax for the hero shapes (uses the independent `translate` property, so it never fights the CSS animations) */
+  if (!reduce() && matchMedia("(pointer: fine)").matches) {
+    const hero = $(".hero"), ms = $$(".morph"); let raf = 0;
+    hero.addEventListener("pointermove", (e) => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { const nx = e.clientX / innerWidth - .5, ny = e.clientY / innerHeight - .5; ms.forEach((m, i) => { m.style.translate = `${nx * (i ? -40 : 56)}px ${ny * (i ? -30 : 44)}px`; }); }); });
+  }
+  /* magnetic primary buttons */
+  if (!reduce() && matchMedia("(pointer: fine)").matches) $$(".btn.big, #palBtn").forEach((b) => {
+    b.addEventListener("pointermove", (e) => { const r = b.getBoundingClientRect(); b.style.translate = `${(e.clientX - r.left - r.width / 2) * .14}px ${(e.clientY - r.top - r.height / 2) * .22}px`; });
+    b.addEventListener("pointerleave", () => { b.style.translate = ""; });
+  });
+
+  /* ── smooth scrolling for nav links, CTA anchors and back-to-top (works even when the OS asks for reduced motion, just shorter) ── */
+  let raf = 0; const ease = (t) => (t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+  const stopScroll = () => { cancelAnimationFrame(raf); root.style.scrollBehavior = ""; };
+  function smoothTo(y, min = 500) {
+    stopScroll(); const y0 = scrollY, max = root.scrollHeight - innerHeight, to = Math.max(0, Math.min(y, max)), dy = to - y0; if (Math.abs(dy) < 2) return;
+    const dur = reduce() ? 250 : Math.min(1200, Math.max(min, Math.abs(dy) * .5)), t0 = performance.now(); root.style.scrollBehavior = "auto";
+    const step = (now) => { const p = Math.min(1, (now - t0) / dur); scrollTo(0, y0 + dy * ease(p)); if (p < 1) raf = requestAnimationFrame(step); else root.style.scrollBehavior = ""; };
+    raf = requestAnimationFrame(step);
+  }
+  ["wheel", "touchstart", "keydown"].forEach((ev) => addEventListener(ev, stopScroll, { passive: true }));
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    const id = decodeURIComponent(a.getAttribute("href").slice(1)); const el = id && id !== "top-anchor" ? document.getElementById(id) : null;
+    if (id && id !== "top-anchor" && !el) return; e.preventDefault();
+    if (!el) { smoothTo(0); history.replaceState(null, "", location.pathname + location.search); return; }
+    const off = parseFloat(getComputedStyle(root).scrollPaddingTop) || 84;
+    smoothTo(el.getBoundingClientRect().top + scrollY - off + 1);
+    history.replaceState(null, "", "#" + id);
+    if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1"); el.focus({ preventScroll: true });
+  });
+  const topBtn = $("#top"); topBtn.onclick = () => { smoothTo(0, 650); history.replaceState(null, "", location.pathname + location.search); };
+  const ringUpdate = () => { const max = root.scrollHeight - innerHeight; topBtn.style.setProperty("--p", max > 0 ? Math.round((scrollY / max) * 100) : 0); };
+  addEventListener("scroll", ringUpdate, { passive: true }); ringUpdate();
+  setLang(lang);
+})();
 </script>
 <noscript><style>[data-r]{opacity:1!important;transform:none!important}.stage img:first-of-type{opacity:1!important}</style></noscript>
 </body>

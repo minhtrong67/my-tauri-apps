@@ -8,6 +8,7 @@ import type { DupGroup } from '../../lib/types';
 import { Modal } from '../ui/Modal';
 import { Button, IconButton } from '../ui/Buttons';
 import { Select } from '../ui/Select';
+import { WavyProgress } from '../ui/Progress';
 import { confirmDialog, errText, refreshAll, revealItem, useExplorer } from '../../store/explorer';
 import { baseName, isVirtual, parentOf } from '../../lib/paths';
 import { EmptyState } from '../EmptyState';
@@ -47,7 +48,7 @@ export function DupesDialog() {
         <p className="mb-3 text-on-surface-variant">{t('dupes.desc', { folder: real ? baseName(root as string) : '—' })}</p>
         <div className="flex flex-wrap items-center gap-2"><Select ariaLabel={t('dupes.minSize')} value={min} onChange={setMin} options={MINS} width={150} />
           {busy ? <Button tone="danger" icon={X} label={t('common.cancel')} onClick={stop} /> : <Button tone="filled" icon={ScanSearch} label={t('dupes.scan')} disabled={!real} onClick={() => void scan()} />}</div>
-        {busy && <div className="mt-4"><div className={`h-2 overflow-hidden rounded-full bg-surface-highest ${prog.total ? '' : 'indet'}`}>{prog.total > 0 && <div className="h-full rounded-full bg-primary transition-[width]" style={{ width: Math.min(100, (prog.done / prog.total) * 100) + '%' }} />}</div>
+        {busy && <div className="mt-4"><WavyProgress value={prog.total ? (prog.done / prog.total) * 100 : undefined} />
           <div className="mt-1.5 text-xs text-on-surface-variant">{prog.stage === 'scan' ? t('dupes.scanning', { n: prog.done.toLocaleString() }) : t('dupes.hashing', { done: prog.done.toLocaleString(), total: prog.total.toLocaleString() })}</div></div>}
       </div>
       <div className="space-y-3 px-6 pb-4">

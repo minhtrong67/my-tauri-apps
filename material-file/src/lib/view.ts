@@ -73,7 +73,8 @@ export function computeView(entries: Entry[], o: ViewOpts): ViewResult {
     list = list.filter((e) => {
       if (k === 'folders') return e.isDir;
       if (k === 'tagged') return (o.tags[pk(e.path)] || []).length > 0;
-      return e.isDir || KIND_CATS[k].includes(catOf(e)); // folders stay visible so you can keep navigating
+      if (k.startsWith('tag-')) return (o.tags[pk(e.path)] || []).includes(k.slice(4) as never);
+      return e.isDir || (KIND_CATS[k] || []).includes(catOf(e)); // folders stay visible so you can keep navigating
     });
   }
   const { sortKey, sortDir, groupBy } = o.layout;

@@ -43,9 +43,9 @@ Material File keeps the parts of File Explorer people use every day — quick ac
 | Navigation | Folder tabs (middle-click to close), breadcrumbs with sub-folder jump, folder tree, back / forward history, mouse side buttons, **dual pane (F9)** with drag & drop between panes |
 | Views | Details with resizable columns, small / medium / large icons, grouping, type filters, **virtualised list** (only visible rows are rendered, so huge folders stay smooth), **layout remembered per folder**, compact / comfortable density |
 | Command palette | **Ctrl+K** to jump to any folder, file or command |
-| File operations | Copy / move / rename with conflict dialog, progress with cancel, Recycle Bin delete, undo, batch rename, drag & drop (also **from Explorer into the app**) |
-| Organise | **Colour tags and stars**, pinned folders, frequent folders, recent files |
-| Search | Filter as you type, Enter searches all sub-folders (cancellable), **advanced search**: regex, file type, size and date filters |
+| File operations | Copy / move / rename with conflict dialog, wavy progress with cancel, Recycle Bin delete, **undo for rename, move, create and delete (restores from the Recycle Bin)**, **batch rename with live preview** (pattern `{name} {n} {date}`, find & replace, regex, letter case), drag & drop (also **from Explorer into the app**), friendly error messages |
+| Organise | **Colour tags and stars** (rename them, filter by tag), pinned folders, frequent folders, recent files, **drag tabs to reorder** |
+| Search | Filter as you type, Enter searches all sub-folders (cancellable), **advanced search**: regex, file type, size and date filters, **search history** and **saved searches** |
 | Tools | **Duplicate finder** (size → partial hash → full hash), **disk-usage treemap**, archives (ZIP built in, RAR / 7-Zip via WinRAR / 7-Zip), set wallpaper |
 | Preview | Details pane with text preview, **Space quick-look** for images (zoom / pan), video, audio, PDF, Markdown and text; real **image thumbnails** generated in Rust and cached |
 | Live | The list **refreshes by itself** when files change (file watcher) |
@@ -53,6 +53,7 @@ Material File keeps the parts of File Explorer people use every day — quick ac
 | Appearance | Light / dark / system, 19 Material theme colours + custom colour, 5 bundled fonts (Roboto, Inter, Open Sans, Noto Sans, Nunito) + system fonts, text size (small / medium / large), English & Tiếng Việt |
 | Window | Remember the window size **or** always open maximised |
 | Updates | Gentle update notification from GitHub Releases (once a day, can be turned off) |
+| Material 3 Expressive | Spring motion, shape-morphing buttons and tiles, floating toolbar, morphing loading indicator, wavy progress, page transitions that follow the navigation direction |
 | UI details | Custom tooltips, themed dropdowns (never the native `<select>`), toasts (info / success / warning / error), dialogs whose buttons carry an icon, a label and an intent colour |
 
 ### Keyboard shortcuts
@@ -114,6 +115,8 @@ npm run build   # tsc + vite build + tauri build → NSIS installer
 
 The installer is created in `target/release/bundle/nsis/` (workspace root). Copy it to `download/Material-File-Setup.exe` so the landing page can offer it.
 
+Portable build (single `.exe`, needs WebView2): `npm run build:portable` → `download/Material-File-Portable.exe`.
+
 To regenerate the app / installer / uninstaller icons (amber `#FFC107`): `npm run icons` (needs Python + Pillow).
 
 ## Project structure
@@ -136,6 +139,7 @@ material-file/
 │  ├─ src/extras.rs           # search, watcher, thumbnails, duplicates, disk usage, tray, shortcut
 │  ├─ icons/                  # app icons + installer/ (setup, uninstall, NSIS/WiX images, hooks.nsh)
 │  └─ tauri.conf.json  capabilities/
+├─ scripts/portable.mjs       # copies the release exe to download/ (portable build)
 ├─ tools/generate_icons.py    # amber Material icon generator
 ├─ screenshots/               # image01.png … image04.png
 ├─ download/                  # put the setup file here

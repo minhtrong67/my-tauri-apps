@@ -157,7 +157,7 @@ fn make_executable(path: &Path) {
 #[cfg(not(unix))]
 fn make_executable(_path: &Path) {}
 
-pub async fn install_ytdlp(m: &Arc<Manager>) -> Result<(), String> {
+async fn install_ytdlp_inner(m: &Arc<Manager>) -> Result<(), String> {
     let asset = if cfg!(windows) {
         "yt-dlp.exe"
     } else if cfg!(target_os = "macos") {
@@ -174,7 +174,7 @@ pub async fn install_ytdlp(m: &Arc<Manager>) -> Result<(), String> {
     Ok(())
 }
 
-pub async fn install_ffmpeg(m: &Arc<Manager>) -> Result<(), String> {
+async fn install_ffmpeg_inner(m: &Arc<Manager>) -> Result<(), String> {
     if !cfg!(windows) {
         return Err("Automatic ffmpeg setup is only available on Windows. Install it with your package manager (for example `brew install ffmpeg` or `sudo apt install ffmpeg`).".into());
     }
@@ -202,6 +202,57 @@ pub async fn install_ffmpeg(m: &Arc<Manager>) -> Result<(), String> {
     .map_err(|e| e.to_string())??;
     let _ = tokio::fs::remove_file(&zip_path).await;
     Ok(())
+}
+
+pub async fn install_ytdlp(m: &Arc<Manager>) -> Result<(), String> {
+    let _guard = m.install_lock.lock().await;
+    install_ytdlp_inner(m).await
+}
+
+pub async fn install_ffmpeg(m: &Arc<Manager>) -> Result<(), String> {
+    let _guard = m.install_lock.lock().await;
+    install_ffmpeg_inner(m).await
+}
+
+fn emit_setup(m: &Manager, stage: &str, state: &str, message: Option<String>) {
+    let _ = m.app.emit(
+        "engine-setup",
+        EngineSetup { stage: stage.into(), state: state.into(), message },
+    );
+}
+
+/// Make sure yt-dlp (and ffmpeg on Windows) are available, installing them silently when missing.
+/// A managed yt-dlp older than a week is refreshed because sites change often.
+pub async fn ensure_engines(m: &Arc<Manager>) {
+    let _guard = m.install_lock.lock().await;
+    let mut failed: Option<String> = None;
+
+    let stale = ytdlp_path(m)
+        .filter(|p| p.starts_with(bin_dir(m)))
+        .and_then(|p| std::fs::metadata(p).ok())
+        .and_then(|md| md.modified().ok())
+        .and_then(|t| t.elapsed().ok())
+        .map(|age| age > Duration::from_secs(7 * 24 * 3600))
+        .unwrap_or(false);
+
+    if ytdlp_path(m).is_none() || stale {
+        emit_setup(m, "yt-dlp", "working", None);
+        if let Err(e) = install_ytdlp_inner(m).await {
+            if ytdlp_path(m).is_none() {
+                failed = Some(e);
+            }
+        }
+    }
+    if failed.is_none() && ffmpeg_path(m).is_none() && cfg!(windows) {
+        emit_setup(m, "ffmpeg", "working", None);
+        if let Err(e) = install_ffmpeg_inner(m).await {
+            failed = Some(e);
+        }
+    }
+    match failed {
+        Some(e) => emit_setup(m, "", "error", Some(e)),
+        None => emit_setup(m, "", "done", None),
+    }
 }
 
 // ------------------------------------------------------------------ analysis
@@ -273,6 +324,10 @@ pub async fn info(
     referer: Option<&str>,
     ua: Option<&str>,
 ) -> Result<MediaInfo, String> {
+    if ytdlp_path(m).is_none() {
+        // An automatic install may be in progress: wait for it.
+        let _wait = m.install_lock.lock().await;
+    }
     let bin = ytdlp_path(m).ok_or_else(|| "ENGINE_MISSING".to_string())?;
     let has_ffmpeg = ffmpeg_path(m).is_some();
     let mut cmd = command(&bin);
@@ -428,6 +483,9 @@ fn parse_num<T: std::str::FromStr>(s: Option<&&str>) -> Option<T> {
 
 pub async fn run(m: &Arc<Manager>, id: &str, ctl: &Arc<Control>) -> Result<(), Stop> {
     let d = m.get(id).ok_or(Stop::Canceled)?;
+    if ytdlp_path(m).is_none() {
+        let _wait = m.install_lock.lock().await;
+    }
     let bin = ytdlp_path(m).ok_or_else(|| Stop::Failed("ENGINE_MISSING".into()))?;
     let settings = m.settings();
     let has_ffmpeg = ffmpeg_path(m).is_some();

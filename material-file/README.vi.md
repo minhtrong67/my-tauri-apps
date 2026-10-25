@@ -43,9 +43,9 @@ Material File giữ lại những phần của File Explorer mà mọi người 
 | Điều hướng | Thẻ thư mục (bấm giữa để đóng), breadcrumb nhảy tới thư mục con, cây thư mục, lịch sử tiến / lùi, nút bên của chuột, **hai ngăn (F9)** với kéo thả giữa các ngăn |
 | Kiểu xem | Chi tiết với cột đổi kích thước, biểu tượng nhỏ / vừa / lớn, nhóm, lọc theo loại, **danh sách ảo hoá** (chỉ vẽ các dòng đang thấy nên thư mục rất lớn vẫn mượt), **nhớ kiểu xem theo từng thư mục**, mật độ gọn / thoải mái |
 | Bảng lệnh | **Ctrl+K** để nhảy tới thư mục, tệp hoặc lệnh bất kỳ |
-| Thao tác tệp | Sao chép / di chuyển / đổi tên với hộp thoại trùng tên, tiến trình có nút huỷ, xoá vào Thùng rác, hoàn tác, đổi tên hàng loạt, kéo thả (kể cả **từ Explorer vào ứng dụng**) |
-| Sắp xếp | **Thẻ màu và dấu sao**, thư mục ghim, thư mục hay dùng, tệp gần đây |
-| Tìm kiếm | Lọc khi gõ, Enter tìm trong mọi thư mục con (có thể huỷ), **tìm nâng cao**: regex, loại tệp, kích thước, ngày |
+| Thao tác tệp | Sao chép / di chuyển / đổi tên với hộp thoại trùng tên, tiến trình dạng sóng có nút huỷ, xoá vào Thùng rác, **hoàn tác đổi tên, di chuyển, tạo mới và xoá (khôi phục từ Thùng rác)**, **đổi tên hàng loạt có xem trước trực tiếp** (mẫu `{name} {n} {date}`, tìm & thay thế, regex, hoa/thường), kéo thả (kể cả **từ Explorer vào ứng dụng**), thông báo lỗi dễ hiểu |
+| Sắp xếp | **Thẻ màu và dấu sao** (đổi tên, lọc theo thẻ), thư mục ghim, thư mục hay dùng, tệp gần đây, **kéo thẻ để đổi thứ tự** |
+| Tìm kiếm | Lọc khi gõ, Enter tìm trong mọi thư mục con (có thể huỷ), **tìm nâng cao**: regex, loại tệp, kích thước, ngày, **lịch sử tìm kiếm** và **tìm kiếm đã lưu** |
 | Công cụ | **Tìm tệp trùng** (kích thước → băm một phần → băm đầy đủ), **bản đồ dung lượng treemap**, tệp nén (ZIP tích hợp, RAR / 7-Zip qua WinRAR / 7-Zip), đặt hình nền |
 | Xem trước | Ngăn chi tiết có xem trước văn bản, **xem nhanh bằng Space** cho ảnh (zoom / kéo), video, âm thanh, PDF, Markdown và văn bản; **ảnh thu nhỏ** thật do Rust tạo và lưu đệm |
 | Trực tiếp | Danh sách **tự làm mới** khi tệp thay đổi (theo dõi tệp) |
@@ -53,6 +53,7 @@ Material File giữ lại những phần của File Explorer mà mọi người 
 | Giao diện | Sáng / tối / theo hệ thống, 19 màu chủ đề Material + màu tuỳ chỉnh, 5 phông kèm theo (Roboto, Inter, Open Sans, Noto Sans, Nunito) + phông hệ thống, cỡ chữ (nhỏ / vừa / lớn), English & Tiếng Việt |
 | Cửa sổ | Ghi nhớ kích thước cửa sổ **hoặc** luôn mở phóng to tối đa |
 | Cập nhật | Thông báo bản mới từ GitHub Releases (mỗi ngày một lần, có thể tắt) |
+| Material 3 Expressive | Chuyển động lò xo, nút và ô đổi hình, thanh công cụ nổi, loader biến hình, tiến trình dạng sóng, chuyển trang theo hướng điều hướng |
 | Chi tiết UI | Tooltip tuỳ biến, dropdown tuỳ biến (không dùng `<select>` mặc định), toast (info / success / warning / error), hộp thoại có nút kèm biểu tượng, nhãn và màu theo hành động |
 
 ### Phím tắt
@@ -114,6 +115,8 @@ npm run build   # tsc + vite build + tauri build → bộ cài NSIS
 
 Bộ cài nằm trong `target/release/bundle/nsis/` (gốc workspace). Chép nó vào `download/Material-File-Setup.exe` để landing page có file để tải.
 
+Bản portable (1 file `.exe`, cần WebView2): `npm run build:portable` → `download/Material-File-Portable.exe`.
+
 Tạo lại icon ứng dụng / bộ cài / gỡ cài đặt (màu amber `#FFC107`): `npm run icons` (cần Python + Pillow).
 
 ## Cấu trúc dự án
@@ -136,6 +139,7 @@ material-file/
 │  ├─ src/extras.rs           # tìm kiếm, watcher, ảnh thu nhỏ, tệp trùng, dung lượng, khay, phím tắt
 │  ├─ icons/                  # icon ứng dụng + installer/ (setup, gỡ cài đặt, ảnh NSIS/WiX, hooks.nsh)
 │  └─ tauri.conf.json  capabilities/
+├─ scripts/portable.mjs       # chép exe release vào download/ (bản portable)
 ├─ tools/generate_icons.py    # trình tạo icon Material màu amber
 ├─ screenshots/               # image01.png … image04.png
 ├─ download/                  # đặt file setup vào đây

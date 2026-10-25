@@ -21,7 +21,7 @@ export interface SearchOpts {
   id: number; regex: boolean; exts: string[]; minSize?: number; maxSize?: number; after?: number; before?: number;
 }
 export type PaneId = 'a' | 'b';
-export type Kind = 'all' | 'folders' | 'docs' | 'images' | 'video' | 'audio' | 'archives' | 'code' | 'tagged';
+export type Kind = 'all' | 'folders' | 'docs' | 'images' | 'video' | 'audio' | 'archives' | 'code' | 'tagged' | `tag-${TagId}`;
 export type ViewMode = 'details' | 'large' | 'grid' | 'small';
 export type SortKey = 'name' | 'modified' | 'created' | 'type' | 'size';
 export type GroupBy = 'none' | 'name' | 'type' | 'modified' | 'size';

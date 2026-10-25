@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Clipboard, DownloadCloud, Link2, Pause, Play, Plus, Search, Trash2, X } from "lucide-react";
+import { Clipboard, ClipboardPaste, DownloadCloud, Link2, Pause, Play, Plus, Search, Trash2, X } from "lucide-react";
 import { DownloadCard } from "../components/DownloadCard";
-import { Button, Chip, IconButton } from "../components/ui";
+import { Button, Chip, cx, IconButton, ShapeBadge } from "../components/ui";
 import { api } from "../lib/api";
 import { extractUrls, formatSpeed } from "../lib/format";
 import { useT } from "../lib/hooks";
@@ -14,6 +14,7 @@ export function DownloadsPage() {
   const openDialog = useUi((s) => s.openDialog);
   const [link, setLink] = useState("");
   const [dragging, setDragging] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
   const dragDepth = useRef(0);
 
   const counts = useMemo(() => {
@@ -84,6 +85,13 @@ export function DownloadsPage() {
     if (clip) setLink(clip);
   };
 
+  const pasteFab = async () => {
+    setFabOpen(false);
+    const clip = (await api.readClipboard()).trim();
+    const urls = extractUrls(clip);
+    openDialog(urls.length ? { url: urls.join("\n"), auto: urls.length === 1 } : {});
+  };
+
   const anyActive = counts.active > 0;
   const anyPaused = items.some((d) => d.status === "paused" || d.status === "failed");
 
@@ -97,91 +105,77 @@ export function DownloadsPage() {
 
   return (
     <div className="anim-page relative flex h-full min-h-0 flex-col">
-      {/* Link bar */}
-      <header className="shrink-0 px-4 pt-4 pb-3 sm:px-8 sm:pt-6">
-        <div className="mx-auto flex max-w-4xl items-center gap-2 rounded-full bg-surface-high py-1.5 pr-1.5 pl-5 shadow-sm ring-1 ring-outline-variant/50 transition-shadow focus-within:shadow-md focus-within:ring-2 focus-within:ring-primary">
-          <Link2 size={20} className="shrink-0 text-on-surface-variant" />
-          <input
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && submit()}
-            placeholder={t("pastePlaceholder")}
-            aria-label={t("pastePlaceholder")}
-            spellCheck={false}
-            className="h-10 min-w-0 flex-1 bg-transparent text-[0.95rem] text-on-surface outline-none placeholder:text-on-surface-variant/70"
-          />
-          {link ? (
-            <IconButton label={t("close")} size="sm" onClick={() => setLink("")}>
-              <X size={18} />
-            </IconButton>
-          ) : (
-            <IconButton label={t("paste")} size="sm" onClick={paste}>
-              <Clipboard size={18} />
-            </IconButton>
-          )}
-          <Button className="hidden sm:inline-flex" icon={<Plus size={18} />} onClick={submit}>
-            {t("download")}
-          </Button>
-          <IconButton label={t("download")} tone="tonal" className="sm:hidden" onClick={submit}>
-            <Plus size={20} />
-          </IconButton>
-        </div>
-
-        <div className="mx-auto mt-4 flex max-w-4xl flex-wrap items-center gap-x-4 gap-y-3">
-          <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1" role="tablist">
-            {filters.map((f) => (
-              <Chip key={f.id} selected={filter === f.id} onClick={() => setFilter(f.id)} count={counts[f.id]}>
-                {f.label}
-              </Chip>
-            ))}
+      {/* Headline + link bar */}
+      <header className="shrink-0 px-4 pt-5 pb-3 sm:px-10 sm:pt-8">
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+            <h1 className="text-[2.5rem] leading-none font-semibold tracking-tight text-on-surface sm:text-[3.25rem]">{t("dlTitle")}</h1>
+            <p className="pb-1.5 text-sm tabular-nums text-on-surface-variant">
+              {anyActive ? (
+                <span className="inline-flex items-center gap-2 rounded-full bg-primary-container px-3 py-1 font-semibold text-on-primary-container">
+                  <span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" /><span className="relative inline-flex size-2 rounded-full bg-primary" /></span>
+                  {t("activeSummary", { n: counts.active })}
+                  {speed > 0 && <span className="font-medium opacity-80">· {formatSpeed(speed)}</span>}
+                </span>
+              ) : (
+                t("idleSummary")
+              )}
+            </p>
           </div>
-          <label className="flex h-9 w-full items-center gap-2 rounded-full bg-surface-container px-3 text-on-surface-variant transition-all focus-within:ring-2 focus-within:ring-primary sm:w-52">
-            <Search size={16} />
+
+          <div className="flex items-center gap-2 rounded-full bg-surface-high py-2 pr-2 pl-6 shadow-sm ring-1 ring-outline-variant/40 transition-all duration-300 focus-within:shadow-lg focus-within:shadow-primary/15 focus-within:ring-2 focus-within:ring-primary">
+            <Link2 size={22} className="shrink-0 text-primary" />
             <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
-              className="min-w-0 flex-1 bg-transparent text-sm text-on-surface outline-none placeholder:text-on-surface-variant/70"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && submit()}
+              placeholder={t("pastePlaceholder")}
+              aria-label={t("pastePlaceholder")}
+              spellCheck={false}
+              className="h-11 min-w-0 flex-1 bg-transparent text-base text-on-surface outline-none placeholder:text-on-surface-variant/70"
             />
-          </label>
+            {link ? (
+              <IconButton label={t("close")} size="sm" onClick={() => setLink("")}>
+                <X size={18} />
+              </IconButton>
+            ) : (
+              <IconButton label={t("paste")} size="sm" onClick={paste}>
+                <Clipboard size={18} />
+              </IconButton>
+            )}
+            <Button className="hidden sm:inline-flex" size="lg" icon={<Plus size={20} />} onClick={submit}>
+              {t("download")}
+            </Button>
+            <IconButton label={t("download")} tone="tonal" className="sm:hidden" onClick={submit}>
+              <Plus size={20} />
+            </IconButton>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-3">
+            <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1" role="tablist">
+              {filters.map((f) => (
+                <Chip key={f.id} selected={filter === f.id} onClick={() => setFilter(f.id)} count={counts[f.id]}>
+                  {f.label}
+                </Chip>
+              ))}
+            </div>
+            <label className="flex h-10 w-full items-center gap-2 rounded-full bg-surface-container px-4 text-on-surface-variant transition-all focus-within:bg-surface-high focus-within:ring-2 focus-within:ring-primary sm:w-52">
+              <Search size={16} />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
+                className="min-w-0 flex-1 bg-transparent text-sm text-on-surface outline-none placeholder:text-on-surface-variant/70"
+              />
+            </label>
+          </div>
         </div>
       </header>
 
-      {/* Summary + bulk actions */}
-      {items.length > 0 && (
-        <div className="mx-auto flex w-full max-w-4xl shrink-0 flex-wrap items-center gap-2 px-4 pb-2 sm:px-8">
-          <p className="flex-1 text-sm text-on-surface-variant tabular-nums">
-            {anyActive ? (
-              <>
-                <span className="font-medium text-primary">{t("activeSummary", { n: counts.active })}</span>
-                {speed > 0 && <span> · {t("totalSpeed", { speed: formatSpeed(speed) })}</span>}
-              </>
-            ) : (
-              t("idleSummary")
-            )}
-          </p>
-          {anyActive && (
-            <Button variant="text" icon={<Pause size={17} />} onClick={() => api.pauseAll()}>
-              {t("pauseAll")}
-            </Button>
-          )}
-          {anyPaused && (
-            <Button variant="text" icon={<Play size={17} />} onClick={() => api.resumeAll()}>
-              {t("resumeAll")}
-            </Button>
-          )}
-          {counts.done > 0 && (
-            <Button variant="text" icon={<Trash2 size={17} />} onClick={() => api.clearFinished()}>
-              {t("clearDone")}
-            </Button>
-          )}
-        </div>
-      )}
-
       {/* List */}
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-24 sm:px-8">
-        <div className="mx-auto flex max-w-4xl flex-col gap-2.5">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-32 sm:px-10">
+        <div className="seg-list mx-auto max-w-4xl">
           {visible.map((d, i) => (
             <DownloadCard key={d.id} d={d} index={i} />
           ))}
@@ -189,15 +183,53 @@ export function DownloadsPage() {
         </div>
       </div>
 
-      {/* FAB */}
-      <button
-        onClick={() => openDialog()}
-        className="ripple-host group absolute right-5 bottom-5 flex h-14 items-center gap-0 rounded-2xl bg-primary-container px-4 text-on-primary-container shadow-lg transition-all duration-300 ease-emphasized hover:gap-2 hover:shadow-xl active:scale-95 sm:right-8 sm:bottom-8"
-        aria-label={t("addLink")}
-      >
-        <Plus size={24} className="transition-transform duration-300 ease-spring group-hover:rotate-90" />
-        <span className="max-w-0 overflow-hidden text-sm font-medium whitespace-nowrap transition-all duration-300 ease-emphasized group-hover:max-w-32">{t("addLink")}</span>
-      </button>
+      {/* Floating toolbar (bulk actions) */}
+      {(anyActive || anyPaused || counts.done > 0) && (
+        <div className="anim-pop absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1 rounded-full bg-surface-highest p-1.5 shadow-xl ring-1 ring-outline-variant/40 sm:bottom-8">
+          {anyActive && (
+            <IconButton label={t("pauseAll")} tone="primary" onClick={() => api.pauseAll()}>
+              <Pause size={20} />
+            </IconButton>
+          )}
+          {anyPaused && (
+            <IconButton label={t("resumeAll")} tone="primary" onClick={() => api.resumeAll()}>
+              <Play size={20} />
+            </IconButton>
+          )}
+          {counts.done > 0 && (
+            <IconButton label={t("clearDone")} onClick={() => api.clearFinished()}>
+              <Trash2 size={20} />
+            </IconButton>
+          )}
+        </div>
+      )}
+
+      {/* FAB menu */}
+      <div className="absolute right-5 bottom-5 z-30 flex flex-col items-end gap-3 sm:right-10 sm:bottom-8">
+        {fabOpen && (
+          <div className="flex flex-col items-end gap-2">
+            <button onClick={pasteFab} className="anim-pop ripple-host morph flex h-14 items-center gap-3 rounded-full bg-secondary-container px-6 font-semibold text-on-secondary-container shadow-lg">
+              <ClipboardPaste size={20} />
+              {t("fabPaste")}
+            </button>
+            <button onClick={() => { setFabOpen(false); openDialog(); }} className="anim-pop ripple-host morph flex h-14 items-center gap-3 rounded-full bg-tertiary-container px-6 font-semibold text-on-tertiary-container shadow-lg" style={{ animationDelay: "50ms" }}>
+              <Link2 size={20} />
+              {t("fabNew")}
+            </button>
+          </div>
+        )}
+        <button
+          onClick={() => setFabOpen((o) => !o)}
+          aria-label={t("addLink")}
+          aria-expanded={fabOpen}
+          className={cx(
+            "ripple-host flex size-[72px] items-center justify-center bg-primary text-on-primary shadow-xl shadow-primary/30 transition-all duration-500 ease-spring hover:scale-105 active:scale-95",
+            fabOpen ? "rounded-full" : "rounded-[28px] hover:rounded-[36px]",
+          )}
+        >
+          <Plus size={30} strokeWidth={2.5} className={cx("transition-transform duration-500 ease-spring", fabOpen && "rotate-[135deg]")} />
+        </button>
+      </div>
 
       {dragging && (
         <div className="anim-scrim pointer-events-none absolute inset-3 z-40 flex flex-col items-center justify-center gap-3 rounded-[28px] border-2 border-dashed border-primary bg-primary-container/80 text-on-primary-container backdrop-blur-sm">
@@ -213,18 +245,18 @@ function EmptyState({ filtered }: { filtered: boolean }) {
   const { t } = useT();
   const openDialog = useUi((s) => s.openDialog);
   return (
-    <div className="anim-page flex flex-col items-center px-6 py-16 text-center">
-      <div className="relative mb-6 flex size-28 items-center justify-center">
-        <div className="absolute inset-0 rounded-[2rem] bg-primary-container/60" style={{ transform: "rotate(-8deg)" }} />
-        <div className="absolute inset-2 rounded-[1.6rem] bg-secondary-container/70" style={{ transform: "rotate(6deg)" }} />
-        <div className="anim-float relative flex size-20 items-center justify-center rounded-3xl bg-primary text-on-primary shadow-lg">
+    <div className="anim-page flex flex-col items-center rounded-[40px] bg-surface-low px-6 py-16 text-center">
+      <div className="relative mb-8 flex size-40 items-center justify-center">
+        <span className="shape-flower anim-spin-slow absolute inset-0 bg-tertiary-container" />
+        <span className="shape-cookie absolute inset-5 bg-primary-container" />
+        <ShapeBadge shape="clover" size={84} tone="primary">
           <DownloadCloud size={38} />
-        </div>
+        </ShapeBadge>
       </div>
-      <h2 className="text-xl font-medium text-on-surface">{filtered ? t("emptyFilterTitle") : t("emptyTitle")}</h2>
-      <p className="mt-2 max-w-md text-sm leading-relaxed text-on-surface-variant">{filtered ? t("emptyFilterBody") : t("emptyBody")}</p>
+      <h2 className="text-[1.75rem] font-semibold tracking-tight text-on-surface">{filtered ? t("emptyFilterTitle") : t("emptyTitle")}</h2>
+      <p className="mt-2 max-w-md text-[0.95rem] leading-relaxed text-on-surface-variant">{filtered ? t("emptyFilterBody") : t("emptyBody")}</p>
       {!filtered && (
-        <Button className="mt-6" size="lg" icon={<Plus size={20} />} onClick={() => openDialog()}>
+        <Button className="mt-7" size="lg" icon={<Plus size={20} />} onClick={() => openDialog()}>
           {t("addLink")}
         </Button>
       )}

@@ -8,3 +8,7 @@ Put the Windows installer here so the **Download** button on the landing page (`
 
 The landing page links to `download/Material-File-Setup.exe`. To use another file name, change the
 `DOWNLOAD_FILE` constant at the top of the `<script>` block in `index.html`.
+
+## Portable build (optional)
+
+`npm run build:portable` builds the app without an installer and copies `material-file.exe` here as **`Material-File-Portable.exe`**. The landing page offers it as the second download button.

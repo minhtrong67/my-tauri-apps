@@ -34,8 +34,6 @@ The whole spreadsheet engine (formula parser, evaluator, undo history, virtual g
 | *Light theme: formulas, number formats, merged title, frozen header* | *Dark theme with a custom colour and formula auto-complete* |
 | ![Settings](screenshots/image03.png) | ![Filter](screenshots/image04.png) |
 | *Settings in Vietnamese: theme, colour, language, window mode* | *Column filter with search and check-list* |
-| ![Menus and find](screenshots/image05.png) | |
-| *Data menu and Find & Replace panel* | |
 
 ## Features
 
@@ -73,11 +71,35 @@ The whole spreadsheet engine (formula parser, evaluator, undo history, virtual g
 - **Window option in Settings:** *remember the window size* (reopens exactly as you left it) **or** *always start maximized*; `F11` toggles full screen at any time
 - Full icon set: app icon, installer (setup) icon and uninstaller icon
 
+## Supported file formats
+
+| | Format | Notes |
+|---|---|---|
+| **Open** | `.xlsx` | Full support: values, formulas, styles, merges, charts, conditional formatting, validation |
+| | `.xlsm`, `.xltm` | Opened as normal workbooks. **Macros are not run and are dropped** when you save |
+| | `.xltx`, `.xltm` | Templates open as a new untitled workbook, so the template is never overwritten |
+| | `.csv`, `.tsv`, `.txt` | Delimiter (`,` `;` tab `\|`) is detected automatically, UTF-8 (BOM allowed) |
+| | `.json` | Array of objects (keys become the header row), array of arrays, or `{ "data": [...] }` |
+| **Save / export** | `.xlsx` | *Save* and *Save as* always write `.xlsx` |
+| | `.csv`, `.tsv`, `.json` | *Export sheet as…* writes the active sheet (what you see: formatted text for CSV/TSV, raw values for JSON) |
+| | PDF | Use *Print* → "Save as PDF" |
+| **Not supported** | `.xls`, `.xlsb`, `.ods`, `.numbers` | Open them in Excel / LibreOffice and save as `.xlsx` first — the app shows a clear message instead of guessing |
+
+Files can be opened from the menu, by drag & drop, with *Open with*, or by double-clicking (the installer registers `.xlsx`, `.csv` and `.tsv`).
+Opening anything other than a real `.xlsx` never overwrites the original: **Save** asks for a new `.xlsx` name.
+
+**Reliability & desktop integration** *(new in 1.2)*
+- **Crash recovery** — an automatic backup every 45 s while there are unsaved changes; restored (on request) after a crash or power cut
+- **Single window** — double-clicking another `.xlsx` / `.csv` opens it in the running window; file associations are registered by the installer; drag & drop to open
+- **Binary file I/O** — files travel between the UI and Rust as raw bytes (no base64), restricted to `.xlsx` / `.csv` / `.tsv` / `.txt`
+- Strict Content-Security-Policy and sanitised colours read from files
+- **Material 3 Expressive** — spring motion, shapes that morph on hover / press / selection, connected button groups
+
 ## Landing page
 
 Live at **https://minhtrong67.github.io/material-xlsx/**. The page ships with full SEO and social-sharing metadata: title / description / keywords, canonical + `hreflang` (`?lang=en|vi`), robots, Open Graph and Twitter cards with a 1200×630 share image (`og-image.png`), JSON-LD (WebSite, SoftwareApplication, FAQPage), `sitemap.xml`, `robots.txt` and `site.webmanifest`.
 
-`index.html` in the project root is a standalone, responsive, animated landing page (English / Vietnamese, light / dark, live colour demo, screenshot gallery and a Download button). After `npm run build`, copy `src-tauri/target/release/bundle/nsis/Material Xlsx_1.1.0_x64-setup.exe` into `download/` — the button already points to it. Open the file in a browser or host it on GitHub Pages.
+`index.html` in the project root is a standalone, responsive, animated landing page (English / Vietnamese, light / dark, live colour demo, screenshot gallery and a Download button). After `npm run build`, copy `src-tauri/target/release/bundle/nsis/Material Xlsx_1.2.0_x64-setup.exe` into `download/` — the button already points to it. Open the file in a browser or host it on GitHub Pages.
 
 ## Download
 
@@ -85,7 +107,7 @@ Pre-built installers are published on the **[Releases](https://github.com/minhtr
 
 | Platform | File |
 |---|---|
-| Windows 10 / 11 | `Material Xlsx_1.1.0_x64-setup.exe` (NSIS installer) or `.msi` |
+| Windows 10 / 11 | `Material Xlsx_1.2.0_x64-setup.exe` (NSIS installer) or `.msi` |
 | macOS | `.dmg` (build on a Mac) |
 | Linux | `.deb` / `.AppImage` (build on Linux) |
 
@@ -102,8 +124,8 @@ To uninstall use *Settings → Apps* or the **Uninstall Material Xlsx** shortcut
 | Layer | Technology |
 |---|---|
 | Desktop shell | [Tauri 2](https://tauri.app) (Rust) + plugins `dialog`, `opener`, `window-state` |
-| Rust crates | `serde`, `base64`, `arboard` (clipboard) |
-| UI | HTML, CSS and vanilla JavaScript (ES modules, no bundler) |
+| Rust crates | `serde`, `percent-encoding`, `arboard` (clipboard), `tauri-plugin-single-instance` |
+| UI | HTML, CSS and vanilla JavaScript (ES modules) bundled by [Vite](https://vite.dev) |
 | Design system | Material Design 3, colour roles by `@material/material-color-utilities` |
 | Spreadsheet engine | Custom Pratt parser + evaluator, immutable-cell model with snapshot undo |
 | XLSX I/O | [ExcelJS](https://github.com/exceljs/exceljs) |
@@ -118,7 +140,8 @@ This project is a member of a Cargo workspace (`members = ["*/src-tauri"]`), so 
 ```bash
 cd material-xlsx
 npm install        # installs the Tauri CLI
-npm run dev        # runs the app with hot reload of the front-end
+npm run dev        # Vite dev server (hot reload) + Tauri window
+npm run web:build  # optional: bundle the front-end into dist/ only
 npm test           # unit tests for formulas, number formats and the data model
 ```
 
@@ -128,7 +151,7 @@ npm test           # unit tests for formulas, number formats and the data model
 npm run build
 ```
 
-Installers are written to `target/release/bundle/` of the workspace (for example `nsis/Material Xlsx_1.1.0_x64-setup.exe`). The setup and uninstall icons are configured in `src-tauri/tauri.conf.json` (`installerIcon`, `uninstallerIcon`).
+Installers are written to `target/release/bundle/` of the workspace (for example `nsis/Material Xlsx_1.2.0_x64-setup.exe`). The setup and uninstall icons are configured in `src-tauri/tauri.conf.json` (`installerIcon`, `uninstallerIcon`).
 
 ## Project structure
 
@@ -137,13 +160,16 @@ material-xlsx/
 ├─ index.html              landing page (single file, bilingual, Material Design 3)
 ├─ og-image.png, robots.txt, sitemap.xml, site.webmanifest   SEO / social-sharing assets
 ├─ download/               put the Windows installer here (the landing page links to it)
+├─ scripts/make-icons.py   regenerates every icon, the SVG favicon and og-image.png (needs pillow, numpy)
+├─ vite.config.js          Vite (bundles src/ into dist/)
+├─ CHANGELOG.md, .github/workflows/release.yml   release notes, CI build
 ├─ package.json            npm scripts: dev, build, test
-├─ screenshots/            README images (image01 … image05)
+├─ screenshots/            README images (image01 … image04)
 ├─ tests/                  unit tests (formulas, functions, formats, model, features, charts, xlsx round-trip, i18n)
 ├─ src/                    front-end
 │  ├─ index.html           shell + SVG icon sprite
 │  ├─ styles.css           Material Design 3 styles + motion
-│  ├─ vendor/              ExcelJS, Material colour utilities (bundled, works offline)
+│  ├─ public/vendor/              ExcelJS, Material colour utilities (bundled, works offline)
 │  └─ js/
 │     ├─ main.js           entry point
 │     ├─ app.js            toolbar, menus, tabs, dialogs, files, find & replace
@@ -156,7 +182,7 @@ material-xlsx/
 │     ├─ app-ext.js        dialogs: rules, validation, charts, links, notes, data tools
 │     ├─ refs.js           cell references, lexer, reference rewriting
 │     ├─ numfmt.js         number / date formats and typed-input parsing
-│     ├─ io.js             XLSX (ExcelJS), CSV / TSV, base64 helpers
+│     ├─ io.js             XLSX (ExcelJS), CSV / TSV, byte helpers
 │     ├─ i18n.js, i18n-more.js   English / Vietnamese strings
 │     ├─ theme.js          Material 3 colour roles, light / dark / system
 │     ├─ widgets.js        menus, dialogs, ripple, snackbar, colour palette

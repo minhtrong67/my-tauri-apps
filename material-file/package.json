@@ -12,7 +12,8 @@
     "build": "tauri build",
     "web:dev": "vite",
     "web:build": "tsc --noEmit && vite build",
-    "icons": "python tools/generate_icons.py"
+    "icons": "python tools/generate_icons.py",
+    "build:portable": "tauri build --no-bundle && node scripts/portable.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.9.0",

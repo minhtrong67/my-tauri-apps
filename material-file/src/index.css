@@ -248,3 +248,30 @@ kbd { font: inherit; font-size: .75rem; color: var(--on-surface-variant); opacit
 .prose-md blockquote { border-left: 4px solid var(--primary); padding: .2rem 1rem; color: var(--on-surface-variant); background: var(--surface-container-low); border-radius: 0 .8rem .8rem 0; }
 .prose-md table { border-collapse: collapse; } .prose-md th, .prose-md td { border: 1px solid var(--outline-variant); padding: .4rem .8rem; }
 .prose-md img { max-width: 100%; border-radius: 1rem; } .prose-md hr { border: 0; height: 1px; background: var(--outline-variant); margin: 1.5rem 0; }
+@keyframes nav-in { from { opacity: 0; transform: translateX(var(--nx, 0)) scale(.985); } }
+
+/* ================================================================ Material 3 Expressive layer */
+/* Loading indicator: a shape that morphs between round, squircle and soft-star while it turns. */
+@keyframes m3-morph {
+  0%   { border-radius: 50%; transform: rotate(0deg) scale(1); }
+  25%  { border-radius: 38% 62% 55% 45% / 45% 40% 60% 55%; transform: rotate(90deg) scale(1.08); }
+  50%  { border-radius: 22%; transform: rotate(180deg) scale(.94); }
+  75%  { border-radius: 60% 40% 35% 65% / 55% 60% 40% 45%; transform: rotate(270deg) scale(1.08); }
+  100% { border-radius: 50%; transform: rotate(360deg) scale(1); }
+}
+.m3-loader { display: inline-block; width: 3rem; height: 3rem; background: var(--primary); animation: m3-morph 2.6s var(--ease-emph) infinite; box-shadow: 0 0 0 .5rem color-mix(in oklab, var(--primary) 16%, transparent); }
+.m3-loader.sm { width: 1.5rem; height: 1.5rem; box-shadow: 0 0 0 .25rem color-mix(in oklab, var(--primary) 16%, transparent); }
+/* Wavy progress: a travelling sine wave for the finished part, a flat dotted track for the rest. */
+@keyframes wave-run { to { transform: translateX(-28px); } }
+.wavy { position: relative; height: 14px; color: var(--primary); }
+.wavy .track { position: absolute; inset: 6px 0; border-radius: 99px; background: var(--surface-container-highest); }
+.wavy .fill { position: absolute; left: 0; top: 0; bottom: 0; overflow: hidden; transition: width .25s var(--ease-emph); }
+.wavy svg { position: absolute; left: 0; top: 0; width: calc(100% + 28px); height: 14px; animation: wave-run .9s linear infinite; }
+/* drop targets: lift and glow while a drag hovers them */
+[data-drop-path].drop-target { outline: 2px solid var(--primary); outline-offset: -2px; background: var(--sel-strong) !important; animation: drop-pulse 1s var(--ease-emph) infinite; }
+@keyframes drop-pulse { 50% { box-shadow: 0 0 0 5px color-mix(in oklab, var(--primary) 22%, transparent); } }
+.tile[data-drop-path].drop-target { transform: scale(1.04); border-radius: 1.5rem; }
+/* floating toolbar surface */
+.toolbar-float { background: var(--surface-container-high); box-shadow: var(--shadow-1); border-radius: 1.75rem; }
+.fab { box-shadow: var(--shadow-2); }
+.fab:hover { box-shadow: var(--shadow-3); }

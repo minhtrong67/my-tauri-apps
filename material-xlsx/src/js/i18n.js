@@ -1,7 +1,7 @@
 // English / Vietnamese strings. Function names inside formulas always stay in English (like Excel's en-US).
 const D = {
   en: {
-    "cmd.new": "New workbook", "cmd.open": "Open…", "cmd.save": "Save", "cmd.saveAs": "Save as…", "cmd.exportCsv": "Export sheet as CSV…", "cmd.importCsv": "Import CSV as new sheet…", "cmd.print": "Print…",
+    "cmd.new": "New workbook", "cmd.open": "Open…", "cmd.save": "Save", "cmd.saveAs": "Save as…", "cmd.exportCsv": "Export sheet as CSV…", "cmd.exportTsv": "Export sheet as TSV…", "cmd.exportJson": "Export sheet as JSON…", "toast.unsupported": "Unsupported file type .{ext}. Open it in Excel and save as .xlsx first.", "toast.macro": "Opened {name} — macros are not supported and are dropped when you save as .xlsx", "cmd.importCsv": "Import CSV / TSV / JSON into sheet…", "cmd.print": "Print…",
     "cmd.undo": "Undo", "cmd.redo": "Redo", "cmd.cut": "Cut", "cmd.copy": "Copy", "cmd.paste": "Paste", "cmd.pasteValues": "Paste values only", "cmd.pasteFormats": "Paste formatting only",
     "cmd.clearContents": "Clear contents", "cmd.clearFormats": "Clear formatting", "cmd.clearAll": "Clear all", "cmd.selectAll": "Select all", "cmd.find": "Find…", "cmd.replace": "Find and replace…",
     "cmd.rowAbove": "Insert row above", "cmd.rowBelow": "Insert row below", "cmd.colLeft": "Insert column left", "cmd.colRight": "Insert column right", "cmd.delRow": "Delete row(s)", "cmd.delCol": "Delete column(s)",
@@ -24,7 +24,7 @@ const D = {
     "btn.apply": "Apply", "btn.cancel": "Cancel", "btn.close": "Close", "btn.discard": "Don't save", "btn.save": "Save",
     "dlg.customfmt": "Custom number format", "dlg.fmthint": 'Examples: 0.00 · #,##0 · 0.0% · yyyy-mm-dd · "$"#,##0.00', "dlg.deltitle": "Delete sheet?", "dlg.deltext": 'Sheet "{name}" and all of its data will be deleted.',
     "dlg.unsaved": "Save changes?", "dlg.unsavedtext": '"{name}" has unsaved changes.',
-    "doc.untitled": "Untitled", "drop.hint": "Drop an .xlsx or .csv file to open it",
+    "rec.title": "Recover unsaved work?", "rec.text": 'Material Xlsx closed unexpectedly while "{name}" had unsaved changes. Restore the automatic backup?', "rec.restore": "Restore", "rec.discard": "Discard", "rec.done": "Backup restored — save to keep it", "doc.untitled": "Untitled", "drop.hint": "Drop an .xlsx or .csv file to open it",
     "find.find": "Find", "find.replacewith": "Replace with", "find.replace": "Replace", "find.replaceall": "Replace all", "find.case": "Match case", "find.whole": "Entire cell", "find.allsheets": "All sheets",
     "find.prev": "Previous (Shift+Enter)", "find.next": "Next (Enter)", "find.count": "{i} of {n}", "find.none": "No results", "find.replaced": "Replaced {n} cell(s)",
     "flt.search": "Search", "flt.all": "(Select all)", "flt.blank": "(Blank)",
@@ -39,7 +39,7 @@ const D = {
     "zoom.out": "Zoom out", "zoom.in": "Zoom in", "zoom.label": "Zoom",
   },
   vi: {
-    "cmd.new": "Tạo bảng tính mới", "cmd.open": "Mở…", "cmd.save": "Lưu", "cmd.saveAs": "Lưu thành…", "cmd.exportCsv": "Xuất sheet ra CSV…", "cmd.importCsv": "Nhập CSV thành sheet mới…", "cmd.print": "In…",
+    "cmd.new": "Tạo bảng tính mới", "cmd.open": "Mở…", "cmd.save": "Lưu", "cmd.saveAs": "Lưu thành…", "cmd.exportCsv": "Xuất sheet ra CSV…", "cmd.exportTsv": "Xuất sheet ra TSV…", "cmd.exportJson": "Xuất sheet ra JSON…", "toast.unsupported": "Không hỗ trợ định dạng .{ext}. Hãy mở bằng Excel và lưu thành .xlsx trước.", "toast.macro": "Đã mở {name} — macro không được hỗ trợ và sẽ bị bỏ khi lưu thành .xlsx", "cmd.importCsv": "Nhập CSV / TSV / JSON thành sheet mới…", "cmd.print": "In…",
     "cmd.undo": "Hoàn tác", "cmd.redo": "Làm lại", "cmd.cut": "Cắt", "cmd.copy": "Sao chép", "cmd.paste": "Dán", "cmd.pasteValues": "Dán chỉ giá trị", "cmd.pasteFormats": "Dán chỉ định dạng",
     "cmd.clearContents": "Xoá nội dung", "cmd.clearFormats": "Xoá định dạng", "cmd.clearAll": "Xoá tất cả", "cmd.selectAll": "Chọn tất cả", "cmd.find": "Tìm kiếm…", "cmd.replace": "Tìm và thay thế…",
     "cmd.rowAbove": "Chèn hàng phía trên", "cmd.rowBelow": "Chèn hàng phía dưới", "cmd.colLeft": "Chèn cột bên trái", "cmd.colRight": "Chèn cột bên phải", "cmd.delRow": "Xoá hàng", "cmd.delCol": "Xoá cột",
@@ -62,7 +62,7 @@ const D = {
     "btn.apply": "Áp dụng", "btn.cancel": "Huỷ", "btn.close": "Đóng", "btn.discard": "Không lưu", "btn.save": "Lưu",
     "dlg.customfmt": "Định dạng số tuỳ chỉnh", "dlg.fmthint": 'Ví dụ: 0.00 · #,##0 · 0.0% · yyyy-mm-dd · "$"#,##0.00', "dlg.deltitle": "Xoá sheet?", "dlg.deltext": 'Sheet "{name}" và toàn bộ dữ liệu bên trong sẽ bị xoá.',
     "dlg.unsaved": "Lưu thay đổi?", "dlg.unsavedtext": '"{name}" có thay đổi chưa được lưu.',
-    "doc.untitled": "Chưa đặt tên", "drop.hint": "Thả tệp .xlsx hoặc .csv để mở",
+    "rec.title": "Khôi phục dữ liệu chưa lưu?", "rec.text": 'Material Xlsx đã đóng đột ngột khi "{name}" còn thay đổi chưa lưu. Khôi phục bản sao lưu tự động?', "rec.restore": "Khôi phục", "rec.discard": "Bỏ qua", "rec.done": "Đã khôi phục bản sao lưu — hãy lưu để giữ lại", "doc.untitled": "Chưa đặt tên", "drop.hint": "Thả tệp .xlsx hoặc .csv để mở",
     "find.find": "Tìm", "find.replacewith": "Thay bằng", "find.replace": "Thay", "find.replaceall": "Thay tất cả", "find.case": "Phân biệt hoa thường", "find.whole": "Khớp toàn bộ ô", "find.allsheets": "Mọi sheet",
     "find.prev": "Trước (Shift+Enter)", "find.next": "Sau (Enter)", "find.count": "{i} / {n}", "find.none": "Không có kết quả", "find.replaced": "Đã thay thế {n} ô",
     "flt.search": "Tìm", "flt.all": "(Chọn tất cả)", "flt.blank": "(Trống)",

@@ -18,8 +18,8 @@ export function CommandBar() {
   const menuAt = (items: ReturnType<typeof sortMenuItems>) => (e: React.MouseEvent<HTMLElement>) => { const r = e.currentTarget.getBoundingClientRect(); showMenu(items, r.left, r.bottom + 4); };
   const chev = <ChevronDown className="!size-3.5 opacity-70" />;
   return (
-    <div role="toolbar" aria-label={t('toolbar.aria')} className="flex h-12 flex-none items-center gap-0.5 overflow-x-auto bg-surface-container px-3 [scrollbar-width:none]">
-      <CmdButton icon={Plus} label={t('cmd.new')} disabled={!real} onClick={(e) => menuAt(newMenuItems(id))(e)} extra={chev} className="!bg-primary !text-on-primary [&_svg]:!text-on-primary" />
+    <div className="flex-none bg-surface-container px-2.5 pt-2 pb-1.5"><div role="toolbar" aria-label={t('toolbar.aria')} className="toolbar-float flex h-12 items-center gap-0.5 overflow-x-auto px-2 [scrollbar-width:none]">
+      <CmdButton icon={Plus} label={t('cmd.new')} disabled={!real} onClick={(e) => menuAt(newMenuItems(id))(e)} extra={chev} className="fab !bg-primary-container !text-on-primary-container [&_svg]:!text-on-primary-container !pr-3" />
       <i className="mx-1.5 h-6 w-px flex-none bg-outline-variant" />
       <CmdButton icon={Scissors} label={t('cmd.cut')} hideLabel kbd="Ctrl+X" disabled={!has} onClick={() => copyToClipboard(id, true)} />
       <CmdButton icon={Copy} label={t('cmd.copy')} hideLabel kbd="Ctrl+C" disabled={!has} onClick={() => copyToClipboard(id, false)} />
@@ -35,6 +35,6 @@ export function CommandBar() {
       <CmdButton icon={LayoutGrid} label={t('cmd.view')} onClick={menuAt(viewMenuItems(id))} extra={chev} className={L.view === 'details' ? '' : ''} />
       <CmdButton icon={FilterIcon} label={t('cmd.filter')} disabled={!real} onClick={menuAt(filterMenuItems(id))} extra={chev} className={kind !== 'all' ? '!bg-secondary-container !text-on-secondary-container' : ''} />
       <CmdButton icon={MoreHorizontal} label={t('cmd.more')} hideLabel onClick={menuAt(moreMenuItems(id))} />
-    </div>
+    </div></div>
   );
 }

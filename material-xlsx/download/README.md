@@ -3,7 +3,7 @@
 Put the Windows installer here after running `npm run build`:
 
 ```
-src-tauri/target/release/bundle/nsis/Material Xlsx_1.1.0_x64-setup.exe   →   download/Material Xlsx_1.1.0_x64-setup.exe
+src-tauri/target/release/bundle/nsis/Material Xlsx_1.2.0_x64-setup.exe   →   download/Material Xlsx_1.2.0_x64-setup.exe
 ```
 
 The landing page (`../index.html`) links to exactly this file name. If you change the app version, edit the

@@ -10,7 +10,7 @@ import { isRaster, isSvg, catOf } from '../lib/fileTypes';
 import { typeLabel } from '../lib/view';
 import { FileIcon, Thumb } from './FileIcon';
 import { IconButton } from './ui/Buttons';
-import { TAGS } from '../lib/menus';
+import { TAGS, tagLabel } from '../lib/menus';
 import type { Entry } from '../lib/types';
 
 const TEXT_EXT = new Set(['txt', 'md', 'json', 'js', 'ts', 'tsx', 'jsx', 'css', 'html', 'xml', 'yml', 'yaml', 'toml', 'ini', 'log', 'csv', 'rs', 'py', 'sh', 'bat', 'sql', 'c', 'cpp', 'h', 'java', 'go', 'vue', 'tsv']);
@@ -47,7 +47,7 @@ export function DetailsPane() {
             <Row k={t('col.created')} v={fmtDate(one.created, S.lang)} />
             <Row k={t('props.location')} v={parentOf(one.path) || ''} />
           </dl>
-          {(S.tags[pk(one.path)] || []).length > 0 && <div className="mt-3 flex flex-wrap gap-1.5">{(S.tags[pk(one.path)] || []).map((x) => { const tg = TAGS.find((y) => y.id === x)!; return <span key={x} className="flex items-center gap-1.5 rounded-full bg-surface-container-high px-2.5 py-0.5 text-xs font-medium"><i className="tag-dot !size-2.5" style={{ background: tg.color }} />{t(tg.key)}</span>; })}</div>}
+          {(S.tags[pk(one.path)] || []).length > 0 && <div className="mt-3 flex flex-wrap gap-1.5">{(S.tags[pk(one.path)] || []).map((x) => { const tg = TAGS.find((y) => y.id === x)!; return <span key={x} className="flex items-center gap-1.5 rounded-full bg-surface-container-high px-2.5 py-0.5 text-xs font-medium"><i className="tag-dot !size-2.5" style={{ background: tg.color }} />{tagLabel(tg.id)}</span>; })}</div>}
           {!one.isDir && (TEXT_EXT.has(extOf(one.name)) || catOf(one) === 'text') && one.size < 5e6 && <div className="mt-3"><TextPreview e={one} /></div>}
         </div>
       ) : sel.length > 1 ? (

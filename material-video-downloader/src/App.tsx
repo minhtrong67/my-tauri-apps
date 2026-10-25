@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { AddDialog } from "./components/AddDialog";
+import { EngineSetupCard } from "./components/EngineSetup";
 import { Nav } from "./components/Nav";
 import { Toasts } from "./components/Toasts";
 import { api, isTauri } from "./lib/api";
@@ -86,14 +87,15 @@ export default function App() {
   }, []);
 
   return (
-    <div className="flex h-full flex-col bg-surface text-on-surface sm:flex-row">
+    <div className="flex h-full flex-col bg-surface-container text-on-surface sm:flex-row">
       <Nav />
-      <main className="min-h-0 min-w-0 flex-1">
+      <main className="min-h-0 min-w-0 flex-1 sm:py-2 sm:pr-2"><div className="relative h-full overflow-hidden bg-background sm:rounded-[32px] sm:bg-surface-lowest sm:shadow-sm">
         {page === "downloads" && <DownloadsPage />}
         {page === "settings" && <SettingsPage />}
         {page === "about" && <AboutPage />}
-      </main>
+      </div></main>
       <AddDialog />
+      <EngineSetupCard />
       <Toasts />
     </div>
   );

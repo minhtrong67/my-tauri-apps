@@ -43,7 +43,7 @@ export function Modal({ open, onClose, title, icon: Icon, children, footer, widt
         {!bare && title && (
           <header className="flex flex-none items-center gap-3 px-6 pt-5 pb-3">
             {Icon && <span className="grid size-10 place-items-center rounded-2xl bg-primary-container text-on-primary-container"><Icon className="size-5" /></span>}
-            <h2 className="flex-1 truncate text-xl font-semibold">{title}</h2>
+            <h2 className="flex-1 truncate text-2xl font-semibold tracking-tight">{title}</h2>
             <IconButton icon={X} label={t('common.close')} kbd="Esc" onClick={onClose} />
           </header>
         )}

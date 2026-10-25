@@ -25,6 +25,14 @@ const en = {
   floatBtn: "Show a download button over videos",
   floatBtnHint: "Appears when you hover a video",
   fallbackSaved: "Saved with the browser instead",
+  all: "All", video: "Videos", stream: "Streams",
+  downloadAll: "Download all", copy: "Copy link", copied: "Link copied",
+  thisPageTitle: "This page", found: "found",
+  offlineTitle: "Desktop app not connected", offlineBody: "Start the app so videos can be sent to it. Plain files can still be saved with the browser.",
+  step1: "Install Material Video Downloader", step2: "Open the app and keep it running", step3: "Come back and press Retry",
+  retry: "Retry", themeColor: "Theme color", about: "About", madeBy: "By minhtrong67 · built with Claude",
+  floatBtnShort: "Video overlay button",
+
 };
 const vi = {
   title: "Trình tải video",
@@ -53,12 +61,20 @@ const vi = {
   floatBtn: "Hiện nút tải trên video",
   floatBtnHint: "Xuất hiện khi bạn rê chuột lên video",
   fallbackSaved: "Đã tải bằng trình duyệt",
+  all: "Tất cả", video: "Video", stream: "Luồng",
+  downloadAll: "Tải tất cả", copy: "Sao chép liên kết", copied: "Đã sao chép liên kết",
+  thisPageTitle: "Trang này", found: "đã tìm thấy",
+  offlineTitle: "Chưa kết nối ứng dụng máy tính", offlineBody: "Hãy mở ứng dụng để gửi video sang đó. Tệp thường vẫn có thể lưu bằng trình duyệt.",
+  step1: "Cài đặt Material Video Downloader", step2: "Mở ứng dụng và để nó chạy", step3: "Quay lại và bấm Thử lại",
+  retry: "Thử lại", themeColor: "Màu chủ đề", about: "Giới thiệu", madeBy: "Tác giả minhtrong67 · xây dựng cùng Claude",
+  floatBtnShort: "Nút tải trên video",
+
 };
 const dict = { en, vi };
 
 export async function getPrefs() {
   const p = (await chrome.storage.local.get("prefs")).prefs || {};
-  return { theme: "system", lang: "system", floatBtn: true, ...p };
+  return { theme: "system", lang: "system", floatBtn: true, color: "blue", ...p };
 }
 export async function setPrefs(patch) {
   const next = { ...(await getPrefs()), ...patch };
@@ -72,7 +88,15 @@ export function resolveLang(pref) {
 export function makeT(lang) {
   return (k) => dict[lang][k] ?? dict.en[k] ?? k;
 }
-export function applyTheme(theme) {
+import { PALETTES } from "./palettes.js";
+
+export function applyTheme(theme, color = "blue") {
   const dark = theme === "dark" || (theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
-  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  const root = document.documentElement;
+  root.dataset.theme = dark ? "dark" : "light";
+  root.style.colorScheme = dark ? "dark" : "light";
+  const pal = (PALETTES[color] || PALETTES.blue)[dark ? "dark" : "light"];
+  for (const [k, v] of Object.entries(pal)) root.style.setProperty(`--${k}`, v);
 }
+export const SWATCH_IDS = Object.keys(PALETTES);
+export const swatchColor = (id) => PALETTES[id].seed;

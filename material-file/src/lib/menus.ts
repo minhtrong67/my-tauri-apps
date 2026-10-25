@@ -16,6 +16,7 @@ import { useExplorer, activeTab, selectedEntries, selectAll, invertSelection, cl
 import { pk } from './paths';
 
 const ex = () => useExplorer.getState();
+export const tagLabel = (id: TagId) => getSettings().tagNames[id]?.trim() || t(TAGS.find((x) => x.id === id)!.key);
 export const TAGS: { id: TagId; color: string; key: string }[] = [
   { id: 'star', color: '#FFB300', key: 'tag.star' }, { id: 'red', color: '#E53935', key: 'tag.red' }, { id: 'orange', color: '#FB8C00', key: 'tag.orange' },
   { id: 'green', color: '#43A047', key: 'tag.green' }, { id: 'blue', color: '#1E88E5', key: 'tag.blue' }, { id: 'purple', color: '#8E24AA', key: 'tag.purple' }
@@ -58,7 +59,9 @@ export function columnMenuItems(): MenuItem[] {
 }
 export function filterMenuItems(id: PaneId): MenuItem[] {
   const cur = ex().panes[id].kind;
-  return (['all', 'folders', 'docs', 'images', 'video', 'audio', 'archives', 'code', 'tagged'] as Kind[]).map((k) => ({ label: t('filter.' + k), check: cur === k, run: () => setKind(id, k) }));
+  const base = (['all', 'folders', 'docs', 'images', 'video', 'audio', 'archives', 'code', 'tagged'] as Kind[]).map((k) => ({ label: t('filter.' + k), check: cur === k, run: () => setKind(id, k) }));
+  const tags = TAGS.map((tg) => ({ label: tagLabel(tg.id), swatch: tg.color, check: cur === `tag-${tg.id}`, run: () => setKind(id, `tag-${tg.id}` as Kind) }));
+  return [...base, { sep: true } as MenuItem, ...tags];
 }
 export function viewMenuItems(id: PaneId, withShow = true): MenuItem[] {
   const L = layout(id); const p = ex().panes[id].path; const s = getSettings();
@@ -104,7 +107,7 @@ export function moreMenuItems(id: PaneId): MenuItem[] {
 function tagMenu(paths: string[]): MenuItem[] {
   const tags = getSettings().tags;
   return [
-    ...TAGS.map((tg) => ({ label: t(tg.key), swatch: tg.color, check: paths.length > 0 && paths.every((p) => (tags[pk(p)] || []).includes(tg.id)), run: () => toggleTag(paths, tg.id) })),
+    ...TAGS.map((tg) => ({ label: tagLabel(tg.id), swatch: tg.color, check: paths.length > 0 && paths.every((p) => (tags[pk(p)] || []).includes(tg.id)), run: () => toggleTag(paths, tg.id) })),
     { sep: true },
     { label: t('tag.clear'), icon: XCircle, disabled: !paths.some((p) => (tags[pk(p)] || []).length), run: () => clearTags(paths) }
   ];

@@ -55,5 +55,6 @@ export const api = {
   findDuplicates: (root: string, minSize: number) => call<DupGroup[]>('find_duplicates', { root, minSize }),
   folderSizes: (path: string) => call<SizeItem[]>('folder_sizes', { path }),
   setTray: (enabled: boolean, labels: string[]) => call<void>('set_tray', { enabled, labels }),
-  setGlobalShortcut: (enabled: boolean) => call<void>('set_global_shortcut', { enabled })
+  setGlobalShortcut: (enabled: boolean) => call<void>('set_global_shortcut', { enabled }),
+  restoreTrashed: (paths: string[]) => call<number>('restore_trashed', { paths })
 };

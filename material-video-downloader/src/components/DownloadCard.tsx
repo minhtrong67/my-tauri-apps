@@ -38,7 +38,8 @@ function DownloadCardBase({ d, index }: { d: Download; index: number }) {
   return (
     <article
       className={cx(
-        "anim-item group relative flex flex-col gap-3 rounded-2xl bg-surface-low p-3 transition-all duration-300 ease-emphasized hover:bg-surface-container hover:shadow-md sm:flex-row sm:items-center sm:gap-4",
+        "anim-item group relative flex flex-col gap-3 p-3.5 hover:shadow-lg hover:shadow-primary/10 sm:flex-row sm:items-center sm:gap-4",
+        running || merging ? "bg-primary-container/45" : done ? "bg-surface-low" : d.status === "failed" ? "bg-error-container/40" : "bg-surface-low",
         done && "anim-complete",
       )}
       style={{ ["--i" as string]: Math.min(index, 10) }}
@@ -47,7 +48,7 @@ function DownloadCardBase({ d, index }: { d: Download; index: number }) {
         <Thumb src={d.thumbnail} seed={d.site + d.title} kind={d.kind} audio={d.audioOnly} className="h-[72px] w-28 sm:w-32" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="truncate text-[0.95rem] font-medium text-on-surface" title={d.title} data-selectable>
+            <h3 className="truncate text-base font-semibold tracking-tight text-on-surface" title={d.title} data-selectable>
               {d.title}
             </h3>
           </div>
@@ -97,9 +98,7 @@ function DownloadCardBase({ d, index }: { d: Download; index: number }) {
           )}
           {done && (
             <p className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-primary">
-              <span className="flex size-4 items-center justify-center rounded-full bg-primary text-on-primary">
-                <Check size={11} strokeWidth={3.5} />
-              </span>
+              <span className="relative flex size-5 items-center justify-center"><span className="shape-cookie absolute inset-0 bg-primary" /><Check size={12} strokeWidth={3.5} className="relative text-on-primary" /></span>
               {statusLabel}
               {d.duration ? <span className="font-normal text-on-surface-variant">· {formatClock(d.duration)}</span> : null}
             </p>

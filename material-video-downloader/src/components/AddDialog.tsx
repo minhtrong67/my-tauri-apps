@@ -76,7 +76,10 @@ export function AddDialog() {
       } catch (e) {
         if (id !== runId.current) return;
         const msg = e instanceof Error ? e.message : String(e);
-        if (msg === "ENGINE_MISSING") setPhase("engine");
+        if (msg === "ENGINE_MISSING") {
+          setPhase("engine");
+          void install(url);
+        }
         else {
           setError(msg);
           setPhase("error");
@@ -150,20 +153,21 @@ export function AddDialog() {
     close();
   };
 
-  const install = async () => {
+  async function install(retryUrl?: string) {
     setInstalling(true);
     setInstallPct(0);
     try {
       await api.installYtdlp();
       toast(t("engineInstalled"));
       setInstalling(false);
-      if (urls[0]) void analyze(urls[0]);
+      const next = retryUrl ?? urls[0];
+      if (next) void analyze(next);
     } catch (e) {
       setInstalling(false);
       setError(String(e));
       setPhase("error");
     }
-  };
+  }
 
   const pasteFromClipboard = async () => {
     const clip = await api.readClipboard();
@@ -214,7 +218,7 @@ export function AddDialog() {
       return (
         <>
           <Button variant="text" onClick={close} disabled={installing}>{t("dialogCancel")}</Button>
-          <Button icon={installing ? <Loader2 size={18} className="animate-spin" /> : <Wrench size={18} />} disabled={installing} onClick={install}>
+          <Button icon={installing ? <Loader2 size={18} className="animate-spin" /> : <Wrench size={18} />} disabled={installing} onClick={() => install()}>
             {installing ? `${t("engineInstalling")} ${installPct}%` : t("engineInstall")}
           </Button>
         </>

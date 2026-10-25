@@ -30,6 +30,8 @@ A free, open-source desktop app (Tauri + React) with IDM-style segmented downloa
 | <img src="screenshots/image02.png" width="440" alt="New download dialog"> | <img src="screenshots/image04.png" width="440" alt="Settings"> |
 | **Vietnamese interface** | **Responsive layout** |
 | <img src="screenshots/image05.png" width="440" alt="Vietnamese UI"> | <img src="screenshots/image06.png" width="180" alt="Narrow window"> |
+| **Chrome extension (light)** | **Chrome extension (dark)** |
+| <img src="screenshots/image07.png" width="260" alt="Extension popup"> | <img src="screenshots/image08.png" width="260" alt="Extension popup dark"> |
 
 </div>
 
@@ -49,7 +51,8 @@ A free, open-source desktop app (Tauri + React) with IDM-style segmented downloa
 - Falls back to the browser's own downloader for plain files when the app is closed.
 
 **Design & experience**
-- Material Design 3 with colors generated from a seed (the default is the project's own Material Theme Builder export).
+- **Material 3 Expressive**: cookie / flower / clover shapes, buttons that morph when pressed, segmented lists whose corners round up on hover, an expandable navigation rail, floating toolbar, FAB menu, spring motion and a wavy progress indicator.
+- Colors generated from a seed (the default is the project's own Material Theme Builder export).
 - Light / dark / **system** theme with a circular reveal transition, **17 Material theme colors** plus a custom picker.
 - **3 text sizes**, **English / Tiếng Việt** (auto-detected, switchable).
 - Wavy progress indicator, ripples, spring animations, responsive from small windows to ultrawide.
@@ -67,9 +70,9 @@ A free, open-source desktop app (Tauri + React) with IDM-style segmented downloa
 2. Click **Load unpacked** and choose the [`extension/`](extension/) folder (or unzip `download/material-video-downloader-extension.zip`).
 3. Keep the desktop app running — the popup shows a green dot when they are connected.
 
-### Optional helpers
-- **yt-dlp** – installed with one click the first time you open a platform link (Settings → Engine).
-- **ffmpeg** – needed to merge separate video + audio (highest qualities) and to make MP3. One-click install on Windows; elsewhere use `brew install ffmpeg` / `sudo apt install ffmpeg`.
+### Helpers install themselves
+On first launch the app silently downloads **yt-dlp** (and **ffmpeg** on Windows) into its own data folder, shows the progress in a small card, and refreshes yt-dlp weekly so downloads keep working when sites change. You can also reinstall them from Settings → Engine.
+On macOS / Linux install ffmpeg yourself (`brew install ffmpeg` / `sudo apt install ffmpeg`); it is needed for the highest qualities and MP3.
 
 ## Tech stack
 
@@ -103,7 +106,7 @@ npm run build   # produces installers in <workspace>/target/release/bundle/
 Windows gets an NSIS setup (`bundle/nsis/*.exe`) with its own setup and uninstall icons; macOS gets `.app`/`.dmg`; Linux gets `.deb`/`.AppImage`.
 Copy the result into [`download/`](download/) using the names listed in [`download/README.md`](download/README.md), then run `npm run pack:extension` to refresh the extension zip.
 
-Other scripts: `npm run icons` regenerates every app / setup / uninstall / extension icon (requires Python + Pillow).
+Other scripts: `npm run pack:extension` zips the extension; `npm run icons` regenerates every app / setup / uninstall / extension icon (requires Python + Pillow).
 
 ## Project structure
 

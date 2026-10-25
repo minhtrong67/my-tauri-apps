@@ -5,7 +5,8 @@ import { t, setLang, getLang, applyI18n } from "./i18n.js";
 import { setTheme, applyColors, PRESETS, isDark, onSystemTheme } from "./theme.js";
 import * as W from "./widgets.js";
 import * as FS from "./tauri.js";
-import { importXlsx, exportXlsx, importCSV, toCSV } from "./io.js";
+import { importXlsx, exportXlsx, importCSV, importJSON, toCSV, toJSON } from "./io.js";
+import { OOXML, MACRO_EXT, TEMPLATE_EXT, OPEN_REGEX, extOf, canOpen } from "./formats.js";
 import { NUM_PRESETS } from "./numfmt.js";
 import { parseAddr, rangeText, colName, colIndex, MAX_ROWS, MAX_COLS, key } from "./refs.js";
 import { createExtras } from "./app-ext.js";
@@ -36,6 +37,8 @@ const CMD = {
   save: { ico: "save", key: "Ctrl+S", run: () => save() },
   saveAs: { ico: "save", key: "Ctrl+Shift+S", run: () => saveAs() },
   exportCsv: { ico: "download", run: () => exportCsv() },
+  exportTsv: { ico: "download", run: () => exportText("tsv") },
+  exportJson: { ico: "download", run: () => exportText("json") },
   importCsv: { ico: "upload", run: () => importCsvSheet() },
   print: { ico: "print", key: "Ctrl+P", run: () => printSheet() },
   undo: { ico: "undo", key: "Ctrl+Z", run: () => { if (!grid.editing) book.undo(); }, enabled: () => book.undoStack.length > 0 },
@@ -199,7 +202,7 @@ function refreshToolbar() {
 function buildMenus() {
   const nav = $("#menus"); nav.innerHTML = "";
   const defs = {
-    file: () => [item("new"), item("open"), { sep: true }, item("save"), item("saveAs"), { sep: true }, item("exportCsv"), item("importCsv"), item("print"),
+    file: () => [item("new"), item("open"), { sep: true }, item("save"), item("saveAs"), { sep: true }, item("exportCsv"), item("exportTsv"), item("exportJson"), item("importCsv"), item("print"),
       ...(S.recents.length ? [{ sep: true }, { title: t("menu.recent") }, ...S.recents.slice(0, 6).map((r) => ({ label: r.name, icon: "folder", run: () => openRecent(r) }))] : [])],
     edit: () => [item("undo"), item("redo"), { sep: true }, item("cut"), item("copy"), item("paste"), item("pasteValues"), item("pasteFormats"), { sep: true }, item("clearContents"), item("clearFormats"), item("clearAll"), { sep: true }, item("pasteSpecial"), item("pasteTranspose"), { sep: true }, item("selectAll"), item("find"), item("replace")],
     insert: () => [item("rowAbove"), item("rowBelow"), item("colLeft"), item("colRight"), { sep: true }, item("delRow"), item("delCol"), { sep: true }, item("hideRows"), item("unhideRows"), item("hideCols"), item("unhideCols"), item("autofitCols"), item("autofitRows"), { sep: true }, item("chart"), item("link"), item("note"), item("insertDate"), item("insertTime"), { sep: true }, item("newSheet"), item("autosum")],
@@ -251,7 +254,7 @@ function renderTabs() {
   book.sheets.forEach((s, i) => {
     const b = el("button", "tab" + (i === book.active ? " active" : "") + (book.sheets.length > prevSheetCount && prevSheetCount && i === book.active ? " new" : ""));
     b.setAttribute("role", "tab"); b.setAttribute("aria-selected", i === book.active);
-    b.innerHTML = (s.tab ? `<span class="tdot" style="--tc:${s.tab}"></span>` : "") + '<span class="tn"></span>';
+    b.innerHTML = (safeColor(s.tab) ? `<span class="tdot" style="--tc:${safeColor(s.tab)}"></span>` : "") + '<span class="tn"></span>';
     b.querySelector(".tn").textContent = s.name; b.title = s.name;
     b.addEventListener("click", () => selectSheet(i));
     b.addEventListener("dblclick", () => renameTab(i, b));
@@ -306,7 +309,7 @@ async function confirmDelete(i) {
 }
 function ask({ title, text, actions }) {
   return new Promise((res) => {
-    W.dialog({ title, content: text, size: "sm", actions: actions.map(([v, label, primary]) => ({ label, primary, value: v, cancel: v === "cancel", outline: v === "discard", start: v === "discard", icon: { cancel: "close", discard: "trash", save: "save", ok: v === "ok" ? "check" : undefined }[v] })), onClose: (v) => res(v) });
+    W.dialog({ title, content: text, size: "sm", actions: actions.map(([v, label, primary]) => ({ label, primary, value: v, cancel: v === "cancel", outline: v === "discard", start: v === "discard", icon: { cancel: "close", discard: "trash", save: "save", restore: "undo", ok: v === "ok" ? "check" : undefined }[v] })), onClose: (v) => res(v) });
   });
 }
 
@@ -384,7 +387,30 @@ async function guardUnsaved() {
   if (!book.dirty) return true;
   const r = await ask({ title: t("dlg.unsaved"), text: t("dlg.unsavedtext", { name: doc.name || t("doc.untitled") }), actions: [["cancel", t("btn.cancel")], ["discard", t("btn.discard")], ["save", t("btn.save"), true]] });
   if (r === "save") return save();
-  return r === "discard";
+  if (r === "discard") { FS.clearDraft(); return true; }
+  return false;
+}
+
+// ───────────────────────── autosave & crash recovery ─────────────────────────
+let draftEpoch = -1, draftBusy = false;
+async function autosaveDraft() {
+  if (!FS.isTauri || !book.dirty || draftBusy || grid.editing || book.epoch === draftEpoch) return;
+  draftBusy = true;
+  try { const ep = book.epoch; await FS.saveDraft(await exportXlsx(book), { name: doc.name, path: doc.path }); draftEpoch = ep; }
+  catch (e) { console.warn("autosave failed", e); }
+  finally { draftBusy = false; }
+}
+async function offerRecovery() {
+  const info = await FS.draftInfo(); if (!info) return;
+  const r = await ask({ title: t("rec.title"), text: t("rec.text", { name: info.name || t("doc.untitled") }), actions: [["discard", t("rec.discard")], ["restore", t("rec.restore"), true]] });
+  if (r !== "restore") { FS.clearDraft(); return; }
+  W.busy(true);
+  try {
+    const res = await importXlsx(await FS.readDraft());
+    book.reset(res.sheets, res.styles); doc = { name: info.name || "", path: info.path || null }; prevSheetCount = 0;
+    renderTabs(); grid.select(0, 0); book.dirty = true; updateDoc(); toast("rec.done");
+  } catch (e) { console.error(e); toast("toast.openfail", { err: String(e && e.message || e) }); }
+  finally { W.busy(false); }
 }
 async function newDoc() {
   if (!(await guardUnsaved())) return;
@@ -392,14 +418,24 @@ async function newDoc() {
   grid.scroll.scrollTo(0, 0); renderTabs(); updateDoc(); grid.select(0, 0);
 }
 const textOf = (bytes) => new TextDecoder("utf-8").decode(bytes);
+// One entry point for every supported format; unknown extensions are rejected instead of being parsed as text.
+async function parseFile(f) {
+  const ext = extOf(f.name);
+  if (!canOpen(f.name)) throw new Error(t("toast.unsupported", { ext }));
+  if (OOXML.includes(ext)) return importXlsx(f.bytes);
+  if (ext === "json") return importJSON(textOf(f.bytes), stem(f.name), S.lang);
+  return importCSV(textOf(f.bytes), stem(f.name), S.lang);
+}
 async function loadFile(f) {
   W.busy(true);
   try {
-    const ext = (f.name.split(".").pop() || "").toLowerCase();
-    const res = ext === "xlsx" ? await importXlsx(f.bytes) : importCSV(textOf(f.bytes), stem(f.name), S.lang);
-    book.reset(res.sheets, res.styles); doc = { name: f.name, path: f.path }; prevSheetCount = 0;
+    const ext = extOf(f.name), res = await parseFile(f);
+    // Only a real .xlsx keeps its path; every other format (csv, json, xlsm, templates…) is saved as a new .xlsx so the source is never overwritten.
+    const keep = ext === "xlsx" && !TEMPLATE_EXT.includes(ext);
+    book.reset(res.sheets, res.styles); doc = { name: keep ? f.name : stem(f.name) + ".xlsx", path: keep ? f.path : null }; prevSheetCount = 0;
     grid.scroll.scrollTo(0, 0); renderTabs(); updateDoc(); grid.select(0, 0);
-    addRecent(f); toast("toast.opened", { name: f.name });
+    if (!keep) book.dirty = true;
+    addRecent(f); toast(MACRO_EXT.includes(ext) ? "toast.macro" : "toast.opened", { name: f.name });
   } catch (e) { console.error(e); toast("toast.openfail", { err: String(e && e.message || e) }); }
   finally { W.busy(false); }
 }
@@ -415,7 +451,7 @@ function addRecent(f) {
 }
 async function save() {
   if (grid.editing) grid.commitEdit(0, 0);
-  if (!doc.path && FS.isTauri) return saveAs();
+  if ((!doc.path || !/\.xlsx$/i.test(doc.path)) && FS.isTauri) return saveAs();
   return writeXlsx(doc.path);
 }
 async function saveAs() { if (grid.editing) grid.commitEdit(0, 0); return writeXlsx(null); }
@@ -426,22 +462,24 @@ async function writeXlsx(path) {
     const base = doc.name ? stem(doc.name) : t("doc.untitled");
     const r = await FS.saveFileDialog(base + ".xlsx", bytes, FS.XLSX_FILTER, path);
     if (!r) return false;
-    doc = { name: r.name, path: r.path }; book.dirty = false; updateDoc(); addRecent(r); toast("toast.saved", { name: r.name });
+    doc = { name: r.name, path: r.path }; book.dirty = false; FS.clearDraft(); updateDoc(); addRecent(r); toast("toast.saved", { name: r.name });
     return true;
   } catch (e) { console.error(e); toast("toast.savefail", { err: String(e && e.message || e) }); return false; }
   finally { W.busy(false); }
 }
-async function exportCsv() {
+async function exportText(kind) {
   try {
-    const bytes = new TextEncoder().encode(toCSV(book, sheet()));
-    const r = await FS.saveFileDialog(sheet().name + ".csv", bytes, FS.CSV_FILTER, null);
+    const body = kind === "json" ? toJSON(book, sheet()) : toCSV(book, sheet(), kind === "tsv" ? "\t" : ",");
+    const filter = { csv: FS.CSV_FILTER, tsv: FS.TSV_FILTER, json: FS.JSON_FILTER }[kind];
+    const r = await FS.saveFileDialog(sheet().name + "." + kind, new TextEncoder().encode(body), filter, null);
     if (r) toast("toast.exported", { name: r.name });
   } catch (e) { toast("toast.savefail", { err: String(e) }); }
 }
+const exportCsv = () => exportText("csv");
 async function importCsvSheet() {
   const f = await FS.openFileDialog(); if (!f) return;
   try {
-    const res = importCSV(textOf(f.bytes), stem(f.name), S.lang);
+    const res = await parseFile(f);
     const imp = res.sheets[0];
     grid.saveView();
     book.tx(() => {
@@ -452,10 +490,12 @@ async function importCsvSheet() {
     toast("toast.imported", { name: f.name });
   } catch (e) { toast("toast.openfail", { err: String(e) }); }
 }
+// Colours come from the file: accept only plain hex / rgb() so they can never break out of a style attribute.
+const safeColor = (c) => (typeof c === "string" && /^(#[0-9a-f]{3,8}|rgba?\([\d\s.,%]+\))$/i.test(c.trim()) ? c.trim() : "");
 function printSheet() {
   const sh = sheet(), b = book.bounds(sh);
   if (b.maxR < 0) { toast("toast.empty"); return; }
-  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   let html = "<table>";
   for (let r = 0; r <= b.maxR; r++) {
     if (sh.rowHidden(r)) continue;
@@ -463,7 +503,7 @@ function printSheet() {
     for (let c = 0; c <= b.maxC; c++) {
       if (sh.chidden.has(c)) continue;
       const d = book.display(sh, r, c), st = d.st;
-      const css = [st.b ? "font-weight:700" : "", st.i ? "font-style:italic" : "", st.fc ? `color:${st.fc}` : "", st.bg ? `background:${st.bg}` : "", `text-align:${st.ha || (typeof d.v === "number" ? "right" : "left")}`, `width:${(sh.colW[c] ?? sh.defW) * 0.75}pt`].filter(Boolean).join(";");
+      const css = [st.b ? "font-weight:700" : "", st.i ? "font-style:italic" : "", safeColor(st.fc) ? `color:${safeColor(st.fc)}` : "", safeColor(st.bg) ? `background:${safeColor(st.bg)}` : "", `text-align:${st.ha || (typeof d.v === "number" ? "right" : "left")}`, `width:${(sh.colW[c] ?? sh.defW) * 0.75}pt`].filter(Boolean).join(";");
       html += `<td style="${css}">${esc(d.text)}</td>`;
     }
     html += "</tr>";
@@ -728,14 +768,14 @@ function initWindow() {
     win.onCloseRequested(async (ev) => {
       if (!book.dirty) return;
       ev.preventDefault();
-      if (await guardUnsaved()) win.destroy();
+      if (await guardUnsaved()) { await FS.clearDraft(); win.destroy(); }
     });
   } else window.addEventListener("beforeunload", (e) => { if (book.dirty) { e.preventDefault(); e.returnValue = ""; } });
   let drop = null;
   const hideDrop = () => { if (drop) { drop.remove(); drop = null; } };
   FS.listen("tauri://drag-enter", () => { if (!drop) { drop = el("div", "drop"); drop.textContent = t("drop.hint"); document.body.appendChild(drop); } });
   FS.listen("tauri://drag-leave", hideDrop);
-  FS.listen("tauri://drag-drop", (e) => { hideDrop(); const p = e.payload && e.payload.paths && e.payload.paths[0]; if (p && /\.(xlsx|csv|tsv|txt)$/i.test(p)) openPathDirect(p); });
+  FS.listen("tauri://drag-drop", (e) => { hideDrop(); const p = e.payload && e.payload.paths && e.payload.paths[0]; if (!p) return; if (OPEN_REGEX.test(p)) openPathDirect(p); else toast("toast.unsupported", { ext: extOf(p) }); });
 }
 
 // ───────────────────────── init ─────────────────────────
@@ -768,6 +808,9 @@ export async function init() {
   // window: honour "always start in full screen", then reveal it (the window starts hidden to avoid a size flash)
   if (S.winMode === "maximized") await FS.maximizeWindow();
   await FS.showWindow();
-  const lf = await FS.launchFile(); if (lf) openPathDirect(lf);
+  const lf = await FS.launchFile();
+  if (lf) await openPathDirect(lf); else await offerRecovery();
+  FS.listen("open-file", (e) => { if (e.payload) openPathDirect(String(e.payload)); });   // 2nd launch / "Open with"
+  setInterval(autosaveDraft, 45000);
   window.__mx = { book, grid, CMD, S, openFind, changeLang, X };   // handy for debugging / tests
 }

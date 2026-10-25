@@ -444,3 +444,15 @@ textarea.pf-field { padding: 4px 6px; resize: none; }
 .fsel-pop { position: fixed; z-index: 200; margin: 0; padding: 6px 0; list-style: none; max-height: 220px; overflow-y: auto; background: var(--md-surface-container-high); color: var(--md-on-surface); border-radius: 18px; box-shadow: var(--elev3); transform-origin: top left; animation: menuIn .3s var(--spring-fast); }
 .fsel-pop li { list-style: none; }
 @media (max-width: 760px) { .viewer { margin-right: 6px; margin-bottom: 6px; border-radius: 22px; } .annot-bar { bottom: 14px; } .tile { padding: 14px; } }
+
+/* fixes: long labels in settings, horizontal scroll on the welcome screen */
+.welcome { overflow-x: hidden; overflow-y: auto; }
+.blob { max-width: 100vw; }
+.segmented { max-width: 100%; }
+.seg { min-width: 0; padding: 0 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.seg > span { overflow: hidden; text-overflow: ellipsis; }
+.srow.stack .segmented { width: 100%; display: flex; }
+.srow.stack .seg { flex: 1 1 0; }
+.srow-text { overflow-wrap: anywhere; }
+.radio-card > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 520px) { .srow.stack .segmented { flex-wrap: wrap; border-radius: 20px; } .srow.stack .seg { flex: 1 1 40%; } }

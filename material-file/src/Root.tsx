@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { FolderUp, Loader } from 'lucide-react';
+import { FolderUp } from 'lucide-react';
+import { Loader } from './components/ui/Progress';
 import { useExplorer, initExplorer } from './store/explorer';
 import { useSettings } from './store/settings';
 import { useUI } from './store/ui';
@@ -23,6 +24,7 @@ import { SearchDialog } from './components/dialogs/SearchDialog';
 import { Lightbox } from './components/dialogs/Lightbox';
 import { CommandPalette } from './components/dialogs/CommandPalette';
 import { UpdateDialog } from './components/dialogs/UpdateDialog';
+import { RenameDialog } from './components/dialogs/RenameDialog';
 
 function DragLayer() {
   const t = useT(); const d = useUI((s) => s.dragging); const ext = useUI((s) => s.extDrop.active);
@@ -47,13 +49,13 @@ export default function App() {
       <div className={`flex min-h-0 flex-1 gap-2 pr-2 pb-2 ${nav ? '' : 'pl-2'}`}>
         {nav && <Sidebar />}
         <main className="relative flex min-h-0 min-w-0 flex-1 gap-2">
-          {ready ? <><FilePane id="a" />{dual && <FilePane id="b" />}</> : <div className="grid flex-1 place-items-center"><Loader className="size-8 animate-spin text-primary" /></div>}
+          {ready ? <><FilePane id="a" />{dual && <FilePane id="b" />}</> : <div className="grid flex-1 place-items-center"><Loader /></div>}
           <SelectionBar />
         </main>
         {details && <DetailsPane />}
       </div>
       <OperationCard /><Toaster /><ContextMenu /><DragLayer />
-      <AppDialog /><SettingsDialog /><PropertiesDialog /><DupesDialog /><UsageDialog /><SearchDialog /><Lightbox /><CommandPalette /><UpdateDialog />
+      <AppDialog /><SettingsDialog /><PropertiesDialog /><DupesDialog /><UsageDialog /><SearchDialog /><Lightbox /><CommandPalette /><UpdateDialog /><RenameDialog />
     </div>
   );
 }

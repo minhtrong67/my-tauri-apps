@@ -346,6 +346,32 @@ export function importCSV(text, name, lang) {
   return { sheets: book.sheets, styles: book.styles };
 }
 
+// ───────────────────────── JSON ─────────────────────────
+// Accepts an array of objects (keys become the header row), an array of arrays, an array of values,
+// or an object wrapping such an array ({"data": [...]}).
+export function importJSON(text, name, lang) {
+  let data = JSON.parse(text.replace(/^\uFEFF/, ""));
+  if (!Array.isArray(data) && data && typeof data === "object") { const k = Object.keys(data).find((x) => Array.isArray(data[x])); data = k !== undefined ? data[k] : [data]; }
+  if (!Array.isArray(data)) throw new Error("JSON must contain an array of rows or objects");
+  const book = new Book(); book.lang = lang; const sh = book.sheets[0]; sh.name = name || "Sheet1";
+  const put = (r, c, v) => { if (v === null || v === undefined || v === "") return; sh.cells.set(key(r, c), { v: typeof v === "object" ? JSON.stringify(v) : v }); };
+  const isObj = (x) => x && typeof x === "object" && !Array.isArray(x);
+  if (data.length && data.every(isObj)) {
+    const cols = []; for (const o of data) for (const k of Object.keys(o)) if (!cols.includes(k)) cols.push(k);
+    cols.forEach((k, c) => put(0, c, k)); data.forEach((o, r) => cols.forEach((k, c) => put(r + 1, c, o[k])));
+  } else data.forEach((row, r) => (Array.isArray(row) ? row.forEach((v, c) => put(r, c, v)) : put(r, 0, row)));
+  sh.touch();
+  return { sheets: book.sheets, styles: book.styles };
+}
+export function toJSON(book, sh) {
+  const b = book.bounds(sh); if (b.maxR < 0) return "[]";
+  const val = (r, c) => { const v = book.value(sh, r, c); return v instanceof XErr ? v.code : v === undefined ? null : v; };
+  const rows = []; for (let r = 0; r <= b.maxR; r++) { const row = []; for (let c = 0; c <= b.maxC; c++) row.push(val(r, c)); rows.push(row); }
+  const head = rows[0], useObjects = rows.length > 1 && head.every((h) => typeof h === "string" && h !== "") && new Set(head).size === head.length;
+  const out = useObjects ? rows.slice(1).map((row) => Object.fromEntries(head.map((h, i) => [h, row[i]]))) : rows;
+  return JSON.stringify(out, null, 2);
+}
+
 // ───────────────────────── base64 ─────────────────────────
 export function bytesToBase64(u8) {
   let s = ""; const CH = 0x8000;

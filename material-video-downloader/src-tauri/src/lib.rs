@@ -33,7 +33,9 @@ pub fn run() {
             let manager = manager::Manager::new(handle.clone(), data_dir);
             app.manage(manager.clone());
             window::apply_startup(&handle, &manager.settings().window_mode);
-            server::start(manager);
+            server::start(manager.clone());
+            let setup_manager = manager.clone();
+            tauri::async_runtime::spawn(async move { ytdlp::ensure_engines(&setup_manager).await });
             Ok(())
         })
         .on_window_event(window::on_event)

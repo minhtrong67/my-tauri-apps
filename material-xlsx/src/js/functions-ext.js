@@ -266,7 +266,68 @@ export function extFunctions(H) {
     if (idx === undefined) { if (a[5] !== undefined) return val(a[5], cx); throw E.NA; }
     return before ? text.slice(0, idx) : text.slice(idx + nd.length);
   }
-  const ALIAS = { PERCENTILE: "PERCENTILE.INC", QUARTILE: "QUARTILE.INC", FORECAST: "FORECAST.LINEAR", COVAR: "COVARIANCE.P", NORMDIST: "NORM.DIST", NORMSDIST: "NORM.S.DIST", NORMINV: "NORM.INV", NORMSINV: "NORM.S.INV" };
+  // ── more statistics, maths, distributions and bit/number conversion (1.2) ──
+  const sorted = (a, cx) => numbers([a[0]], cx).sort((x, y) => x - y);
+  const sampleMoments = (n) => { if (n.length < 3) throw E.DIV0; const m = mean(n), sd = Math.sqrt(sum(n.map((y) => (y - m) ** 2)) / (n.length - 1)); if (sd === 0) throw E.DIV0; return n.map((y) => (y - m) / sd); };
+  const cnk = (n, k) => { let r = 1; for (let i = 1; i <= k; i++) r = (r * (n - k + i)) / i; return r; };
+  const cumFlag = (a, i, cx) => toBool(val(a[i], cx));
+  const ROMAN_T = [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
+  const bit = (a, cx) => { const x = Math.trunc(num(a[0], cx)), y = Math.trunc(num(a[1], cx)); bad(x < 0 || y < 0 || x > 2 ** 48 - 1 || y > 2 ** 48 - 1); return [x, y]; };
+  Object.assign(F, {
+    "PERCENTRANK.INC": (a, cx) => {
+      const n = sorted(a, cx), x = num(a[1], cx), sig = Math.trunc(optNum(a[2], cx, 3)); bad(!n.length || sig < 1);
+      if (x < n[0] || x > n[n.length - 1]) throw E.NA;
+      if (n.length === 1) return 1;
+      let i = n.findIndex((v) => v >= x), r = n[i] === x ? i : i - 1 + (x - n[i - 1]) / (n[i] - n[i - 1]);
+      const f = 10 ** sig; return Math.floor((r / (n.length - 1)) * f + 1e-9) / f;
+    },
+    TRIMMEAN: (a, cx) => { const n = sorted(a, cx), p = num(a[1], cx); bad(!n.length || p < 0 || p >= 1); const k = Math.floor((n.length * p) / 2), t = n.slice(k, n.length - k); return mean(t); },
+    SKEW: (a, cx) => { const z = sampleMoments(numbers(a, cx)), n = z.length; return (n / ((n - 1) * (n - 2))) * sum(z.map((v) => v ** 3)); },
+    KURT: (a, cx) => { const z = sampleMoments(numbers(a, cx)), n = z.length; if (n < 4) throw E.DIV0; return ((n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3))) * sum(z.map((v) => v ** 4)) - (3 * (n - 1) ** 2) / ((n - 2) * (n - 3)); },
+    FISHER: (a, cx) => { const x = num(a[0], cx); bad(Math.abs(x) >= 1); return 0.5 * Math.log((1 + x) / (1 - x)); },
+    FISHERINV: (a, cx) => { const e = Math.exp(2 * num(a[0], cx)); return (e - 1) / (e + 1); },
+    SUMX2MY2: (a, cx) => { const [x, y] = pairs(a, cx); return sum(x.map((v, i) => v * v - y[i] * y[i])); },
+    SUMX2PY2: (a, cx) => { const [x, y] = pairs(a, cx); return sum(x.map((v, i) => v * v + y[i] * y[i])); },
+    SUMXMY2: (a, cx) => { const [x, y] = pairs(a, cx); return sum(x.map((v, i) => (v - y[i]) ** 2)); },
+    "BINOM.DIST": (a, cx) => {
+      const k = Math.trunc(num(a[0], cx)), n = Math.trunc(num(a[1], cx)), p = num(a[2], cx); bad(k < 0 || k > n || p < 0 || p > 1);
+      const pmf = (i) => cnk(n, i) * p ** i * (1 - p) ** (n - i);
+      if (!cumFlag(a, 3, cx)) return pmf(k); let t = 0; for (let i = 0; i <= k; i++) t += pmf(i); return t;
+    },
+    "POISSON.DIST": (a, cx) => {
+      const k = Math.trunc(num(a[0], cx)), m = num(a[1], cx); bad(k < 0 || m < 0);
+      const pmf = (i) => { let l = -m + i * Math.log(m || 1e-300); for (let j = 2; j <= i; j++) l -= Math.log(j); return m === 0 ? (i === 0 ? 1 : 0) : Math.exp(l); };
+      if (!cumFlag(a, 2, cx)) return pmf(k); let t = 0; for (let i = 0; i <= k; i++) t += pmf(i); return Math.min(1, t);
+    },
+    "EXPON.DIST": (a, cx) => { const x = num(a[0], cx), l = num(a[1], cx); bad(x < 0 || l <= 0); return cumFlag(a, 2, cx) ? 1 - Math.exp(-l * x) : l * Math.exp(-l * x); },
+    COT: (a, cx) => { const x = num(a[0], cx); if (x === 0) throw E.DIV0; return 1 / Math.tan(x); },
+    ACOSH: (a, cx) => { const x = num(a[0], cx); bad(x < 1); return Math.acosh(x); },
+    ASINH: (a, cx) => Math.asinh(num(a[0], cx)),
+    ATANH: (a, cx) => { const x = num(a[0], cx); bad(Math.abs(x) >= 1); return Math.atanh(x); },
+    SQRTPI: (a, cx) => { const x = num(a[0], cx); bad(x < 0); return Math.sqrt(x * Math.PI); },
+    ERF: (a, cx) => { const lo = num(a[0], cx); return a[1] === undefined ? erf(lo) : erf(num(a[1], cx)) - erf(lo); },
+    DELTA: (a, cx) => (num(a[0], cx) === optNum(a[1], cx, 0) ? 1 : 0),
+    GESTEP: (a, cx) => (num(a[0], cx) >= optNum(a[1], cx, 0) ? 1 : 0),
+    BITAND: (a, cx) => { const [x, y] = bit(a, cx); return Number(BigInt(x) & BigInt(y)); },
+    BITOR: (a, cx) => { const [x, y] = bit(a, cx); return Number(BigInt(x) | BigInt(y)); },
+    BITXOR: (a, cx) => { const [x, y] = bit(a, cx); return Number(BigInt(x) ^ BigInt(y)); },
+    BITLSHIFT: (a, cx) => { const x = Math.trunc(num(a[0], cx)), s = Math.trunc(num(a[1], cx)); bad(x < 0 || Math.abs(s) > 53); const r = s >= 0 ? x * 2 ** s : Math.floor(x / 2 ** -s); bad(r > 2 ** 48 - 1); return r; },
+    BITRSHIFT: (a, cx) => { const x = Math.trunc(num(a[0], cx)), s = Math.trunc(num(a[1], cx)); bad(x < 0 || Math.abs(s) > 53); const r = s >= 0 ? Math.floor(x / 2 ** s) : x * 2 ** -s; bad(r > 2 ** 48 - 1); return r; },
+    ROMAN: (a, cx) => { let n = Math.trunc(num(a[0], cx)); if (n < 0 || n > 3999) throw E.VALUE; if (n === 0) return ""; let o = ""; for (const [v, r] of ROMAN_T) while (n >= v) { o += r; n -= v; } return o; },
+    ARABIC: (a, cx) => {
+      let t = str(a[0], cx).trim().toUpperCase(), neg = false; if (t[0] === "-") { neg = true; t = t.slice(1); } if (t === "") return 0;
+      const V = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 }; let r = 0;
+      for (let i = 0; i < t.length; i++) { const c = V[t[i]], nx = V[t[i + 1]]; if (!c) throw E.VALUE; r += nx > c ? -c : c; }
+      return neg ? -r : r;
+    },
+    BASE: (a, cx) => { const n = Math.trunc(num(a[0], cx)), b = Math.trunc(num(a[1], cx)), m = Math.trunc(optNum(a[2], cx, 0)); bad(n < 0 || n > 2 ** 53 - 1 || b < 2 || b > 36 || m < 0 || m > 255); return n.toString(b).toUpperCase().padStart(m, "0"); },
+    DECIMAL: (a, cx) => {
+      const b = Math.trunc(num(a[1], cx)); bad(b < 2 || b > 36); const t = str(a[0], cx).trim().toUpperCase(); if (!t) return 0; let r = 0;
+      for (const ch of t) { const d = parseInt(ch, 36); if (Number.isNaN(d) || d >= b) throw E.NUM; r = r * b + d; }
+      return r;
+    },
+  });
+  const ALIAS = { PERCENTILE: "PERCENTILE.INC", QUARTILE: "QUARTILE.INC", FORECAST: "FORECAST.LINEAR", PERCENTRANK: "PERCENTRANK.INC", "BINOMDIST": "BINOM.DIST", "POISSON": "POISSON.DIST", "EXPONDIST": "EXPON.DIST", COVAR: "COVARIANCE.P", NORMDIST: "NORM.DIST", NORMSDIST: "NORM.S.DIST", NORMINV: "NORM.INV", NORMSINV: "NORM.S.INV" };
   for (const [k, v] of Object.entries(ALIAS)) F[k] = F[v];
   return F;
 }

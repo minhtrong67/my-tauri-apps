@@ -134,3 +134,9 @@ export const DEFAULT_CORE: CoreSettings = {
   ytdlpPath: "",
   ffmpegPath: "",
 };
+
+export interface EngineSetup {
+  stage: string;
+  state: "working" | "done" | "error";
+  message: string | null;
+}

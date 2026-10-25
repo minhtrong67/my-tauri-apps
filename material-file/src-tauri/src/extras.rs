@@ -480,3 +480,42 @@ pub fn set_global_shortcut(app: AppHandle, enabled: bool) -> Result<(), String> 
     }
     Ok(())
 }
+
+/* ----------------------------------------------------- undo delete (Recycle Bin) */
+
+/// Restores items that were just moved to the Recycle Bin, matching them by their original path.
+#[tauri::command]
+pub async fn restore_trashed(paths: Vec<String>) -> Result<usize, String> {
+    tauri::async_runtime::spawn_blocking(move || restore_impl(paths)).await.map_err(|e| e.to_string())?
+}
+
+#[cfg(windows)]
+fn restore_impl(paths: Vec<String>) -> Result<usize, String> {
+    let wanted: Vec<String> = paths.iter().map(|p| p.replace('/', "\\").to_lowercase()).collect();
+    let items = trash::os_limited::list().map_err(|e| e.to_string())?;
+    // newest deletions first, one item per requested path
+    let mut picked = Vec::new();
+    for w in &wanted {
+        let mut best: Option<trash::TrashItem> = None;
+        for it in items.iter() {
+            let orig = it.original_path().to_string_lossy().replace('/', "\\").to_lowercase();
+            if orig == *w && best.as_ref().map_or(true, |b| it.time_deleted > b.time_deleted) {
+                best = Some(it.clone());
+            }
+        }
+        if let Some(b) = best {
+            picked.push(b);
+        }
+    }
+    let n = picked.len();
+    if n == 0 {
+        return Err("not-found".into());
+    }
+    trash::os_limited::restore_all(picked).map_err(|e| e.to_string())?;
+    Ok(n)
+}
+
+#[cfg(not(windows))]
+fn restore_impl(_paths: Vec<String>) -> Result<usize, String> {
+    Err("unsupported".into())
+}

@@ -4,6 +4,7 @@ import { DEFAULT_SEED } from '../lib/theme';
 
 export interface Layout { view?: ViewMode; sortKey?: SortKey; sortDir?: 'asc' | 'desc'; groupBy?: GroupBy }
 export type ColId = 'modified' | 'created' | 'type' | 'size';
+export interface SavedSearch { name: string; q: string; regex: boolean; kind: string; min?: string; max?: string; minU?: string; maxU?: string; after?: string; before?: string }
 export interface WinState { w: number; h: number; maximized: boolean }
 
 export interface Settings {
@@ -39,6 +40,9 @@ export interface Settings {
   recent: { path: string; t: number }[];
   frequent: Record<string, number>;
   tags: Record<string, TagId[]>;
+  tagNames: Partial<Record<TagId, string>>;
+  searchHistory: string[];
+  savedSearches: SavedSearch[];
   layouts: Record<string, Layout>;
   session: { a: { paths: string[]; active: number } | null };
   lastUpdateCheck: number;
@@ -53,7 +57,7 @@ export const DEFAULTS: Settings = {
   trayEnabled: false, globalShortcut: false, dualPane: false,
   windowMode: 'remember', winState: null,
   cols: ['modified', 'type', 'size'], colW: { modified: 170, created: 170, type: 160, size: 100 },
-  pinned: [], recent: [], frequent: {}, tags: {}, layouts: {}, session: { a: null }, lastUpdateCheck: 0
+  pinned: [], recent: [], frequent: {}, tags: {}, tagNames: {}, searchHistory: [], savedSearches: [], layouts: {}, session: { a: null }, lastUpdateCheck: 0
 };
 
 const KEY = 'material-file.settings.v2';
@@ -77,7 +81,7 @@ export const useSettings = create<Store>((set, get) => ({
   set: (patch) => set(patch),
   reset: () => {
     const k = get();
-    set({ ...DEFAULTS, lang: DEFAULTS.lang, pinned: k.pinned, recent: k.recent, frequent: k.frequent, tags: k.tags, winState: k.winState });
+    set({ ...DEFAULTS, lang: DEFAULTS.lang, pinned: k.pinned, recent: k.recent, frequent: k.frequent, tags: k.tags, tagNames: k.tagNames, savedSearches: k.savedSearches, winState: k.winState });
   }
 }));
 // debounce persistence so rapid changes (column resize, window resize) do not hammer localStorage

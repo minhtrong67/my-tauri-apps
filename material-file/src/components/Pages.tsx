@@ -7,7 +7,7 @@ import { baseName, parentOf, pk } from '../lib/paths';
 import { fmtDate, fmtSize } from '../lib/format';
 import type { Drive, PaneId } from '../lib/types';
 import { FileIcon } from './FileIcon';
-import { sidebarMenuItems, TAGS } from '../lib/menus';
+import { sidebarMenuItems, tagLabel, TAGS } from '../lib/menus';
 import { EmptyState } from './EmptyState';
 import { Button } from './ui/Buttons';
 import type { LucideIcon } from 'lucide-react';
@@ -77,7 +77,7 @@ export function HomePage({ id }: { id: PaneId }) {
       {frequent.length > 0 && <><H icon={History}>{t('home.frequent')}</H>
         <div className="grid gap-2.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(13.5rem, 1fr))' }}>{frequent.map((p) => <PlaceCard key={p} id={id} path={p} label={baseName(p)} sub={parentLabel(p)} folder i={k++} />)}</div></>}
       {tagged > 0 && <><H icon={Tag}>{t('home.tags')}</H>
-        <div className="flex flex-wrap gap-2">{TAGS.map((tg) => <span key={tg.id} className="flex items-center gap-2 rounded-full bg-surface-container-high px-3 py-1.5 text-sm font-medium"><i className="tag-dot !size-3" style={{ background: tg.color }} />{t(tg.key)}<b className="text-on-surface-variant">{Object.values(S.tags).filter((a) => a.includes(tg.id)).length}</b></span>)}</div></>}
+        <div className="flex flex-wrap gap-2">{TAGS.map((tg) => <span key={tg.id} className="flex items-center gap-2 rounded-full bg-surface-container-high px-3 py-1.5 text-sm font-medium"><i className="tag-dot !size-3" style={{ background: tg.color }} />{tagLabel(tg.id)}<b className="text-on-surface-variant">{Object.values(S.tags).filter((a) => a.includes(tg.id)).length}</b></span>)}</div></>}
       <H icon={Clock} extra={S.recent.length > 0 && <Button tone="text" small icon={Trash2} label={t('home.clear')} onClick={() => S.set({ recent: [] })} />}>{t('home.recent')}</H>
       {S.recent.length ? (
         <div className="card overflow-hidden p-1.5">

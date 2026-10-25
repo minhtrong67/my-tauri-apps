@@ -10,7 +10,7 @@ export function Toasts() {
         <div
           key={t.id}
           className={cx(
-            "anim-toast pointer-events-auto flex min-h-12 w-full max-w-md items-center gap-3 rounded-xl py-2 pr-2 pl-4 text-sm shadow-xl",
+            "anim-toast pointer-events-auto flex min-h-12 w-full max-w-md items-center gap-3 rounded-[20px] py-2 pr-2 pl-5 text-sm shadow-xl",
             t.tone === "error" ? "bg-error text-on-error" : "bg-inverse-surface text-inverse-on-surface",
           )}
         >

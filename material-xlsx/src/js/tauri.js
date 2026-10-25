@@ -1,15 +1,30 @@
 // Thin wrapper around the Tauri global API, with browser fallbacks so the UI also runs in a plain browser.
-import { bytesToBase64, base64ToBytes } from "./io.js";
+
+import { OPEN_EXT, OOXML, TEXT, ACCEPT } from "./formats.js";
 
 const T = window.__TAURI__;
 export const isTauri = !!T;
 export const basename = (p) => String(p).split(/[\\/]/).pop();
 
-export async function readFile(path) { return base64ToBytes(await T.core.invoke("read_file", { path })); }
-export async function writeFile(path, bytes) { await T.core.invoke("write_file", { path, data: bytesToBase64(bytes) }); }
+// Binary IPC: no base64 round-trip, so large workbooks open and save faster.
+export async function readFile(path) { return new Uint8Array(await T.core.invoke("read_file", { path })); }
+export async function writeFile(path, bytes) { await T.core.invoke("write_file", bytes, { headers: { "x-path": encodeURIComponent(path) } }); }
+
+// Crash-recovery draft (desktop only)
+export async function saveDraft(bytes, meta) { if (T) await T.core.invoke("save_draft", bytes, { headers: { "x-meta": encodeURIComponent(JSON.stringify(meta)) } }); }
+export async function draftInfo() { if (!T) return null; try { const s = await T.core.invoke("draft_info"); return s ? JSON.parse(s) : null; } catch { return null; } }
+export async function readDraft() { return new Uint8Array(await T.core.invoke("read_draft")); }
+export async function clearDraft() { if (T) { try { await T.core.invoke("clear_draft"); } catch { /* ignore */ } } }
 
 export const XLSX_FILTER = [{ name: "Excel Workbook", extensions: ["xlsx"] }];
-export const OPEN_FILTER = [{ name: "Excel / CSV", extensions: ["xlsx", "csv", "tsv", "txt"] }];
+export const OPEN_FILTER = [
+  { name: "All supported files", extensions: OPEN_EXT },
+  { name: "Excel workbook / template", extensions: OOXML },
+  { name: "CSV / TSV / text", extensions: TEXT },
+  { name: "JSON", extensions: ["json"] },
+];
+export const TSV_FILTER = [{ name: "TSV", extensions: ["tsv"] }];
+export const JSON_FILTER = [{ name: "JSON", extensions: ["json"] }];
 export const CSV_FILTER = [{ name: "CSV", extensions: ["csv"] }];
 
 let fileInput = null;
@@ -24,7 +39,7 @@ function browserPick(accept) {
 
 // Returns {path, name, bytes} or null
 export async function openFileDialog() {
-  if (!T) return browserPick(".xlsx,.csv,.tsv,.txt");
+  if (!T) return browserPick(ACCEPT);
   const path = await T.dialog.open({ multiple: false, filters: OPEN_FILTER });
   if (!path) return null;
   return { path, name: basename(path), bytes: await readFile(path) };
@@ -56,7 +71,7 @@ export async function clipboardWrite(text) {
 
 export function currentWindow() { return T && T.window ? T.window.getCurrentWindow() : null; }
 export async function setWindowTitle(title) { const w = currentWindow(); if (w) { try { await w.setTitle(title); } catch { /* permission */ } } }
-export async function appVersion() { try { return await T.app.getVersion(); } catch { return "1.0.0"; } }
+export async function appVersion() { try { return await T.app.getVersion(); } catch { return "1.2.0"; } }
 export async function launchFile() { if (!T) return null; try { return await T.core.invoke("get_launch_file"); } catch { return null; } }
 export function listen(ev, cb) { return T && T.event ? T.event.listen(ev, cb) : Promise.resolve(() => {}); }
 export async function revealPath(path) { if (T) { try { await T.core.invoke("reveal_file", { path }); } catch { /* ignore */ } } }

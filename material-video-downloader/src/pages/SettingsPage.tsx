@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import {
   Check, ClipboardList, Copy, Download, FolderOpen, Globe, Languages, Loader2, Maximize2, Monitor, Moon, MonitorSmartphone, Palette, Plug, RefreshCw, Settings as Gear, Sun, Wrench, PictureInPicture2,
 } from "lucide-react";
-import { Button, cx, Segmented, Select, Slider, Switch } from "../components/ui";
+import { Button, cx, Segmented, Select, ShapeBadge, Slider, Switch } from "../components/ui";
 import { api } from "../lib/api";
 import { useT } from "../lib/hooks";
 import type { TKey } from "../lib/i18n";
@@ -30,10 +30,10 @@ export function SettingsPage() {
     <div className="anim-page flex h-full min-h-0 flex-col md:flex-row">
       <aside className="shrink-0 border-b border-outline-variant/50 md:w-64 md:border-r md:border-b-0">
         <div className="flex items-center gap-3 px-5 pt-5 pb-2 md:pb-4">
-          <span className="flex size-10 items-center justify-center rounded-full bg-primary-container text-on-primary-container">
+          <ShapeBadge shape="cookie" size={48}>
             <Gear size={22} />
-          </span>
-          <h1 className="text-[1.375rem] font-normal">{t("settingsTitle")}</h1>
+          </ShapeBadge>
+          <h1 className="text-[1.75rem] font-semibold tracking-tight">{t("settingsTitle")}</h1>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-col md:overflow-visible md:pb-0" aria-label={t("settingsTitle")}>
           {SECTIONS.map((s) => {
@@ -44,8 +44,8 @@ export function SettingsPage() {
                 onClick={() => setSection(s.id)}
                 aria-current={active ? "page" : undefined}
                 className={cx(
-                  "ripple-host flex h-12 shrink-0 items-center gap-3 rounded-full px-4 text-sm font-medium transition-colors duration-200",
-                  active ? "bg-secondary-container text-on-secondary-container" : "text-on-surface-variant hover:bg-on-surface/6",
+                  "ripple-host flex h-14 shrink-0 items-center gap-3 px-5 text-sm font-semibold transition-all duration-500 ease-spring active:scale-[0.97]",
+                  active ? "rounded-full bg-secondary-container text-on-secondary-container" : "rounded-2xl text-on-surface-variant hover:rounded-full hover:bg-on-surface/6",
                 )}
               >
                 {s.icon}
@@ -74,10 +74,10 @@ export function SettingsPage() {
 
 function Card({ title, hint, children }: { title?: string; hint?: string; children: ReactNode }) {
   return (
-    <section className="rounded-3xl bg-surface-low p-5">
+    <section className="rounded-[32px] bg-surface-low p-6 transition-[border-radius] duration-500 ease-spring hover:rounded-[40px]">
       {title && (
         <div className="mb-4">
-          <h2 className="text-base font-medium text-on-surface">{title}</h2>
+          <h2 className="text-lg font-semibold tracking-tight text-on-surface">{title}</h2>
           {hint && <p className="mt-0.5 text-sm text-on-surface-variant">{hint}</p>}
         </div>
       )}
@@ -349,9 +349,9 @@ function Engine() {
     manualHint?: string,
   ) => (
     <div className="flex items-center gap-4 py-3 first:pt-0 last:pb-0">
-      <span className={cx("flex size-11 shrink-0 items-center justify-center rounded-2xl", info?.found ? "bg-primary-container text-on-primary-container" : "bg-surface-highest text-on-surface-variant")}>
+      <ShapeBadge shape={info?.found ? "cookie" : "gem"} size={52} tone={info?.found ? "primary" : "secondary"}>
         <Wrench size={20} />
-      </span>
+      </ShapeBadge>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-[0.95rem] font-medium">{title}</p>
@@ -429,7 +429,7 @@ function Extension() {
         <ol className="flex flex-col gap-3">
           {steps.map((s, i) => (
             <li key={i} className="flex items-start gap-3">
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary-container text-sm font-medium text-on-secondary-container">{i + 1}</span>
+              <ShapeBadge shape="flower" size={34} tone="secondary"><span className="text-sm font-bold">{i + 1}</span></ShapeBadge>
               <span className="pt-0.5 text-sm leading-relaxed text-on-surface">{s}</span>
             </li>
           ))}

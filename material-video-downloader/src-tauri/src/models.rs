@@ -228,3 +228,11 @@ impl<E: std::fmt::Display> From<E> for Stop {
         Stop::Failed(e.to_string())
     }
 }
+
+#[derive(Serialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineSetup {
+    pub stage: String,
+    pub state: String,
+    pub message: Option<String>,
+}

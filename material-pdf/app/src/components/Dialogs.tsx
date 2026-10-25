@@ -78,7 +78,7 @@ function SettingsDialog() {
             <Row title={t("fontSize")} desc={t("fontSizeDesc")}>
               <Segmented value={s.fontSize} onChange={(v) => set({ fontSize: v })} options={[{ value: "small", label: t("small") }, { value: "medium", label: t("medium") }, { value: "large", label: t("large") }]} />
             </Row>
-            <Row title={t("language")} desc={t("languageDesc")}>
+            <Row title={t("language")} desc={t("languageDesc")} stack>
               <Segmented value={s.lang} onChange={(v) => set({ lang: v })} options={[{ value: "auto", label: t("auto") }, { value: "en", label: t("english") }, { value: "vi", label: t("vietnamese") }]} />
             </Row>
           </>}
@@ -92,7 +92,7 @@ function SettingsDialog() {
                 ))}
               </div>
             </Row>
-            <Row title={t("defaultZoom")} desc={t("defaultZoomDesc")}>
+            <Row title={t("defaultZoom")} desc={t("defaultZoomDesc")} stack>
               <Segmented value={s.defaultFit} onChange={(v) => set({ defaultFit: v })} options={[{ value: "width", label: t("zoomFitWidth") }, { value: "page", label: t("zoomFitPage") }, { value: "100", label: t("zoom100") }]} />
             </Row>
             <Row title={t("nightDefault")} desc={t("nightDefaultDesc")}><Switch checked={s.nightPages} onChange={(v) => set({ nightPages: v })} label={t("nightDefault")} /></Row>

@@ -38,4 +38,16 @@ t('ADDRESS(2,3)','$C$2');t('ADDRESS(2,3,4)','C2');t('ADDRESS(2,3,2)','C$2');t('A
 t('TEXTBEFORE("Red riding hood","riding")','Red ');t('TEXTAFTER("Red riding hood","riding ")','hood');t('TEXTBEFORE("a-b-c","-",-1)','a-b');t('TEXTAFTER("a-b-c","-",2)','c');t('TEXTBEFORE("abc","x")','#N/A');
 t('DEC2BIN(9)','1001');t('DEC2HEX(255)','FF');t('HEX2DEC("FF")',255);t('BIN2DEC("1111111111")',-1);t('DEC2BIN(9,8)','00001001');
 t('NUMBERVALUE("2.500,27",",",".")',2500.27);t('DOLLAR(1234.567,2)','$1,234.57');t('FIXED(1234.567,1)','1,234.6');t('TYPE(A1)',1);t('TYPE("a")',2);t('TYPE(A1:A3)',64);t('ISREF(A1)',true);t('T("x")','x');t('T(5)','');t('UNICODE("A")',65);t('UNICHAR(66)','B');
+// 1.2 additions (values from Microsoft documentation)
+const S4=mk('Sk',{A1:3,A2:4,A3:5,A4:2,A5:3,A6:4,A7:5,A8:6,A9:4,A10:7,B1:13,B2:12,B3:11,B4:8,B5:4,B6:3,B7:2,B8:1,B9:1,B10:1,C1:4,C2:5,C3:6,C4:7,C5:2,C6:3,C7:4,C8:5,C9:1,C10:2,C11:3});sheets.push(S4);
+ap('SKEW(Sk!A1:A10)',0.359543,1e-6);ap('KURT(Sk!A1:A10)',-0.151799637,1e-8);
+ap('PERCENTRANK(Sk!B1:B10,2)',0.333,1e-9);ap('PERCENTRANK.INC(Sk!B1:B10,8)',0.666,1e-9);ap('PERCENTRANK(Sk!B1:B10,5)',0.583,1e-9);t('PERCENTRANK(Sk!B1:B10,99)','#N/A');
+ap('TRIMMEAN(Sk!C1:C11,0.2)',3.777777778,1e-8);
+ap('FISHER(0.75)',0.972955,1e-6);ap('FISHERINV(0.972955)',0.75,1e-6);
+ap('SUMX2MY2(Stat!C1:C7,Stat!D1:D7)',-55);ap('SUMXMY2(Stat!C1:C7,Stat!D1:D7)',79);ap('SUMX2PY2(Stat!C1:C7,Stat!D1:D7)',521);
+ap('BINOM.DIST(6,10,0.5,FALSE)',0.2050781,1e-7);ap('BINOMDIST(6,10,0.5,TRUE)',0.828125,1e-7);ap('POISSON.DIST(2,5,FALSE)',0.084224,1e-6);ap('POISSON(2,5,TRUE)',0.124652,1e-6);
+ap('EXPON.DIST(0.2,10,TRUE)',0.864665,1e-6);ap('EXPON.DIST(0.2,10,FALSE)',1.353353,1e-6);
+ap('ERF(0.745)',0.707929,1e-6);ap('ERF(0,1)',0.842701,1e-6);ap('ACOSH(10)',2.993223,1e-6);ap('ASINH(-2.5)',-1.647231,1e-6);ap('ATANH(-0.7)',-0.867301,1e-6);ap('SQRTPI(2)',2.506628,1e-6);ap('COT(1)',0.642093,1e-6);t('COT(0)','#DIV/0!');
+t('BITAND(1,5)',1);t('BITOR(23,10)',31);t('BITXOR(5,3)',6);t('BITLSHIFT(4,2)',16);t('BITRSHIFT(13,2)',3);t('DELTA(5,4)',0);t('DELTA(5,5)',1);t('GESTEP(5,4)',1);t('GESTEP(3,4)',0);
+t('ROMAN(499)','CDXCIX');t('ROMAN(2024)','MMXXIV');t('ARABIC("MCMXCIV")',1994);t('ARABIC("-IX")',-9);t('BASE(15,2,10)','0000001111');t('BASE(255,16)','FF');t('DECIMAL("FF",16)',255);t('DECIMAL("zap",36)',45745);
 console.log(fail?('FAILURES '+fail):'functions-ext: all passed');

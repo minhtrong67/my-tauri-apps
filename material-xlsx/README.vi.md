@@ -33,8 +33,6 @@ Toàn bộ công cụ bảng tính (bộ phân tích công thức, bộ tính to
 | *Giao diện sáng: công thức, định dạng số, tiêu đề gộp ô, cố định hàng đầu* | *Giao diện tối với màu tuỳ chọn và gợi ý hàm* |
 | ![Cài đặt](screenshots/image03.png) | ![Bộ lọc](screenshots/image04.png) |
 | *Cài đặt bằng tiếng Việt: giao diện, màu, ngôn ngữ, chế độ cửa sổ* | *Bộ lọc cột có ô tìm kiếm* |
-| ![Menu và tìm kiếm](screenshots/image05.png) | |
-| *Menu Dữ liệu và bảng Tìm & Thay thế* | |
 
 ## Tính năng
 
@@ -72,11 +70,35 @@ Toàn bộ công cụ bảng tính (bộ phân tích công thức, bộ tính to
 - **Tuỳ chọn cửa sổ trong Cài đặt:** *ghi nhớ kích thước cửa sổ* (mở lại đúng như lần trước) **hoặc** *luôn mở phóng to tối đa*; `F11` bật/tắt toàn màn hình bất cứ lúc nào
 - Bộ icon đầy đủ: icon ứng dụng, icon file cài đặt (setup) và icon gỡ cài đặt (uninstall)
 
+## Định dạng tệp được hỗ trợ
+
+| | Định dạng | Ghi chú |
+|---|---|---|
+| **Mở** | `.xlsx` | Hỗ trợ đầy đủ: giá trị, công thức, định dạng, ô gộp, biểu đồ, định dạng có điều kiện, xác thực dữ liệu |
+| | `.xlsm`, `.xltm` | Mở như bảng tính thường. **Macro không được chạy và sẽ bị bỏ** khi lưu |
+| | `.xltx`, `.xltm` | Mẫu (template) mở thành bảng tính mới chưa đặt tên, không bao giờ ghi đè lên mẫu |
+| | `.csv`, `.tsv`, `.txt` | Tự nhận dấu phân cách (`,` `;` tab `\|`), UTF-8 (cho phép BOM) |
+| | `.json` | Mảng đối tượng (khoá thành hàng tiêu đề), mảng các mảng, hoặc `{ "data": [...] }` |
+| **Lưu / xuất** | `.xlsx` | *Lưu* và *Lưu thành…* luôn ghi `.xlsx` |
+| | `.csv`, `.tsv`, `.json` | *Xuất sheet ra…* ghi sheet đang chọn (CSV/TSV là văn bản đã định dạng, JSON là giá trị gốc) |
+| | PDF | Dùng *In* → "Lưu thành PDF" |
+| **Chưa hỗ trợ** | `.xls`, `.xlsb`, `.ods`, `.numbers` | Hãy mở bằng Excel / LibreOffice và lưu thành `.xlsx` trước — app sẽ báo rõ thay vì đoán sai |
+
+Có thể mở tệp từ menu, kéo & thả, "Mở bằng" hoặc nhấp đúp (trình cài đặt đăng ký `.xlsx`, `.csv`, `.tsv`).
+Mở bất kỳ định dạng nào khác `.xlsx` thật sự sẽ không bao giờ ghi đè tệp gốc: **Lưu** sẽ hỏi tên `.xlsx` mới.
+
+**Ổn định & tích hợp desktop** *(mới ở 1.2)*
+- **Khôi phục sau sự cố** — tự sao lưu mỗi 45 giây khi có thay đổi chưa lưu; có thể khôi phục sau khi treo máy hoặc mất điện
+- **Một cửa sổ duy nhất** — nhấp đúp `.xlsx` / `.csv` khác sẽ mở trong cửa sổ đang chạy; trình cài đặt đăng ký liên kết tệp; kéo & thả để mở
+- **Truyền tệp nhị phân** — dữ liệu đi giữa giao diện và Rust dạng byte thô (không base64), chỉ cho phép `.xlsx` / `.csv` / `.tsv` / `.txt`
+- Content-Security-Policy chặt chẽ và làm sạch màu đọc từ tệp
+- **Material 3 Expressive** — chuyển động lò xo, hình khối biến đổi khi rê / nhấn / chọn, nhóm nút liền mạch
+
 ## Landing page
 
 Đã triển khai tại **https://minhtrong67.github.io/material-xlsx/**. Trang có đầy đủ metadata SEO và chia sẻ mạng xã hội: title / description / keywords, canonical + `hreflang` (`?lang=en|vi`), robots, Open Graph và Twitter card với ảnh chia sẻ 1200×630 (`og-image.png`), JSON-LD (WebSite, SoftwareApplication, FAQPage), `sitemap.xml`, `robots.txt` và `site.webmanifest`.
 
-`index.html` ở thư mục gốc là trang giới thiệu độc lập, responsive, có hiệu ứng (tiếng Anh / tiếng Việt, sáng / tối, demo đổi màu trực tiếp, thư viện ảnh và nút Tải về). Sau `npm run build`, chép `src-tauri/target/release/bundle/nsis/Material Xlsx_1.1.0_x64-setup.exe` vào thư mục `download/` — nút tải đã trỏ sẵn tới tệp này. Mở bằng trình duyệt hoặc đưa lên GitHub Pages.
+`index.html` ở thư mục gốc là trang giới thiệu độc lập, responsive, có hiệu ứng (tiếng Anh / tiếng Việt, sáng / tối, demo đổi màu trực tiếp, thư viện ảnh và nút Tải về). Sau `npm run build`, chép `src-tauri/target/release/bundle/nsis/Material Xlsx_1.2.0_x64-setup.exe` vào thư mục `download/` — nút tải đã trỏ sẵn tới tệp này. Mở bằng trình duyệt hoặc đưa lên GitHub Pages.
 
 ## Tải về
 
@@ -84,7 +106,7 @@ Bộ cài dựng sẵn được đăng ở trang **[Releases](https://github.com
 
 | Nền tảng | Tệp |
 |---|---|
-| Windows 10 / 11 | `Material Xlsx_1.1.0_x64-setup.exe` (NSIS) hoặc `.msi` |
+| Windows 10 / 11 | `Material Xlsx_1.2.0_x64-setup.exe` (NSIS) hoặc `.msi` |
 | macOS | `.dmg` (build trên máy Mac) |
 | Linux | `.deb` / `.AppImage` (build trên Linux) |
 
@@ -101,7 +123,7 @@ Gỡ cài đặt bằng *Settings → Apps* hoặc lối tắt **Uninstall Mater
 | Lớp | Công nghệ |
 |---|---|
 | Khung ứng dụng | [Tauri 2](https://tauri.app) (Rust) + plugin `dialog`, `opener`, `window-state` |
-| Crate Rust | `serde`, `base64`, `arboard` (clipboard) |
+| Crate Rust | `serde`, `percent-encoding`, `arboard` (clipboard), `tauri-plugin-single-instance` |
 | Giao diện | HTML, CSS và JavaScript thuần (ES modules, không cần bundler) |
 | Hệ thiết kế | Material Design 3, màu sinh bằng `@material/material-color-utilities` |
 | Công cụ bảng tính | Bộ phân tích Pratt + bộ tính toán tự viết, mô hình ô bất biến với hoàn tác bằng snapshot |
@@ -127,7 +149,7 @@ npm test           # kiểm thử công thức, định dạng số và mô hìn
 npm run build
 ```
 
-Bộ cài nằm trong `target/release/bundle/` của workspace (ví dụ `nsis/Material Xlsx_1.1.0_x64-setup.exe`). Icon setup và uninstall được cấu hình trong `src-tauri/tauri.conf.json` (`installerIcon`, `uninstallerIcon`).
+Bộ cài nằm trong `target/release/bundle/` của workspace (ví dụ `nsis/Material Xlsx_1.2.0_x64-setup.exe`). Icon setup và uninstall được cấu hình trong `src-tauri/tauri.conf.json` (`installerIcon`, `uninstallerIcon`).
 
 ## Cấu trúc dự án
 
@@ -137,12 +159,12 @@ material-xlsx/
 ├─ og-image.png, robots.txt, sitemap.xml, site.webmanifest   tài nguyên SEO / chia sẻ mạng xã hội
 ├─ download/               đặt bộ cài Windows vào đây (landing page liên kết tới thư mục này)
 ├─ package.json            lệnh npm: dev, build, test
-├─ screenshots/            ảnh cho README (image01 … image05)
+├─ screenshots/            ảnh cho README (image01 … image04)
 ├─ tests/                  kiểm thử (công thức, hàm, định dạng, mô hình, tính năng, biểu đồ, xlsx, i18n)
 ├─ src/                    giao diện
 │  ├─ index.html           khung trang + bộ icon SVG
 │  ├─ styles.css           style Material Design 3 + chuyển động
-│  ├─ vendor/              ExcelJS, Material colour utilities (đóng gói sẵn, chạy offline)
+│  ├─ public/vendor/              ExcelJS, Material colour utilities (đóng gói sẵn, chạy offline)
 │  └─ js/                  main, app, app-ext, grid, model, formula, functions-ext, features, charts, refs, numfmt, io, i18n, theme, widgets, tauri
 └─ src-tauri/              backend Rust
    ├─ Cargo.toml  tauri.conf.json  build.rs

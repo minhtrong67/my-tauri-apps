@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { AlertTriangle, Copy as CopyIcon, Trash2, X, Check, Replace, SkipForward, Pencil } from 'lucide-react';
+import { AlertTriangle, Copy as CopyIcon, Trash2, X, Check, Replace, SkipForward } from 'lucide-react';
 import { api } from '../lib/api';
 import type { Drive, Entry, Kind, PaneId, Place, TagId, Tools } from '../lib/types';
 import { baseName, crumbsOf, HOME, isVirtual, parentOf, pk, samePath, stripExt } from '../lib/paths';
@@ -26,13 +26,15 @@ export interface PaneState {
   token: number;
   loading: boolean;
   reveal: { path: string; n: number } | null;
+  navDir: 1 | -1;
 }
 export interface TreeNode { name: string; path: string; hidden: boolean }
 export type UndoOp =
   | { type: 'rename'; from: string; to: string }
   | { type: 'rename-many'; pairs: { from: string; to: string }[] }
   | { type: 'move'; pairs: { from: string; to: string }[] }
-  | { type: 'create'; paths: string[] };
+  | { type: 'create'; paths: string[] }
+  | { type: 'trash'; paths: string[] };
 
 interface Explorer {
   panes: Record<PaneId, PaneState>;
@@ -51,7 +53,7 @@ let tabSeq = 1;
 const newTabObj = (path: string | null): Tab => ({ id: tabSeq++, path, back: [], fwd: [] });
 const emptyPane = (): PaneState => ({
   path: null, entries: [], search: null, filter: '', kind: 'all', selected: new Set(), anchor: null, focus: null,
-  tabs: [newTabObj(null)], active: 0, sig: '', renaming: null, token: 0, loading: false, reveal: null
+  tabs: [newTabObj(null)], active: 0, sig: '', renaming: null, token: 0, loading: false, reveal: null, navDir: 1
 });
 
 export const useExplorer = create<Explorer>(() => ({
@@ -142,6 +144,11 @@ export async function loadDrives() {
 }
 export const errText = (err: unknown): string => {
   const s = String((err as { message?: string })?.message ?? err);
+  if (/os error 5\b|access is denied|permission denied/i.test(s)) return t('err.denied');
+  if (/os error 32\b|being used by another process|sharing violation/i.test(s)) return t('err.inUse');
+  if (/os error 112\b|not enough space|no space left/i.test(s)) return t('err.diskFull');
+  if (/os error (2|3)\b|cannot find the (path|file)|no such file/i.test(s)) return t('err.notFound');
+  if (/os error (123|206)\b|filename.*too long|invalid name/i.test(s)) return t('err.invalidName');
   if (s.includes('exists')) return t('err.exists');
   if (s.includes('invalid-name')) return t('err.invalidName');
   if (s.includes('into-itself')) return t('err.intoItself');
@@ -182,9 +189,11 @@ export async function revealInTree(path: string) {
   await Promise.all(need.map(loadTreeChildren));
 }
 
+let nextDir: 1 | -1 = 1; // direction of the page transition for the next navigation (-1 = going back / up)
 export interface NavOpts { push?: boolean; silent?: boolean; select?: string[] | null }
 export async function navigate(id: PaneId, path: string, { push = true, silent = false, select = null }: NavOpts = {}): Promise<boolean> {
   const token = pane(id).token + 1;
+  const dir = nextDir; nextDir = 1;
   patch(id, silent ? { token } : { token, loading: true });
   if (!silent) setLoading(true);
   try {
@@ -201,7 +210,7 @@ export async function navigate(id: PaneId, path: string, { push = true, silent =
     tabs = tabs.map((tb, k) => (k === i ? { ...tb, path } : tb));
     const keep = changed ? {} : { selected: new Set([...cur.selected].filter((p) => entries.some((e) => e.path === p))) };
     patch(id, {
-      path, entries, search: null, sig, tabs, loading: false,
+      path, entries, search: null, sig, tabs, loading: false, ...(changed ? { navDir: dir } : {}),
       ...(changed ? { selected: new Set<string>(), anchor: null, focus: null, filter: '', kind: 'all' as Kind, renaming: null } : keep)
     });
     if (changed) { if (!isVirtual(path)) bumpFrequent(path); void api.watchDir(id, isVirtual(path) ? '' : path).catch(() => {}); }
@@ -223,6 +232,7 @@ export async function goBack(id: PaneId) {
   const tb = activeTab(pane(id));
   if (!tb.back.length) return;
   const target = tb.back[tb.back.length - 1]; const from = pane(id).path;
+  nextDir = -1;
   if (await navigate(id, target, { push: false })) patchTab(id, (x) => ({ ...x, back: x.back.slice(0, -1), fwd: from === null ? x.fwd : [...x.fwd, from] }));
 }
 export async function goForward(id: PaneId) {
@@ -243,7 +253,7 @@ export async function jumpHistory(id: PaneId, kind: 'back' | 'fwd', idx: number)
 }
 export function goUp(id: PaneId) {
   const p = pane(id).path; const par = parentOf(p);
-  if (par !== null && p !== '' && p !== null) void navigate(id, par, { select: [p] });
+  if (par !== null && p !== '' && p !== null) { nextDir = -1; void navigate(id, par, { select: [p] }); }
 }
 
 /* -------------------------------------------------------------------- tabs */
@@ -336,9 +346,15 @@ export const setFilter = (id: PaneId, filter: string) => patch(id, { filter });
 export const setKind = (id: PaneId, kind: Kind) => patch(id, { kind });
 let searchSeq = 0;
 export interface DeepSearchOpts { regex: boolean; exts: string[]; minSize?: number; maxSize?: number; after?: number; before?: number }
+export function rememberSearch(q: string) {
+  const s = getSettings(); const v = q.trim();
+  if (v.length < 2) return;
+  s.set({ searchHistory: [v, ...s.searchHistory.filter((x) => x !== v)].slice(0, 12) });
+}
 export async function deepSearch(id: PaneId, query: string, opts: Partial<DeepSearchOpts> = {}) {
   const root = pane(id).path;
   if (!root || isVirtual(root) || (!query && !opts.exts?.length && opts.minSize === undefined && opts.maxSize === undefined && !opts.after && !opts.before)) return;
+  rememberSearch(query);
   setLoading(true);
   try {
     const res = await api.searchDir(root, query, 2000, { id: ++searchSeq, regex: !!opts.regex, exts: opts.exts || [], minSize: opts.minSize, maxSize: opts.maxSize, after: opts.after, before: opts.before });
@@ -423,6 +439,7 @@ const startOp = (labelKey: string) => {
 };
 export const onFileOp = (p: { done: number; total: number; name: string }) => patchOp({ name: p.name, done: p.done, total: p.total });
 
+export const pushUndoOp = (op: UndoOp) => pushUndo(op);
 function pushUndo(op: UndoOp) { S.setState((s) => ({ undo: [...s.undo, op].slice(-30) })); }
 
 export async function runPaste(sources: string[], dest: string, mv: boolean) {
@@ -484,7 +501,9 @@ export async function deleteSelection(id: PaneId, permanent: boolean) {
   }
   setLoading(true);
   try {
-    await api.deleteItems(sel.map((e) => e.path), permanent);
+    const paths = sel.map((e) => e.path);
+    await api.deleteItems(paths, permanent);
+    if (!permanent) pushUndo({ type: 'trash', paths });
     clearSelection(id);
     toast(t('msg.deleted'), 'success');
   } catch (err) { toast(errText(err), 'error'); } finally { setLoading(false); refreshAll(); }
@@ -518,21 +537,7 @@ export async function renameSelection(id: PaneId) {
   const sel = selectedEntries(id);
   if (sel.length === 1) { beginRename(id, sel[0].path); return; }
   if (sel.length < 2) return;
-  const base = await promptDialog({ title: t('rename.title', { n: sel.length }), label: t('rename.label'), icon: Pencil, okLabel: t('cmd.rename') });
-  if (!base) return;
-  setLoading(true);
-  const pairs: { from: string; to: string }[] = [];
-  try {
-    for (let i = 0; i < sel.length; i++) {
-      const e = sel[i]; const dot = e.name.lastIndexOf('.');
-      const ext = !e.isDir && dot > 0 ? e.name.slice(dot) : '';
-      pairs.push({ from: e.path, to: await api.renameItem(e.path, `${base} (${i + 1})${ext}`) });
-    }
-  } catch (err) { toast(errText(err), 'error'); } finally {
-    if (pairs.length) pushUndo({ type: 'rename-many', pairs });
-    setLoading(false);
-    await refresh(id, pairs.map((p) => p.to));
-  }
+  openModal('rename', { targets: sel });
 }
 
 export async function undoLast() {
@@ -544,6 +549,7 @@ export async function undoLast() {
     if (op.type === 'rename') await api.renameItem(op.to, baseName(op.from));
     else if (op.type === 'rename-many') for (const p of op.pairs.slice().reverse()) await api.renameItem(p.to, baseName(p.from));
     else if (op.type === 'move') for (const p of op.pairs) await api.pasteItems([p.to], parentOf(p.from) || '', true, 'rename');
+    else if (op.type === 'trash') await api.restoreTrashed(op.paths);
     else await api.deleteItems(op.paths, false);
     toast(t('msg.undone'), 'success');
   } catch (err) { toast(errText(err), 'error'); } finally { setLoading(false); refreshAll(); }

@@ -13,7 +13,7 @@ import { api } from '../../lib/api';
 import { confirmDialog, errText } from '../../store/explorer';
 import { fmtSize } from '../../lib/format';
 import logo from '../../assets/logo.svg';
-import { toggleDual } from '../../lib/menus';
+import { toggleDual, TAGS } from '../../lib/menus';
 import { APP_VERSION, GITHUB_REPO } from '../../lib/constants';
 
 type PanelId = 'appearance' | 'general' | 'files' | 'about';
@@ -119,6 +119,15 @@ function Files() {
       <SectionCard title={t('settings.layout')}>
         {row(PanelRight, 'showDetails', 'showDetails')}{row(FolderTree, 'showNav', 'showNav')}{row(FolderTree, 'autoExpandTree', 'autoExpandTree')}
         <SettingRow icon={Columns2} title={t('settings.dual')} desc={t('settings.d.dual')}><Switch label={t('settings.dual')} checked={S.dualPane} onChange={() => void toggleDual()} /></SettingRow>
+      </SectionCard>
+      <SectionCard title={t('settings.tags')}>
+        <div className="grid gap-2 px-4 py-3 sm:grid-cols-2">
+          {TAGS.map((tg) => (
+            <label key={tg.id} className="flex items-center gap-3 rounded-2xl bg-surface-container-high px-3 py-1.5">
+              <i className="tag-dot !size-4 flex-none" style={{ background: tg.color }} />
+              <input className="h-9 min-w-0 flex-1 bg-transparent outline-none" maxLength={24} placeholder={t(tg.key)} aria-label={t(tg.key)} value={S.tagNames[tg.id] || ''} onChange={(e) => S.set({ tagNames: { ...S.tagNames, [tg.id]: e.target.value } })} />
+            </label>))}
+        </div>
       </SectionCard>
       <SectionCard title={t('settings.safety')}>
         {row(ShieldCheck, 'confirmDelete', 'confirmDelete')}

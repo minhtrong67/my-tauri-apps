@@ -15,11 +15,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANTS: Record<Variant, string> = {
-  filled: "bg-primary text-on-primary hover:shadow-md hover:brightness-110",
-  tonal: "bg-secondary-container text-on-secondary-container hover:shadow-sm hover:brightness-[1.03]",
-  outlined: "border border-outline text-primary hover:bg-primary/8",
-  text: "text-primary hover:bg-primary/8",
-  danger: "bg-error text-on-error hover:shadow-md hover:brightness-110",
+  filled: "bg-primary text-on-primary hover:shadow-lg hover:shadow-primary/30",
+  tonal: "bg-secondary-container text-on-secondary-container hover:shadow-md",
+  outlined: "border-2 border-outline-variant text-primary hover:bg-primary/8",
+  text: "text-primary hover:bg-primary/10",
+  danger: "bg-error text-on-error hover:shadow-lg hover:shadow-error/30",
 };
 
 export function Button({ variant = "filled", icon, size = "md", className, children, ...rest }: ButtonProps) {
@@ -27,9 +27,9 @@ export function Button({ variant = "filled", icon, size = "md", className, child
     <button
       {...rest}
       className={cx(
-        "ripple-host inline-flex shrink-0 select-none items-center justify-center gap-2 rounded-full font-medium transition-all duration-200 ease-emphasized active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40",
-        size === "lg" ? "h-12 px-6 text-[0.95rem]" : "h-10 px-5 text-sm",
-        !!icon && "pl-4",
+        "ripple-host morph inline-flex shrink-0 select-none items-center justify-center gap-2 rounded-full font-semibold tracking-[0.01em] hover:-translate-y-px active:translate-y-0 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40",
+        size === "lg" ? "h-14 px-8 text-base" : "h-11 px-6 text-sm",
+        !!icon && (size === "lg" ? "pl-6" : "pl-5"),
         VARIANTS[variant],
         className,
       )}
@@ -59,8 +59,8 @@ export function IconButton({ label, tone = "default", size = "md", className, ch
       aria-label={label}
       title={label}
       className={cx(
-        "ripple-host inline-flex shrink-0 items-center justify-center rounded-full transition-all duration-200 ease-emphasized active:scale-90 disabled:pointer-events-none disabled:opacity-40",
-        size === "sm" ? "size-9" : "size-10",
+        "ripple-host morph inline-flex shrink-0 items-center justify-center rounded-full active:scale-90 disabled:pointer-events-none disabled:opacity-40",
+        size === "sm" ? "size-9" : "size-11",
         tones[tone],
         className,
       )}
@@ -90,16 +90,16 @@ export function Chip({
       onClick={onClick}
       aria-pressed={selected}
       className={cx(
-        "ripple-host inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border px-3.5 text-sm font-medium transition-all duration-200 ease-emphasized active:scale-95",
+        "ripple-host inline-flex h-10 shrink-0 items-center gap-1.5 px-4 text-sm font-semibold transition-all duration-500 ease-spring active:scale-95",
         selected
-          ? "border-transparent bg-secondary-container text-on-secondary-container"
-          : "border-outline-variant text-on-surface-variant hover:bg-on-surface/6",
+          ? "rounded-full bg-primary text-on-primary shadow-md shadow-primary/25"
+          : "rounded-xl bg-surface-container text-on-surface-variant hover:rounded-2xl hover:bg-surface-high",
       )}
     >
-      {selected ? <Check size={16} className="anim-pop" /> : icon}
+      {selected ? <Check size={16} strokeWidth={3} className="anim-pop" /> : icon}
       {children}
       {count !== undefined && count > 0 && (
-        <span className={cx("ml-0.5 rounded-full px-1.5 text-xs tabular-nums", selected ? "bg-on-secondary-container/12" : "bg-on-surface/8")}>{count}</span>
+        <span className={cx("ml-0.5 rounded-full px-1.5 text-xs font-bold tabular-nums", selected ? "bg-on-primary/20" : "bg-on-surface/10")}>{count}</span>
       )}
     </button>
   );
@@ -119,9 +119,10 @@ export function Segmented<T extends string>({
   className?: string;
 }) {
   return (
-    <div role="radiogroup" className={cx("inline-flex overflow-hidden rounded-full border border-outline", className)}>
+    <div role="radiogroup" className={cx("flex gap-[3px]", className)}>
       {options.map((o, i) => {
         const active = o.value === value;
+        const edge = i === 0 ? "rounded-l-full rounded-r-lg" : i === options.length - 1 ? "rounded-r-full rounded-l-lg" : "rounded-lg";
         return (
           <button
             key={o.value}
@@ -129,12 +130,11 @@ export function Segmented<T extends string>({
             aria-checked={active}
             onClick={(e) => onChange(o.value, e)}
             className={cx(
-              "ripple-host inline-flex h-10 min-w-0 flex-1 items-center justify-center gap-1.5 px-4 text-sm font-medium transition-colors duration-200",
-              i > 0 && "border-l border-outline",
-              active ? "bg-secondary-container text-on-secondary-container" : "text-on-surface hover:bg-on-surface/6",
+              "ripple-host inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-1.5 px-4 text-sm font-semibold transition-all duration-500 ease-spring active:scale-[0.97]",
+              active ? "rounded-full bg-primary text-on-primary shadow-md shadow-primary/25" : cx(edge, "bg-surface-highest text-on-surface hover:bg-surface-high"),
             )}
           >
-            {active ? <Check size={16} className="anim-pop shrink-0" /> : o.icon}
+            {active ? <Check size={17} strokeWidth={3} className="anim-pop shrink-0" /> : o.icon}
             <span className="truncate">{o.label}</span>
           </button>
         );
@@ -257,13 +257,13 @@ export function Dialog({
       <div className="anim-scrim absolute inset-0 bg-black/45 backdrop-blur-[2px]" onClick={onClose} />
       <div
         className={cx(
-          "anim-sheet relative flex max-h-full w-full flex-col overflow-hidden rounded-t-[28px] bg-surface-high shadow-2xl sm:rounded-[28px]",
+          "anim-sheet relative flex max-h-full w-full flex-col overflow-hidden rounded-t-[36px] bg-surface-high shadow-2xl sm:rounded-[40px]",
           wide ? "sm:max-w-[640px]" : "sm:max-w-[480px]",
         )}
       >
         <div className="flex items-center gap-3 px-6 pt-6 pb-2">
-          {icon && <span className="flex size-10 items-center justify-center rounded-full bg-primary-container text-on-primary-container">{icon}</span>}
-          <h2 className="min-w-0 flex-1 truncate text-[1.375rem] leading-8 font-normal text-on-surface">{title}</h2>
+          {icon && <span className="relative flex size-12 items-center justify-center"><span className="shape-cookie absolute inset-0 bg-primary-container" /><span className="relative text-on-primary-container">{icon}</span></span>}
+          <h2 className="min-w-0 flex-1 truncate text-[1.625rem] leading-9 font-semibold tracking-tight text-on-surface">{title}</h2>
           <IconButton label="Close" onClick={onClose}>
             <X size={20} />
           </IconButton>
@@ -299,7 +299,7 @@ export function Menu({
     <div ref={ref} className="relative">
       {anchor({ open, toggle: () => setOpen((o) => !o) })}
       {open && (
-        <div className="anim-pop absolute right-0 top-full z-30 mt-1 min-w-56 origin-top-right overflow-hidden rounded-xl bg-surface-high py-2 shadow-xl ring-1 ring-outline-variant/40">
+        <div className="anim-pop absolute right-0 top-full z-30 mt-1 min-w-56 origin-top-right overflow-hidden rounded-3xl bg-surface-high py-2 shadow-xl ring-1 ring-outline-variant/40">
           {children(() => setOpen(false))}
         </div>
       )}
@@ -329,5 +329,32 @@ export function MenuItem({
       <span className="flex size-5 items-center justify-center opacity-80">{icon}</span>
       {children}
     </button>
+  );
+}
+
+/* ---------------------------------------------------------------- Expressive bits */
+
+export function Loader({ size = 48 }: { size?: number }) {
+  return <span className="m3e-loader" style={{ ["--size" as string]: `${size}px` }} role="progressbar" aria-label="Loading" />;
+}
+
+export function ShapeBadge({
+  shape = "cookie",
+  size = 48,
+  tone = "primary",
+  children,
+}: {
+  shape?: "cookie" | "flower" | "clover" | "sunny" | "gem";
+  size?: number;
+  tone?: "primary" | "secondary" | "tertiary" | "error";
+  children: ReactNode;
+}) {
+  const bg = { primary: "bg-primary-container", secondary: "bg-secondary-container", tertiary: "bg-tertiary-container", error: "bg-error-container" }[tone];
+  const fg = { primary: "text-on-primary-container", secondary: "text-on-secondary-container", tertiary: "text-on-tertiary-container", error: "text-on-error-container" }[tone];
+  return (
+    <span className="relative inline-flex shrink-0 items-center justify-center" style={{ width: size, height: size }}>
+      <span className={cx(`shape-${shape} absolute inset-0`, bg)} />
+      <span className={cx("relative", fg)}>{children}</span>
+    </span>
   );
 }

@@ -55,6 +55,7 @@ pub struct Manager {
     pub limiter: Arc<Limiter>,
     pub http: reqwest::Client,
     pub server_port: Mutex<Option<u16>>,
+    pub install_lock: tokio::sync::Mutex<()>,
 }
 
 fn lock<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
@@ -97,6 +98,7 @@ impl Manager {
             limiter,
             http,
             server_port: Mutex::new(None),
+            install_lock: tokio::sync::Mutex::new(()),
         })
     }
 

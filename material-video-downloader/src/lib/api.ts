@@ -9,6 +9,7 @@ import {
   type CoreSettings,
   type Download,
   type EngineProgress,
+  type EngineSetup,
   type EngineStatus,
   type ExtensionAdd,
   type MediaInfo,
@@ -99,5 +100,6 @@ export const api = {
   onUpdate: (h: Handler<Download>) => on<Download>("download-update", h),
   onRemoved: (h: Handler<string>) => on<string>("download-removed", h),
   onExtensionAdd: (h: Handler<ExtensionAdd>) => on<ExtensionAdd>("extension-add", h),
+  onEngineSetup: (h: Handler<EngineSetup>) => on<EngineSetup>("engine-setup", h),
   onEngineProgress: (h: Handler<EngineProgress>) => on<EngineProgress>("engine-progress", h),
 };

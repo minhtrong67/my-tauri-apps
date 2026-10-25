@@ -926,6 +926,7 @@ fn main() {
             extras::folder_sizes,
             extras::set_tray,
             extras::set_global_shortcut,
+            extras::restore_trashed,
             get_places,
             get_drives,
             open_item,
