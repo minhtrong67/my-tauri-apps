@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { tr, type Key } from '../lib/i18n';
 import { Button, Chip, Icon, IconButton, Modal, Segmented, Select, Slider, Switch } from './ui';
-import { LoadingIndicator, WavySeek } from './Expressive';
-import { installUpdate } from '../lib/updater';
 import { Cover } from './Cover';
 import { useStore } from '../lib/store';
 import { EQ_LABELS, EQ_PRESETS, engine } from '../lib/audio';
@@ -124,49 +122,6 @@ function EditTagsDialog({ id, onClose }: { id: string; onClose: () => void }) {
         </div>
       </div>
       <p className="mt-4 flex items-center gap-2 text-body-sm text-on-surface-variant"><Icon name="info" size={16} />{tr('tagsHint')}</p>
-    </Modal>
-  );
-}
-
-function UpdateDialog({ d, onClose }: { d: { version: string; notes: string; date?: string }; onClose: () => void }) {
-  const showToast = useStore((s) => s.showToast);
-  const [busy, setBusy] = useState(false);
-  const [prog, setProg] = useState({ done: 0, total: 0 });
-  const go = async () => {
-    setBusy(true);
-    try {
-      await installUpdate((done, total) => setProg({ done, total }));
-    } catch (e) {
-      setBusy(false);
-      showToast(tr('updateFailed', { e: String(e) }), undefined, undefined, 'error');
-    }
-  };
-  const known = prog.total > 0;
-  const pct = known ? Math.min(100, Math.round((prog.done / prog.total) * 100)) : 0;
-  const finished = known && prog.done >= prog.total;
-  return (
-    <Modal
-      title={tr('updateAvailableTitle')} wide onClose={busy ? () => undefined : onClose}
-      actions={<><Button variant="tonal" icon="schedule" onClick={onClose} disabled={busy}>{tr('updateLater')}</Button><Button icon="download" onClick={go} disabled={busy}>{busy ? tr('updating') : tr('updateNow')}</Button></>}
-    >
-      <div className="flex items-center gap-2 mb-4 flex-wrap">
-        <span className="px-3 h-8 inline-flex items-center rounded-full bg-surface-container-highest text-on-surface-variant text-label-lg">v{__APP_VERSION__}</span>
-        <Icon name="chevron_right" size={20} className="text-on-surface-variant" />
-        <span className="px-3 h-8 inline-flex items-center rounded-full bg-primary text-on-primary text-label-lg">v{d.version}</span>
-        {d.date && <span className="text-body-sm text-on-surface-variant ml-1">{new Date(d.date).toLocaleDateString()}</span>}
-      </div>
-      {busy ? (
-        <div className="flex flex-col items-center gap-4 py-4">
-          <LoadingIndicator size={56} />
-          <div className="text-body-md text-on-surface-variant">{finished ? tr('installingUpdate') : known ? `${tr('downloadingUpdate')} ${pct}%` : tr('downloadingUpdate')}</div>
-          {known && <div className="w-full pointer-events-none"><WavySeek value={prog.done} max={prog.total} playing={!finished} onChange={() => undefined} onCommit={() => undefined} label={tr('downloadingUpdate')} /></div>}
-        </div>
-      ) : (
-        <>
-          <div className="text-label-lg text-on-surface-variant mb-2">{tr('releaseNotes')}</div>
-          <div className="max-h-56 overflow-y-auto rounded-2xl bg-surface-container-highest p-4 text-body-md whitespace-pre-wrap select-text">{d.notes.trim() || tr('noReleaseNotes')}</div>
-        </>
-      )}
     </Modal>
   );
 }
@@ -379,7 +334,6 @@ export function Dialogs() {
     case 'addToPlaylist': return <AddToPlaylist ids={d.ids} onClose={close} />;
     case 'sleep': return <SleepDialog onClose={close} />;
     case 'editTags': return <EditTagsDialog id={d.id} onClose={close} />;
-    case 'update': return <UpdateDialog d={d} onClose={close} />;
     case 'audio': return <AudioDialog onClose={close} />;
     case 'shortcuts': return <ShortcutsDialog onClose={close} />;
     case 'smartEditor': return <SmartEditor id={d.id} onClose={close} />;

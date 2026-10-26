@@ -1,16 +1,190 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/icon.png" />
-    <title>Material Calendar</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <div id="toasts" popover="manual" aria-live="polite"></div>
-    <dialog id="evDlg"></dialog>
-    <dialog id="setDlg"></dialog>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Material Calendar — Lịch desktop Material 3 Expressive</title>
+<meta name="description" content="Material Calendar: ứng dụng lịch desktop nhanh, đẹp, offline. Âm lịch Việt Nam, nhắc nhở, kéo thả, giao diện Material 3 Expressive. Mã nguồn mở, miễn phí.">
+<meta name="keywords" content="material calendar, lịch desktop, âm lịch, tauri, material 3 expressive, open source">
+<meta name="author" content="minhtrong67">
+<meta name="theme-color" content="#b3261e">
+<link rel="canonical" href="https://github.com/minhtrong67/material-calendar">
+<link rel="icon" href="src-tauri/icons/icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Material Calendar — Lịch desktop Material 3 Expressive">
+<meta property="og:description" content="Lịch desktop đẹp, nhanh, offline với âm lịch Việt Nam và nhắc nhở thông minh.">
+<meta property="og:image" content="src-tauri/icons/icon.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Material Calendar">
+<meta name="twitter:description" content="Lịch desktop Material 3 Expressive, mã nguồn mở.">
+<meta name="twitter:image" content="src-tauri/icons/icon.png">
+<style>
+:root{--h:4;--s:70%;--font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--ease:cubic-bezier(.34,1.56,.64,1);--out:cubic-bezier(.2,0,0,1)}
+:root[data-theme=light]{--p:hsl(var(--h) var(--s) 40%);--on-p:#fff;--pc:hsl(var(--h) var(--s) 90%);--on-pc:hsl(var(--h) var(--s) 12%);--bg:hsl(var(--h) 30% 98%);--sc:hsl(var(--h) 25% 94%);--sch:hsl(var(--h) 25% 90%);--tx:hsl(var(--h) 15% 10%);--tv:hsl(var(--h) 10% 32%);--ol:hsl(var(--h) 15% 84%)}
+:root[data-theme=dark]{--p:hsl(var(--h) var(--s) 80%);--on-p:hsl(var(--h) var(--s) 18%);--pc:hsl(var(--h) var(--s) 30%);--on-pc:hsl(var(--h) var(--s) 90%);--bg:hsl(var(--h) 14% 8%);--sc:hsl(var(--h) 12% 12%);--sch:hsl(var(--h) 12% 17%);--tx:hsl(var(--h) 10% 90%);--tv:hsl(var(--h) 8% 75%);--ol:hsl(var(--h) 10% 28%)}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{font:16px/1.6 var(--font);background:var(--bg);color:var(--tx);overflow-x:hidden;transition:background .4s,color .4s;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+svg{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+section{padding:96px 0}
+h1,h2,h3{line-height:1.1;letter-spacing:-.02em}
+h2{font-size:clamp(30px,5vw,52px);font-weight:800;margin-bottom:12px}
+.lead{color:var(--tv);font-size:18px;max-width:620px}
+.btn{display:inline-flex;align-items:center;gap:10px;height:56px;padding:0 28px;border-radius:28px;font-weight:700;transition:border-radius .35s var(--ease),transform .35s var(--ease),box-shadow .3s}
+.btn:hover{border-radius:16px;transform:translateY(-2px)}.btn:active{transform:scale(.95)}
+.btn.fill{background:var(--p);color:var(--on-p);box-shadow:0 8px 24px -8px var(--p)}
+.btn.tonal{background:var(--pc);color:var(--on-pc)}
+#bar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--p);z-index:60}
+header{position:fixed;top:12px;left:12px;right:12px;z-index:50}
+.nav{max-width:1160px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:8px 8px 8px 16px;border-radius:32px;background:color-mix(in srgb,var(--sc) 82%,transparent);backdrop-filter:blur(18px);border:1px solid var(--ol);position:relative}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;margin-right:auto}.logo img{width:34px;height:34px}
+.links{display:flex;gap:2px}.links a{padding:8px 16px;border-radius:20px;font-weight:600;color:var(--tv);transition:.25s}
+.links a:hover,.links a.on{background:var(--pc);color:var(--on-pc)}
+.ib{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;transition:background .2s,border-radius .3s var(--ease)}
+.ib:hover{background:var(--sch);border-radius:14px}
+#menuBtn{display:none}
+.pop{position:absolute;right:0;top:64px;width:min(340px,calc(100vw - 24px));padding:20px;border-radius:28px;background:var(--sch);border:1px solid var(--ol);box-shadow:0 20px 50px -12px rgba(0,0,0,.35);display:grid;gap:16px;transform-origin:top right;transition:transform .35s var(--ease),opacity .2s}
+.pop[hidden]{display:grid;opacity:0;transform:scale(.8);pointer-events:none}
+.pop small{font-weight:700;color:var(--tv);display:block;margin-bottom:6px}
+.seg{display:flex;background:var(--sc);border-radius:20px;padding:4px}.seg button{flex:1;padding:8px;border-radius:16px;font-weight:600;color:var(--tv);transition:.25s}
+.seg button.on{background:var(--p);color:var(--on-p)}
+.sw{display:flex;gap:8px;flex-wrap:wrap}.sw button{width:34px;height:34px;border-radius:50%;background:var(--c);transition:border-radius .3s var(--ease),transform .3s var(--ease);outline:2px solid transparent;outline-offset:2px}
+.sw button:hover{border-radius:10px;transform:scale(1.1)}.sw button.on{outline-color:var(--tx);border-radius:10px}
+.sw input{width:34px;height:34px;border:0;padding:0;border-radius:50%;background:none;cursor:pointer}
+.hero{padding:150px 0 70px;position:relative}
+.blob{position:absolute;z-index:-1;filter:blur(70px);opacity:.45;background:var(--pc);animation:morph 14s ease-in-out infinite}
+.b1{width:520px;height:520px;top:-80px;right:-120px}.b2{width:360px;height:360px;left:-100px;top:340px;background:var(--p);opacity:.18;animation-delay:-6s}
+@keyframes morph{0%,100%{border-radius:60% 40% 55% 45%/50% 60% 40% 50%;transform:rotate(0)}50%{border-radius:40% 60% 45% 55%/60% 40% 60% 40%;transform:rotate(25deg) scale(1.08)}}
+.grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;background:var(--pc);color:var(--on-pc);font-weight:700;font-size:14px;margin-bottom:20px}
+.hero h1{font-size:clamp(42px,7vw,84px);font-weight:900;margin-bottom:20px}
+.hero h1 span:nth-child(2){color:var(--p);display:inline-block;animation:bob 4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-1.5deg)}}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.meta{display:flex;gap:20px;margin-top:20px;color:var(--tv);font-size:14px;flex-wrap:wrap}.meta b{color:var(--tx)}
+.mock{border-radius:36px;background:var(--sc);border:1px solid var(--ol);padding:18px;box-shadow:0 30px 70px -30px rgba(0,0,0,.45);transform:perspective(1200px) rotateY(-7deg) rotateX(3deg)}
+.mh{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-weight:800;font-size:18px}.mh i{margin-left:auto;display:flex;gap:6px}.mh i b{width:10px;height:10px;border-radius:50%;background:var(--ol)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.cal em{font-style:normal;text-align:center;font-size:11px;color:var(--tv);font-weight:700}
+.d{aspect-ratio:1;border-radius:14px;background:var(--bg);padding:5px 6px;font-size:12px;font-weight:600;position:relative;animation:pop .5s var(--ease) backwards;animation-delay:calc(var(--i)*18ms);transition:.3s var(--ease)}
+.d:hover{border-radius:50%;background:var(--pc)}
+.d.t{background:var(--p);color:var(--on-p);border-radius:50%}
+.d.e::after{content:"";position:absolute;left:8px;right:8px;bottom:5px;height:4px;border-radius:2px;background:var(--c,var(--p))}
+@keyframes pop{from{opacity:0;transform:scale(.4)}}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:48px}
+.card{padding:28px;border-radius:32px;background:var(--sc);border:1px solid transparent;position:relative;overflow:hidden;transition:border-radius .45s var(--ease),transform .45s var(--ease),border-color .3s,opacity .7s var(--out)}
+.card:hover{border-radius:56px 24px 56px 24px;transform:translateY(-6px);border-color:var(--p)}
+.card::before{content:"";position:absolute;width:220px;height:220px;left:calc(var(--mx,50%) - 110px);top:calc(var(--my,0%) - 110px);background:radial-gradient(var(--pc),transparent 70%);opacity:0;transition:opacity .3s}.card:hover::before{opacity:.8}
+.card>*{position:relative}.ic{width:56px;height:56px;border-radius:18px;background:var(--pc);color:var(--on-pc);display:grid;place-items:center;margin-bottom:18px;transition:border-radius .4s var(--ease),transform .4s var(--ease)}
+.card:hover .ic{border-radius:50%;transform:rotate(12deg) scale(1.1)}.card h3{font-size:20px;margin-bottom:8px}.card p{color:var(--tv);font-size:15px}
+.band{background:var(--sc);border-radius:56px;margin:0 12px;padding:64px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-top:40px}
+.stats div{padding:24px;border-radius:28px;background:var(--bg);text-align:center}.stats b{font-size:44px;color:var(--p);display:block;line-height:1}
+.dl{text-align:center;padding:64px 24px;border-radius:56px;background:var(--p);color:var(--on-p);position:relative;overflow:hidden}
+.dl .lead{color:inherit;opacity:.85;margin:12px auto 28px}.dl .btn{background:var(--on-p);color:var(--p)}
+.dl::before,.dl::after{content:"";position:absolute;width:300px;height:300px;background:var(--on-p);opacity:.1;animation:morph 12s infinite}.dl::before{left:-80px;top:-80px}.dl::after{right:-60px;bottom:-100px;animation-delay:-5s}
+.dl>*{position:relative}
+footer{padding:48px 0 64px;text-align:center;color:var(--tv)}
+.pill{display:inline-block;padding:2px 12px;border-radius:12px;background:var(--pc);color:var(--on-pc);font-weight:700}
+#top{position:fixed;right:20px;bottom:20px;width:56px;height:56px;border-radius:20px;background:var(--pc);color:var(--on-pc);display:grid;place-items:center;box-shadow:0 10px 30px -8px rgba(0,0,0,.4);transform:scale(0) rotate(-90deg);transition:transform .45s var(--ease),border-radius .3s;z-index:40}
+#top.show{transform:none}#top:hover{border-radius:50%}
+.rv{opacity:0;transform:translateY(32px) scale(.97);transition:opacity .7s var(--out),transform .7s var(--ease);transition-delay:var(--d,0s)}.rv.in{opacity:1;transform:none}
+@media(max-width:860px){.grid2{grid-template-columns:1fr}.mock{transform:none!important}.links{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;padding:12px;border-radius:28px;background:var(--sch);border:1px solid var(--ol)}.links.open{display:flex}#menuBtn{display:grid}section{padding:64px 0}.hero{padding-top:120px}.band{border-radius:36px;margin:0}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<header><nav class="nav">
+  <a href="#home" class="logo"><img src="src-tauri/icons/128x128.png" alt="Material Calendar"><span>Material Calendar</span></a>
+  <div class="links" id="links"><a href="#features" data-i="nFeat">Tính năng</a><a href="#themes" data-i="nTheme">Giao diện</a><a href="#about" data-i="nAbout">Giới thiệu</a><a href="#download" data-i="nDl">Tải về</a></div>
+  <button class="ib" id="setBtn" aria-label="Customize"><svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  <button class="ib" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <div class="pop" id="pop" hidden>
+    <div><small data-i="sTheme">Giao diện</small><div class="seg" id="segT"><button data-v="system" data-i="sys">Hệ thống</button><button data-v="light" data-i="lig">Sáng</button><button data-v="dark" data-i="dar">Tối</button></div></div>
+    <div><small data-i="sLang">Ngôn ngữ</small><div class="seg" id="segL"><button data-v="vi">Tiếng Việt</button><button data-v="en">English</button></div></div>
+    <div><small data-i="sColor">Màu chủ đề</small><div class="sw" id="sw"></div></div>
+  </div>
+</nav></header>
+
+<main>
+<section class="hero" id="home"><div class="blob b1"></div><div class="blob b2"></div>
+ <div class="wrap grid2">
+  <div class="rv"><span class="chip"><svg viewBox="0 0 24 24"><path d="m12 3 1.9 5.8L20 10l-5 3.6L16.8 20 12 16.4 7.2 20 9 13.6 4 10l6.1-1.2z"/></svg><span data-i="chip">Mã nguồn mở · Miễn phí</span></span>
+   <h1><span data-i="h1a">Lịch</span> <span data-i="h1b">đẹp</span><br><span data-i="h1c">cho desktop.</span></h1>
+   <p class="lead" data-i="lead">Material Calendar là ứng dụng lịch nhanh, nhẹ và offline với âm lịch Việt Nam, nhắc nhở thông minh và giao diện Material 3 Expressive.</p>
+   <div class="cta"><a class="btn fill" href="#download"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14"/></svg><span data-i="dlNow">Tải xuống ngay</span></a><a class="btn tonal" href="#features" data-i="explore">Khám phá tính năng</a></div>
+   <div class="meta"><span><b>Windows</b> · macOS · Linux</span><span><b>Tauri 2</b></span><span><b>MIT</b> License</span></div>
+  </div>
+  <div class="mock rv" id="mock" style="--d:.15s"><div class="mh"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span id="mTitle"></span><i><b></b><b></b><b></b></i></div><div class="cal" id="cal"></div></div>
+ </div></section>
+
+<section id="features"><div class="wrap">
+ <h2 class="rv" data-i="fTitle">Mọi thứ bạn cần,<br>không thừa thứ gì.</h2><p class="lead rv" data-i="fLead">Bốn chế độ xem, sự kiện lặp, nhắc nhở và âm lịch được thiết kế liền mạch.</p>
+ <div class="cards" id="cards"></div></div></section>
+
+<section id="themes"><div class="band"><div class="wrap">
+ <h2 class="rv" data-i="tTitle">Màu của bạn,<br>phong cách của bạn.</h2><p class="lead rv" data-i="tLead">Chọn màu chủ đề ngay tại đây: cả trang này và ứng dụng đều đổi theo bảng màu Material 3.</p>
+ <div class="sw rv" id="sw2" style="margin-top:28px;gap:14px"></div>
+ <div class="stats"><div class="rv"><b>8+</b><span data-i="st1">màu chủ đề</span></div><div class="rv" style="--d:.1s"><b>3</b><span data-i="st2">chế độ sáng/tối</span></div><div class="rv" style="--d:.2s"><b>2</b><span data-i="st3">ngôn ngữ</span></div><div class="rv" style="--d:.3s"><b>0</b><span data-i="st4">dữ liệu gửi đi</span></div></div>
+</div></div></section>
+
+<section id="about"><div class="wrap grid2">
+ <div class="rv"><h2 data-i="aTitle">Nhẹ, riêng tư,<br>của bạn.</h2><p class="lead" data-i="aLead">Xây dựng bằng Tauri 2 nên khởi động tức thì và tiết kiệm bộ nhớ. Dữ liệu nằm hoàn toàn trên máy bạn.</p></div>
+ <div class="card rv" style="--d:.15s"><h3 data-i="aBy">Tác giả</h3><p><span class="pill">minhtrong67</span> · <span data-i="aAi">với sự hỗ trợ của</span> <span class="pill">Claude</span></p><p style="margin-top:12px" data-i="aOss">Dự án công khai và mã nguồn mở theo giấy phép MIT.</p></div>
+</div></section>
+
+<section id="download"><div class="wrap"><div class="dl rv">
+ <img src="src-tauri/icons/128x128.png" width="96" height="96" alt="" style="margin-bottom:12px">
+ <h2 data-i="dTitle">Sẵn sàng sắp xếp ngày của bạn?</h2><p class="lead" data-i="dLead">Phiên bản 1.0.0 cho Windows 64-bit.</p>
+ <a class="btn" href="download/Material%20Calendar_1.0.0_x64-setup.exe" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14"/></svg><span data-i="dBtn">Tải Material Calendar</span></a>
+</div></div></section>
+</main>
+
+<footer><div class="wrap">© 2026 <span class="pill">minhtrong67</span> · MIT · Material 3 Expressive</div></footer>
+<button id="top" aria-label="Scroll to top"><svg viewBox="0 0 24 24"><path d="m6 14 6-6 6 6"/></svg></button>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),R=document.documentElement;
+const L={vi:{nFeat:'Tính năng',nTheme:'Giao diện',nAbout:'Giới thiệu',nDl:'Tải về',sTheme:'Giao diện',sys:'Hệ thống',lig:'Sáng',dar:'Tối',sLang:'Ngôn ngữ',sColor:'Màu chủ đề',chip:'Mã nguồn mở · Miễn phí',h1a:'Lịch',h1b:'đẹp',h1c:'cho desktop.',lead:'Material Calendar là ứng dụng lịch nhanh, nhẹ và offline với âm lịch Việt Nam, nhắc nhở thông minh và giao diện Material 3 Expressive.',dlNow:'Tải xuống ngay',explore:'Khám phá tính năng',fTitle:'Mọi thứ bạn cần,<br>không thừa thứ gì.',fLead:'Bốn chế độ xem, sự kiện lặp, nhắc nhở và âm lịch được thiết kế liền mạch.',tTitle:'Màu của bạn,<br>phong cách của bạn.',tLead:'Chọn màu chủ đề ngay tại đây: cả trang này và ứng dụng đều đổi theo bảng màu Material 3.',st1:'màu chủ đề',st2:'chế độ sáng/tối',st3:'ngôn ngữ',st4:'dữ liệu gửi đi',aTitle:'Nhẹ, riêng tư,<br>của bạn.',aLead:'Xây dựng bằng Tauri 2 nên khởi động tức thì và tiết kiệm bộ nhớ. Dữ liệu nằm hoàn toàn trên máy bạn.',aBy:'Tác giả',aAi:'với sự hỗ trợ của',aOss:'Dự án công khai và mã nguồn mở theo giấy phép MIT.',dTitle:'Sẵn sàng sắp xếp ngày của bạn?',dLead:'Phiên bản 1.0.0 cho Windows 64-bit.',dBtn:'Tải Material Calendar',
+ f:[['4 chế độ xem','Tháng, tuần, ngày và lịch trình với đường “bây giờ” trực tiếp.'],['Âm lịch Việt Nam','Ngày âm, Can Chi và các lễ âm lịch ở mọi chế độ xem.'],['Nhắc nhở','Toast và thông báo hệ thống, hoãn 5 phút chỉ một chạm.'],['Kéo & thả','Di chuyển sự kiện giữa các ngày và khung giờ, có hoàn tác.'],['Sự kiện lặp','Hằng ngày, tuần, tháng, năm cùng 8 màu sự kiện.'],['Nhập / xuất','Sao lưu dữ liệu JSON bằng hộp thoại gốc của hệ điều hành.']]},
+ en:{nFeat:'Features',nTheme:'Themes',nAbout:'About',nDl:'Download',sTheme:'Appearance',sys:'System',lig:'Light',dar:'Dark',sLang:'Language',sColor:'Theme color',chip:'Open source · Free',h1a:'A',h1b:'beautiful',h1c:'desktop calendar.',lead:'Material Calendar is a fast, lightweight, offline calendar with Vietnamese lunar dates, smart reminders and a Material 3 Expressive design.',dlNow:'Download now',explore:'Explore features',fTitle:'Everything you need,<br>nothing you don’t.',fLead:'Four views, recurring events, reminders and lunar dates, designed to feel seamless.',tTitle:'Your color,<br>your style.',tLead:'Pick a theme color right here: this page and the app both follow the Material 3 palette.',st1:'theme colors',st2:'light/dark modes',st3:'languages',st4:'data sent out',aTitle:'Light, private,<br>yours.',aLead:'Built with Tauri 2, it starts instantly and sips memory. Your data stays entirely on your machine.',aBy:'Author',aAi:'with help from',aOss:'Public and open source under the MIT license.',dTitle:'Ready to organize your days?',dLead:'Version 1.0.0 for 64-bit Windows.',dBtn:'Download Material Calendar',
+ f:[['4 views','Month, week, day and agenda with a live “now” line.'],['Vietnamese lunar','Lunar dates, Can Chi and festivals in every view.'],['Reminders','Toasts and system notifications, snooze in one tap.'],['Drag & drop','Move events across days and time slots, with undo.'],['Recurring events','Daily, weekly, monthly, yearly and 8 event colors.'],['Import / export','Back up JSON data with native OS dialogs.']]}};
+const IC=['<rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/>','<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>','<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/>','<path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/>','<path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/>','<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>'];
+const PRE=['#b3261e','#6750a4','#0b57d0','#006a6a','#2e7d32','#c25e00','#9c3d8f'];
+let st={};try{st=JSON.parse(localStorage.getItem('mc.land')||'{}')}catch(e){}
+const S={theme:st.theme||'system',lang:st.lang||(navigator.language.startsWith('en')?'en':'vi'),seed:st.seed||PRE[0]};
+const mq=matchMedia('(prefers-color-scheme:dark)');
+function hs(hex){const n=parseInt(hex.slice(1),16),r=(n>>16&255)/255,g=(n>>8&255)/255,b=(n&255)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;let h=0;if(d)h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;const s=d?d/(1-Math.abs(mx+mn-1)):0;return[Math.round((h*60+360)%360),Math.round(Math.min(.85,Math.max(.35,s))*100)]}
+function apply(){const[h,s]=hs(S.seed);R.style.setProperty('--h',h);R.style.setProperty('--s',s+'%');R.dataset.theme=S.theme==='system'?(mq.matches?'dark':'light'):S.theme;$('meta[name=theme-color]').content=S.seed;
+ document.querySelectorAll('#segT button').forEach(b=>b.classList.toggle('on',b.dataset.v===S.theme));document.querySelectorAll('#segL button').forEach(b=>b.classList.toggle('on',b.dataset.v===S.lang));
+ document.querySelectorAll('.sw button').forEach(b=>b.classList.toggle('on',b.dataset.c===S.seed));try{localStorage.setItem('mc.land',JSON.stringify(S))}catch(e){}}
+function lang(){const d=L[S.lang];R.lang=S.lang;document.querySelectorAll('[data-i]').forEach(e=>{if(d[e.dataset.i])e.innerHTML=d[e.dataset.i]});
+ $('#cards').innerHTML=d.f.map((f,i)=>`<div class="card rv in" style="--d:${i*60}ms"><div class="ic"><svg viewBox="0 0 24 24">${IC[i]}</svg></div><h3>${f[0]}</h3><p>${f[1]}</p></div>`).join('');bindCards();
+ document.title='Material Calendar — '+(S.lang==='vi'?'Lịch desktop Material 3 Expressive':'Material 3 Expressive desktop calendar');
+ $('#mTitle').textContent=new Intl.DateTimeFormat(S.lang,{month:'long',year:'numeric'}).format(new Date());buildCal()}
+function buildCal(){const n=new Date(),f=new Date(n.getFullYear(),n.getMonth(),1),off=(f.getDay()+6)%7,dim=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();
+ let h=Array.from({length:7},(_,i)=>`<em>${new Intl.DateTimeFormat(S.lang,{weekday:'narrow'}).format(new Date(2024,0,1+i))}</em>`).join('');
+ for(let i=0;i<35;i++){const d=i-off+1,ok=d>0&&d<=dim;h+=ok?`<div class="d ${d===n.getDate()?'t':''} ${[3,8,12,17,22,26].includes(d)?'e':''}" style="--i:${i};--c:${['var(--p)','#188038','#e37400'][d%3]}">${d}</div>`:'<div></div>'}$('#cal').innerHTML=h}
+function bindCards(){document.querySelectorAll('.card').forEach(c=>c.onpointermove=e=>{const r=c.getBoundingClientRect();c.style.setProperty('--mx',e.clientX-r.left+'px');c.style.setProperty('--my',e.clientY-r.top+'px')})}
+document.querySelectorAll('#sw,#sw2').forEach(w=>{w.innerHTML=PRE.map(c=>`<button data-c="${c}" style="--c:${c}" aria-label="${c}"></button>`).join('')+'<input type="color" aria-label="Custom color">';
+ w.onclick=e=>{const b=e.target.closest('button');if(b){S.seed=b.dataset.c;apply()}};w.querySelector('input').oninput=e=>{S.seed=e.target.value;apply()}});
+$('#segT').onclick=e=>{const b=e.target.closest('button');if(b){S.theme=b.dataset.v;apply()}};
+$('#segL').onclick=e=>{const b=e.target.closest('button');if(b){S.lang=b.dataset.v;apply();lang()}};
+mq.onchange=()=>S.theme==='system'&&apply();
+$('#setBtn').onclick=e=>{e.stopPropagation();$('#pop').hidden=!$('#pop').hidden};
+$('#menuBtn').onclick=e=>{e.stopPropagation();$('#links').classList.toggle('open')};
+document.addEventListener('click',e=>{if(!e.target.closest('#pop,#setBtn'))$('#pop').hidden=true;if(!e.target.closest('.links,#menuBtn'))$('#links').classList.remove('open')});
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.onclick=e=>{const t=$(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});history.replaceState(null,'',a.getAttribute('href'));$('#links').classList.remove('open')}});
+$('#top').onclick=()=>scrollTo({top:0,behavior:'smooth'});
+const secs=[...document.querySelectorAll('main section[id]')],navA=[...document.querySelectorAll('.links a')];
+addEventListener('scroll',()=>{const y=scrollY,h=R.scrollHeight-innerHeight;$('#bar').style.width=(y/h*100)+'%';$('#top').classList.toggle('show',y>500);
+ const cur=secs.filter(s=>s.offsetTop-140<=y).pop();navA.forEach(a=>a.classList.toggle('on',!!cur&&a.hash==='#'+cur.id))},{passive:true});
+const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&(e.target.classList.add('in'),io.unobserve(e.target))),{threshold:.15});
+document.querySelectorAll('.rv:not(.in)').forEach(e=>io.observe(e));
+$('#home').onpointermove=e=>{if(innerWidth<860)return;const r=innerWidth/2;$('#mock').style.transform=`perspective(1200px) rotateY(${-7+(e.clientX-r)/r*5}deg) rotateX(${3-(e.clientY-300)/300*3}deg)`};
+apply();lang();
+</script>
+</body>
 </html>

@@ -1,6 +1,5 @@
 import type { StoreApi } from 'zustand';
 import type { TagEdit } from '../tauri';
-import type { UpdateInfo } from '../updater';
 import type { ToastKind, MenuItem, MenuState, Listen, SmartList, Playlist, RepeatMode, Settings, Toast, ViewMode, Track, View, Dialog } from '../types';
 
 export interface UiSlice {
@@ -100,9 +99,6 @@ export interface PlaylistSlice {
 
 export interface AppSlice {
   ready: boolean;
-  updateInfo: UpdateInfo | null;
-  checkingUpdate: boolean;
-  checkUpdates: (silent?: boolean) => Promise<void>;
   settings: Settings;
   init: () => Promise<void>;
   saveSession: () => void;

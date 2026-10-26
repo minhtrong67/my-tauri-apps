@@ -6,7 +6,7 @@
 
 **Know which Claude account is ready — before you open Chrome.**
 
-A free, open-source Windows dashboard that tracks Claude usage limits and reset times across all your Chrome profiles.
+A free, open-source Windows dashboard that tracks Claude usage limits and reset times across all your Chrome profiles — designed in Material 3 Expressive.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-b5502c.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078d4)
@@ -21,7 +21,7 @@ A free, open-source Windows dashboard that tracks Claude usage limits and reset 
 
 ## Introduction
 
-If you juggle several Claude accounts, one per Chrome profile, you quickly lose track of which one still has capacity and when the others come back. **Claude Tracker** puts them all in one place: a small Chrome extension reports each profile's limits to a desktop app that runs entirely on your PC, and the dashboard shows live countdowns, progress toward each reset, and one-click access to the right Chrome profile.
+If you juggle several Claude accounts, one per Chrome profile, you quickly lose track of which one still has capacity and when the others come back. **Claude Tracker** puts them all in one place: a small Chrome extension reports each profile's limits to a desktop app that runs entirely on your PC, and the dashboard shows live countdowns, progress toward each reset, usage forecasts, notifications and one-click access to the right Chrome profile.
 
 > Claude Tracker is an independent project. It is not affiliated with or endorsed by Anthropic.
 
@@ -37,17 +37,21 @@ All screenshots use demo data.
 
 ## Features
 
-- **One dashboard for every profile.** Each card shows the Claude account, the Chrome profile (`Profile 4 · 01 - Work`) and the name of the Google account signed in to that profile. Nothing is truncated.
-- **Live reset countdown.** Time left is spelled out in full ("2 hours 31 minutes"), with a progress bar toward the reset.
-- **Real Chrome profile avatars**, read from the profile picture Chrome already stores (falls back to initials).
-- **Grid or list view**, plus a collapsible **Filters** panel (status filters and search by name, email or profile).
-- **Open all Chrome** in one click: every tracked profile opens on the claude.ai home page.
-- **Windows notifications** at the expected reset time, with a configurable usage threshold.
-- **Appearance:** light, dark or follow the system (applied instantly), three text sizes, eight Material theme colors, system UI font and [Lucide](https://lucide.dev) icons.
-- **English and Tiếng Việt.** The language is detected automatically and can be switched at any time.
-- **Window behavior:** remember the size and position you left, or always open maximized.
-- **Private by design.** No cloud and no sign-in. The app only listens on `127.0.0.1` and requires a secret token.
-- **Responsive and smooth.** Layouts adapt down to narrow windows; animations respect `prefers-reduced-motion`.
+- **One dashboard for every profile.** Each card shows the Claude account, the Chrome profile (`Profile 4 · 01 - Work`) and the Google account signed in to that profile. Nothing is truncated.
+- **Overview tiles.** Ready, waiting, next to recover — click a tile to filter — plus **Open best account**, which picks the ready account with the lowest usage.
+- **Live reset countdown** with a Material 3 Expressive *wavy progress* bar; time left is spelled out in full ("2 hours 31 minutes"). A card celebrates the moment an account recovers.
+- **Usage history and forecast.** Sparklines per account and a "limit expected at 15:40" prediction based on your recent pace. History can be exported to CSV.
+- **Smart notifications.** A warning when usage reaches a threshold, a note at the expected reset time, and configurable quiet hours.
+- **Organize.** Pin, rename and add notes to accounts; hide accounts (restorable, they do not reappear on their own); grid or list view; filters and search.
+- **Real Chrome profile avatars**, read from the picture Chrome already stores (falls back to initials).
+- **Open all Chrome** in one click, or only the best account.
+- **System tray.** Dynamic tooltip ("3 ready · 2 waiting · next 15:40"), quick menu, optional start with Windows (minimized) and single-instance protection.
+- **Appearance.** Light, dark or follow the system; eight Material theme colors; three text sizes; six typefaces (system UI by default, plus bundled Roboto, Inter, Be Vietnam Pro, Noto Sans, Open Sans); [Lucide](https://lucide.dev) icons.
+- **English and Tiếng Việt**, detected automatically and switchable at any time (the extension too).
+- **Window behavior.** Remember the size and position you left, or always open maximized.
+- **Keyboard shortcuts.** `Ctrl+R` refresh · `Ctrl+F` search · `Ctrl+1` dashboard · `Ctrl+,` settings.
+- **Private by design.** No cloud and no sign-in. The app listens only on `127.0.0.1`, requires a secret token, rejects web-page origins and writes its data atomically.
+- **Responsive and smooth.** Navigation rail on wide windows, navigation bar on narrow ones; custom tooltips, dropdowns, toasts and dialogs in both themes; animations respect `prefers-reduced-motion`.
 
 ### Account states
 
@@ -63,13 +67,13 @@ When a reset time passes, the card flips to **Ready / Available** on its own (us
 
 ### 1. Install the app
 
-Download `ClaudeTracker-Setup.exe` from the [`downloads/`](downloads/) folder (or the Releases page) and run it. Windows 10/11 already includes WebView2. Closing the window sends the app to the system tray; choose **Quit** in the tray menu to exit completely.
+Download `ClaudeTracker-Setup.exe` from the [`downloads/`](downloads/) folder (or the Releases page) and run it. Windows 10/11 already includes WebView2. Closing the window sends the app to the system tray (this can be turned off in Settings); choose **Quit** in the tray menu to exit completely.
 
 ### 2. Add the extension (once per Chrome profile)
 
 1. Open `chrome://extensions` in the profile and turn on **Developer mode**.
 2. Choose **Load unpacked** and select the [`extension/`](extension/) folder.
-3. Open the extension's settings and enter the **port** and **token** shown in the app under **Settings → Connect the extension**, then press **Save & connect**.
+3. Open the extension's settings and enter the **port** and **token** shown in the app under **Settings → Connection**, then press **Save & connect**.
 4. Make sure the profile is signed in to claude.ai and to Chrome (Google account) so the app can match the right Chrome profile automatically.
 
 ### How it works
@@ -89,7 +93,7 @@ The extension reuses your existing signed-in session instead of reading Chrome c
 
 ### Known limitations
 
-- The claude.ai usage endpoint is internal and may change. If a bar is empty, check **Settings → Raw data diagnostics** and adjust `parse_usage` in `src-tauri/src/main.rs` and `getJson` in `extension/background.js`.
+- The claude.ai usage endpoint is internal and may change. If a bar is empty, check **Settings → Connection → Raw data diagnostics** and adjust `parse_usage` in `src-tauri/src/main.rs` and `getJson` in `extension/background.js`.
 - The app must be running (the tray counts) to receive data and send notifications.
 - Free-plan accounts are detected from the on-page banner and need an open claude.ai tab in that profile.
 
@@ -98,10 +102,10 @@ The extension reuses your existing signed-in session instead of reading Chrome c
 | Layer | Technology |
 | --- | --- |
 | Desktop shell | [Tauri 2](https://tauri.app) (Rust) |
-| Local API | `tiny_http` on `127.0.0.1`, `serde`, `chrono` |
-| UI | React 18, TypeScript, Vite 5 |
+| Local API | `tiny_http` on `127.0.0.1`, `serde`, `chrono`; `tauri-plugin-single-instance`, `-autostart`, `-notification` |
+| UI | React 18, TypeScript, Vite 5, Tailwind CSS 3 |
 | Icons | [lucide-react](https://lucide.dev) |
-| Styling | Hand-written CSS with Material 3 design tokens, system font stack |
+| Styling | Material 3 Expressive design tokens in CSS variables, shared with Tailwind utilities; system font stack plus bundled `@fontsource` fonts |
 | Browser extension | Chrome Manifest V3 |
 | Installer | NSIS (via Tauri bundler) |
 
@@ -118,7 +122,7 @@ npm run build:web  # type-check + production build of the UI
 
 `npm run dev:mock` serves the interface at `http://localhost:1420` with a fake backend (`app/src/mock/`), which is handy for UI work and for taking screenshots (`npm run screenshots`, needs `npm i -D playwright`).
 
-Icons are generated from one geometry by `npm run icons` (requires Python and Pillow): app icon, setup icon and uninstall icon in all desktop sizes.
+Icons are generated from one geometry by `npm run icons` (requires Python and Pillow): app icon, setup icon and uninstall icon in all desktop sizes, drawn as a Claude-orange (`#D97757`) Material 3 Expressive "cookie" shape.
 
 ## Build
 
@@ -133,26 +137,28 @@ The installer is written to `src-tauri/target/release/bundle/nsis/`. `release:co
 
 ```
 claude-tracker/
-├─ index.html              # Landing page (single file, Material Design)
+├─ tailwind.config.js      # Tailwind mapped to the CSS design tokens
+├─ index.html              # Landing page (single file, Material 3 Expressive)
 ├─ app/                    # React UI (Vite root)
 │  ├─ index.html
 │  ├─ public/              # favicon
 │  └─ src/
-│     ├─ App.tsx           # shell, dashboard, polling, refresh
-│     ├─ AccountCard.tsx   # account card (grid + list)
-│     ├─ SettingsView.tsx  # appearance, window, notifications, connection
-│     ├─ ui.tsx            # logo, avatar, segmented control, switch, toast, dialog
+│     ├─ App.tsx           # shell: navigation rail, overview tiles, filters, shortcuts
+│     ├─ AccountCard.tsx   # account card (grid + list), wavy progress, forecast
+│     ├─ EditDialog.tsx    # rename / note dialog
+│     ├─ SettingsView.tsx  # appearance, window & system, notifications, connection, data, about
+│     ├─ ui.tsx            # logo, avatar, tooltip, select, switch, toast, dialogs, wavy progress, sparkline
 │     ├─ i18n.tsx          # English / Vietnamese strings
-│     ├─ prefs.ts          # theme, text size, language, view mode
-│     ├─ lib.ts            # state analysis, countdown formatting
-│     ├─ styles.css        # Material 3 tokens and layout
+│     ├─ prefs.ts, fonts.ts, accents.ts, logo.ts
+│     ├─ lib.ts            # state analysis, forecast, countdown formatting
+│     ├─ styles.css        # Material 3 Expressive tokens and layout
 │     └─ mock/             # fake backend for `npm run dev:mock`
-├─ extension/              # Chrome extension (MV3)
+├─ extension/              # Chrome extension (MV3, EN/VI)
 ├─ src-tauri/              # Rust backend, Tauri config, icons
 │  ├─ src/main.rs
 │  └─ icons/               # icon.ico, setup.ico, uninstall.ico, PNG sizes
 ├─ downloads/              # installer for the landing page's download button
-├─ screenshots/            # image01.png … image05.png
+├─ screenshots/            # image01.png … image04.png
 ├─ assets/                 # logo, Open Graph image
 ├─ scripts/                # icons, screenshots, installer copy
 └─ LICENSE

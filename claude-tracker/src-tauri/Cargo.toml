@@ -1,6 +1,6 @@
 [package]
 name = "claude-tracker"
-version = "0.2.0"
+version = "0.3.0"
 description = "Track Claude usage limits across multiple Chrome profiles"
 authors = ["minhtrong67"]
 license = "MIT"
@@ -12,6 +12,8 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-notification = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-autostart = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tiny_http = "0.12"

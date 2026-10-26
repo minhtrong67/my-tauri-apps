@@ -1,10 +1,10 @@
-import { memo } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Chrome, CircleCheck, CircleDashed, ExternalLink, Hourglass, Clock, Trash2, TriangleAlert } from "lucide-react";
-import type { ChromeProfile } from "./types";
-import { AccountView, fmtAgo, fmtClock, fmtCountdown, fmtDay, limitLabel, progressPct } from "./lib";
+import { Chrome, CircleCheck, CircleDashed, Clock, EyeOff, ExternalLink, Hourglass, Pencil, Pin, PinOff, TrendingUp, TriangleAlert } from "lucide-react";
+import type { ChromeProfile, Sample } from "./types";
+import { AccountView, accountTitle, fmtAgo, fmtClock, fmtCountdown, fmtDay, forecastHit, limitLabel, progressPct, windowSamples } from "./lib";
 import { useI18n } from "./i18n";
-import { Avatar } from "./ui";
+import { Avatar, Select, Sparkline, Tip, WavyProgress } from "./ui";
 
 const BADGE = {
   ready: { key: "badge.ready", tone: "ok", Icon: CircleCheck },
@@ -12,7 +12,7 @@ const BADGE = {
   nodata: { key: "badge.nodata", tone: "muted", Icon: CircleDashed },
 } as const;
 
-function Hero({ view, now }: { view: AccountView; now: number }) {
+function Hero({ view, now, hist, warnAt }: { view: AccountView; now: number; hist?: Sample[]; warnAt: number }) {
   const { t, lang } = useI18n();
   const f = view.focus;
   const a = view.account;
@@ -27,16 +27,32 @@ function Hero({ view, now }: { view: AccountView; now: number }) {
     );
   }
 
+  const pts = windowSamples(hist, f.limit.key, f.resetMs, now);
+  const from = f.resetMs !== null ? f.resetMs - (f.limit.key === "seven_day" ? 168 : 5) * 3600000 : now;
+
   if (view.state === "ready") {
-    const used = f.util !== null && f.limit.key !== "free_window" ? t("card.used", { pct: Math.round(f.util) }) : null;
+    const showUsage = f.util !== null && f.limit.key !== "free_window";
+    const eta = showUsage ? forecastHit(pts, f.util, f.resetMs, now) : null;
     return (
       <div className="hero">
         <div className="hero-kicker">{t("card.status")}</div>
         <div className="hero-word ok">{t("card.available")}</div>
         <div className="hero-sub">
-          {used ? `${used} · ` : ""}
+          {showUsage ? `${t("card.used", { pct: Math.round(f.util as number) })} · ` : ""}
           {view.recoveredAt ? t("card.resetDone", { time: fmtClock(view.recoveredAt, lang) }) : t("card.confirmedAt", { time: a.fetched_at ? fmtClock(a.fetched_at, lang) : "—" })}
         </div>
+        {showUsage && (
+          <div className="progress">
+            <WavyProgress value={f.util as number} tone={(f.util as number) >= warnAt ? "warn" : "ok"} label={t("card.usage")} />
+          </div>
+        )}
+        {showUsage && f.resetMs !== null && <Sparkline pts={pts} from={from} to={f.resetMs} tone={(f.util as number) >= warnAt ? "warn" : "ok"} />}
+        {eta && (
+          <div className="forecast">
+            <TrendingUp size={14} aria-hidden="true" />
+            {t("card.forecast", { time: fmtClock(eta, lang) })}
+          </div>
+        )}
       </div>
     );
   }
@@ -52,9 +68,7 @@ function Hero({ view, now }: { view: AccountView; now: number }) {
       </div>
       {pct !== null && (
         <div className="progress">
-          <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)}>
-            <div className="fill danger" style={{ transform: `scaleX(${pct / 100})` }} />
-          </div>
+          <WavyProgress value={pct} tone="danger" label={t("card.progress")} />
           <div className="progress-meta">
             <span>
               {t("card.progress")} <b>{Math.round(pct)}%</b>
@@ -71,16 +85,24 @@ export const AccountCard = memo(function AccountCard({
   view,
   now,
   profiles,
+  hist,
+  warnAt,
   index,
   onOpen,
-  onRemove,
+  onHide,
+  onEdit,
+  onPin,
 }: {
   view: AccountView;
   now: number;
   profiles: ChromeProfile[];
+  hist?: Sample[];
+  warnAt: number;
   index: number;
   onOpen: (dir: string) => void;
-  onRemove: (id: string, name: string) => void;
+  onHide: (id: string, name: string) => void;
+  onEdit: (id: string) => void;
+  onPin: (id: string, pinned: boolean) => void;
 }) {
   const { t, lang } = useI18n();
   const a = view.account;
@@ -89,20 +111,38 @@ export const AccountCard = memo(function AccountCard({
   const others = view.limits.filter((l) => l !== view.focus);
   const claudeEmail = a.email ?? a.id;
   const userName = prof?.user_name?.trim() || "";
-  const title = userName || claudeEmail;
+  const title = accountTitle(a, userName);
+  const subtitle = title.toLowerCase() !== claudeEmail.toLowerCase() ? claudeEmail : "";
   const chromeMail = prof?.email || a.chrome_email || "";
   const setProfile = (dir: string) => invoke("update_account", { id: a.id, profileDir: dir });
 
+  // Khoảnh khắc "vừa hồi lượt": hiệu ứng nhấn ngắn khi trạng thái chuyển từ chờ sang sẵn sàng
+  const prev = useRef(view.state);
+  const [pop, setPop] = useState(false);
+  useEffect(() => {
+    if (prev.current === "waiting" && view.state === "ready") {
+      setPop(true);
+      const id = window.setTimeout(() => setPop(false), 1800);
+      return () => window.clearTimeout(id);
+    }
+    prev.current = view.state;
+  }, [view.state]);
+  useEffect(() => {
+    prev.current = view.state;
+  });
+
   return (
-    <article className={`card ${view.state}`} style={{ ["--i" as string]: Math.min(index, 12) }}>
+    <article className={`card ${view.state} ${pop ? "pop" : ""} ${a.pinned ? "pinned" : ""}`} style={{ ["--i" as string]: Math.min(index, 12) }}>
       <header className="card-head">
         <Avatar name={title} src={prof?.avatar} />
         <div className="ident">
-          <h3 className="name">{title}</h3>
-          {userName && <div className="mail">{claudeEmail}</div>}
-          {chromeMail && chromeMail.toLowerCase() !== claudeEmail.toLowerCase() && (
-            <div className="mail dim">{t("card.chromeAccount", { email: chromeMail })}</div>
-          )}
+          <h3 className="name">
+            {title}
+            {a.pinned && <Pin size={14} className="pin-mark" aria-label={t("card.unpin")} />}
+          </h3>
+          {subtitle && <div className="mail">{subtitle}</div>}
+          {chromeMail && chromeMail.toLowerCase() !== claudeEmail.toLowerCase() && <div className="mail dim">{t("card.chromeAccount", { email: chromeMail })}</div>}
+          {a.note && <div className="note">{a.note}</div>}
         </div>
         <span className={`badge ${badge.tone}`}>
           <badge.Icon size={14} aria-hidden="true" />
@@ -117,18 +157,19 @@ export const AccountCard = memo(function AccountCard({
           <span className="pname">{prof?.name ?? "Chrome Profile"}</span>
         </div>
       ) : (
-        <select className="select" value={a.profile_dir ?? ""} onChange={(e) => setProfile(e.target.value)} aria-label={t("card.assignTitle")}>
-          <option value="">{t("card.assign")}</option>
-          {profiles.map((p) => (
-            <option key={p.dir} value={p.dir}>
-              {p.name} ({p.dir})
-            </option>
-          ))}
-        </select>
+        <Select
+          className="in-card"
+          icon={<Chrome size={16} aria-hidden="true" />}
+          label={t("card.assignTitle")}
+          placeholder={t("card.assign")}
+          value={a.profile_dir ?? ""}
+          onChange={(v) => setProfile(v)}
+          options={profiles.map((p) => ({ value: p.dir, label: p.name, hint: p.dir }))}
+        />
       )}
 
       <div className="body">
-        <Hero view={view} now={now} />
+        <Hero view={view} now={now} hist={hist} warnAt={warnAt} />
 
         {others.length > 0 && (
           <ul className="extras">
@@ -156,9 +197,21 @@ export const AccountCard = memo(function AccountCard({
           {t("card.updated", { ago: fmtAgo(a.fetched_at, now, t) })}
         </span>
         <div className="actions">
-          <button className="btn icon-btn" aria-label={t("card.remove")} title={t("card.remove")} onClick={() => onRemove(a.id, title)}>
-            <Trash2 size={18} />
-          </button>
+          <Tip label={a.pinned ? t("card.unpin") : t("card.pin")}>
+            <button className={`btn icon-btn ${a.pinned ? "on" : ""}`} aria-label={a.pinned ? t("card.unpin") : t("card.pin")} aria-pressed={!!a.pinned} onClick={() => onPin(a.id, !a.pinned)}>
+              {a.pinned ? <PinOff size={18} /> : <Pin size={18} />}
+            </button>
+          </Tip>
+          <Tip label={t("card.edit")}>
+            <button className="btn icon-btn" aria-label={t("card.edit")} onClick={() => onEdit(a.id)}>
+              <Pencil size={18} />
+            </button>
+          </Tip>
+          <Tip label={t("card.remove")}>
+            <button className="btn icon-btn" aria-label={t("card.remove")} onClick={() => onHide(a.id, title)}>
+              <EyeOff size={18} />
+            </button>
+          </Tip>
           <button className="btn tonal" disabled={!a.profile_dir} onClick={() => a.profile_dir && onOpen(a.profile_dir)}>
             <ExternalLink size={16} aria-hidden="true" />
             {t("card.open")}
@@ -168,3 +221,4 @@ export const AccountCard = memo(function AccountCard({
     </article>
   );
 });
+

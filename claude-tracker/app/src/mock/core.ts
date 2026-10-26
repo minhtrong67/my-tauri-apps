@@ -57,7 +57,25 @@ let accounts: Account[] = [
 let seq = 0;
 let ext = Date.now();
 let windowPrefs = { mode: "remember", width: 1280, height: 800, x: 0, y: 0, maximized: false };
-let settings = { notify_enabled: true, notify_threshold: 100 };
+let settings = { notify_enabled: true, notify_threshold: 100, warn_enabled: true, warn_at: 80, quiet_enabled: false, quiet_from: 22 * 60, quiet_to: 7 * 60, close_to_tray: true };
+let autostart = false;
+
+/** Lịch sử giả: mức dùng 5 giờ tăng dần trong cửa sổ hiện tại để thấy biểu đồ + dự báo */
+function fakeHistory(a: Account): [number, string, number][] {
+  const five = a.limits[0];
+  const r = five.resets_at ? Date.parse(five.resets_at) : null;
+  const end = Math.min(Date.now(), r ?? Date.now());
+  const start = (r ?? Date.now() + 5 * 3600000) - 5 * 3600000;
+  const u = five.utilization ?? 0;
+  const out: [number, string, number][] = [];
+  const n = 14;
+  for (let i = 0; i < n; i++) {
+    const f = i / (n - 1);
+    const t = start + (end - start) * f;
+    out.push([t, "five_hour", Math.round(u * (0.15 + 0.85 * f * f) * 10) / 10]);
+  }
+  return out;
+}
 
 export async function invoke<T = unknown>(cmd: string, args?: Record<string, unknown>): Promise<T> {
   switch (cmd) {
@@ -71,6 +89,8 @@ export async function invoke<T = unknown>(cmd: string, args?: Record<string, unk
         window: windowPrefs as AppData["window"],
         ingest_seq: seq,
         ext_seen: ext,
+        autostart,
+        server_error: null,
       };
       return d as T;
     }
@@ -87,9 +107,34 @@ export async function invoke<T = unknown>(cmd: string, args?: Record<string, unk
     case "set_window_mode":
       windowPrefs = { ...windowPrefs, mode: (args as { mode: string }).mode };
       return undefined as T;
+    case "get_histories": {
+      const m: Record<string, [number, string, number][]> = {};
+      for (const a of accounts) if (!a.hidden && a.limits[0].utilization !== null && a.limits[0].utilization < 100) m[a.id] = fakeHistory(a);
+      return m as T;
+    }
+    case "update_account": {
+      const x = args as { id: string; profileDir?: string; alias?: string; note?: string; pinned?: boolean };
+      accounts = accounts.map((a) =>
+        a.id === x.id
+          ? { ...a, profile_dir: x.profileDir ?? a.profile_dir, alias: x.alias !== undefined ? x.alias || null : a.alias, note: x.note !== undefined ? x.note || null : a.note, pinned: x.pinned ?? a.pinned }
+          : a
+      );
+      return undefined as T;
+    }
     case "remove_account":
+    case "restore_account":
+      accounts = accounts.map((a) => (a.id === (args as { id: string }).id ? { ...a, hidden: cmd === "remove_account" } : a));
+      return undefined as T;
+    case "forget_account":
       accounts = accounts.filter((a) => a.id !== (args as { id: string }).id);
       return undefined as T;
+    case "set_autostart":
+      autostart = (args as { enabled: boolean }).enabled;
+      return autostart as T;
+    case "regenerate_token":
+      return "mock-" + Math.random().toString(16).slice(2, 18) as T;
+    case "export_csv":
+      return "C:\\Users\\you\\Downloads\\claude-tracker-history.csv" as T;
     default:
       return undefined as T;
   }

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { BottomBar, Rail, type Page } from "./components/Rail";
+import { ScrollTop } from "./components/ScrollTop";
 import { TooltipHost } from "./components/Tooltip";
 import { BuilderPage } from "./pages/BuilderPage";
+import { ComparePage } from "./pages/ComparePage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { applyWindowOnStart, trackWindowSize } from "./lib/tauri";
@@ -45,7 +47,14 @@ export default function App() {
       const mod = e.ctrlKey || e.metaKey;
       if (!mod) return;
       const k = e.key.toLowerCase();
-      if (k === "," ) {
+      const PAGES: Page[] = ["builder", "library", "compare", "settings"];
+      if (/^[1-4]$/.test(k)) {
+        e.preventDefault();
+        setPage(PAGES[Number(k) - 1]);
+      } else if (k === "b") {
+        e.preventDefault();
+        set({ railExpanded: !settings.railExpanded });
+      } else if (k === "," ) {
         e.preventDefault();
         setPage("settings");
       } else if (!isTyping(e.target) && k === "z") {
@@ -64,7 +73,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [builder, t, toast]);
+  }, [builder, t, toast, set, settings.railExpanded]);
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden bg-surface text-on-surface md:flex-row">
@@ -74,10 +83,12 @@ export default function App() {
         <div key={page} className="anim-page h-full">
           {page === "builder" && <BuilderPage />}
           {page === "library" && <LibraryPage onOpen={() => setPage("builder")} />}
+          {page === "compare" && <ComparePage onEdit={() => setPage("builder")} />}
           {page === "settings" && <SettingsPage />}
         </div>
       </div>
-      <BottomBar page={page} onChange={setPage} />
+      <BottomBar page={page} onChange={setPage} savedCount={builder.saved.length} />
+      <ScrollTop resetKey={page} />
       <TooltipHost />
     </div>
   );

@@ -1,8 +1,9 @@
 import { useDeferredValue, useMemo, useState } from "react";
-import { Copy, Download, FileCode2 } from "lucide-react";
+import { Copy, Download, FileArchive, FileCode2 } from "lucide-react";
 import { EXPORT_FORMATS, buildExport, type ExportFormat } from "../../lib/export";
 import { generateAll, type GeneratedTheme } from "../../lib/theme";
-import { saveTextFile } from "../../lib/tauri";
+import { saveBinaryFile, saveTextFile } from "../../lib/tauri";
+import { buildZip } from "../../lib/zip";
 import { useBuilder } from "../../state/builder";
 import { useSettings } from "../../state/settings";
 import { useToast } from "../../state/toast";
@@ -29,17 +30,33 @@ export function ExportTab({ theme }: { theme: GeneratedTheme }) {
     }
   };
 
+  const onZip = async () => {
+    try {
+      const files = EXPORT_FORMATS.filter((f) => f.id !== "project").map((f) => ({ name: f.file, content: buildExport(f.id, { config: deferredConfig, theme, schemes }) }));
+      files.push({ name: "my-theme.mtb.json", content: buildExport("project", { config: deferredConfig, theme, schemes }) });
+      const name = "material-theme.zip";
+      if (await saveBinaryFile(name, buildZip(files), "zip", "application/zip")) toast.success(t("export.zipSaved", { name, count: files.length }));
+    } catch {
+      toast.error(t("export.saveFailed"));
+    }
+  };
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-on-surface-variant">{t("export.hint")}</p>
+      <div className="flex flex-wrap items-end gap-3">
       <Select<ExportFormat>
-        className="max-w-xs"
+        className="w-full max-w-xs"
         label={t("export.format")}
         icon={FileCode2}
         value={format}
         onChange={setFormat}
         options={EXPORT_FORMATS.map((f) => ({ value: f.id, label: f.label, hint: f.file, icon: FileCode2 }))}
       />
+      <Button variant="tonal" icon={<FileArchive className="size-4" />} data-tip={t("export.zipHint")} onClick={() => void onZip()}>
+        {t("export.zip")}
+      </Button>
+      </div>
 
       <div className="overflow-hidden rounded-3xl bg-surface-container-low">
         <div className="flex flex-wrap items-center gap-2 border-b border-outline-variant px-4 py-3">

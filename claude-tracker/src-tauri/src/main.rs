@@ -1,6 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Local, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::{
@@ -16,14 +16,19 @@ use std::{
     time::Duration,
 };
 use tauri::{
-    menu::{Menu, MenuItem},
-    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+    menu::{Menu, MenuItem, PredefinedMenuItem},
+    tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent},
     AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize, State, WindowEvent,
 };
+use tauri_plugin_autostart::ManagerExt as _;
 use tauri_plugin_notification::NotificationExt;
 use tiny_http::{Header, Method, Request, Response, Server};
 
-const PORT: u16 = 47821;
+const DEFAULT_PORT: u16 = 47821;
+const HISTORY_CAP: usize = 600;
+
+/// Lỗi mở cổng (nếu có) để giao diện báo cho người dùng thay vì im lặng
+static SERVER_ERR: Mutex<Option<String>> = Mutex::new(None);
 
 /// Tăng mỗi khi nhận được dữ liệu từ một extension (giao diện dựa vào đây để biết "đã có dữ liệu mới")
 static INGEST_SEQ: AtomicU64 = AtomicU64::new(0);
@@ -40,6 +45,17 @@ struct Limit {
     resets_at: Option<String>,
     #[serde(default)]
     notified_for: Option<String>,
+    /// Mốc reset đã được cảnh báo "sắp hết lượt" (mỗi chu kỳ chỉ cảnh báo một lần)
+    #[serde(default)]
+    warned_for: Option<String>,
+}
+
+/// Một mẫu mức dùng theo thời gian (vẽ biểu đồ nhỏ + dự báo)
+#[derive(Serialize, Deserialize, Clone)]
+struct Sample {
+    t: i64,
+    k: String,
+    u: f64,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -60,6 +76,17 @@ struct Account {
     last_raw: Option<Value>,
     #[serde(default)]
     created_at: i64,
+    /// "Xoá" = ẩn: giữ dữ liệu để extension gửi lại không làm tài khoản hiện lại
+    #[serde(default)]
+    hidden: bool,
+    #[serde(default)]
+    pinned: bool,
+    #[serde(default)]
+    alias: Option<String>,
+    #[serde(default)]
+    note: Option<String>,
+    #[serde(default)]
+    history: Vec<Sample>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -68,10 +95,28 @@ struct Settings {
     notify_enabled: bool,
     /// Chỉ thông báo khi mức dùng >= ngưỡng này (100 = chỉ khi đã hết lượt)
     notify_threshold: f64,
+    /// Cảnh báo khi mức dùng đạt `warn_at`% (trước khi hết lượt)
+    warn_enabled: bool,
+    warn_at: f64,
+    /// Giờ yên lặng: không bật thông báo trong khoảng này (phút kể từ 00:00)
+    quiet_enabled: bool,
+    quiet_from: u32,
+    quiet_to: u32,
+    /// Đóng cửa sổ = thu xuống khay (false = thoát hẳn)
+    close_to_tray: bool,
 }
 impl Default for Settings {
     fn default() -> Self {
-        Self { notify_enabled: true, notify_threshold: 100.0 }
+        Self {
+            notify_enabled: true,
+            notify_threshold: 100.0,
+            warn_enabled: true,
+            warn_at: 80.0,
+            quiet_enabled: false,
+            quiet_from: 22 * 60,
+            quiet_to: 7 * 60,
+            close_to_tray: true,
+        }
     }
 }
 
@@ -103,6 +148,9 @@ struct Store {
     window: WindowPrefs,
     /// Ngôn ngữ giao diện đang dùng ("vi" | "en"), giao diện báo xuống để thông báo/khay hiển thị đúng ngôn ngữ
     lang: String,
+    port: u16,
+    /// Đã báo "app vẫn chạy dưới khay" lần đầu chưa
+    tray_hint: bool,
 }
 impl Default for Store {
     fn default() -> Self {
@@ -112,17 +160,35 @@ impl Default for Store {
             settings: Settings::default(),
             window: WindowPrefs::default(),
             lang: "vi".into(),
+            port: DEFAULT_PORT,
+            tray_hint: false,
         }
     }
 }
 
-type TrayItems = (MenuItem<tauri::Wry>, MenuItem<tauri::Wry>);
+struct TrayHandles {
+    show: MenuItem<tauri::Wry>,
+    refresh: MenuItem<tauri::Wry>,
+    open_all: MenuItem<tauri::Wry>,
+    quit: MenuItem<tauri::Wry>,
+    icon: TrayIcon,
+}
 
 struct AppState {
     store: Arc<Mutex<Store>>,
     path: PathBuf,
     refresh: Arc<AtomicU64>,
-    tray: Mutex<Option<TrayItems>>,
+    tray: Mutex<Option<TrayHandles>>,
+}
+
+/// Khoá không bao giờ panic: nếu một luồng từng panic khi đang giữ khoá, vẫn lấy lại dữ liệu
+fn lock(m: &Mutex<Store>) -> std::sync::MutexGuard<'_, Store> {
+    m.lock().unwrap_or_else(|e| e.into_inner())
+}
+
+/// So sánh token không phụ thuộc thời gian
+fn ct_eq(a: &str, b: &str) -> bool {
+    a.len() == b.len() && a.bytes().zip(b.bytes()).fold(0u8, |r, (x, y)| r | (x ^ y)) == 0
 }
 
 /// Chuỗi dịch cho phần chạy ở backend (menu khay, thông báo Windows)
@@ -130,9 +196,15 @@ fn tr(lang: &str, key: &str) -> &'static str {
     match (lang, key) {
         ("en", "tray.show") => "Open dashboard",
         ("en", "tray.quit") => "Quit",
+        ("en", "tray.refresh") => "Refresh now",
+        ("en", "tray.openall") => "Open all Chrome profiles",
+        ("en", "notif.hint") => "Claude Tracker keeps running in the system tray so it can notify you.",
         ("en", "notif.test") => "Notifications are working.",
         (_, "tray.show") => "Mở dashboard",
         (_, "tray.quit") => "Thoát",
+        (_, "tray.refresh") => "Làm mới ngay",
+        (_, "tray.openall") => "Mở tất cả Chrome profile",
+        (_, "notif.hint") => "Claude Tracker vẫn chạy dưới khay hệ thống để có thể thông báo cho bạn.",
         (_, "notif.test") => "Thông báo hoạt động bình thường.",
         _ => "",
     }
@@ -152,16 +224,28 @@ fn limit_name(lang: &str, l: &Limit) -> String {
     l.label.clone()
 }
 
-fn load(path: &PathBuf) -> Store {
-    fs::read_to_string(path)
-        .ok()
-        .and_then(|t| serde_json::from_str(&t).ok())
-        .unwrap_or_default()
+fn read_store(path: &PathBuf) -> Option<Store> {
+    fs::read_to_string(path).ok().and_then(|t| serde_json::from_str(&t).ok())
 }
 
+/// Đọc file chính; hỏng thì dùng bản sao lưu .bak
+fn load(path: &PathBuf) -> Store {
+    read_store(path).or_else(|| read_store(&path.with_extension("json.bak"))).unwrap_or_default()
+}
+
+/// Ghi an toàn: ghi ra file tạm rồi đổi tên (mất điện giữa chừng không làm hỏng dữ liệu), giữ một bản .bak
 fn persist(path: &PathBuf, s: &Store) {
-    if let Ok(bytes) = serde_json::to_vec_pretty(s) {
-        let _ = fs::write(path, bytes);
+    let Ok(bytes) = serde_json::to_vec_pretty(s) else { return };
+    let tmp = path.with_extension("json.tmp");
+    if fs::write(&tmp, &bytes).is_err() {
+        return;
+    }
+    if path.exists() {
+        let _ = fs::copy(path, path.with_extension("json.bak"));
+    }
+    if fs::rename(&tmp, path).is_err() {
+        let _ = fs::write(path, &bytes);
+        let _ = fs::remove_file(&tmp);
     }
 }
 
@@ -191,7 +275,7 @@ fn limit_from(key: String, label: Option<String>, o: &Obj) -> Option<Limit> {
     if util.is_none() && reset.is_none() {
         return None;
     }
-    Some(Limit { label: label.unwrap_or_else(|| label_for(&key)), key, utilization: util, resets_at: reset, notified_for: None })
+    Some(Limit { label: label.unwrap_or_else(|| label_for(&key)), key, utilization: util, resets_at: reset, notified_for: None, warned_for: None })
 }
 
 /// Nhận (1) mọi khóa cấp 1 dạng { utilization?, resets_at? } và (2) từng phần tử của mảng `limits`.
@@ -224,6 +308,29 @@ fn parse_usage(v: &Value) -> Vec<Limit> {
         _ => 2,
     });
     out
+}
+
+// ---------- Lịch sử mức dùng ----------
+
+/// Ghi một mẫu khi mức dùng đổi >= 1% hoặc đã qua 4 phút kể từ mẫu trước (để vẽ biểu đồ + dự báo)
+fn record_history(a: &mut Account, now: i64) {
+    for l in a.limits.iter() {
+        if l.key == "free_window" {
+            continue;
+        }
+        let Some(u) = l.utilization else { continue };
+        let push = match a.history.iter().rev().find(|x| x.k == l.key) {
+            Some(x) => now - x.t >= 240_000 || (x.u - u).abs() >= 1.0,
+            None => true,
+        };
+        if push {
+            a.history.push(Sample { t: now, k: l.key.clone(), u });
+        }
+    }
+    if a.history.len() > HISTORY_CAP {
+        let n = a.history.len() - HISTORY_CAP;
+        a.history.drain(0..n);
+    }
 }
 
 // ---------- Ingest từ extension ----------
@@ -266,7 +373,7 @@ fn ingest(app: &AppHandle, st: &Arc<Mutex<Store>>, path: &PathBuf, body: &str) -
         .ok_or("thiếu định danh tài khoản (email / org / profile_hint)")?;
     let now = Utc::now().timestamp_millis();
 
-    let mut s = st.lock().map_err(|e| e.to_string())?;
+    let mut s = lock(st);
     let idx = match s.accounts.iter().position(|a| a.id == id) {
         Some(i) => i,
         None => {
@@ -287,6 +394,7 @@ fn ingest(app: &AppHandle, st: &Arc<Mutex<Store>>, path: &PathBuf, body: &str) -
             for l in limits.iter_mut() {
                 if let Some(old) = a.limits.iter().find(|o| o.key == l.key) {
                     l.notified_for = old.notified_for.clone();
+                    l.warned_for = old.warned_for.clone();
                 }
             }
             a.limits = limits;
@@ -313,6 +421,7 @@ fn ingest(app: &AppHandle, st: &Arc<Mutex<Store>>, path: &PathBuf, body: &str) -
             utilization: Some(util),
             resets_at: reset,
             notified_for: notified,
+            warned_for: None,
         });
         a.fetched_at = Some(now);
     }
@@ -328,24 +437,38 @@ fn ingest(app: &AppHandle, st: &Arc<Mutex<Store>>, path: &PathBuf, body: &str) -
             a.profile_auto = true;
         }
     }
+    record_history(&mut s.accounts[idx], now);
     persist(path, &s);
     drop(s);
     INGEST_SEQ.fetch_add(1, Ordering::Relaxed);
     let _ = app.emit("store-updated", ());
+    refresh_tray(app);
     Ok(())
 }
 
 // ---------- HTTP server loopback ----------
 
+fn origin_of(req: &Request) -> Option<String> {
+    req.headers().iter().find(|h| h.field.equiv("origin")).map(|h| h.value.as_str().to_string())
+}
+
 fn reply(req: Request, code: u16, body: Value) {
+    // Chỉ phản hồi CORS cho extension Chrome (không dùng "*")
+    let allow = origin_of(&req).filter(|o| o.starts_with("chrome-extension://")).unwrap_or_default();
     let mut r = Response::from_string(body.to_string()).with_status_code(code);
-    for (k, v) in [
-        ("Content-Type", "application/json"),
-        ("Access-Control-Allow-Origin", "*"),
-        ("Access-Control-Allow-Headers", "content-type, x-tracker-token"),
-        ("Access-Control-Allow-Methods", "GET, POST, OPTIONS"),
-    ] {
-        r.add_header(Header::from_bytes(k.as_bytes(), v.as_bytes()).unwrap());
+    let mut hs = vec![
+        ("Content-Type", "application/json".to_string()),
+        ("Access-Control-Allow-Headers", "content-type, x-tracker-token".to_string()),
+        ("Access-Control-Allow-Methods", "GET, POST, OPTIONS".to_string()),
+        ("Vary", "Origin".to_string()),
+    ];
+    if !allow.is_empty() {
+        hs.push(("Access-Control-Allow-Origin", allow));
+    }
+    for (k, v) in hs {
+        if let Ok(h) = Header::from_bytes(k.as_bytes(), v.as_bytes()) {
+            r.add_header(h);
+        }
     }
     let _ = req.respond(r);
 }
@@ -353,14 +476,20 @@ fn reply(req: Request, code: u16, body: Value) {
 fn handle(app: &AppHandle, st: &Arc<Mutex<Store>>, path: &PathBuf, refresh: &Arc<AtomicU64>, mut req: Request) {
     let method = req.method().clone();
     let url = req.url().to_string();
+    // Trình duyệt thường (trang web bất kỳ) gửi kèm Origin http(s) -> từ chối; extension dùng chrome-extension://
+    if let Some(o) = origin_of(&req) {
+        if !o.starts_with("chrome-extension://") {
+            return reply(req, 403, json!({ "error": "origin không hợp lệ" }));
+        }
+    }
     if method == Method::Options {
         return reply(req, 204, json!({}));
     }
-    let token = st.lock().map(|s| s.token.clone()).unwrap_or_default();
+    let token = lock(st).token.clone();
     let ok = req
         .headers()
         .iter()
-        .any(|h| h.field.equiv("x-tracker-token") && h.value.as_str() == token);
+        .any(|h| h.field.equiv("x-tracker-token") && ct_eq(h.value.as_str(), &token));
     if !ok {
         return reply(req, 401, json!({ "error": "token không hợp lệ" }));
     }
@@ -398,12 +527,16 @@ fn handle(app: &AppHandle, st: &Arc<Mutex<Store>>, path: &PathBuf, refresh: &Arc
     }
 }
 
-fn start_server(app: AppHandle, st: Arc<Mutex<Store>>, path: PathBuf, refresh: Arc<AtomicU64>) {
+fn start_server(app: AppHandle, st: Arc<Mutex<Store>>, path: PathBuf, refresh: Arc<AtomicU64>, port: u16) {
     thread::spawn(move || {
-        let server = match Server::http(("127.0.0.1", PORT)) {
+        let server = match Server::http(("127.0.0.1", port)) {
             Ok(s) => s,
             Err(e) => {
-                eprintln!("Không mở được cổng {PORT}: {e}");
+                eprintln!("Không mở được cổng {port}: {e}");
+                if let Ok(mut g) = SERVER_ERR.lock() {
+                    *g = Some(format!("{port}: {e}"));
+                }
+                let _ = app.emit("store-updated", ());
                 return;
             }
         };
@@ -417,40 +550,61 @@ fn start_server(app: AppHandle, st: Arc<Mutex<Store>>, path: PathBuf, refresh: A
 
 // ---------- Watcher: thông báo khi tới giờ dự kiến reset ----------
 
+/// Đang trong giờ yên lặng (theo giờ máy) hay không
+fn in_quiet(st: &Settings) -> bool {
+    if !st.quiet_enabled || st.quiet_from == st.quiet_to {
+        return false;
+    }
+    let n = Local::now();
+    let m = n.hour() * 60 + n.minute();
+    if st.quiet_from < st.quiet_to {
+        m >= st.quiet_from && m < st.quiet_to
+    } else {
+        m >= st.quiet_from || m < st.quiet_to
+    }
+}
+
 fn start_watcher(app: AppHandle, st: Arc<Mutex<Store>>, path: PathBuf) {
     thread::spawn(move || loop {
         thread::sleep(Duration::from_secs(20));
         let mut notes: Vec<(String, String)> = vec![];
         {
-            let mut s = match st.lock() {
-                Ok(s) => s,
-                Err(_) => continue,
-            };
-            if !s.settings.notify_enabled {
-                continue;
-            }
-            let thr = s.settings.notify_threshold;
-            let lang = s.lang.clone();
-            let now = Utc::now();
-            let mut dirty = false;
-            for a in s.accounts.iter_mut() {
-                for l in a.limits.iter_mut() {
-                    let (Some(r), Some(u)) = (l.resets_at.clone(), l.utilization) else { continue };
-                    if u < thr || l.notified_for.as_deref() == Some(r.as_str()) {
-                        continue;
-                    }
-                    if let Ok(t) = DateTime::parse_from_rfc3339(&r) {
-                        if t.with_timezone(&Utc) <= now {
-                            let at = t.with_timezone(&chrono::Local).format("%H:%M");
-                            let name = limit_name(&lang, l);
+            let mut s = lock(&st);
+            if s.settings.notify_enabled && !in_quiet(&s.settings) {
+                let thr = s.settings.notify_threshold;
+                let warn_on = s.settings.warn_enabled;
+                let warn_at = s.settings.warn_at;
+                let lang = s.lang.clone();
+                let now = Utc::now();
+                let mut dirty = false;
+                for a in s.accounts.iter_mut().filter(|a| !a.hidden) {
+                    let who = a.alias.clone().unwrap_or_else(|| a.label.clone());
+                    for l in a.limits.iter_mut() {
+                        let (Some(r), Some(u)) = (l.resets_at.clone(), l.utilization) else { continue };
+                        let Ok(t) = DateTime::parse_from_rfc3339(&r) else { continue };
+                        let t = t.with_timezone(&Utc);
+                        let at = t.with_timezone(&Local).format("%H:%M").to_string();
+                        let name = limit_name(&lang, l);
+                        // 1) Sắp hết lượt: đã dùng >= warn_at% nhưng chưa chạm 100%
+                        if warn_on && u >= warn_at && u < 100.0 && t > now && l.warned_for.as_deref() != Some(r.as_str()) {
+                            notes.push(if lang == "en" {
+                                (format!("{who} · {:.0}% used", u), format!("{name} is almost used up. It resets at {at}."))
+                            } else {
+                                (format!("{who} · đã dùng {:.0}%", u), format!("{name} sắp hết lượt. Reset lúc {at}."))
+                            });
+                            l.warned_for = Some(r.clone());
+                            dirty = true;
+                        }
+                        // 2) Tới giờ dự kiến reset
+                        if u >= thr && t <= now && l.notified_for.as_deref() != Some(r.as_str()) {
                             notes.push(if lang == "en" {
                                 (
-                                    format!("{} · expected to reset", a.label),
+                                    format!("{who} · expected to reset"),
                                     format!("{name} is expected to recover at {at}. Not confirmed yet — open Claude to check."),
                                 )
                             } else {
                                 (
-                                    format!("{} · dự kiến đã reset", a.label),
+                                    format!("{who} · dự kiến đã reset"),
                                     format!("{name} dự kiến hồi lúc {at}. Chưa xác nhận — mở Claude để kiểm tra."),
                                 )
                             });
@@ -459,15 +613,69 @@ fn start_watcher(app: AppHandle, st: Arc<Mutex<Store>>, path: PathBuf) {
                         }
                     }
                 }
-            }
-            if dirty {
-                persist(&path, &s);
+                if dirty {
+                    persist(&path, &s);
+                }
             }
         }
         for (t, b) in notes {
             let _ = app.notification().builder().title(t).body(b).show();
         }
+        refresh_tray(&app);
     });
+}
+
+/// Tooltip khay hệ thống: số tài khoản sẵn sàng / đang chờ + giờ hồi sớm nhất
+fn refresh_tray(app: &AppHandle) {
+    let st = app.state::<AppState>();
+    let (lang, ready, waiting, next) = {
+        let s = lock(&st.store);
+        let now = Utc::now().timestamp_millis();
+        let (mut ready, mut waiting) = (0usize, 0usize);
+        let mut next: Option<i64> = None;
+        for a in s.accounts.iter().filter(|a| !a.hidden) {
+            if a.limits.is_empty() {
+                continue;
+            }
+            let avail = a
+                .limits
+                .iter()
+                .filter(|l| l.utilization.unwrap_or(0.0) >= 100.0)
+                .filter_map(|l| l.resets_at.as_deref().and_then(|r| DateTime::parse_from_rfc3339(r).ok()))
+                .map(|d| d.timestamp_millis())
+                .filter(|&t| t > now)
+                .max();
+            match avail {
+                Some(t) => {
+                    waiting += 1;
+                    next = Some(next.map_or(t, |n| n.min(t)));
+                }
+                None => ready += 1,
+            }
+        }
+        (s.lang.clone(), ready, waiting, next)
+    };
+    let at = next
+        .and_then(DateTime::<Utc>::from_timestamp_millis)
+        .map(|d| d.with_timezone(&Local).format("%H:%M").to_string());
+    let tip = if lang == "en" {
+        let mut t = format!("Claude Tracker\n{ready} ready · {waiting} waiting");
+        if let Some(a) = at {
+            t.push_str(&format!("\nNext: {a}"));
+        }
+        t
+    } else {
+        let mut t = format!("Claude Tracker\n{ready} sẵn sàng · {waiting} đang chờ");
+        if let Some(a) = at {
+            t.push_str(&format!("\nSớm nhất: {a}"));
+        }
+        t
+    };
+    if let Ok(g) = st.tray.lock() {
+        if let Some(h) = g.as_ref() {
+            let _ = h.icon.set_tooltip(Some(tip));
+        }
+    }
 }
 
 // ---------- Chrome ----------
@@ -491,26 +699,68 @@ fn emit(app: &AppHandle) {
 }
 
 #[tauri::command]
-fn get_state(st: State<AppState>) -> Value {
-    let s = st.store.lock().unwrap();
-    let mut v = serde_json::to_value(&*s).unwrap();
-    v["port"] = json!(PORT);
+fn get_state(app: AppHandle, st: State<AppState>) -> Value {
+    let s = lock(&st.store);
+    let mut v = serde_json::to_value(&*s).unwrap_or_else(|_| json!({}));
+    // Lịch sử có endpoint riêng (get_histories) để trạng thái chính luôn gọn
+    if let Some(arr) = v.get_mut("accounts").and_then(|x| x.as_array_mut()) {
+        for a in arr {
+            if let Some(o) = a.as_object_mut() {
+                o.remove("history");
+            }
+        }
+    }
     v["ingest_seq"] = json!(INGEST_SEQ.load(Ordering::Relaxed));
     v["ext_seen"] = json!(EXT_SEEN.load(Ordering::Relaxed));
+    v["autostart"] = json!(app.autolaunch().is_enabled().unwrap_or(false));
+    v["server_error"] = json!(SERVER_ERR.lock().ok().and_then(|g| g.clone()));
     v
 }
 
+/// { id: [[t, key, utilization], ...] } cho các tài khoản đang hiển thị
 #[tauri::command]
-fn update_account(app: AppHandle, st: State<AppState>, id: String, label: Option<String>, profile_dir: Option<String>) {
+fn get_histories(st: State<AppState>) -> Value {
+    let s = lock(&st.store);
+    let mut m = serde_json::Map::new();
+    for a in s.accounts.iter().filter(|a| !a.hidden) {
+        let arr: Vec<Value> = a.history.iter().map(|x| json!([x.t, x.k, x.u])).collect();
+        m.insert(a.id.clone(), Value::Array(arr));
+    }
+    Value::Object(m)
+}
+
+fn clean(o: Option<String>) -> Option<Option<String>> {
+    o.map(|x| {
+        let t = x.trim().to_string();
+        if t.is_empty() { None } else { Some(t) }
+    })
+}
+
+#[tauri::command]
+fn update_account(
+    app: AppHandle,
+    st: State<AppState>,
+    id: String,
+    profile_dir: Option<String>,
+    alias: Option<String>,
+    note: Option<String>,
+    pinned: Option<bool>,
+) {
     {
-        let mut s = st.store.lock().unwrap();
+        let mut s = lock(&st.store);
         if let Some(a) = s.accounts.iter_mut().find(|a| a.id == id) {
-            if let Some(l) = label.filter(|l| !l.trim().is_empty()) {
-                a.label = l.trim().to_string();
-            }
             if let Some(p) = profile_dir {
                 a.profile_dir = if p.is_empty() { None } else { Some(p) };
                 a.profile_auto = false;
+            }
+            if let Some(v) = clean(alias) {
+                a.alias = v;
+            }
+            if let Some(v) = clean(note) {
+                a.note = v;
+            }
+            if let Some(p) = pinned {
+                a.pinned = p;
             }
         }
         persist(&st.path, &s);
@@ -518,11 +768,35 @@ fn update_account(app: AppHandle, st: State<AppState>, id: String, label: Option
     emit(&app);
 }
 
+/// "Xoá" tài khoản = ẩn (dữ liệu giữ lại, extension gửi tiếp cũng không làm nó hiện lại)
 #[tauri::command]
 fn remove_account(app: AppHandle, st: State<AppState>, id: String) {
+    set_hidden(&app, &st, &id, true);
+}
+
+#[tauri::command]
+fn restore_account(app: AppHandle, st: State<AppState>, id: String) {
+    set_hidden(&app, &st, &id, false);
+}
+
+fn set_hidden(app: &AppHandle, st: &State<AppState>, id: &str, hidden: bool) {
     {
-        let mut s = st.store.lock().unwrap();
-        s.accounts.retain(|a| a.id != id);
+        let mut s = lock(&st.store);
+        if let Some(a) = s.accounts.iter_mut().find(|a| a.id == id) {
+            a.hidden = hidden;
+        }
+        persist(&st.path, &s);
+    }
+    emit(app);
+    refresh_tray(app);
+}
+
+/// Xoá hẳn một tài khoản đã ẩn (kèm lịch sử). Nếu extension còn chạy, tài khoản sẽ tự xuất hiện lại.
+#[tauri::command]
+fn forget_account(app: AppHandle, st: State<AppState>, id: String) {
+    {
+        let mut s = lock(&st.store);
+        s.accounts.retain(|a| !(a.id == id && a.hidden));
         persist(&st.path, &s);
     }
     emit(&app);
@@ -531,7 +805,7 @@ fn remove_account(app: AppHandle, st: State<AppState>, id: String) {
 #[tauri::command]
 fn set_settings(app: AppHandle, st: State<AppState>, settings: Settings) {
     {
-        let mut s = st.store.lock().unwrap();
+        let mut s = lock(&st.store);
         s.settings = settings;
         persist(&st.path, &s);
     }
@@ -565,26 +839,91 @@ fn copy_text(text: String) -> Result<(), String> {
 
 #[tauri::command]
 fn test_notification(app: AppHandle, st: State<AppState>) {
-    let lang = st.store.lock().map(|s| s.lang.clone()).unwrap_or_default();
+    let lang = lock(&st.store).lang.clone();
     let _ = app.notification().builder().title("Claude Tracker").body(tr(&lang, "notif.test")).show();
 }
 
 /// Giao diện báo ngôn ngữ đang dùng -> cập nhật menu khay và ngôn ngữ thông báo
 #[tauri::command]
-fn set_lang(st: State<AppState>, lang: String) {
+fn set_lang(app: AppHandle, st: State<AppState>, lang: String) {
     let lang = if lang == "en" { "en" } else { "vi" };
     {
-        let mut s = st.store.lock().unwrap();
+        let mut s = lock(&st.store);
         if s.lang == lang {
             return;
         }
         s.lang = lang.into();
         persist(&st.path, &s);
     }
-    if let Some((show, quit)) = st.tray.lock().unwrap().as_ref() {
-        let _ = show.set_text(tr(lang, "tray.show"));
-        let _ = quit.set_text(tr(lang, "tray.quit"));
+    if let Ok(g) = st.tray.lock() {
+        if let Some(h) = g.as_ref() {
+            let _ = h.show.set_text(tr(lang, "tray.show"));
+            let _ = h.refresh.set_text(tr(lang, "tray.refresh"));
+            let _ = h.open_all.set_text(tr(lang, "tray.openall"));
+            let _ = h.quit.set_text(tr(lang, "tray.quit"));
+        }
     }
+    refresh_tray(&app);
+}
+
+#[tauri::command]
+fn get_autostart(app: AppHandle) -> bool {
+    app.autolaunch().is_enabled().unwrap_or(false)
+}
+
+#[tauri::command]
+fn set_autostart(app: AppHandle, enabled: bool) -> Result<bool, String> {
+    let m = app.autolaunch();
+    let r = if enabled { m.enable() } else { m.disable() };
+    r.map_err(|e| e.to_string())?;
+    Ok(m.is_enabled().unwrap_or(enabled))
+}
+
+/// Đổi cổng lắng nghe rồi khởi động lại app (extension cũng phải đổi cổng tương ứng)
+#[tauri::command]
+fn set_port(app: AppHandle, st: State<AppState>, port: u16) -> Result<(), String> {
+    if port < 1024 {
+        return Err("Cổng phải từ 1024 trở lên".into());
+    }
+    {
+        let mut s = lock(&st.store);
+        s.port = port;
+        persist(&st.path, &s);
+    }
+    app.restart()
+}
+
+/// Tạo token mới (extension phải nhập lại token mới)
+#[tauri::command]
+fn regenerate_token(app: AppHandle, st: State<AppState>) -> String {
+    let t = uuid::Uuid::new_v4().simple().to_string();
+    {
+        let mut s = lock(&st.store);
+        s.token = t.clone();
+        persist(&st.path, &s);
+    }
+    emit(&app);
+    t
+}
+
+/// Xuất lịch sử mức dùng ra CSV trong thư mục Downloads, trả về đường dẫn file
+#[tauri::command]
+fn export_csv(app: AppHandle, st: State<AppState>) -> Result<String, String> {
+    let dir = app.path().download_dir().map_err(|e| e.to_string())?;
+    let file = dir.join(format!("claude-tracker-history-{}.csv", Local::now().format("%Y%m%d-%H%M%S")));
+    let mut out = String::from("account,limit,time,utilization\n");
+    {
+        let s = lock(&st.store);
+        for a in s.accounts.iter() {
+            let who = a.email.clone().unwrap_or_else(|| a.id.clone()).replace('"', "\"\"");
+            for x in a.history.iter() {
+                let t = DateTime::<Utc>::from_timestamp_millis(x.t).map(|d| d.to_rfc3339()).unwrap_or_default();
+                out.push_str(&format!("\"{}\",{},{},{}\n", who, x.k, t, x.u));
+            }
+        }
+    }
+    fs::write(&file, out).map_err(|e| e.to_string())?;
+    Ok(file.to_string_lossy().into_owned())
 }
 
 fn snapshot_window(app: &AppHandle, w: &mut WindowPrefs) {
@@ -609,7 +948,7 @@ fn snapshot_window(app: &AppHandle, w: &mut WindowPrefs) {
 fn set_window_mode(app: AppHandle, st: State<AppState>, mode: String) {
     let mode = if mode == "maximized" { "maximized" } else { "remember" };
     {
-        let mut s = st.store.lock().unwrap();
+        let mut s = lock(&st.store);
         s.window.mode = mode.into();
         if mode == "remember" {
             snapshot_window(&app, &mut s.window); // lưu ngay kích thước hiện tại làm mốc
@@ -690,10 +1029,8 @@ fn open_profile(profile_dir: String, url: Option<String>) -> Result<(), String> 
 
 /// Mở nhiều Chrome Profile cùng lúc, mỗi profile một cửa sổ ở trang chủ Claude.
 /// Chạy ở luồng riêng và cách nhau một nhịp ngắn để Chrome kịp nhận từng yêu cầu.
-#[tauri::command]
-fn open_profiles(profile_dirs: Vec<String>, url: Option<String>) -> Result<usize, String> {
+fn spawn_profiles(profile_dirs: Vec<String>, url: String) -> Result<usize, String> {
     let chrome = find_chrome().ok_or("Không tìm thấy chrome.exe")?;
-    let url = url.unwrap_or_else(|| "https://claude.ai/".into());
     let mut dirs: Vec<String> = vec![];
     for d in profile_dirs {
         if !d.is_empty() && !dirs.contains(&d) {
@@ -710,6 +1047,11 @@ fn open_profiles(profile_dirs: Vec<String>, url: Option<String>) -> Result<usize
     Ok(n)
 }
 
+#[tauri::command]
+fn open_profiles(profile_dirs: Vec<String>, url: Option<String>) -> Result<usize, String> {
+    spawn_profiles(profile_dirs, url.unwrap_or_else(|| "https://claude.ai/".into()))
+}
+
 // ---------- Tray / main ----------
 
 /// Có ít nhất một phần cửa sổ nằm trong một màn hình đang cắm (tránh mở ra ngoài màn hình khi đã rút màn hình phụ)
@@ -724,8 +1066,9 @@ fn position_visible(app: &AppHandle, x: i32, y: i32) -> bool {
         .unwrap_or(true)
 }
 
-/// Áp dụng tuỳ chọn cửa sổ rồi mới hiện cửa sổ (cửa sổ khai báo visible=false để không bị nháy sai kích thước)
-fn apply_window(app: &AppHandle, w: &WindowPrefs) {
+/// Áp dụng tuỳ chọn cửa sổ rồi mới hiện cửa sổ (cửa sổ khai báo visible=false để không bị nháy sai kích thước).
+/// `show` = false khi khởi động cùng Windows (--minimized): chỉ nằm dưới khay.
+fn apply_window(app: &AppHandle, w: &WindowPrefs, show: bool) {
     let Some(win) = app.get_webview_window("main") else { return };
     if w.mode == "maximized" {
         let _ = win.maximize();
@@ -745,7 +1088,9 @@ fn apply_window(app: &AppHandle, w: &WindowPrefs) {
             let _ = win.maximize();
         }
     }
-    let _ = win.show();
+    if show {
+        let _ = win.show();
+    }
 }
 
 static WIN_GEN: AtomicU64 = AtomicU64::new(0);
@@ -758,7 +1103,7 @@ fn track_window(window: &tauri::Window) {
     let app = window.app_handle().clone();
     let st = app.state::<AppState>();
     {
-        let mut s = st.store.lock().unwrap();
+        let mut s = lock(&st.store);
         if s.window.mode != "remember" {
             return;
         }
@@ -769,9 +1114,7 @@ fn track_window(window: &tauri::Window) {
     thread::spawn(move || {
         thread::sleep(Duration::from_millis(600));
         if WIN_GEN.load(Ordering::SeqCst) == generation {
-            if let Ok(s) = store.lock() {
-                persist(&path, &s);
-            }
+            persist(&path, &lock(&store));
         }
     });
 }
@@ -784,8 +1127,35 @@ fn show_main(app: &AppHandle) {
     }
 }
 
+/// Đóng cửa sổ: thu xuống khay (mặc định, báo một lần) hoặc thoát hẳn tuỳ cài đặt
+fn on_close(window: &tauri::Window) -> bool {
+    let app = window.app_handle().clone();
+    let st = app.state::<AppState>();
+    let (to_tray, hint, lang) = {
+        let mut s = lock(&st.store);
+        let hint = s.settings.close_to_tray && !s.tray_hint;
+        if hint {
+            s.tray_hint = true;
+            persist(&st.path, &s);
+        }
+        (s.settings.close_to_tray, hint, s.lang.clone())
+    };
+    if !to_tray {
+        app.exit(0);
+        return false;
+    }
+    if hint {
+        let _ = app.notification().builder().title("Claude Tracker").body(tr(&lang, "notif.hint")).show();
+    }
+    let _ = window.hide();
+    true
+}
+
 fn main() {
     tauri::Builder::default()
+        // Phải đăng ký đầu tiên: mở lần hai chỉ đưa cửa sổ cũ lên (không tranh cổng / ghi đè dữ liệu)
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| show_main(app)))
+        .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, Some(vec!["--minimized"])))
         .plugin(tauri_plugin_notification::init())
         .setup(|app| {
             let dir = app.path().app_data_dir()?;
@@ -801,27 +1171,41 @@ fn main() {
                 }
             }
             let store = Arc::new(Mutex::new(load(&path)));
-            persist(&path, &store.lock().unwrap());
+            persist(&path, &lock(&store));
             let refresh = Arc::new(AtomicU64::new(0));
             app.manage(AppState { store: store.clone(), path: path.clone(), refresh: refresh.clone(), tray: Mutex::new(None) });
 
-            start_server(app.handle().clone(), store.clone(), path.clone(), refresh);
+            let (lang, win_prefs, port) = {
+                let s = lock(&store);
+                (s.lang.clone(), s.window.clone(), s.port)
+            };
+            start_server(app.handle().clone(), store.clone(), path.clone(), refresh, port);
             start_watcher(app.handle().clone(), store.clone(), path);
 
-            let (lang, win_prefs) = {
-                let s = store.lock().unwrap();
-                (s.lang.clone(), s.window.clone())
-            };
             let show = MenuItem::with_id(app, "show", tr(&lang, "tray.show"), true, None::<&str>)?;
+            let refresh_i = MenuItem::with_id(app, "refresh", tr(&lang, "tray.refresh"), true, None::<&str>)?;
+            let open_all = MenuItem::with_id(app, "openall", tr(&lang, "tray.openall"), true, None::<&str>)?;
             let quit = MenuItem::with_id(app, "quit", tr(&lang, "tray.quit"), true, None::<&str>)?;
-            let menu = Menu::with_items(app, &[&show, &quit])?;
-            *app.state::<AppState>().tray.lock().unwrap() = Some((show.clone(), quit.clone()));
-            TrayIconBuilder::new()
+            let sep = PredefinedMenuItem::separator(app)?;
+            let menu = Menu::with_items(app, &[&show, &refresh_i, &open_all, &sep, &quit])?;
+            let icon = TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
                 .tooltip("Claude Tracker")
                 .menu(&menu)
                 .on_menu_event(|app, e| match e.id.as_ref() {
                     "show" => show_main(app),
+                    "refresh" => {
+                        app.state::<AppState>().refresh.fetch_add(1, Ordering::Relaxed);
+                        emit(app);
+                    }
+                    "openall" => {
+                        let dirs: Vec<String> = {
+                            let st = app.state::<AppState>();
+                            let s = lock(&st.store);
+                            s.accounts.iter().filter(|a| !a.hidden).filter_map(|a| a.profile_dir.clone()).collect()
+                        };
+                        let _ = spawn_profiles(dirs, "https://claude.ai/".into());
+                    }
                     "quit" => app.exit(0),
                     _ => {}
                 })
@@ -831,25 +1215,37 @@ fn main() {
                     }
                 })
                 .build(app)?;
-            apply_window(app.handle(), &win_prefs);
+            *app.state::<AppState>().tray.lock().unwrap_or_else(|e| e.into_inner()) =
+                Some(TrayHandles { show, refresh: refresh_i, open_all, quit, icon });
+            refresh_tray(app.handle());
+            let minimized = std::env::args().any(|a| a == "--minimized");
+            apply_window(app.handle(), &win_prefs, !minimized);
             Ok(())
         })
         .on_window_event(|window, event| match event {
-            // Đóng cửa sổ = thu xuống khay hệ thống để vẫn gửi được thông báo
             WindowEvent::CloseRequested { api, .. } => {
-                let _ = window.hide();
+                // Luôn chặn đóng thật: on_close tự ẩn xuống khay hoặc gọi exit
                 api.prevent_close();
+                on_close(window);
             }
             WindowEvent::Resized(_) | WindowEvent::Moved(_) => track_window(window),
             _ => {}
         })
         .invoke_handler(tauri::generate_handler![
             get_state,
+            get_histories,
             update_account,
             remove_account,
+            restore_account,
+            forget_account,
             set_settings,
             test_notification,
             set_lang,
+            get_autostart,
+            set_autostart,
+            set_port,
+            regenerate_token,
+            export_csv,
             set_window_mode,
             request_refresh,
             copy_text,

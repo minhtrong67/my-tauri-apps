@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
 import { readFileSync } from "node:fs";
+import tailwindcss from "tailwindcss";
+import autoprefixer from "autoprefixer";
 
 const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
 
@@ -11,6 +13,7 @@ const r = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 export default defineConfig(({ mode }) => ({
   root: "app",
   plugins: [react()],
+  css: { postcss: { plugins: [tailwindcss({ config: r("./tailwind.config.js") }), autoprefixer()] } },
   clearScreen: false,
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   server: { port: 1420, strictPort: true },
@@ -20,6 +23,7 @@ export default defineConfig(({ mode }) => ({
       ? {
           alias: {
             "@tauri-apps/api/core": r("./app/src/mock/core.ts"),
+            "@tauri-apps/api/window": r("./app/src/mock/window.ts"),
             "@tauri-apps/api/event": r("./app/src/mock/event.ts"),
           },
         }

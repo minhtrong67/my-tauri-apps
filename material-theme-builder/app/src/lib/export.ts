@@ -1,7 +1,7 @@
 import { CORE_KEYS, ROLE_KEYS, SCHEME_IDS, TONES, VARIANT_IDS, type GeneratedTheme, type RoleKey, type Roles, type SchemeId, type ThemeConfig } from "./theme";
 import { kebab, slug } from "./utils";
 
-export type ExportFormat = "css" | "scss" | "tailwind" | "json" | "compose" | "flutter" | "android" | "project";
+export type ExportFormat = "css" | "scss" | "tailwind" | "json" | "compose" | "kmp" | "flutter" | "swiftui" | "android" | "figma" | "project";
 
 export const EXPORT_FORMATS: { id: ExportFormat; label: string; file: string; ext: string }[] = [
   { id: "css", label: "CSS", file: "material-theme.css", ext: "css" },
@@ -9,8 +9,11 @@ export const EXPORT_FORMATS: { id: ExportFormat; label: string; file: string; ex
   { id: "scss", label: "SCSS", file: "_material-theme.scss", ext: "scss" },
   { id: "json", label: "JSON", file: "material-theme.json", ext: "json" },
   { id: "compose", label: "Compose", file: "MaterialTheme.kt", ext: "kt" },
+  { id: "kmp", label: "Compose Multiplatform", file: "AppTheme.kt", ext: "kt" },
   { id: "flutter", label: "Flutter", file: "material_theme.dart", ext: "dart" },
+  { id: "swiftui", label: "SwiftUI", file: "MaterialTheme.swift", ext: "swift" },
   { id: "android", label: "Android XML", file: "colors.xml", ext: "xml" },
+  { id: "figma", label: "Figma / Design Tokens", file: "material-theme.tokens.json", ext: "json" },
   { id: "project", label: "Project", file: "my-theme.mtb.json", ext: "json" },
 ];
 
@@ -140,8 +143,9 @@ function buildJson(i: ExportInput): string {
     coreColors: { primary: i.config.source, ...i.config.core },
     extendedColors: i.theme.custom.map((c) => ({
       name: c.name,
-      color: c.value,
+      color: i.config.custom.find((x) => x.id === c.id)?.hex ?? c.value,
       harmonized: i.config.custom.find((x) => x.id === c.id)?.blend ?? false,
+      value: c.value,
       light: c.light,
       dark: c.dark,
     })),
@@ -252,6 +256,128 @@ function buildFlutter(i: ExportInput): string {
   return out.join("\n");
 }
 
+/* ---------------------------- Compose Multiplatform ---------------------- */
+
+function buildKmp(i: ExportInput): string {
+  const base = buildCompose(i).trimEnd();
+  return (
+    base.replace(
+      "import androidx.compose.material3.darkColorScheme",
+      "import androidx.compose.foundation.isSystemInDarkTheme\nimport androidx.compose.material3.MaterialTheme\nimport androidx.compose.material3.darkColorScheme",
+    )
+      .replace("import androidx.compose.ui.graphics.Color", "import androidx.compose.runtime.Composable\nimport androidx.compose.ui.graphics.Color") +
+    [
+      "",
+      "",
+      "/** Wrap your app (commonMain) in AppTheme. Pass highContrast for the high contrast schemes. */",
+      "@Composable",
+      "fun AppTheme(",
+      "    darkTheme: Boolean = isSystemInDarkTheme(),",
+      "    highContrast: Boolean = false,",
+      "    content: @Composable () -> Unit,",
+      ") {",
+      "    val colorScheme = when {",
+      "        darkTheme && highContrast -> darkHighContrastColorScheme",
+      "        darkTheme -> darkColorScheme",
+      "        highContrast -> lightHighContrastColorScheme",
+      "        else -> lightColorScheme",
+      "    }",
+      "    MaterialTheme(colorScheme = colorScheme, content = content)",
+      "}",
+      "",
+    ].join("\n")
+  );
+}
+
+/* --------------------------------- SwiftUI ------------------------------- */
+
+const swiftHex = (hex: string) => "0x" + hex.slice(1).toUpperCase();
+
+function buildSwiftUI(i: ExportInput): string {
+  const out: string[] = [
+    `// ${header(i.config)}`,
+    "import SwiftUI",
+    "",
+    "extension Color {",
+    "    init(hex: UInt32) {",
+    "        self.init(",
+    "            .sRGB,",
+    "            red: Double((hex >> 16) & 0xFF) / 255,",
+    "            green: Double((hex >> 8) & 0xFF) / 255,",
+    "            blue: Double(hex & 0xFF) / 255,",
+    "            opacity: 1",
+    "        )",
+    "    }",
+    "}",
+    "",
+    "struct MaterialScheme {",
+    ...COMPOSE_ROLES.map((k) => `    let ${k}: Color`),
+    "}",
+    "",
+    "enum MaterialTheme {",
+  ];
+  for (const id of SCHEME_IDS) {
+    out.push(`    static let ${camelScheme(id)} = MaterialScheme(`);
+    COMPOSE_ROLES.forEach((k, idx) => out.push(`        ${k}: Color(hex: ${swiftHex(i.schemes[id][k])})${idx < COMPOSE_ROLES.length - 1 ? "," : ""}`));
+    out.push("    )", "");
+  }
+  out.pop();
+  out.push(
+    "",
+    "    /// Pick the scheme for the current appearance.",
+    "    static func scheme(_ colorScheme: ColorScheme, highContrast: Bool = false) -> MaterialScheme {",
+    "        switch (colorScheme, highContrast) {",
+    "        case (.dark, true): return darkHighContrast",
+    "        case (.dark, false): return dark",
+    "        case (_, true): return lightHighContrast",
+    "        default: return light",
+    "        }",
+    "    }",
+    "}",
+    "",
+  );
+  return out.join("\n");
+}
+
+/* ------------------------------ Figma / tokens --------------------------- */
+
+/** W3C Design Tokens (DTCG) with one group per mode. Imports into Tokens Studio and Figma variable plugins. */
+function buildFigma(i: ExportInput): string {
+  const token = (v: string) => ({ $type: "color", $value: v });
+  const modes: Record<string, Record<string, unknown>> = {};
+  for (const id of SCHEME_IDS) {
+    const group: Record<string, unknown> = {};
+    for (const k of ROLE_KEYS) group[kebab(k)] = token(i.schemes[id][k]);
+    modes[id] = group;
+  }
+  const palettes: Record<string, Record<string, unknown>> = {};
+  for (const p of i.theme.palettes) {
+    const key = p.id.startsWith("custom:") ? slug(p.name ?? p.id) : p.id;
+    const tones: Record<string, unknown> = {};
+    for (const t of TONES) tones[String(t)] = token(p.tones[t]);
+    palettes[kebab(key)] = tones;
+  }
+  const extended: Record<string, unknown> = {};
+  for (const c of i.theme.custom) {
+    const n = slug(c.name);
+    for (const mode of ["light", "dark"] as const) {
+      extended[`${n}-${mode}`] = {
+        color: token(c[mode].color),
+        "on-color": token(c[mode].onColor),
+        "color-container": token(c[mode].colorContainer),
+        "on-color-container": token(c[mode].onColorContainer),
+      };
+    }
+  }
+  const out = {
+    $description: header(i.config),
+    scheme: modes,
+    palette: palettes,
+    ...(i.theme.custom.length ? { extended } : {}),
+  };
+  return JSON.stringify(out, null, 2) + "\n";
+}
+
 /* --------------------------------- Android ------------------------------- */
 
 function buildAndroid(i: ExportInput): string {
@@ -281,8 +407,14 @@ export function buildExport(format: ExportFormat, input: ExportInput): string {
       return buildJson(input);
     case "compose":
       return buildCompose(input);
+    case "kmp":
+      return buildKmp(input);
     case "flutter":
       return buildFlutter(input);
+    case "swiftui":
+      return buildSwiftUI(input);
+    case "figma":
+      return buildFigma(input);
     case "android":
       return buildAndroid(input);
     case "project":

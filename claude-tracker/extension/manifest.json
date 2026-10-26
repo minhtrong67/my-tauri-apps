@@ -1,19 +1,50 @@
 {
   "manifest_version": 3,
   "name": "Claude Tracker Reporter",
-  "version": "0.5.0",
-  "description": "Gửi trạng thái giới hạn Claude của Chrome Profile này về app Claude Tracker (chỉ qua 127.0.0.1).",
-  "icons": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" },
-  "permissions": ["storage", "alarms", "identity", "identity.email", "scripting"],
-  "host_permissions": ["https://claude.ai/*", "http://127.0.0.1/*"],
-  "background": { "service_worker": "background.js" },
+  "version": "0.6.0",
+  "description": "__MSG_extDesc__",
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "permissions": [
+    "storage",
+    "alarms",
+    "identity",
+    "identity.email",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_title": "Claude Tracker Reporter",
     "default_popup": "popup.html",
-    "default_icon": { "16": "icons/16.png", "32": "icons/32.png" }
+    "default_icon": {
+      "16": "icons/16.png",
+      "32": "icons/32.png"
+    }
   },
-  "options_ui": { "page": "options.html", "open_in_tab": true },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "content_scripts": [
-    { "matches": ["https://claude.ai/*"], "js": ["content.js"], "run_at": "document_idle" }
-  ]
+    {
+      "matches": [
+        "https://claude.ai/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "default_locale": "en"
 }

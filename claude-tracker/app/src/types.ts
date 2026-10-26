@@ -17,10 +17,24 @@ export interface Account {
   fetched_at?: number | null;
   last_error?: string | null;
   last_raw?: unknown;
+  hidden?: boolean;
+  pinned?: boolean;
+  alias?: string | null;
+  note?: string | null;
 }
+/** [thời điểm ms, khoá giới hạn, % đã dùng] */
+export type Sample = [number, string, number];
+export type Histories = Record<string, Sample[]>;
 export interface Settings {
   notify_enabled: boolean;
   notify_threshold: number;
+  warn_enabled: boolean;
+  warn_at: number;
+  quiet_enabled: boolean;
+  /** phút kể từ 00:00 */
+  quiet_from: number;
+  quiet_to: number;
+  close_to_tray: boolean;
 }
 export type WindowMode = "remember" | "maximized";
 export interface WindowPrefs {
@@ -41,6 +55,8 @@ export interface AppData {
   ingest_seq: number;
   /** Lần cuối extension gọi tới app (ms epoch), 0 = chưa từng */
   ext_seen: number;
+  autostart?: boolean;
+  server_error?: string | null;
 }
 export interface ChromeProfile {
   dir: string;

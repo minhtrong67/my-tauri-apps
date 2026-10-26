@@ -4,11 +4,11 @@
 
 # Material Calendar
 
-**A fast, beautiful desktop calendar — Material Design 3, built with Tauri 2.**
+**A fast, beautiful desktop calendar — Material 3 Expressive, built with Tauri 2.**
 
 ![Tauri](https://img.shields.io/badge/Tauri-2.x-24C8DB?logo=tauri&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)
-![Material Design 3](https://img.shields.io/badge/Material%20Design-3-6750A4)
+![Material 3 Expressive](https://img.shields.io/badge/Material%20Design-3-6750A4)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 English · [Tiếng Việt](#tiếng-việt)
@@ -17,7 +17,7 @@ English · [Tiếng Việt](#tiếng-việt)
 
 ## Introduction
 
-**Material Calendar** is a lightweight, offline-first desktop app for planning your days. It follows Material Design 3, uses your system UI font, adapts to light/dark mode and your favourite theme colour, and ships as a tiny native installer thanks to Tauri.
+**Material Calendar** is a lightweight, offline-first desktop app for planning your days. It follows Material 3 Expressive, uses your system UI font, adapts to light/dark mode and your favourite theme colour, and ships as a tiny native installer thanks to Tauri.
 
 **Author:** [`minhtrong67`](https://github.com/minhtrong67) — built with the help of **Claude** (Anthropic).
 
@@ -66,8 +66,9 @@ Download the installer for your platform from the **Releases** page, or build it
 
 - [Tauri 2](https://tauri.app) (Rust) — native shell
 - Tauri plugins: `dialog` and `fs` (import/export), `notification` (reminders)
-- [Vite 5](https://vitejs.dev) + vanilla JavaScript (ES modules) — UI
-- Material Design 3 tokens generated at runtime from a seed colour
+- [React 18](https://react.dev) + TypeScript + [Vite 5](https://vitejs.dev) — UI
+- [Tailwind CSS 3](https://tailwindcss.com) + [Lucide](https://lucide.dev) icons
+- Material 3 Expressive tokens generated at runtime from a seed colour
 - `system-ui` font stack
 
 ## Development
@@ -101,7 +102,10 @@ npm run icons   # uses app-icon.png (1024×1024)
 
 ```
 material-calendar/
-├── index.html
+├── index.html              # landing page
+├── app/                    # Tauri app frontend (Vite root)
+│   ├── index.html
+│   └── src/
 ├── package.json
 ├── vite.config.js
 ├── app-icon.png            # 1024×1024 master icon
@@ -109,7 +113,7 @@ material-calendar/
 ├── screenshots/            # image01.png, image02.png, …
 ├── src/
 │   ├── main.js             # views, dialogs, state, events
-│   ├── styles.css          # Material Design 3 styles & animations
+│   ├── styles.css          # Material 3 Expressive styles & animations
 │   ├── theme.js            # light/dark/system + seed colour tokens
 │   ├── lunar.js            # Vietnamese lunar calendar algorithm
 │   ├── i18n.js             # English / Vietnamese strings
@@ -130,7 +134,7 @@ Released under the [MIT License](LICENSE) © 2026 minhtrong67.
 
 ## Tiếng Việt
 
-**Material Calendar** là ứng dụng lịch desktop nhẹ, chạy offline, thiết kế theo Material Design 3, dùng font `system-ui`, hỗ trợ giao diện sáng/tối/hệ thống và đổi màu chủ đề.
+**Material Calendar** là ứng dụng lịch desktop nhẹ, chạy offline, thiết kế theo Material 3 Expressive, dùng font `system-ui`, hỗ trợ giao diện sáng/tối/hệ thống và đổi màu chủ đề.
 
 - Bốn chế độ xem: Tháng, Tuần, Ngày, Lịch trình.
 - Âm lịch + lễ âm lịch, số tuần, giờ 12/24h, thông báo hệ thống.

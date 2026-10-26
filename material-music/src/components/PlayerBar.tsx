@@ -4,6 +4,9 @@ import { IconButton, Slider } from './ui';
 import { SeekBar, TransportControls } from './PlayerControls';
 import { useCurrent, useStore } from '../lib/store';
 
+/** loads the (lazy) full-screen view ahead of time so it opens with no delay */
+const preloadNowPlaying = () => void import('./NowPlaying');
+
 export function PlayerBar() {
   const t = useCurrent();
   const volume = useStore((s) => s.settings.volume);
@@ -15,9 +18,9 @@ export function PlayerBar() {
   const volIcon = muted || volume === 0 ? 'volume_off' : volume < 0.4 ? 'volume_down' : 'volume_up';
 
   return (
-    <div className="toolbar-float h-[88px] shrink-0 mx-3 mb-3 rounded-[32px] bg-surface-container-high flex items-center px-4 gap-4">
+    <div data-player-bar className="toolbar-float h-[88px] shrink-0 mx-3 mb-3 rounded-[32px] bg-surface-container-high flex items-center px-4 gap-4">
       <div className="w-[28%] min-w-0 flex items-center gap-3">
-        <button className="shrink-0 group relative" onClick={() => t && st.set({ showNowPlaying: true })} aria-label={tr('openNowPlaying')} disabled={!t}>
+        <button data-np-thumb className="shrink-0 group relative" onPointerEnter={preloadNowPlaying} onClick={() => t && st.set({ showNowPlaying: true })} aria-label={tr('openNowPlaying')} disabled={!t}>
           <Cover track={t} eager className="w-16 h-16 rounded-2xl" iconSize={28} />
         </button>
         <div key={t?.id} className="min-w-0 title-in">
@@ -38,7 +41,7 @@ export function PlayerBar() {
         <IconButton icon="queue_music" title={`${tr('queue')} (Q)`} active={showQueue} onClick={() => st.set({ showQueue: !showQueue })} />
         <IconButton icon={volIcon} title={`${tr('muteToggle')} (M)`} onClick={st.toggleMute} />
         <div className="w-24"><Slider size="sm" min={0} max={1} step={0.01} value={muted ? 0 : volume} onChange={st.setVolume} label={tr('volume')} format={(v) => `${Math.round(v * 100)}%`} /></div>
-        <IconButton icon="open_in_full" title={`${tr('nowPlayingTip')} (N)`} disabled={!t} onClick={() => st.set({ showNowPlaying: true })} />
+        <IconButton icon="open_in_full" title={`${tr('nowPlayingTip')} (N)`} disabled={!t} onClick={() => { preloadNowPlaying(); st.set({ showNowPlaying: true }); }} />
       </div>
     </div>
   );

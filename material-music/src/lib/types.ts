@@ -82,7 +82,6 @@ export interface Settings {
   crossfade: number;
   globalMediaKeys: boolean;
   watchFolders: boolean;
-  autoUpdate: boolean;
   /** Audio output device id ('' = system default) */
   audioDevice: string;
   /** Fade the music out over the last seconds of the sleep timer */
@@ -95,6 +94,8 @@ export interface Settings {
   keymap: Record<string, string>;
   /** ListenBrainz scrobbling */
   scrobble: boolean;
+  /** look lyrics up on LRCLIB by itself when a song has none saved */
+  autoLyrics: boolean;
   scrobbleToken: string;
 }
 
@@ -122,13 +123,13 @@ export const defaultSettings: Settings = {
   crossfade: 0,
   globalMediaKeys: true,
   watchFolders: true,
-  autoUpdate: true,
   audioDevice: '',
   sleepFade: true,
   visualizer: 'bars',
   globalHotkeys: false,
   keymap: {},
   scrobble: false,
+  autoLyrics: false,
   scrobbleToken: '',
 };
 
@@ -220,5 +221,4 @@ export type Dialog =
   | { type: 'audio' }
   | { type: 'shortcuts' }
   | { type: 'smartEditor'; id?: string }
-  | { type: 'editTags'; id: string }
-  | { type: 'update'; version: string; notes: string; date?: string };
+  | { type: 'editTags'; id: string };

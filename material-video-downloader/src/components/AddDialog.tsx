@@ -8,7 +8,7 @@ import { useT } from "../lib/hooks";
 import type { MediaInfo, QualityOption } from "../lib/types";
 import { useSettings } from "../store/settings";
 import { useUi } from "../store/ui";
-import { Button, cx, Dialog, Switch } from "./ui";
+import { Button, cx, Dialog, Loader, Switch } from "./ui";
 import { Thumb } from "./Thumb";
 
 type Phase = "input" | "loading" | "result" | "error" | "engine";
@@ -182,6 +182,14 @@ export function AddDialog() {
   const title =
     phase === "result" ? t("dialogTitle") : phase === "engine" ? t("engineMissingTitle") : t("dialogTitle");
 
+  const explained = (() => {
+    const e = error || "";
+    if (/unsupported url/i.test(e)) return { title: t("errUnsupportedT"), hint: t("errUnsupportedB") };
+    if (/(log ?in|sign ?in|cookies|private|age[- ]restricted|members)/i.test(e)) return { title: t("errLoginT"), hint: t("errLoginB") };
+    if (/(timed out|network|connection|dns|unreachable|offline)/i.test(e)) return { title: t("errNetT"), hint: t("errNetB") };
+    return { title: t("errorGeneric"), hint: "" };
+  })();
+
   const actions = (() => {
     if (phase === "input") {
       return urls.length > 1 ? (
@@ -276,8 +284,8 @@ export function AddDialog() {
               <div className="skeleton h-4 w-2/5 rounded-md" />
             </div>
           </div>
-          <p className="flex items-center gap-2 text-sm text-on-surface-variant">
-            <Loader2 size={16} className="animate-spin text-primary" />
+          <p className="flex items-center gap-3 text-sm font-medium text-on-surface-variant">
+            <Loader size={30} />
             {t("analyzing")}
           </p>
           <div className="flex gap-2">
@@ -364,11 +372,14 @@ export function AddDialog() {
       )}
 
       {phase === "error" && (
-        <div className="flex items-start gap-3 rounded-2xl bg-error-container p-4 text-on-error-container">
-          <AlertCircle size={22} className="mt-0.5 shrink-0" />
+        <div className="anim-pop flex items-start gap-3 rounded-3xl bg-error-container p-4 text-on-error-container">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-error/15">
+            <AlertCircle size={22} />
+          </span>
           <div className="min-w-0">
-            <p className="font-medium">{t("errorGeneric")}</p>
-            <p className="mt-1 text-sm break-words opacity-90" data-selectable>{error}</p>
+            <p className="font-semibold">{explained.title}</p>
+            {explained.hint && <p className="mt-1 text-sm leading-relaxed opacity-90">{explained.hint}</p>}
+            <p className="mt-2 rounded-xl bg-error/10 px-3 py-2 font-mono text-xs break-words opacity-80" data-selectable>{error}</p>
           </div>
         </div>
       )}

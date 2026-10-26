@@ -79,6 +79,7 @@ English · [Tiếng Việt](README.vi.md)
 - **Smart playlists** that fill themselves: *Most played*, *New this month*, *Never played* and *Lossless* (FLAC / WAV) – plus **your own rule-based smart playlists** (genre, year, bitrate, format, length, recently added, played / not played, favorites) with a live preview.
 - **Duplicate finder:** groups the same song, keeps the best copy (lossless first, then bitrate) and moves play counts, favorites and playlists to it. Only the library entry is removed – never your files.
 - **Statistics:** most played songs and artists, listening time and the last 7 days. A song counts after 30 s or half of its length, so skipping does not inflate the numbers.
+- **Home** starts with a *Continue listening* card (resume, shuffle all) and one-tap shortcuts; *Settings* has a sticky section bar to jump around.
 
 #### Supported audio formats
 
@@ -103,6 +104,8 @@ Playback uses the Microsoft Edge WebView2 media stack, so a file plays if WebVie
 - **Synced lyrics** (`.lrc` next to the song or embedded in the tags) – click a line to seek. No lyrics yet? **Search online** (LRCLIB, only when you press the button) and save them as a `.lrc` next to the song.
 - Three **visualizer styles** (bars, wave, circle), a full-window *Now Playing* view and a **mini player** that stays on top.
 - **Lyrics offset:** −/+ 0.1 s per song when the timing of an `.lrc` is off.
+- **Reliable online lyrics:** the title is cleaned (`(Official Video)`, `ft. …`, `Artist - Title` names), several readings are tried on LRCLIB, every result is scored by title, artist and length so a wrong song is never shown, and network hiccups are retried. The matched song is shown next to *From LRCLIB*, and *Settings → Online → Find lyrics automatically* can do it for you.
+- **Smooth full-screen player:** the player bar grows into the Now Playing view (container transform) while the cover flies to its place; closing plays it backwards.
 - **Audio output:** pick the speakers / headphones the music plays on (*Settings → Playback*).
 - **Save the queue as a playlist** with one click.
 - Sleep timer (15 – 120 minutes or after the current song) with an optional **fade-out**, optional **global hotkeys** (`Ctrl+Alt+Space / ← / → / M / T`), **global media keys** (Play/Pause, Next, Previous, Stop – work in the background and from the tray; the Windows media overlay shows the cover and progress), restore of the previous session.
@@ -112,7 +115,6 @@ Playback uses the Microsoft Edge WebView2 media stack, so a file plays if WebVie
 - A tidy, grouped **Settings** page: General · Appearance · Playback · Library · About.
 - English / Vietnamese UI, automatic by default.
 - **Material 3 Expressive:** spring motion tokens (fast / default / slow, spatial and effects, sampled into CSS `linear()` easing), five button sizes that stay round but square off while pressed or selected, icon toggle buttons that morph from circle to rounded square, connected button groups, an expressive slider (thick track, bar handle, value bubble), a **wavy seek bar** that flows while music plays and flattens when paused, a morphing-shape **loading indicator**, a floating-toolbar player bar and emphasized headings.
-- **Auto-update:** checks for a signed new version at startup and every 6 hours, shows the release notes, downloads with a progress bar, installs and restarts (see [Auto-update](#auto-update)).
 - **Theme reveal:** switching light / dark / color expands the new theme as a circle from where you clicked (View Transitions, with a fade fallback). Lyrics blur and soften away from the line being sung, and covers zoom in on every song change.
 - Smooth Material motion: staggered card entrances, hover lift, sliding toggles, press feedback and screen transitions (reduced automatically when Windows animations are off).
 
@@ -219,7 +221,6 @@ npm run dev
 | `npm test` | Vitest unit tests (lyrics, M3U, smart rules, duplicates, statistics, shortcuts…) |
 | `npm run check:i18n` | English and Vietnamese must have the same texts and placeholders |
 | `cargo test` / `cargo check` (inside `src-tauri`) | Test / type-check the Rust backend |
-| `npm run release -- "notes"` | Signed installer + `download/latest.json` for auto-update |
 | `npm run portable` | Zip with the portable executable (after `npm run build`) |
 
 **Using it inside an existing Cargo workspace** – add it to the workspace members:
@@ -274,32 +275,16 @@ To use your own artwork replace `src-tauri/icons/icon.png` (square, ≥ 512 px),
 
 **Landing page** – `index.html` at the project root is a single-file Material Design landing page (responsive, SEO + social meta tags, EN/VI). Its Download button points to `download/Material-Music_1.3.0_x64-setup.exe`; copy your built installer into the [`download`](download) folder with that name. Open it by double-clicking, or host the repository root (e.g. GitHub Pages).
 
-### Auto-update
-
-The app checks for a new version a few seconds after it starts and every 6 hours (*Settings → About → Automatic updates*, or press **Check for updates**). It reads a small manifest, `download/latest.json`, from the website; if a newer, **signed** version is listed, a toast and a dialog offer to download it, show the release notes and a progress bar, install it and restart the app. Every update is verified with your public key before it is installed.
-
-### One-time setup
-> The public key is already set in `src-tauri/tauri.conf.json`. Keep the matching **private key** (`material-music.key`) secret – never commit it – and back it up: without it you can not publish updates. To use your own keys instead, follow the steps below.
-
-1. Create the signing key pair (keep the private key secret, never commit it, and back it up: without it you can not publish updates):
-   ```powershell
-   npx tauri signer generate -w "$env:USERPROFILE\.tauri\material-music.key"
-   ```
-2. Open `material-music.key.pub`, copy its whole content and paste it into `src-tauri/tauri.conf.json` → `plugins.updater.pubkey` (replace the placeholder).
-3. Check `plugins.updater.endpoints` (default `https://material-music-player-delta.vercel.app/download/latest.json`). If you host the site somewhere else, change it and set `UPDATE_BASE_URL` for step 2 below.
-
 ### Publishing a new version
-1. Raise the version in `package.json`, `src-tauri/Cargo.toml` and `src-tauri/tauri.conf.json`.
-2. Build, sign and create the manifest in one go (PowerShell):
-   ```powershell
-   $env:TAURI_SIGNING_PRIVATE_KEY = "$env:USERPROFILE\.tauri\material-music.key"
-   $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = "your-password"   # only if you set one
-   npm run release -- "What is new in this version"
-   ```
-   This runs `tauri build` with updater artifacts, copies the installer to `download/Material-Music_<version>_x64-setup.exe` and writes `download/latest.json`.
-3. Deploy the site (push the `download` folder). Installed apps pick the update up on their next check.
 
-`npm run build` is unchanged: it makes a normal, unsigned installer and needs no key. Copies installed before auto-update existed (1.1.0 and older) have to be updated by hand once.
+The app does **not update itself**: users download the new installer from the landing page and run it, which upgrades the existing install and keeps their data.
+
+1. Raise the version in **three places** so they match: `package.json`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`.
+2. Run `npm run build`. It builds the installer and **copies it** to `download/Material-Music_<version>_x64-setup.exe` (the name the landing page Download button points to).
+3. (Optional) `npm run portable` also creates `download/Material-Music_<version>_x64-portable.zip`.
+4. Update `CHANGELOG.md` and deploy the project folder again (landing page + `download/`).
+
+No signing key or extra configuration is needed.
 
 ## Project Structure
 
@@ -332,7 +317,7 @@ material-music/
 │  └─ views/                  Library (home, songs, albums, artists, playlists, search), Settings, Extra (statistics, duplicates, smart playlist)
 ├─ scripts/
 │  ├─ generate-icons.py       generates every icon (app, setup, uninstall)
-│  ├─ make-update-manifest.mjs · make-portable.mjs · check-i18n.mjs
+│  ├─ copy-installer.mjs · make-portable.mjs · check-i18n.mjs
 ├─ tests/                     Vitest unit tests
 ├─ .github/                   CI + release workflows, issue templates
 ├─ src-tauri/                 Rust backend

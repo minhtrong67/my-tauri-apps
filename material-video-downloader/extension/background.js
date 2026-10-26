@@ -105,6 +105,13 @@ async function storeMeta(sender, msg) {
   chrome.storage.session.set({ [`meta:${tabId}`]: m }).catch(() => undefined);
 }
 
+/** A blob/MSE player gives us no URL: use the media request the tab fetched most recently (HLS playlist or file). */
+async function bestNetwork(tabId, srcs = []) {
+  if (tabId === undefined) return null;
+  const items = [...(await restore(tabId)).values()].sort((a, b) => b.at - a.at);
+  return items.find((i) => srcs.includes(i.url)) || items.find((i) => i.kind === "hls") || items[0] || null;
+}
+
 function pickPrimary(videos) {
   return [...videos].sort((a, b) => Number(b.playing) - Number(a.playing) || b.w * b.h - a.w * a.h)[0];
 }
@@ -154,7 +161,10 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
       reply({ ok: true });
     } else if (msg.type === "send") {
       const pageUrl = msg.pageUrl || sender.tab?.url || msg.frameUrl || "";
-      const url = msg.url || pageUrl;
+      let url = msg.url;
+      if (!url && msg.unresolved) url = (await bestNetwork(sender.tab?.id, msg.srcs))?.url || "";
+      if (!url && msg.unresolved) { reply({ ok: false, reason: "unresolved" }); return; }
+      url = url || pageUrl;
       const cookie = msg.withCookies === false ? "" : await pageCookies(pageUrl || url);
       const res = await send({
         url,

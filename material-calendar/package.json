@@ -3,25 +3,36 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Material Calendar — a Material Design 3 desktop calendar built with Tauri 2",
+  "description": "Material Calendar — a Material 3 Expressive desktop calendar built with Tauri 2, React and Tailwind",
   "author": "minhtrong67",
   "license": "MIT",
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build",
     "icons": "tauri icon app-icon.png",
+    "typecheck": "tsc --noEmit",
     "vite:dev": "vite",
     "vite:build": "vite build",
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.0.0",
-    "@tauri-apps/plugin-dialog": "^2.0.0",
-    "@tauri-apps/plugin-fs": "^2.0.0",
-    "@tauri-apps/plugin-notification": "^2.0.0"
+    "@fontsource/roboto": "^5.1.0",
+    "@tauri-apps/api": "^2.12.0",
+    "@tauri-apps/plugin-dialog": "^2.8.3",
+    "@tauri-apps/plugin-fs": "^2.7.1",
+    "@tauri-apps/plugin-notification": "2.5",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.0.0",
+    "@tauri-apps/cli": "^2.12.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.6.0",
     "vite": "^5.4.0"
   }
 }

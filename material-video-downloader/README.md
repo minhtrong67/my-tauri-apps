@@ -13,7 +13,7 @@ A free, open-source desktop app (Tauri + React) with IDM-style segmented downloa
 ![React 19](https://img.shields.io/badge/React-19-61dafb)
 ![Platforms](https://img.shields.io/badge/Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 
-[Landing page](landing.html) · [Download](download/) · [Report a bug](../../issues)
+[Landing page](index.html)  · [Download](download/) · [Report a bug](../../issues)
 
 </div>
 
@@ -49,6 +49,7 @@ A free, open-source desktop app (Tauri + React) with IDM-style segmented downloa
 - **Thumbnails and durations** for every detected video (poster, captured frame, YouTube / page preview), so you can tell which one to download. The thumbnail travels to the desktop app too.
 - Icon-only **Download** button over every `<video>` (Shadow DOM, works inside iframes, overlays, feeds and fullscreen) on YouTube, Facebook, TikTok, Instagram, X, Reddit, Vimeo and more. It resolves the right post link in feeds, can sit top-left or top-right, and follows your theme color.
 - Right-click menu on links.
+- Works on blob/MSE players (TikTok, Instagram, X, Facebook, Reddit, Threads…): it reads the post id from the player markup or the nearest permalink, and falls back to the media request the tab just made. If it still cannot tell which video you mean, the button says so instead of sending a useless home-page link.
 - Sends links (with referer, user-agent and cookies) to the app over `127.0.0.1` only.
 - Falls back to the browser's own downloader for plain files when the app is closed.
 
@@ -108,14 +109,14 @@ npm run build   # produces installers in <workspace>/target/release/bundle/
 Windows gets an NSIS setup (`bundle/nsis/*.exe`) with its own setup and uninstall icons; macOS gets `.app`/`.dmg`; Linux gets `.deb`/`.AppImage`.
 Copy the result into [`download/`](download/) using the names listed in [`download/README.md`](download/README.md), then run `npm run pack:extension` to refresh the extension zip.
 
-Other scripts: `npm run pack:extension` zips the extension; `npm run icons` regenerates every app / setup / uninstall / extension icon (requires Python + Pillow).
+Other scripts: `npm run pack:extension` zips the extension; `npm run icons` regenerates every app / setup / uninstall / extension icon in the Material 3 Expressive style (layered cookie shapes, vivid M3 tones; requires Python + Pillow).
 
 ## Project structure
 
 ```
 material-video-downloader/
-├── index.html              # Vite entry (app)
-├── landing.html            # Single-file landing page (EN/VI, light/dark)
+├── index.html              # Landing page (single file: EN/VI, light/dark, theme colors)
+├── app/index.html          # Vite entry of the desktop app
 ├── src/                    # React app
 │   ├── components/         # Material UI primitives, dialog, cards, nav
 │   ├── pages/              # Downloads, Settings, About
@@ -127,8 +128,8 @@ material-video-downloader/
 │   └── tauri.conf.json
 ├── extension/              # Chrome MV3 extension (popup, service worker, content script)
 ├── scripts/                # icon generator, extension packer
-├── screenshots/            # image01 … image06
-├── download/               # place installers here (linked by landing.html)
+├── screenshots/            # image01 … image08
+├── download/               # place installers here (linked by index.html)
 └── LICENSE
 ```
 

@@ -1,4 +1,4 @@
-import type { Account, Limit } from "./types";
+import type { Account, Limit, Sample } from "./types";
 import { Lang, TFn, locale } from "./i18n";
 
 /**
@@ -75,9 +75,10 @@ export function analyze(a: Account, now: number): AccountView {
 
 const RANK: Record<AccountState, number> = { ready: 0, waiting: 1, nodata: 2 };
 
-/** Sẵn sàng -> đang chờ (reset sớm nhất trước) -> chưa có dữ liệu */
+/** Tài khoản ghim lên đầu; sau đó sẵn sàng -> đang chờ (reset sớm nhất trước) -> chưa có dữ liệu */
 export function sortViews(vs: AccountView[]): AccountView[] {
   return [...vs].sort((a, b) => {
+    if (!!a.account.pinned !== !!b.account.pinned) return a.account.pinned ? -1 : 1;
     if (RANK[a.state] !== RANK[b.state]) return RANK[a.state] - RANK[b.state];
     if (a.availableAt !== null && b.availableAt !== null) return a.availableAt - b.availableAt;
     return a.account.label.localeCompare(b.account.label);
@@ -159,4 +160,32 @@ export function initials(name: string): string {
   if (w.length === 0) return "?";
   if (w.length === 1) return w[0][0].toUpperCase();
   return (w[0][0] + w[w.length - 1][0]).toUpperCase();
+}
+
+/** Tên hiển thị của tài khoản: tên tự đặt > tên Google của profile > email */
+export function accountTitle(a: Account, userName?: string): string {
+  return a.alias?.trim() || userName?.trim() || a.email || a.id;
+}
+
+/** Các mẫu của một giới hạn nằm trong cửa sổ reset hiện tại */
+export function windowSamples(h: Sample[] | undefined, key: string, resetMs: number | null, now: number): Sample[] {
+  const w = WINDOW_MS[key];
+  if (!h || !w || resetMs === null) return [];
+  const start = resetMs - w;
+  return h.filter((p) => p[1] === key && p[0] >= start && p[0] <= now + 60000);
+}
+
+/**
+ * Dự báo thời điểm chạm 100% theo tốc độ dùng gần đây (hồi quy đơn giản trên ~12 mẫu cuối).
+ * Chỉ trả về khi dự báo xảy ra TRƯỚC giờ reset, nếu không thì không cần cảnh báo.
+ */
+export function forecastHit(pts: Sample[], util: number | null, resetMs: number | null, now: number): number | null {
+  if (util === null || util >= 100 || resetMs === null || pts.length < 3) return null;
+  const a = pts[Math.max(0, pts.length - 12)];
+  const b = pts[pts.length - 1];
+  const dt = b[0] - a[0];
+  const du = b[2] - a[2];
+  if (dt < 10 * 60000 || du <= 0) return null;
+  const eta = now + (100 - util) / (du / dt);
+  return eta < resetMs ? eta : null;
 }

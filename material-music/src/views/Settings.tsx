@@ -1,6 +1,6 @@
-import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { getActiveLang, tr } from '../lib/i18n';
-import { AuthorCredit, Button, Icon, Logo, Segmented, Select, Switch } from '../components/ui';
+import { AuthorCredit, Button, Chip, Icon, Logo, Segmented, Select, Switch } from '../components/ui';
 import { engine } from '../lib/audio';
 import { getBackupDir, openFolder, scrobbleValidate } from '../lib/tauri';
 import { FONT_OPTIONS, MATERIAL_COLORS } from '../lib/theme';
@@ -9,9 +9,9 @@ import { fmtSize } from '../lib/utils';
 
 /* ───────────── building blocks ───────────── */
 
-function Section({ title, icon, children }: { title: string; icon: string; children: ReactNode }) {
+function Section({ id, title, icon, children }: { id: string; title: string; icon: string; children: ReactNode }) {
   return (
-    <section className="mb-5">
+    <section id={`set-${id}`} className="mb-5 scroll-mt-20">
       <h2 className="flex items-center gap-2.5 px-2 mb-2 text-title-md text-primary">
         <Icon name={icon} size={20} />
         {title}
@@ -146,7 +146,43 @@ function ScrobbleToken() {
 
 /* ───────────── page ───────────── */
 
+const JUMPS: { id: string; icon: string; label: () => string }[] = [
+  { id: 'general', icon: 'settings', label: () => tr('generalSection') },
+  { id: 'appearance', icon: 'palette', label: () => tr('appearance') },
+  { id: 'playback', icon: 'graphic_eq', label: () => tr('playbackSection') },
+  { id: 'library', icon: 'library_music', label: () => tr('librarySection') },
+  { id: 'online', icon: 'radio', label: () => tr('scrobbleSection') },
+  { id: 'about', icon: 'info', label: () => tr('aboutSection') },
+];
+
+/** Sticky chip bar: jump to a section and see which one you are reading */
+function JumpBar({ scroller }: { scroller: React.RefObject<HTMLDivElement> }) {
+  const [active, setActive] = useState('general');
+  useEffect(() => {
+    const root = scroller.current;
+    if (!root || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id.replace('set-', ''))),
+      { root, rootMargin: '-90px 0px -65% 0px' },
+    );
+    JUMPS.forEach((j) => { const el = document.getElementById(`set-${j.id}`); if (el) io.observe(el); });
+    return () => io.disconnect();
+  }, [scroller]);
+  const go = (id: string) => {
+    setActive(id);
+    document.getElementById(`set-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  return (
+    <nav aria-label={tr('navSettings')} className="sticky top-0 z-20 -mx-6 px-6 py-3 bg-surface-container-low/90 backdrop-blur-md">
+      <div className="flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none]">
+        {JUMPS.map((j) => <Chip key={j.id} icon={j.icon} selected={active === j.id} onClick={() => go(j.id)}>{j.label()}</Chip>)}
+      </div>
+    </nav>
+  );
+}
+
 export function SettingsView() {
+  const scroller = useRef<HTMLDivElement>(null);
   const s = useStore((st) => st.settings);
   const update = useStore((st) => st.updateSettings);
   const st = useStore.getState();
@@ -159,15 +195,16 @@ export function SettingsView() {
   const vi = getActiveLang() === 'vi';
 
   return (
-    <div className="h-full overflow-y-auto scroll-smooth">
-      <div className="mx-auto w-full max-w-3xl px-6 pb-10 stagger">
-        <div className="pt-8 pb-5 px-2">
+    <div ref={scroller} className="h-full overflow-y-auto scroll-smooth">
+      <div className="mx-auto w-full max-w-3xl px-6 pb-10 animate-fade-in">
+        <div className="pt-8 pb-2 px-2">
           <h1 className="text-headline-lg">{tr('navSettings')}</h1>
           <p className="text-body-lg text-on-surface-variant mt-1">{tr('settingsSub')}</p>
         </div>
+        <JumpBar scroller={scroller} />
 
         {/* General */}
-        <Section title={tr('generalSection')} icon="settings">
+        <Section id="general" title={tr('generalSection')} icon="settings">
           <Row title={tr('language')} desc={tr('languageDesc')}>
             <Segmented value={s.language} onChange={(v) => update({ language: v })} options={[{ value: 'auto', label: tr('langAuto') }, { value: 'en', label: 'English' }, { value: 'vi', label: 'Tiếng Việt' }]} />
           </Row>
@@ -179,7 +216,7 @@ export function SettingsView() {
         </Section>
 
         {/* Appearance */}
-        <Section title={tr('appearance')} icon="palette">
+        <Section id="appearance" title={tr('appearance')} icon="palette">
           <Row title={tr('colorMode')} desc={tr('themeModeDesc')}>
             <Segmented value={s.themeMode} onChange={(v) => update({ themeMode: v })} options={[{ value: 'system', label: tr('themeSystem'), icon: 'brightness_auto' }, { value: 'light', label: tr('themeLight'), icon: 'light_mode' }, { value: 'dark', label: tr('themeDark'), icon: 'dark_mode' }]} />
           </Row>
@@ -243,7 +280,7 @@ export function SettingsView() {
         </Section>
 
         {/* Playback */}
-        <Section title={tr('playbackSection')} icon="graphic_eq">
+        <Section id="playback" title={tr('playbackSection')} icon="graphic_eq">
           <ToggleRow title={tr('restoreSession')} desc={tr('restoreSessionDesc')} checked={s.restoreSession} onChange={(v) => update({ restoreSession: v })} />
           <ToggleRow title={tr('gapless')} desc={tr('gaplessDesc')} checked={s.gapless} onChange={(v) => update({ gapless: v })} />
           <Row title={tr('crossfade')} desc={tr('crossfadeDesc')}>
@@ -267,7 +304,7 @@ export function SettingsView() {
         </Section>
 
         {/* Library */}
-        <Section title={tr('librarySection')} icon="library_music">
+        <Section id="library" title={tr('librarySection')} icon="library_music">
           <div className="px-5 py-4 grid gap-2 grid-cols-[repeat(auto-fit,minmax(130px,1fr))]">
             <Stat icon="music_note" value={all.length} label={tr('songsTitle')} />
             <Stat icon="album" value={albums.length} label="Album" />
@@ -303,7 +340,8 @@ export function SettingsView() {
         </Section>
 
         {/* Online */}
-        <Section title={tr('scrobbleSection')} icon="radio">
+        <Section id="online" title={tr('scrobbleSection')} icon="radio">
+          <ToggleRow title={tr('autoLyrics')} desc={tr('autoLyricsDesc')} checked={s.autoLyrics} onChange={(v) => update({ autoLyrics: v })} />
           <ToggleRow title={tr('scrobbleTitle')} desc={tr('scrobbleDesc')} checked={s.scrobble} onChange={(v) => update({ scrobble: v })} />
           <Row title={tr('scrobbleToken')} desc={tr('scrobbleTokenDesc')}>
             <ScrobbleToken />
@@ -311,7 +349,7 @@ export function SettingsView() {
         </Section>
 
         {/* About */}
-        <Section title={tr('aboutSection')} icon="info">
+        <Section id="about" title={tr('aboutSection')} icon="info">
           <div className="px-5 py-5 flex flex-wrap items-center gap-x-5 gap-y-3">
             <Logo size={64} />
             <div className="min-w-0 flex-1">
@@ -323,11 +361,6 @@ export function SettingsView() {
               <div className="mt-2"><AuthorCredit /></div>
             </div>
           </div>
-          <Row title={tr('updatesRow')} desc={st.updateInfo ? tr('updateAvailable', { v: st.updateInfo.version }) : tr('updatesRowDesc', { v: __APP_VERSION__ })}>
-            {st.updateInfo && <Button icon="download" onClick={() => st.openDialog({ type: 'update', ...st.updateInfo! })}>{tr('updateNow')}</Button>}
-            <Button variant="tonal" icon="refresh" disabled={st.checkingUpdate} onClick={() => void st.checkUpdates(false)}>{st.checkingUpdate ? tr('checkingUpdates') : tr('checkUpdates')}</Button>
-          </Row>
-          <ToggleRow title={tr('autoUpdate')} desc={tr('autoUpdateDesc')} checked={s.autoUpdate} onChange={(v) => update({ autoUpdate: v })} />
           <Row title={tr('shortcutsBtn')} desc={tr('shortcutsDesc')}>
             <Button variant="tonal" icon="keyboard" onClick={() => st.openDialog({ type: 'shortcuts' })}>{tr('open')}</Button>
           </Row>

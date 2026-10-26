@@ -21,24 +21,48 @@
   } catch { /* extension reloaded */ }
 
   const LANG = () => (prefs.lang === "vi" || prefs.lang === "en" ? prefs.lang : (navigator.language || "en").toLowerCase().startsWith("vi") ? "vi" : "en");
-  const TEXT = { en: { tip: "Download video", ok: "Sent to app", err: "Could not send" }, vi: { tip: "Tải video này", ok: "Đã gửi sang ứng dụng", err: "Không gửi được" } };
+  const TEXT = { en: { tip: "Download video", ok: "Sent to app", err: "Could not send", unres: "Open the post, then try again" }, vi: { tip: "Tải video này", ok: "Đã gửi sang ứng dụng", err: "Không gửi được", unres: "Hãy mở bài đăng rồi thử lại" } };
   const tr = (k) => TEXT[LANG()][k];
 
   // ------------------------------------------------------------------ helpers
   const abs = (u) => { try { return u ? new URL(u, location.href).href : ""; } catch { return ""; } };
   const isHttp = (u) => /^https?:/i.test(u || "");
 
+  // Per-site knowledge: which URLs are "a post" (page), which links inside a feed lead to one (link),
+  // and how to read the post id straight from the player markup (mine).
+  const xgId = (video) => {
+    const w = video.closest && video.closest('[id^="xgwrapper-"]');
+    const m = w && /^xgwrapper-\d+-(\d{10,})$/.exec(w.id);
+    return m ? m[1] : "";
+  };
+  const handleNear = (video) => {
+    for (let el = video, i = 0; el && i < 14; i++, el = el.parentElement) {
+      const a = el.querySelector && el.querySelector('a[href^="/@"],a[href*="tiktok.com/@"]');
+      const m = a && /\/@([\w.-]+)/.exec(a.getAttribute("href"));
+      if (m) return m[1];
+    }
+    return "";
+  };
   const RULES = [
     { host: /(^|\.)youtube(-nocookie)?\.com$|^youtu\.be$/, page: /^\/(watch|shorts\/|live\/)/, link: /^\/(watch\?|shorts\/|live\/)/, preferPage: true },
     { host: /(^|\.)vimeo\.com$/, page: /^\/\d+/, link: /^\/\d+/, preferPage: true },
     { host: /(^|\.)dailymotion\.com$/, page: /^\/video\//, link: /^\/video\//, preferPage: true },
     { host: /(^|\.)twitch\.tv$/, page: /\/(videos|clip)\//, link: /\/(videos|clip)\//, preferPage: true },
-    { host: /(^|\.)(facebook|fb)\.com$|^fb\.watch$/, page: /\/(videos|reel|watch|share\/[rv])\/|\/watch\/?$|\/watch\/?\?v=|\/posts\//, link: /\/(videos|reel|watch|share\/[rv])\/|\/watch\/?\?v=|\/posts\/|story\.php|\/permalink/ },
-    { host: /(^|\.)instagram\.com$/, page: /^\/(reel|reels|p|tv)\/[\w-]+/, link: /^\/(reel|reels|p|tv)\/[\w-]+/ },
-    { host: /(^|\.)tiktok\.com$/, page: /\/(video|photo)\/\d+/, link: /\/(video|photo)\/\d+/ },
+    { host: /(^|\.)(facebook|fb)\.com$|^fb\.watch$/, page: /\/(videos|reel|watch|share\/[rv])\/|\/watch\/?\?v=|\/posts\/|\/permalink|story\.php/, link: /\/(videos|reel|watch|share\/[rv])\/|\/watch\/?\?v=|\/posts\/|story\.php|\/permalink/ },
+    { host: /(^|\.)instagram\.com$/, page: /^\/(reel|reels|p|tv)\/[\w-]+|^\/stories\/[\w.]+\/\d+/, link: /^\/(reel|reels|p|tv)\/[\w-]+|^\/stories\/[\w.]+\/\d+/ },
+    { host: /(^|\.)tiktok\.com$/, page: /\/(video|photo)\/\d+/, link: /\/(video|photo)\/\d+/,
+      mine: (v) => { const id = xgId(v); return id ? `https://www.tiktok.com/@${handleNear(v)}/video/${id}` : ""; } },
+    { host: /(^|\.)douyin\.com$/, page: /^\/(video|note)\/\d+/, link: /^\/(video|note)\/\d+/,
+      mine: (v) => { const id = xgId(v); return id ? `https://www.douyin.com/video/${id}` : ""; } },
     { host: /(^|\.)(twitter|x)\.com$/, page: /\/status\/\d+/, link: /\/status\/\d+/ },
+    { host: /(^|\.)threads\.(net|com)$/, page: /\/post\/[\w-]+/, link: /\/post\/[\w-]+/ },
     { host: /(^|\.)reddit\.com$/, page: /\/comments\//, link: /\/comments\// },
+    { host: /(^|\.)linkedin\.com$/, page: /\/(feed\/update|posts|video)\//, link: /\/(feed\/update|posts|video)\// },
+    { host: /(^|\.)pinterest\.[a-z.]+$/, page: /^\/pin\/\d+/, link: /^\/pin\/\d+/ },
+    { host: /(^|\.)bsky\.app$/, page: /\/post\/\w+/, link: /\/post\/\w+/ },
+    { host: /(^|\.)(vk\.com|vkvideo\.ru)$/, page: /\/video-?\d+_\d+/, link: /\/video-?\d+_\d+/ },
     { host: /(^|\.)bilibili\.com$/, page: /\/video\/(BV|av)/i, link: /\/video\/(BV|av)/i },
+    { host: /(^|\.)rumble\.com$/, page: /^\/v[\w-]+/, link: /^\/v[\w-]+/ },
   ];
   const ruleFor = () => RULES.find((r) => r.host.test(location.hostname));
   const KNOWN_SITE = () => !!ruleFor();
@@ -58,13 +82,16 @@
   function permalinkFor(video, rule) {
     const test = (a) => { try { return rule.link.test(a.pathname + a.search); } catch { return false; } };
     let el = video;
-    for (let depth = 0; el && depth < 16; depth++) {
+    for (let depth = 0; el && depth < 18; depth++) {
       if (el.tagName === "BODY" || el.tagName === "HTML" || el.tagName === "MAIN") break; // too broad to belong to one video
       if (el.nodeType === 1) {
         if (el.tagName === "A" && el.href && test(el)) return el.href;
         if (depth > 0) {
           if (el.querySelectorAll("video").length > 1) break; // container holds several videos: too broad
-          for (const a of el.querySelectorAll("a[href]")) if (test(a)) return a.href;
+          const links = [...el.querySelectorAll("a[href]")].filter(test);
+          // Prefer the timestamp/permalink link (usually wraps <time> or sits in the header)
+          const best = links.find((a) => a.querySelector("time")) || links[0];
+          if (best) return best.href;
         }
       }
       el = el.parentElement || (el.getRootNode && el.getRootNode().host) || null;
@@ -72,24 +99,40 @@
     return "";
   }
 
-  /** Which URL should the desktop app receive for this video? */
-  function urlFor(video) {
+  const canonical = () => {
+    const el = document.querySelector('link[rel="canonical"],meta[property="og:url"]');
+    return abs(el && (el.href || el.content));
+  };
+
+  /**
+   * Decide what to hand to the desktop app for this video.
+   * kind: "post" (a page yt-dlp understands) | "direct" (a plain media file) | "page" (generic fallback) | "none" (could not tell)
+   */
+  function resolve(video) {
     if (!IS_TOP) {
       const w = embedToWatch(location.href);
-      if (w) return w;
+      if (w) return { url: w, kind: "post" };
     }
     const rule = ruleFor();
     const src = video.currentSrc || video.src || "";
     if (rule) {
-      const onPage = rule.page.test(location.pathname + location.search);
-      if (rule.preferPage && onPage) return location.href;
+      const here = location.pathname + location.search;
+      const onPage = rule.page.test(here);
+      if (rule.preferPage && onPage) return { url: location.href, kind: "post" };
+      const mined = rule.mine && rule.mine(video);
+      if (mined) return { url: mined, kind: "post" };
       const link = permalinkFor(video, rule);
-      if (link) return link;
-      if (onPage) return location.href;
+      if (link) return { url: link, kind: "post" };
+      if (onPage) return { url: location.href, kind: "post" };
+      const c = canonical();
+      try { if (c && rule.page.test(new URL(c).pathname + new URL(c).search)) return { url: c, kind: "post" }; } catch { /* ignore */ }
+      if (isHttp(src)) return { url: src, kind: "direct" };
+      return { url: "", kind: "none" }; // blob/MSE player in a feed: the service worker looks at network requests
     }
-    if (isHttp(src)) return src;
-    return IS_TOP ? location.href : "";
+    if (isHttp(src)) return { url: src, kind: "direct" };
+    return { url: IS_TOP ? location.href : "", kind: IS_TOP ? "page" : "none" };
   }
+  const urlFor = (v) => resolve(v).url;
 
   function ogImage() {
     const m = document.querySelector('meta[property="og:image"],meta[name="twitter:image"],meta[property="og:image:url"]');
@@ -383,17 +426,21 @@ button:hover svg { transform: translateY(1px) scale(1.06); }
     setIcon("spin");
     snap(v, true);
     try {
+      const r = resolve(v);
       const res = await chrome.runtime.sendMessage({
         type: "send",
         fallback: true,
-        url: urlFor(v),
+        url: r.url,
+        unresolved: r.kind === "none",
+        srcs: [v.currentSrc, v.src].filter(Boolean),
         frameUrl: location.href,
         title: document.title,
         pageUrl: IS_TOP ? location.href : "",
         thumbnail: thumbOf(v) || (IS_TOP ? ogImage() : ""),
       });
       busy = false;
-      flash(res && (res.ok || res.fallback) ? "ok" : "err", tr(res && (res.ok || res.fallback) ? "ok" : "err"));
+      const good = res && (res.ok || res.fallback);
+      flash(good ? "ok" : "err", good ? tr("ok") : tr(res && res.reason === "unresolved" ? "unres" : "err"));
     } catch {
       busy = false;
       flash("err", tr("err"));

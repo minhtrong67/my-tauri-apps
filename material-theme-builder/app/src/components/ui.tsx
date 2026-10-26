@@ -1,4 +1,4 @@
-import { useState, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from "react";
+import { useState, type ButtonHTMLAttributes, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -98,8 +98,19 @@ export function Segmented<T extends string>({
   className?: string;
   hideLabelsOnSmall?: boolean;
 }) {
+  // Roving tabindex + arrow/Home/End keys, as in the WAI-ARIA tabs pattern.
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const keys = ["ArrowRight", "ArrowLeft", "Home", "End"];
+    if (!keys.includes(e.key)) return;
+    const i = options.findIndex((o) => o.value === value);
+    const next = e.key === "Home" ? 0 : e.key === "End" ? options.length - 1 : (i + (e.key === "ArrowRight" ? 1 : -1) + options.length) % options.length;
+    e.preventDefault();
+    const list = e.currentTarget; // React clears currentTarget once the handler returns
+    onChange(options[next].value);
+    requestAnimationFrame(() => list.querySelectorAll<HTMLElement>('[role="tab"]')[next]?.focus());
+  };
   return (
-    <div role="tablist" className={cn("cbg", className)}>
+    <div role="tablist" className={cn("cbg", className)} onKeyDown={onKeyDown}>
       {options.map((o) => {
         const on = o.value === value;
         return (
@@ -107,6 +118,7 @@ export function Segmented<T extends string>({
             key={o.value}
             role="tab"
             type="button"
+            tabIndex={on ? 0 : -1}
             aria-selected={on}
             data-tip={o.title}
             data-ripple

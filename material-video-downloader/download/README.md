@@ -1,6 +1,6 @@
 # download/
 
-Put the installers here. The landing page (`../landing.html`) links to these exact file names:
+Put the installers here. The landing page (`../index.html`) links to these exact file names:
 
 | File | Used by |
 | --- | --- |

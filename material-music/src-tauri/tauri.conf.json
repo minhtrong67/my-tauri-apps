@@ -80,16 +80,5 @@
     "publisher": "minhtrong67",
     "category": "Music",
     "copyright": "Copyright (c) 2026 minhtrong67 - MIT License"
-  },
-  "plugins": {
-    "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZGN0FCQjI5OTgzOURGQTIKUldTaTN6bVlLYnQ2L3lVRS9aQ29ITWJtdEhiQnYyMHBNV3NnVW5McktLb3MzVVk0cHgrZ1h5T3AK",
-      "endpoints": [
-        "https://material-music-player-delta.vercel.app/download/latest.json"
-      ],
-      "windows": {
-        "installMode": "passive"
-      }
-    }
   }
 }

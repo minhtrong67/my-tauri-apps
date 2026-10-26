@@ -8,8 +8,8 @@ import { EntityBrowser, type Entity } from '../components/EntityBrowser';
 import { ViewToggle } from '../components/ViewToggle';
 import { Button, Icon, openMenuBelow } from '../components/ui';
 import { Cover } from '../components/Cover';
-import { searchLibrary, sortTracksNatural, useDerived, useStore, useTrackList, useViewMode } from '../lib/store';
-import { greeting, natural } from '../lib/utils';
+import { searchLibrary, sortTracksNatural, useCurrent, useDerived, useStore, useTrackList, useViewMode } from '../lib/store';
+import { greeting, natural, shuffled, fmtTime } from '../lib/utils';
 import { SMART_ICON, SMART_IDS, ruleTracks, smartTracks } from '../lib/smart';
 import type { Album, SmartId, Track } from '../lib/types';
 import type { Key } from '../lib/i18n';
@@ -22,6 +22,71 @@ function Row({ title, children }: { title: string; children: React.ReactNode }) 
       <h2 className="text-title-lg px-8 mb-2">{title}</h2>
       <div className="flex gap-2 overflow-x-auto px-6 pb-2">{children}</div>
     </section>
+  );
+}
+
+/** Big card at the top of Home: pick up where you stopped, plus one-tap shortcuts */
+function HomeHero({ all }: { all: Track[] }) {
+  const cur = useCurrent();
+  const playing = useStore((s) => s.isPlaying);
+  const position = useStore((s) => s.position);
+  const duration = useStore((s) => s.duration);
+  const liked = useStore((s) => s.liked);
+  const plays = useStore((s) => s.plays);
+  const history = useStore((s) => s.history);
+  const { playTracks, togglePlay, nav } = useStore.getState();
+  const show = cur ?? all[0];
+  const pct = cur && duration > 0 ? Math.min(100, (position / duration) * 100) : 0;
+  const likedIds = all.filter((t) => liked[t.id]).map((t) => t.id);
+  const topIds = Object.entries(plays).filter(([id]) => all.some((t) => t.id === id)).sort((a, b) => b[1] - a[1]).slice(0, 50).map(([id]) => id);
+  const shuffleAll = () => playTracks(shuffled(all.map((t) => t.id)), 0);
+  const randomAlbum = () => {
+    const byAlbum = new Map<string, Track[]>();
+    all.forEach((t) => (byAlbum.get(t.album) ?? byAlbum.set(t.album, []).get(t.album)!).push(t));
+    const albums = [...byAlbum.values()];
+    const pick = albums[Math.floor(Math.random() * albums.length)];
+    if (pick) playTracks(pick.map((t) => t.id), 0);
+  };
+  const quick: { icon: string; label: string; sub: string; onClick: () => void; off?: boolean }[] = [
+    { icon: 'history', label: tr('navRecent'), sub: tr('nSongs', { n: Math.min(history.length, 50) }), onClick: () => nav({ name: 'recent' }), off: !history.length },
+    { icon: 'favorite', label: tr('navLiked'), sub: tr('nSongs', { n: likedIds.length }), onClick: () => (likedIds.length ? playTracks(likedIds, 0) : nav({ name: 'liked' })) },
+    { icon: 'trending_up', label: tr('mostPlayed'), sub: topIds.length ? tr('nSongs', { n: topIds.length }) : tr('qaNothingYet'), onClick: () => topIds.length && playTracks(topIds, 0), off: !topIds.length },
+    { icon: 'album', label: tr('qaRandomAlbum'), sub: tr('qaRandomAlbumSub'), onClick: randomAlbum },
+  ];
+  return (
+    <div className="px-8 pb-6 stagger">
+      <div className="relative overflow-hidden rounded-[40px] bg-primary-container text-on-primary-container p-6 flex items-center gap-6">
+        <div aria-hidden className="absolute -right-10 -top-16 w-64 h-64 bg-primary/10 morph-slow pointer-events-none" />
+        <div aria-hidden className="absolute right-24 -bottom-24 w-56 h-56 bg-tertiary/10 morph-slow pointer-events-none" style={{ animationDelay: '-6s' }} />
+        <div className="relative shrink-0">
+          <Cover track={show} eager className={`w-36 h-36 rounded-[32px] shadow-xl transition-transform duration-500 ${cur && playing ? 'scale-105' : ''}`} iconSize={56} />
+        </div>
+        <div className="relative min-w-0 flex-1">
+          <div className="text-label-lg uppercase tracking-wide opacity-75">{cur ? tr('continueListening') : tr('homePick')}</div>
+          <div className="truncate text-headline-sm mt-0.5">{show?.title}</div>
+          <div className="truncate text-body-lg opacity-80">{show ? `${show.artist} • ${show.album}` : ''}</div>
+          {cur && duration > 0 && (
+            <div className="mt-3 flex items-center gap-3 max-w-md text-label-md opacity-80 tabular-nums">
+              <span>{fmtTime(position)}</span>
+              <div className="flex-1 h-1.5 rounded-full bg-on-primary-container/15 overflow-hidden"><div className="h-full rounded-full bg-primary transition-[width] duration-500" style={{ width: `${pct}%` }} /></div>
+              <span>{fmtTime(duration)}</span>
+            </div>
+          )}
+          <div className="flex flex-wrap gap-3 mt-4">
+            <Button size="md" icon={cur && playing ? 'pause' : 'play_arrow'} onClick={() => (cur ? togglePlay() : show && playTracks(all.map((t) => t.id), 0))}>{cur && playing ? tr('pause') : cur ? tr('resume') : tr('play')}</Button>
+            <Button size="md" variant="outlined" className="!text-on-primary-container !border-on-primary-container/40" icon="shuffle" onClick={shuffleAll}>{tr('qaShuffleAll')}</Button>
+          </div>
+        </div>
+      </div>
+      <div className="grid gap-3 mt-3 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+        {quick.map((q) => (
+          <button key={q.label} onClick={q.onClick} disabled={q.off} className="ripple group h-[72px] px-4 rounded-3xl bg-surface-container-high flex items-center gap-3 text-left hover:bg-surface-container-highest transition-[background,border-radius,transform] duration-300 ease-emphasized hover:rounded-2xl active:scale-[.97] disabled:opacity-50 disabled:pointer-events-none focus-ring">
+            <span className="w-11 h-11 shrink-0 rounded-2xl bg-secondary-container text-on-secondary-container flex items-center justify-center transition-[border-radius,transform] duration-300 ease-emphasized group-hover:rounded-full group-hover:rotate-[-8deg]"><Icon name={q.icon} size={22} fill /></span>
+            <span className="min-w-0"><span className="block truncate text-title-sm">{q.label}</span><span className="block truncate text-body-sm text-on-surface-variant">{q.sub}</span></span>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -41,10 +106,11 @@ export function HomeView() {
 
   return (
     <div className="h-full overflow-y-auto pb-6">
-      <div className="px-8 pt-8 pb-6">
+      <div className="px-8 pt-8 pb-5">
         <h1 className="text-headline-lg">{greeting()}</h1>
         <p className="text-body-lg text-on-surface-variant">{tr('homeSummary', { songs: all.length, albums: albums.length })}</p>
       </div>
+      <HomeHero all={all} />
       {recent.length > 0 && <Row title={tr('recentlyPlayed')}>{recent.map((t, i) => <MediaCard key={t.id} track={t} title={t.title} subtitle={t.artist} onOpen={() => play(recent, i)} onPlay={() => play(recent, i)} />)}</Row>}
       {playlists.length > 0 && (
         <Row title={tr('yourPlaylists')}>

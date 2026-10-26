@@ -16,8 +16,16 @@ All notable changes to Material Music. The format follows [Keep a Changelog](htt
 - **Global hotkeys** (Ctrl + Alt + Space / ← / → / M / T) that work in any app.
 - **Customizable keyboard shortcuts.**
 - **ListenBrainz scrobbling** (optional, needs your user token).
+- **More reliable online lyrics:** cleaned titles, several lookups, scoring so the wrong song is never shown, retries, and an optional *Find lyrics automatically* setting.
+- **Container-transform animation** between the player bar and the full-screen player (and back).
+- **Home:** *Continue listening* card and quick shortcuts. **Settings:** sticky section bar.
+- **New app, setup and uninstall icons** in Material 3 Expressive style (pink, scalloped “cookie” shape).
+- Landing page: FAQ, scroll progress, active menu item and download facts.
 - **Automatic daily backups** of playlists, favorites and settings (the last 5 are kept) and a button to open their folder.
-- Developer tooling: ESLint, Vitest tests, an i18n consistency check, GitHub Actions (CI + signed release) and a portable build script.
+- Developer tooling: ESLint, Vitest tests, an i18n consistency check, GitHub Actions (CI + release) and a portable build script. `npm run build` now also copies the installer to `download/`.
+
+### Removed
+- **Auto-update** (and the signing key / update manifest). New versions are installed by downloading the installer from the landing page.
 
 ### Changed
 - The project, executable and data folder are now called **material-music** everywhere. Existing data from earlier builds is imported automatically on first start.
@@ -29,7 +37,6 @@ All notable changes to Material Music. The format follows [Keep a Changelog](htt
 ### Fixed
 - A damaged `library.json` / `user.json` no longer wipes your data: the last good copy is restored and you are told about it.
 - Durations such as 1 h 59 min 40 s were shown as "1 h 60 min".
-- The updater public key is now configured (earlier builds shipped a placeholder).
 
 ## [1.2.0]
 - Previous release.

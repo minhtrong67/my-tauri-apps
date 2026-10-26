@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Material Theme Builder — Design, preview &amp; export Material 3 Expressive themes</title>
-<meta name="description" content="Material Theme Builder is a free, open-source desktop app to generate Material Design 3 color schemes, preview them on live components, check accessibility and export to CSS, Tailwind, Compose, Flutter and more." />
-<meta name="keywords" content="material theme builder, material design 3, material 3, m3 color scheme, theme generator, dynamic color, color palette generator, tauri app, design tokens, tailwind theme, jetpack compose theme, flutter theme, open source" />
+<meta name="description" content="Free, open-source desktop app for Windows, macOS and Linux: generate Material Design 3 themes, import existing ones, compare side by side, check WCAG &amp; APCA contrast and export to 10 formats incl. Compose, Flutter, SwiftUI and Tailwind." />
+<meta name="keywords" content="material theme builder, material design 3, material 3, m3 color scheme, theme generator, import material theme, compare themes, apca contrast, swiftui theme, figma tokens, dynamic color, color palette generator, tauri app, design tokens, tailwind theme, jetpack compose theme, flutter theme, open source" />
 <meta name="author" content="minhtrong67" />
 <meta name="generator" content="Built with Claude by Anthropic" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -18,7 +18,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Material Theme Builder" />
 <meta property="og:title" content="Material Theme Builder — Design, preview &amp; export Material 3 Expressive themes" />
-<meta property="og:description" content="Generate Material Design 3 color schemes, preview live components, check accessibility and export to CSS, Tailwind, Compose and Flutter. Free and open source." />
+<meta property="og:description" content="Generate and import Material Design 3 themes, compare them side by side, check WCAG &amp; APCA contrast and export to 10 formats. Free, open source, works offline." />
 <meta property="og:url" content="https://minhtrong67.github.io/material-theme-builder/" />
 <meta property="og:image" content="https://minhtrong67.github.io/material-theme-builder/assets/og-image.png" />
 <meta property="og:image:width" content="1200" />
@@ -30,7 +30,7 @@
 <!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Material Theme Builder — Material 3 Expressive theme generator" />
-<meta name="twitter:description" content="Design, preview and export Material Design 3 color themes. Free, open source desktop app." />
+<meta name="twitter:description" content="Design, import, compare and export Material Design 3 themes. Free, open source desktop app for Windows, macOS and Linux." />
 <meta name="twitter:image" content="https://minhtrong67.github.io/material-theme-builder/assets/og-image.png" />
 <meta name="twitter:image:alt" content="Material Theme Builder desktop app" />
 
@@ -45,7 +45,22 @@
   "applicationCategory": "DesignApplication",
   "operatingSystem": "Windows, macOS, Linux",
   "softwareVersion": "1.0.0",
-  "description": "Open-source desktop app to generate, preview and export Material Design 3 color themes.",
+  "description": "Open-source desktop app to generate, import, compare and export Material Design 3 color themes, with WCAG and APCA contrast checks.",
+  "downloadUrl": "https://minhtrong67.github.io/material-theme-builder/download/Material-Theme-Builder_1.0.0_x64-setup.exe",
+  "isAccessibleForFree": true,
+  "featureList": [
+    "Dynamic color engine with 9 Material 3 styles",
+    "Import themes from Google Material Theme Builder JSON, CSS variables, Android colors.xml and .mtb.json",
+    "Compare two themes side by side",
+    "Multi-color palette extraction from an image and a screen eyedropper",
+    "Searchable, taggable theme library with version history",
+    "Live preview screens: components, login, dashboard and list",
+    "WCAG and APCA contrast checks",
+    "Color-blind simulation",
+    "Export to CSS, Tailwind, SCSS, JSON, Jetpack Compose, Flutter, Android XML, SwiftUI, Figma tokens and a project file, plus a zip bundle",
+    "Automatic updates",
+    "Works offline on Windows, macOS and Linux"
+  ],
   "image": "https://minhtrong67.github.io/material-theme-builder/assets/og-image.png",
   "license": "https://opensource.org/licenses/MIT",
   "author": { "@type": "Person", "name": "minhtrong67" },
@@ -53,9 +68,11 @@
 }
 </script>
 
+<script>/*ENGINE:START*/"use strict";(()=>{function L(t){return t<0?-1:t===0?0:1}function et(t,e,r){return(1-r)*t+r*e}function zt(t,e,r){return r<t?t:r>e?e:r}function ot(t,e,r){return r<t?t:r>e?e:r}function at(t){return t=t%360,t<0&&(t=t+360),t}function R(t){return t=t%360,t<0&&(t=t+360),t}function Bt(t,e){return 180-Math.abs(Math.abs(t-e)-180)}function ct(t,e){let r=t[0]*e[0][0]+t[1]*e[0][1]+t[2]*e[0][2],n=t[0]*e[1][0]+t[1]*e[1][1]+t[2]*e[1][2],a=t[0]*e[2][0]+t[1]*e[2][1]+t[2]*e[2][2];return[r,n,a]}var Nt=[[.41233895,.35762064,.18051042],[.2126,.7152,.0722],[.01932141,.11916382,.95034478]],Qt=[[3.2413774792388685,-1.5376652402851851,-.49885366846268053],[-.9691452513005321,1.8758853451067872,.04156585616912061],[.05562093689691305,-.20395524564742123,1.0571799111220335]],Ut=[95.047,100,108.883];function Pt(t,e,r){return(255<<24|(t&255)<<16|(e&255)<<8|r&255)>>>0}function Rt(t){let e=rt(t[0]),r=rt(t[1]),n=rt(t[2]);return Pt(e,r,n)}function lt(t){return t>>16&255}function ut(t){return t>>8&255}function mt(t){return t&255}function Gt(t,e,r){let n=Qt,a=n[0][0]*t+n[0][1]*e+n[0][2]*r,i=n[1][0]*t+n[1][1]*e+n[1][2]*r,s=n[2][0]*t+n[2][1]*e+n[2][2]*r,c=rt(a),h=rt(i),m=rt(s);return Pt(c,h,m)}function te(t){let e=j(lt(t)),r=j(ut(t)),n=j(mt(t));return ct([e,r,n],Nt)}function Ht(t){let e=j(lt(t)),r=j(ut(t)),n=j(mt(t)),a=Nt,i=a[0][0]*e+a[0][1]*r+a[0][2]*n,s=a[1][0]*e+a[1][1]*r+a[1][2]*n,c=a[2][0]*e+a[2][1]*r+a[2][2]*n,h=Ut,m=i/h[0],u=s/h[1],y=c/h[2],P=ht(m),p=ht(u),f=ht(y),l=116*p-16,x=500*(P-p),k=200*(p-f);return[l,x,k]}function qt(t){let e=G(t),r=rt(e);return Pt(r,r,r)}function Ct(t){let e=te(t)[1];return 116*ht(e/100)-16}function G(t){return 100*ee((t+16)/116)}function ft(t){return ht(t/100)*116-16}function j(t){let e=t/255;return e<=.040449936?e/12.92*100:Math.pow((e+.055)/1.055,2.4)*100}function rt(t){let e=t/100,r=0;return e<=.0031308?r=e*12.92:r=1.055*Math.pow(e,1/2.4)-.055,zt(0,255,Math.round(r*255))}function _t(){return Ut}function ht(t){let e=.008856451679035631,r=24389/27;return t>e?Math.pow(t,1/3):(r*t+16)/116}function ee(t){let e=.008856451679035631,r=24389/27,n=t*t*t;return n>e?n:(116*t-16)/r}var N=class t{static make(e=_t(),r=200/Math.PI*G(50)/100,n=50,a=2,i=!1){let s=e,c=s[0]*.401288+s[1]*.650173+s[2]*-.051461,h=s[0]*-.250268+s[1]*1.204414+s[2]*.045854,m=s[0]*-.002079+s[1]*.048952+s[2]*.953127,u=.8+a/10,y=u>=.9?et(.59,.69,(u-.9)*10):et(.525,.59,(u-.8)*10),P=i?1:u*(1-1/3.6*Math.exp((-r-42)/92));P=P>1?1:P<0?0:P;let p=u,f=[P*(100/c)+1-P,P*(100/h)+1-P,P*(100/m)+1-P],l=1/(5*r+1),x=l*l*l*l,k=1-x,M=x*r+.1*k*k*Math.cbrt(5*r),b=G(n)/e[1],H=1.48+Math.sqrt(b),A=.725/Math.pow(b,.2),O=A,I=[Math.pow(M*f[0]*c/100,.42),Math.pow(M*f[1]*h/100,.42),Math.pow(M*f[2]*m/100,.42)],B=[400*I[0]/(I[0]+27.13),400*I[1]/(I[1]+27.13),400*I[2]/(I[2]+27.13)],E=(2*B[0]+B[1]+.05*B[2])*A;return new t(b,E,A,O,y,p,f,M,Math.pow(M,.25),H)}constructor(e,r,n,a,i,s,c,h,m,u){this.n=e,this.aw=r,this.nbb=n,this.ncb=a,this.c=i,this.nc=s,this.rgbD=c,this.fl=h,this.fLRoot=m,this.z=u}};N.DEFAULT=N.make();var W=class t{constructor(e,r,n,a,i,s,c,h,m){this.hue=e,this.chroma=r,this.j=n,this.q=a,this.m=i,this.s=s,this.jstar=c,this.astar=h,this.bstar=m}distance(e){let r=this.jstar-e.jstar,n=this.astar-e.astar,a=this.bstar-e.bstar,i=Math.sqrt(r*r+n*n+a*a);return 1.41*Math.pow(i,.63)}static fromInt(e){return t.fromIntInViewingConditions(e,N.DEFAULT)}static fromIntInViewingConditions(e,r){let n=(e&16711680)>>16,a=(e&65280)>>8,i=e&255,s=j(n),c=j(a),h=j(i),m=.41233895*s+.35762064*c+.18051042*h,u=.2126*s+.7152*c+.0722*h,y=.01932141*s+.11916382*c+.95034478*h,P=.401288*m+.650173*u-.051461*y,p=-.250268*m+1.204414*u+.045854*y,f=-.002079*m+.048952*u+.953127*y,l=r.rgbD[0]*P,x=r.rgbD[1]*p,k=r.rgbD[2]*f,M=Math.pow(r.fl*Math.abs(l)/100,.42),b=Math.pow(r.fl*Math.abs(x)/100,.42),H=Math.pow(r.fl*Math.abs(k)/100,.42),A=L(l)*400*M/(M+27.13),O=L(x)*400*b/(b+27.13),I=L(k)*400*H/(H+27.13),B=(11*A+-12*O+I)/11,E=(A+O-2*I)/9,F=(20*A+20*O+21*I)/20,$=(40*A+20*O+I)/20,Y=Math.atan2(E,B)*180/Math.PI,U=Y<0?Y+360:Y>=360?Y-360:Y,pt=U*Math.PI/180,gt=$*r.nbb,Z=100*Math.pow(gt/r.aw,r.c*r.z),dt=4/r.c*Math.sqrt(Z/100)*(r.aw+4)*r.fLRoot,Tt=U<20.14?U+360:U,wt=.25*(Math.cos(Tt*Math.PI/180+2)+3.8),Ft=5e4/13*wt*r.nc*r.ncb*Math.sqrt(B*B+E*E)/(F+.305),yt=Math.pow(Ft,.9)*Math.pow(1.64-Math.pow(.29,r.n),.73),vt=yt*Math.sqrt(Z/100),Lt=vt*r.fLRoot,Kt=50*Math.sqrt(yt*r.c/(r.aw+4)),Jt=(1+100*.007)*Z/(1+.007*Z),Vt=1/.0228*Math.log(1+.0228*Lt),Xt=Vt*Math.cos(pt),Zt=Vt*Math.sin(pt);return new t(U,vt,Z,dt,Lt,Kt,Jt,Xt,Zt)}static fromJch(e,r,n){return t.fromJchInViewingConditions(e,r,n,N.DEFAULT)}static fromJchInViewingConditions(e,r,n,a){let i=4/a.c*Math.sqrt(e/100)*(a.aw+4)*a.fLRoot,s=r*a.fLRoot,c=r/Math.sqrt(e/100),h=50*Math.sqrt(c*a.c/(a.aw+4)),m=n*Math.PI/180,u=(1+100*.007)*e/(1+.007*e),y=1/.0228*Math.log(1+.0228*s),P=y*Math.cos(m),p=y*Math.sin(m);return new t(n,r,e,i,s,h,u,P,p)}static fromUcs(e,r,n){return t.fromUcsInViewingConditions(e,r,n,N.DEFAULT)}static fromUcsInViewingConditions(e,r,n,a){let i=r,s=n,c=Math.sqrt(i*i+s*s),m=(Math.exp(c*.0228)-1)/.0228/a.fLRoot,u=Math.atan2(s,i)*(180/Math.PI);u<0&&(u+=360);let y=e/(1-(e-100)*.007);return t.fromJchInViewingConditions(y,m,u,a)}toInt(){return this.viewed(N.DEFAULT)}viewed(e){let r=this.chroma===0||this.j===0?0:this.chroma/Math.sqrt(this.j/100),n=Math.pow(r/Math.pow(1.64-Math.pow(.29,e.n),.73),1/.9),a=this.hue*Math.PI/180,i=.25*(Math.cos(a+2)+3.8),s=e.aw*Math.pow(this.j/100,1/e.c/e.z),c=i*(5e4/13)*e.nc*e.ncb,h=s/e.nbb,m=Math.sin(a),u=Math.cos(a),y=23*(h+.305)*n/(23*c+11*n*u+108*n*m),P=y*u,p=y*m,f=(460*h+451*P+288*p)/1403,l=(460*h-891*P-261*p)/1403,x=(460*h-220*P-6300*p)/1403,k=Math.max(0,27.13*Math.abs(f)/(400-Math.abs(f))),M=L(f)*(100/e.fl)*Math.pow(k,1/.42),b=Math.max(0,27.13*Math.abs(l)/(400-Math.abs(l))),H=L(l)*(100/e.fl)*Math.pow(b,1/.42),A=Math.max(0,27.13*Math.abs(x)/(400-Math.abs(x))),O=L(x)*(100/e.fl)*Math.pow(A,1/.42),I=M/e.rgbD[0],B=H/e.rgbD[1],E=O/e.rgbD[2],F=1.86206786*I-1.01125463*B+.14918677*E,$=.38752654*I+.62144744*B-.00897398*E,X=-.0158415*I-.03412294*B+1.04996444*E;return Gt(F,$,X)}static fromXyzInViewingConditions(e,r,n,a){let i=.401288*e+.650173*r-.051461*n,s=-.250268*e+1.204414*r+.045854*n,c=-.002079*e+.048952*r+.953127*n,h=a.rgbD[0]*i,m=a.rgbD[1]*s,u=a.rgbD[2]*c,y=Math.pow(a.fl*Math.abs(h)/100,.42),P=Math.pow(a.fl*Math.abs(m)/100,.42),p=Math.pow(a.fl*Math.abs(u)/100,.42),f=L(h)*400*y/(y+27.13),l=L(m)*400*P/(P+27.13),x=L(u)*400*p/(p+27.13),k=(11*f+-12*l+x)/11,M=(f+l-2*x)/9,b=(20*f+20*l+21*x)/20,H=(40*f+20*l+x)/20,O=Math.atan2(M,k)*180/Math.PI,I=O<0?O+360:O>=360?O-360:O,B=I*Math.PI/180,E=H*a.nbb,F=100*Math.pow(E/a.aw,a.c*a.z),$=4/a.c*Math.sqrt(F/100)*(a.aw+4)*a.fLRoot,X=I<20.14?I+360:I,Y=1/4*(Math.cos(X*Math.PI/180+2)+3.8),pt=5e4/13*Y*a.nc*a.ncb*Math.sqrt(k*k+M*M)/(b+.305),gt=Math.pow(pt,.9)*Math.pow(1.64-Math.pow(.29,a.n),.73),Z=gt*Math.sqrt(F/100),dt=Z*a.fLRoot,Tt=50*Math.sqrt(gt*a.c/(a.aw+4)),wt=(1+100*.007)*F/(1+.007*F),St=Math.log(1+.0228*dt)/.0228,Ft=St*Math.cos(B),yt=St*Math.sin(B);return new t(I,Z,F,$,dt,Tt,wt,Ft,yt)}xyzInViewingConditions(e){let r=this.chroma===0||this.j===0?0:this.chroma/Math.sqrt(this.j/100),n=Math.pow(r/Math.pow(1.64-Math.pow(.29,e.n),.73),1/.9),a=this.hue*Math.PI/180,i=.25*(Math.cos(a+2)+3.8),s=e.aw*Math.pow(this.j/100,1/e.c/e.z),c=i*(5e4/13)*e.nc*e.ncb,h=s/e.nbb,m=Math.sin(a),u=Math.cos(a),y=23*(h+.305)*n/(23*c+11*n*u+108*n*m),P=y*u,p=y*m,f=(460*h+451*P+288*p)/1403,l=(460*h-891*P-261*p)/1403,x=(460*h-220*P-6300*p)/1403,k=Math.max(0,27.13*Math.abs(f)/(400-Math.abs(f))),M=L(f)*(100/e.fl)*Math.pow(k,1/.42),b=Math.max(0,27.13*Math.abs(l)/(400-Math.abs(l))),H=L(l)*(100/e.fl)*Math.pow(b,1/.42),A=Math.max(0,27.13*Math.abs(x)/(400-Math.abs(x))),O=L(x)*(100/e.fl)*Math.pow(A,1/.42),I=M/e.rgbD[0],B=H/e.rgbD[1],E=O/e.rgbD[2],F=1.86206786*I-1.01125463*B+.14918677*E,$=.38752654*I+.62144744*B-.00897398*E,X=-.0158415*I-.03412294*B+1.04996444*E;return[F,$,X]}};var _=class t{static sanitizeRadians(e){return(e+Math.PI*8)%(Math.PI*2)}static trueDelinearized(e){let r=e/100,n=0;return r<=.0031308?n=r*12.92:n=1.055*Math.pow(r,1/2.4)-.055,n*255}static chromaticAdaptation(e){let r=Math.pow(Math.abs(e),.42);return L(e)*400*r/(r+27.13)}static hueOf(e){let r=ct(e,t.SCALED_DISCOUNT_FROM_LINRGB),n=t.chromaticAdaptation(r[0]),a=t.chromaticAdaptation(r[1]),i=t.chromaticAdaptation(r[2]),s=(11*n+-12*a+i)/11,c=(n+a-2*i)/9;return Math.atan2(c,s)}static areInCyclicOrder(e,r,n){let a=t.sanitizeRadians(r-e),i=t.sanitizeRadians(n-e);return a<i}static intercept(e,r,n){return(r-e)/(n-e)}static lerpPoint(e,r,n){return[e[0]+(n[0]-e[0])*r,e[1]+(n[1]-e[1])*r,e[2]+(n[2]-e[2])*r]}static setCoordinate(e,r,n,a){let i=t.intercept(e[a],r,n[a]);return t.lerpPoint(e,i,n)}static isBounded(e){return 0<=e&&e<=100}static nthVertex(e,r){let n=t.Y_FROM_LINRGB[0],a=t.Y_FROM_LINRGB[1],i=t.Y_FROM_LINRGB[2],s=r%4<=1?0:100,c=r%2===0?0:100;if(r<4){let h=s,m=c,u=(e-h*a-m*i)/n;return t.isBounded(u)?[u,h,m]:[-1,-1,-1]}else if(r<8){let h=s,m=c,u=(e-m*n-h*i)/a;return t.isBounded(u)?[m,u,h]:[-1,-1,-1]}else{let h=s,m=c,u=(e-h*n-m*a)/i;return t.isBounded(u)?[h,m,u]:[-1,-1,-1]}}static bisectToSegment(e,r){let n=[-1,-1,-1],a=n,i=0,s=0,c=!1,h=!0;for(let m=0;m<12;m++){let u=t.nthVertex(e,m);if(u[0]<0)continue;let y=t.hueOf(u);if(!c){n=u,a=u,i=y,s=y,c=!0;continue}(h||t.areInCyclicOrder(i,y,s))&&(h=!1,t.areInCyclicOrder(i,r,y)?(a=u,s=y):(n=u,i=y))}return[n,a]}static midpoint(e,r){return[(e[0]+r[0])/2,(e[1]+r[1])/2,(e[2]+r[2])/2]}static criticalPlaneBelow(e){return Math.floor(e-.5)}static criticalPlaneAbove(e){return Math.ceil(e-.5)}static bisectToLimit(e,r){let n=t.bisectToSegment(e,r),a=n[0],i=t.hueOf(a),s=n[1];for(let c=0;c<3;c++)if(a[c]!==s[c]){let h=-1,m=255;a[c]<s[c]?(h=t.criticalPlaneBelow(t.trueDelinearized(a[c])),m=t.criticalPlaneAbove(t.trueDelinearized(s[c]))):(h=t.criticalPlaneAbove(t.trueDelinearized(a[c])),m=t.criticalPlaneBelow(t.trueDelinearized(s[c])));for(let u=0;u<8&&!(Math.abs(m-h)<=1);u++){let y=Math.floor((h+m)/2),P=t.CRITICAL_PLANES[y],p=t.setCoordinate(a,P,s,c),f=t.hueOf(p);t.areInCyclicOrder(i,r,f)?(s=p,m=y):(a=p,i=f,h=y)}}return t.midpoint(a,s)}static inverseChromaticAdaptation(e){let r=Math.abs(e),n=Math.max(0,27.13*r/(400-r));return L(e)*Math.pow(n,1/.42)}static findResultByJ(e,r,n){let a=Math.sqrt(n)*11,i=N.DEFAULT,s=1/Math.pow(1.64-Math.pow(.29,i.n),.73),h=.25*(Math.cos(e+2)+3.8)*(5e4/13)*i.nc*i.ncb,m=Math.sin(e),u=Math.cos(e);for(let y=0;y<5;y++){let P=a/100,p=r===0||a===0?0:r/Math.sqrt(P),f=Math.pow(p*s,1/.9),x=i.aw*Math.pow(P,1/i.c/i.z)/i.nbb,k=23*(x+.305)*f/(23*h+11*f*u+108*f*m),M=k*u,b=k*m,H=(460*x+451*M+288*b)/1403,A=(460*x-891*M-261*b)/1403,O=(460*x-220*M-6300*b)/1403,I=t.inverseChromaticAdaptation(H),B=t.inverseChromaticAdaptation(A),E=t.inverseChromaticAdaptation(O),F=ct([I,B,E],t.LINRGB_FROM_SCALED_DISCOUNT);if(F[0]<0||F[1]<0||F[2]<0)return 0;let $=t.Y_FROM_LINRGB[0],X=t.Y_FROM_LINRGB[1],Y=t.Y_FROM_LINRGB[2],U=$*F[0]+X*F[1]+Y*F[2];if(U<=0)return 0;if(y===4||Math.abs(U-n)<.002)return F[0]>100.01||F[1]>100.01||F[2]>100.01?0:Rt(F);a=a-(U-n)*a/(2*U)}return 0}static solveToInt(e,r,n){if(r<1e-4||n<1e-4||n>99.9999)return qt(n);e=R(e);let a=e/180*Math.PI,i=G(n),s=t.findResultByJ(a,r,i);if(s!==0)return s;let c=t.bisectToLimit(i,a);return Rt(c)}static solveToCam(e,r,n){return W.fromInt(t.solveToInt(e,r,n))}};_.SCALED_DISCOUNT_FROM_LINRGB=[[.001200833568784504,.002389694492170889,.0002795742885861124],[.0005891086651375999,.0029785502573438758,.0003270666104008398],[.00010146692491640572,.0005364214359186694,.0032979401770712076]];_.LINRGB_FROM_SCALED_DISCOUNT=[[1373.2198709594231,-1100.4251190754821,-7.278681089101213],[-271.815969077903,559.6580465940733,-32.46047482791194],[1.9622899599665666,-57.173814538844006,308.7233197812385]];_.Y_FROM_LINRGB=[.2126,.7152,.0722];_.CRITICAL_PLANES=[.015176349177441876,.045529047532325624,.07588174588720938,.10623444424209313,.13658714259697685,.16693984095186062,.19729253930674434,.2276452376616281,.2579979360165119,.28835063437139563,.3188300904430532,.350925934958123,.3848314933096426,.42057480301049466,.458183274052838,.4976837250274023,.5391024159806381,.5824650784040898,.6277969426914107,.6751227633498623,.7244668422128921,.775853049866786,.829304845476233,.8848452951698498,.942497089126609,1.0022825574869039,1.0642236851973577,1.1283421258858297,1.1946592148522128,1.2631959812511864,1.3339731595349034,1.407011200216447,1.4823302800086415,1.5599503113873272,1.6398909516233677,1.7221716113234105,1.8068114625156377,1.8938294463134073,1.9832442801866852,2.075074464868551,2.1693382909216234,2.2660538449872063,2.36523901573795,2.4669114995532007,2.5710888059345764,2.6777882626779785,2.7870270208169257,2.898822059350997,3.0131901897720907,3.1301480604002863,3.2497121605402226,3.3718988244681087,3.4967242352587946,3.624204428461639,3.754355295633311,3.887192587735158,4.022731918402185,4.160988767090289,4.301978482107941,4.445716283538092,4.592217266055746,4.741496401646282,4.893568542229298,5.048448422192488,5.20615066083972,5.3666897647573375,5.5300801301023865,5.696336044816294,5.865471690767354,6.037501145825082,6.212438385869475,6.390297286737924,6.571091626112461,6.7548350853498045,6.941541251256611,7.131223617812143,7.323895587840543,7.5195704746346665,7.7182615035334345,7.919981813454504,8.124744458384042,8.332562408825165,8.543448553206703,8.757415699253682,8.974476575321063,9.194643831691977,9.417930041841839,9.644347703669503,9.873909240696694,10.106627003236781,10.342513269534024,10.58158024687427,10.8238400726681,11.069304815507364,11.317986476196008,11.569896988756009,11.825048221409341,12.083451977536606,12.345119996613247,12.610063955123938,12.878295467455942,13.149826086772048,13.42466730586372,13.702830557985108,13.984327217668513,14.269168601521828,14.55736596900856,14.848930523210871,15.143873411576273,15.44220572664832,15.743938506781891,16.04908273684337,16.35764934889634,16.66964922287304,16.985093187232053,17.30399201960269,17.62635644741625,17.95219714852476,18.281524751807332,18.614349837764564,18.95068293910138,19.290534541298456,19.633915083172692,19.98083495742689,20.331304511189067,20.685334046541502,21.042933821039977,21.404114048223256,21.76888489811322,22.137256497705877,22.50923893145328,22.884842241736916,23.264076429332462,23.6469514538663,24.033477234264016,24.42366364919083,24.817520537484558,25.21505769858089,25.61628489293138,26.021211842414342,26.429848230738664,26.842203703840827,27.258287870275353,27.678110301598522,28.10168053274597,28.529008062403893,28.96010235337422,29.39497283293396,29.83362889318845,30.276079891419332,30.722335150426627,31.172403958865512,31.62629557157785,32.08401920991837,32.54558406207592,33.010999283389665,33.4802739966603,33.953417292456834,34.430438229418264,34.911345834551085,35.39614910352207,35.88485700094671,36.37747846067349,36.87402238606382,37.37449765026789,37.87891309649659,38.38727753828926,38.89959975977785,39.41588851594697,39.93615253289054,40.460400508064545,40.98864111053629,41.520882981230194,42.05713473317016,42.597404951718396,43.141702194811224,43.6900349931913,44.24241185063697,44.798841244188324,45.35933162437017,45.92389141541209,46.49252901546552,47.065252796817916,47.64207110610409,48.22299226451468,48.808024568002054,49.3971762874833,49.9904556690408,50.587870934119984,51.189430279724725,51.79514187861014,52.40501387947288,53.0190544071392,53.637271562750364,54.259673423945976,54.88626804504493,55.517063457223934,56.15206766869424,56.79128866487574,57.43473440856916,58.08241284012621,58.734331877617365,59.39049941699807,60.05092333227251,60.715611475655585,61.38457167773311,62.057811747619894,62.7353394731159,63.417162620860914,64.10328893648692,64.79372614476921,65.48848194977529,66.18756403501224,66.89098006357258,67.59873767827808,68.31084450182222,69.02730813691093,69.74813616640164,70.47333615344107,71.20291564160104,71.93688215501312,72.67524319850172,73.41800625771542,74.16517879925733,74.9167682708136,75.67278210128072,76.43322770089146,77.1981124613393,77.96744375590167,78.74122893956174,79.51947534912904,80.30219030335869,81.08938110306934,81.88105503125999,82.67721935322541,83.4778813166706,84.28304815182372,85.09272707154808,85.90692527145302,86.72564993000343,87.54890820862819,88.3767072518277,89.2090541872801,90.04595612594655,90.88742016217518,91.73345337380438,92.58406282226491,93.43925555268066,94.29903859396902,95.16341895893969,96.03240364439274,96.9059996312159,97.78421388448044,98.6670533535366,99.55452497210776];var D=class t{static from(e,r,n){return new t(_.solveToInt(e,r,n))}static fromInt(e){return new t(e)}toInt(){return this.argb}get hue(){return this.internalHue}set hue(e){this.setInternalState(_.solveToInt(e,this.internalChroma,this.internalTone))}get chroma(){return this.internalChroma}set chroma(e){this.setInternalState(_.solveToInt(this.internalHue,e,this.internalTone))}get tone(){return this.internalTone}set tone(e){this.setInternalState(_.solveToInt(this.internalHue,this.internalChroma,e))}constructor(e){this.argb=e;let r=W.fromInt(e);this.internalHue=r.hue,this.internalChroma=r.chroma,this.internalTone=Ct(e),this.argb=e}setInternalState(e){let r=W.fromInt(e);this.internalHue=r.hue,this.internalChroma=r.chroma,this.internalTone=Ct(e),this.argb=e}inViewingConditions(e){let n=W.fromInt(this.toInt()).xyzInViewingConditions(e),a=W.fromXyzInViewingConditions(n[0],n[1],n[2],N.make());return t.from(a.hue,a.chroma,ft(n[1]))}};var z=class t{static ratioOfTones(e,r){return e=ot(0,100,e),r=ot(0,100,r),t.ratioOfYs(G(e),G(r))}static ratioOfYs(e,r){let n=e>r?e:r,a=n===r?e:r;return(n+5)/(a+5)}static lighter(e,r){if(e<0||e>100)return-1;let n=G(e),a=r*(n+5)-5,i=t.ratioOfYs(a,n),s=Math.abs(i-r);if(i<r&&s>.04)return-1;let c=ft(a)+.4;return c<0||c>100?-1:c}static darker(e,r){if(e<0||e>100)return-1;let n=G(e),a=(n+5)/r-5,i=t.ratioOfYs(n,a),s=Math.abs(i-r);if(i<r&&s>.04)return-1;let c=ft(a)-.4;return c<0||c>100?-1:c}static lighterUnsafe(e,r){let n=t.lighter(e,r);return n<0?100:n}static darkerUnsafe(e,r){let n=t.darker(e,r);return n<0?0:n}};var Q=class t{static isDisliked(e){let r=Math.round(e.hue)>=90&&Math.round(e.hue)<=111,n=Math.round(e.chroma)>16,a=Math.round(e.tone)<65;return r&&n&&a}static fixIfDisliked(e){return t.isDisliked(e)?D.from(e.hue,e.chroma,70):e}};var g=class t{static fromPalette(e){return new t(e.name??"",e.palette,e.tone,e.isBackground??!1,e.background,e.secondBackground,e.contrastCurve,e.toneDeltaPair)}constructor(e,r,n,a,i,s,c,h){if(this.name=e,this.palette=r,this.tone=n,this.isBackground=a,this.background=i,this.secondBackground=s,this.contrastCurve=c,this.toneDeltaPair=h,this.hctCache=new Map,!i&&s)throw new Error(`Color ${e} has secondBackgrounddefined, but background is not defined.`);if(!i&&c)throw new Error(`Color ${e} has contrastCurvedefined, but background is not defined.`);if(i&&!c)throw new Error(`Color ${e} has backgrounddefined, but contrastCurve is not defined.`)}getArgb(e){return this.getHct(e).toInt()}getHct(e){let r=this.hctCache.get(e);if(r!=null)return r;let n=this.getTone(e),a=this.palette(e).getHct(n);return this.hctCache.size>4&&this.hctCache.clear(),this.hctCache.set(e,a),a}getTone(e){let r=e.contrastLevel<0;if(this.toneDeltaPair){let n=this.toneDeltaPair(e),a=n.roleA,i=n.roleB,s=n.delta,c=n.polarity,h=n.stayTogether,u=this.background(e).getTone(e),y=c==="nearer"||c==="lighter"&&!e.isDark||c==="darker"&&e.isDark,P=y?a:i,p=y?i:a,f=this.name===P.name,l=e.isDark?1:-1,x=P.contrastCurve.get(e.contrastLevel),k=p.contrastCurve.get(e.contrastLevel),M=P.tone(e),b=z.ratioOfTones(u,M)>=x?M:t.foregroundTone(u,x),H=p.tone(e),A=z.ratioOfTones(u,H)>=k?H:t.foregroundTone(u,k);return r&&(b=t.foregroundTone(u,x),A=t.foregroundTone(u,k)),(A-b)*l>=s||(A=ot(0,100,b+s*l),(A-b)*l>=s||(b=ot(0,100,A-s*l))),50<=b&&b<60?l>0?(b=60,A=Math.max(A,b+s*l)):(b=49,A=Math.min(A,b+s*l)):50<=A&&A<60&&(h?l>0?(b=60,A=Math.max(A,b+s*l)):(b=49,A=Math.min(A,b+s*l)):l>0?A=60:A=49),f?b:A}else{let n=this.tone(e);if(this.background==null)return n;let a=this.background(e).getTone(e),i=this.contrastCurve.get(e.contrastLevel);if(z.ratioOfTones(a,n)>=i||(n=t.foregroundTone(a,i)),r&&(n=t.foregroundTone(a,i)),this.isBackground&&50<=n&&n<60&&(z.ratioOfTones(49,a)>=i?n=49:n=60),this.secondBackground){let[s,c]=[this.background,this.secondBackground],[h,m]=[s(e).getTone(e),c(e).getTone(e)],[u,y]=[Math.max(h,m),Math.min(h,m)];if(z.ratioOfTones(u,n)>=i&&z.ratioOfTones(y,n)>=i)return n;let P=z.lighter(u,i),p=z.darker(y,i),f=[];return P!==-1&&f.push(P),p!==-1&&f.push(p),t.tonePrefersLightForeground(h)||t.tonePrefersLightForeground(m)?P<0?100:P:f.length===1?f[0]:p<0?0:p}return n}}static foregroundTone(e,r){let n=z.lighterUnsafe(e,r),a=z.darkerUnsafe(e,r),i=z.ratioOfTones(n,e),s=z.ratioOfTones(a,e);if(t.tonePrefersLightForeground(e)){let h=Math.abs(i-s)<.1&&i<r&&s<r;return i>=r||i>=s||h?n:a}else return s>=r||s>=i?a:n}static tonePrefersLightForeground(e){return Math.round(e)<60}static toneAllowsLightForeground(e){return Math.round(e)<=49}static enableLightForeground(e){return t.tonePrefersLightForeground(e)&&!t.toneAllowsLightForeground(e)?49:e}};var d=class t{static fromInt(e){let r=D.fromInt(e);return t.fromHct(r)}static fromHct(e){return new t(e.hue,e.chroma,e)}static fromHueAndChroma(e,r){let n=new Ot(e,r).create();return new t(e,r,n)}constructor(e,r,n){this.hue=e,this.chroma=r,this.keyColor=n,this.cache=new Map}tone(e){let r=this.cache.get(e);return r===void 0&&(r=D.from(this.hue,this.chroma,e).toInt(),this.cache.set(e,r)),r}getHct(e){return D.fromInt(this.tone(e))}},Ot=class{constructor(e,r){this.hue=e,this.requestedChroma=r,this.chromaCache=new Map,this.maxChromaValue=200}create(){let a=0,i=100;for(;a<i;){let s=Math.floor((a+i)/2),c=this.maxChroma(s)<this.maxChroma(s+1);if(this.maxChroma(s)>=this.requestedChroma-.01)if(Math.abs(a-50)<Math.abs(i-50))i=s;else{if(a===s)return D.from(this.hue,this.requestedChroma,a);a=s}else c?a=s+1:i=s}return D.from(this.hue,this.requestedChroma,a)}maxChroma(e){if(this.chromaCache.has(e))return this.chromaCache.get(e);let r=D.from(this.hue,this.maxChromaValue,e).chroma;return this.chromaCache.set(e,r),r}};var C=class{constructor(e,r,n,a){this.low=e,this.normal=r,this.medium=n,this.high=a}get(e){return e<=-1?this.low:e<0?et(this.low,this.normal,(e- -1)/1):e<.5?et(this.normal,this.medium,(e-0)/.5):e<1?et(this.medium,this.high,(e-.5)/.5):this.high}};var v=class{constructor(e,r,n,a,i){this.roleA=e,this.roleB=r,this.delta=n,this.polarity=a,this.stayTogether=i}};var T;(function(t){t[t.MONOCHROME=0]="MONOCHROME",t[t.NEUTRAL=1]="NEUTRAL",t[t.TONAL_SPOT=2]="TONAL_SPOT",t[t.VIBRANT=3]="VIBRANT",t[t.EXPRESSIVE=4]="EXPRESSIVE",t[t.FIDELITY=5]="FIDELITY",t[t.CONTENT=6]="CONTENT",t[t.RAINBOW=7]="RAINBOW",t[t.FRUIT_SALAD=8]="FRUIT_SALAD"})(T||(T={}));function st(t){return t.variant===T.FIDELITY||t.variant===T.CONTENT}function S(t){return t.variant===T.MONOCHROME}function re(t,e,r,n){let a=r,i=D.from(t,e,r);if(i.chroma<e){let s=i.chroma;for(;i.chroma<e;){a+=n?-1:1;let c=D.from(t,e,a);if(s>c.chroma||Math.abs(c.chroma-e)<.4)break;let h=Math.abs(c.chroma-e),m=Math.abs(i.chroma-e);h<m&&(i=c),s=Math.max(s,c.chroma)}}return a}var o=class t{static highestSurface(e){return e.isDark?t.surfaceBright:t.surfaceDim}};o.contentAccentToneDelta=15;o.primaryPaletteKeyColor=g.fromPalette({name:"primary_palette_key_color",palette:t=>t.primaryPalette,tone:t=>t.primaryPalette.keyColor.tone});o.secondaryPaletteKeyColor=g.fromPalette({name:"secondary_palette_key_color",palette:t=>t.secondaryPalette,tone:t=>t.secondaryPalette.keyColor.tone});o.tertiaryPaletteKeyColor=g.fromPalette({name:"tertiary_palette_key_color",palette:t=>t.tertiaryPalette,tone:t=>t.tertiaryPalette.keyColor.tone});o.neutralPaletteKeyColor=g.fromPalette({name:"neutral_palette_key_color",palette:t=>t.neutralPalette,tone:t=>t.neutralPalette.keyColor.tone});o.neutralVariantPaletteKeyColor=g.fromPalette({name:"neutral_variant_palette_key_color",palette:t=>t.neutralVariantPalette,tone:t=>t.neutralVariantPalette.keyColor.tone});o.background=g.fromPalette({name:"background",palette:t=>t.neutralPalette,tone:t=>t.isDark?6:98,isBackground:!0});o.onBackground=g.fromPalette({name:"on_background",palette:t=>t.neutralPalette,tone:t=>t.isDark?90:10,background:t=>o.background,contrastCurve:new C(3,3,4.5,7)});o.surface=g.fromPalette({name:"surface",palette:t=>t.neutralPalette,tone:t=>t.isDark?6:98,isBackground:!0});o.surfaceDim=g.fromPalette({name:"surface_dim",palette:t=>t.neutralPalette,tone:t=>t.isDark?6:new C(87,87,80,75).get(t.contrastLevel),isBackground:!0});o.surfaceBright=g.fromPalette({name:"surface_bright",palette:t=>t.neutralPalette,tone:t=>t.isDark?new C(24,24,29,34).get(t.contrastLevel):98,isBackground:!0});o.surfaceContainerLowest=g.fromPalette({name:"surface_container_lowest",palette:t=>t.neutralPalette,tone:t=>t.isDark?new C(4,4,2,0).get(t.contrastLevel):100,isBackground:!0});o.surfaceContainerLow=g.fromPalette({name:"surface_container_low",palette:t=>t.neutralPalette,tone:t=>t.isDark?new C(10,10,11,12).get(t.contrastLevel):new C(96,96,96,95).get(t.contrastLevel),isBackground:!0});o.surfaceContainer=g.fromPalette({name:"surface_container",palette:t=>t.neutralPalette,tone:t=>t.isDark?new C(12,12,16,20).get(t.contrastLevel):new C(94,94,92,90).get(t.contrastLevel),isBackground:!0});o.surfaceContainerHigh=g.fromPalette({name:"surface_container_high",palette:t=>t.neutralPalette,tone:t=>t.isDark?new C(17,17,21,25).get(t.contrastLevel):new C(92,92,88,85).get(t.contrastLevel),isBackground:!0});o.surfaceContainerHighest=g.fromPalette({name:"surface_container_highest",palette:t=>t.neutralPalette,tone:t=>t.isDark?new C(22,22,26,30).get(t.contrastLevel):new C(90,90,84,80).get(t.contrastLevel),isBackground:!0});o.onSurface=g.fromPalette({name:"on_surface",palette:t=>t.neutralPalette,tone:t=>t.isDark?90:10,background:t=>o.highestSurface(t),contrastCurve:new C(4.5,7,11,21)});o.surfaceVariant=g.fromPalette({name:"surface_variant",palette:t=>t.neutralVariantPalette,tone:t=>t.isDark?30:90,isBackground:!0});o.onSurfaceVariant=g.fromPalette({name:"on_surface_variant",palette:t=>t.neutralVariantPalette,tone:t=>t.isDark?80:30,background:t=>o.highestSurface(t),contrastCurve:new C(3,4.5,7,11)});o.inverseSurface=g.fromPalette({name:"inverse_surface",palette:t=>t.neutralPalette,tone:t=>t.isDark?90:20});o.inverseOnSurface=g.fromPalette({name:"inverse_on_surface",palette:t=>t.neutralPalette,tone:t=>t.isDark?20:95,background:t=>o.inverseSurface,contrastCurve:new C(4.5,7,11,21)});o.outline=g.fromPalette({name:"outline",palette:t=>t.neutralVariantPalette,tone:t=>t.isDark?60:50,background:t=>o.highestSurface(t),contrastCurve:new C(1.5,3,4.5,7)});o.outlineVariant=g.fromPalette({name:"outline_variant",palette:t=>t.neutralVariantPalette,tone:t=>t.isDark?30:80,background:t=>o.highestSurface(t),contrastCurve:new C(1,1,3,4.5)});o.shadow=g.fromPalette({name:"shadow",palette:t=>t.neutralPalette,tone:t=>0});o.scrim=g.fromPalette({name:"scrim",palette:t=>t.neutralPalette,tone:t=>0});o.surfaceTint=g.fromPalette({name:"surface_tint",palette:t=>t.primaryPalette,tone:t=>t.isDark?80:40,isBackground:!0});o.primary=g.fromPalette({name:"primary",palette:t=>t.primaryPalette,tone:t=>S(t)?t.isDark?100:0:t.isDark?80:40,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(3,4.5,7,7),toneDeltaPair:t=>new v(o.primaryContainer,o.primary,10,"nearer",!1)});o.onPrimary=g.fromPalette({name:"on_primary",palette:t=>t.primaryPalette,tone:t=>S(t)?t.isDark?10:90:t.isDark?20:100,background:t=>o.primary,contrastCurve:new C(4.5,7,11,21)});o.primaryContainer=g.fromPalette({name:"primary_container",palette:t=>t.primaryPalette,tone:t=>st(t)?t.sourceColorHct.tone:S(t)?t.isDark?85:25:t.isDark?30:90,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(1,1,3,4.5),toneDeltaPair:t=>new v(o.primaryContainer,o.primary,10,"nearer",!1)});o.onPrimaryContainer=g.fromPalette({name:"on_primary_container",palette:t=>t.primaryPalette,tone:t=>st(t)?g.foregroundTone(o.primaryContainer.tone(t),4.5):S(t)?t.isDark?0:100:t.isDark?90:30,background:t=>o.primaryContainer,contrastCurve:new C(3,4.5,7,11)});o.inversePrimary=g.fromPalette({name:"inverse_primary",palette:t=>t.primaryPalette,tone:t=>t.isDark?40:80,background:t=>o.inverseSurface,contrastCurve:new C(3,4.5,7,7)});o.secondary=g.fromPalette({name:"secondary",palette:t=>t.secondaryPalette,tone:t=>t.isDark?80:40,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(3,4.5,7,7),toneDeltaPair:t=>new v(o.secondaryContainer,o.secondary,10,"nearer",!1)});o.onSecondary=g.fromPalette({name:"on_secondary",palette:t=>t.secondaryPalette,tone:t=>S(t)?t.isDark?10:100:t.isDark?20:100,background:t=>o.secondary,contrastCurve:new C(4.5,7,11,21)});o.secondaryContainer=g.fromPalette({name:"secondary_container",palette:t=>t.secondaryPalette,tone:t=>{let e=t.isDark?30:90;return S(t)?t.isDark?30:85:st(t)?re(t.secondaryPalette.hue,t.secondaryPalette.chroma,e,!t.isDark):e},isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(1,1,3,4.5),toneDeltaPair:t=>new v(o.secondaryContainer,o.secondary,10,"nearer",!1)});o.onSecondaryContainer=g.fromPalette({name:"on_secondary_container",palette:t=>t.secondaryPalette,tone:t=>S(t)?t.isDark?90:10:st(t)?g.foregroundTone(o.secondaryContainer.tone(t),4.5):t.isDark?90:30,background:t=>o.secondaryContainer,contrastCurve:new C(3,4.5,7,11)});o.tertiary=g.fromPalette({name:"tertiary",palette:t=>t.tertiaryPalette,tone:t=>S(t)?t.isDark?90:25:t.isDark?80:40,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(3,4.5,7,7),toneDeltaPair:t=>new v(o.tertiaryContainer,o.tertiary,10,"nearer",!1)});o.onTertiary=g.fromPalette({name:"on_tertiary",palette:t=>t.tertiaryPalette,tone:t=>S(t)?t.isDark?10:90:t.isDark?20:100,background:t=>o.tertiary,contrastCurve:new C(4.5,7,11,21)});o.tertiaryContainer=g.fromPalette({name:"tertiary_container",palette:t=>t.tertiaryPalette,tone:t=>{if(S(t))return t.isDark?60:49;if(!st(t))return t.isDark?30:90;let e=t.tertiaryPalette.getHct(t.sourceColorHct.tone);return Q.fixIfDisliked(e).tone},isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(1,1,3,4.5),toneDeltaPair:t=>new v(o.tertiaryContainer,o.tertiary,10,"nearer",!1)});o.onTertiaryContainer=g.fromPalette({name:"on_tertiary_container",palette:t=>t.tertiaryPalette,tone:t=>S(t)?t.isDark?0:100:st(t)?g.foregroundTone(o.tertiaryContainer.tone(t),4.5):t.isDark?90:30,background:t=>o.tertiaryContainer,contrastCurve:new C(3,4.5,7,11)});o.error=g.fromPalette({name:"error",palette:t=>t.errorPalette,tone:t=>t.isDark?80:40,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(3,4.5,7,7),toneDeltaPair:t=>new v(o.errorContainer,o.error,10,"nearer",!1)});o.onError=g.fromPalette({name:"on_error",palette:t=>t.errorPalette,tone:t=>t.isDark?20:100,background:t=>o.error,contrastCurve:new C(4.5,7,11,21)});o.errorContainer=g.fromPalette({name:"error_container",palette:t=>t.errorPalette,tone:t=>t.isDark?30:90,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(1,1,3,4.5),toneDeltaPair:t=>new v(o.errorContainer,o.error,10,"nearer",!1)});o.onErrorContainer=g.fromPalette({name:"on_error_container",palette:t=>t.errorPalette,tone:t=>S(t)?t.isDark?90:10:t.isDark?90:30,background:t=>o.errorContainer,contrastCurve:new C(3,4.5,7,11)});o.primaryFixed=g.fromPalette({name:"primary_fixed",palette:t=>t.primaryPalette,tone:t=>S(t)?40:90,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(1,1,3,4.5),toneDeltaPair:t=>new v(o.primaryFixed,o.primaryFixedDim,10,"lighter",!0)});o.primaryFixedDim=g.fromPalette({name:"primary_fixed_dim",palette:t=>t.primaryPalette,tone:t=>S(t)?30:80,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(1,1,3,4.5),toneDeltaPair:t=>new v(o.primaryFixed,o.primaryFixedDim,10,"lighter",!0)});o.onPrimaryFixed=g.fromPalette({name:"on_primary_fixed",palette:t=>t.primaryPalette,tone:t=>S(t)?100:10,background:t=>o.primaryFixedDim,secondBackground:t=>o.primaryFixed,contrastCurve:new C(4.5,7,11,21)});o.onPrimaryFixedVariant=g.fromPalette({name:"on_primary_fixed_variant",palette:t=>t.primaryPalette,tone:t=>S(t)?90:30,background:t=>o.primaryFixedDim,secondBackground:t=>o.primaryFixed,contrastCurve:new C(3,4.5,7,11)});o.secondaryFixed=g.fromPalette({name:"secondary_fixed",palette:t=>t.secondaryPalette,tone:t=>S(t)?80:90,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(1,1,3,4.5),toneDeltaPair:t=>new v(o.secondaryFixed,o.secondaryFixedDim,10,"lighter",!0)});o.secondaryFixedDim=g.fromPalette({name:"secondary_fixed_dim",palette:t=>t.secondaryPalette,tone:t=>S(t)?70:80,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(1,1,3,4.5),toneDeltaPair:t=>new v(o.secondaryFixed,o.secondaryFixedDim,10,"lighter",!0)});o.onSecondaryFixed=g.fromPalette({name:"on_secondary_fixed",palette:t=>t.secondaryPalette,tone:t=>10,background:t=>o.secondaryFixedDim,secondBackground:t=>o.secondaryFixed,contrastCurve:new C(4.5,7,11,21)});o.onSecondaryFixedVariant=g.fromPalette({name:"on_secondary_fixed_variant",palette:t=>t.secondaryPalette,tone:t=>S(t)?25:30,background:t=>o.secondaryFixedDim,secondBackground:t=>o.secondaryFixed,contrastCurve:new C(3,4.5,7,11)});o.tertiaryFixed=g.fromPalette({name:"tertiary_fixed",palette:t=>t.tertiaryPalette,tone:t=>S(t)?40:90,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(1,1,3,4.5),toneDeltaPair:t=>new v(o.tertiaryFixed,o.tertiaryFixedDim,10,"lighter",!0)});o.tertiaryFixedDim=g.fromPalette({name:"tertiary_fixed_dim",palette:t=>t.tertiaryPalette,tone:t=>S(t)?30:80,isBackground:!0,background:t=>o.highestSurface(t),contrastCurve:new C(1,1,3,4.5),toneDeltaPair:t=>new v(o.tertiaryFixed,o.tertiaryFixedDim,10,"lighter",!0)});o.onTertiaryFixed=g.fromPalette({name:"on_tertiary_fixed",palette:t=>t.tertiaryPalette,tone:t=>S(t)?100:10,background:t=>o.tertiaryFixedDim,secondBackground:t=>o.tertiaryFixed,contrastCurve:new C(4.5,7,11,21)});o.onTertiaryFixedVariant=g.fromPalette({name:"on_tertiary_fixed_variant",palette:t=>t.tertiaryPalette,tone:t=>S(t)?90:30,background:t=>o.tertiaryFixedDim,secondBackground:t=>o.tertiaryFixed,contrastCurve:new C(3,4.5,7,11)});var w=class{constructor(e){this.sourceColorArgb=e.sourceColorArgb,this.variant=e.variant,this.contrastLevel=e.contrastLevel,this.isDark=e.isDark,this.sourceColorHct=D.fromInt(e.sourceColorArgb),this.primaryPalette=e.primaryPalette,this.secondaryPalette=e.secondaryPalette,this.tertiaryPalette=e.tertiaryPalette,this.neutralPalette=e.neutralPalette,this.neutralVariantPalette=e.neutralVariantPalette,this.errorPalette=d.fromHueAndChroma(25,84)}static getRotatedHue(e,r,n){let a=e.hue;if(r.length!==n.length)throw new Error(`mismatch between hue length ${r.length} & rotations ${n.length}`);if(n.length===1)return R(e.hue+n[0]);let i=r.length;for(let s=0;s<=i-2;s++){let c=r[s],h=r[s+1];if(c<a&&a<h)return R(a+n[s])}return a}getArgb(e){return e.getArgb(this)}getHct(e){return e.getHct(this)}get primaryPaletteKeyColor(){return this.getArgb(o.primaryPaletteKeyColor)}get secondaryPaletteKeyColor(){return this.getArgb(o.secondaryPaletteKeyColor)}get tertiaryPaletteKeyColor(){return this.getArgb(o.tertiaryPaletteKeyColor)}get neutralPaletteKeyColor(){return this.getArgb(o.neutralPaletteKeyColor)}get neutralVariantPaletteKeyColor(){return this.getArgb(o.neutralVariantPaletteKeyColor)}get background(){return this.getArgb(o.background)}get onBackground(){return this.getArgb(o.onBackground)}get surface(){return this.getArgb(o.surface)}get surfaceDim(){return this.getArgb(o.surfaceDim)}get surfaceBright(){return this.getArgb(o.surfaceBright)}get surfaceContainerLowest(){return this.getArgb(o.surfaceContainerLowest)}get surfaceContainerLow(){return this.getArgb(o.surfaceContainerLow)}get surfaceContainer(){return this.getArgb(o.surfaceContainer)}get surfaceContainerHigh(){return this.getArgb(o.surfaceContainerHigh)}get surfaceContainerHighest(){return this.getArgb(o.surfaceContainerHighest)}get onSurface(){return this.getArgb(o.onSurface)}get surfaceVariant(){return this.getArgb(o.surfaceVariant)}get onSurfaceVariant(){return this.getArgb(o.onSurfaceVariant)}get inverseSurface(){return this.getArgb(o.inverseSurface)}get inverseOnSurface(){return this.getArgb(o.inverseOnSurface)}get outline(){return this.getArgb(o.outline)}get outlineVariant(){return this.getArgb(o.outlineVariant)}get shadow(){return this.getArgb(o.shadow)}get scrim(){return this.getArgb(o.scrim)}get surfaceTint(){return this.getArgb(o.surfaceTint)}get primary(){return this.getArgb(o.primary)}get onPrimary(){return this.getArgb(o.onPrimary)}get primaryContainer(){return this.getArgb(o.primaryContainer)}get onPrimaryContainer(){return this.getArgb(o.onPrimaryContainer)}get inversePrimary(){return this.getArgb(o.inversePrimary)}get secondary(){return this.getArgb(o.secondary)}get onSecondary(){return this.getArgb(o.onSecondary)}get secondaryContainer(){return this.getArgb(o.secondaryContainer)}get onSecondaryContainer(){return this.getArgb(o.onSecondaryContainer)}get tertiary(){return this.getArgb(o.tertiary)}get onTertiary(){return this.getArgb(o.onTertiary)}get tertiaryContainer(){return this.getArgb(o.tertiaryContainer)}get onTertiaryContainer(){return this.getArgb(o.onTertiaryContainer)}get error(){return this.getArgb(o.error)}get onError(){return this.getArgb(o.onError)}get errorContainer(){return this.getArgb(o.errorContainer)}get onErrorContainer(){return this.getArgb(o.onErrorContainer)}get primaryFixed(){return this.getArgb(o.primaryFixed)}get primaryFixedDim(){return this.getArgb(o.primaryFixedDim)}get onPrimaryFixed(){return this.getArgb(o.onPrimaryFixed)}get onPrimaryFixedVariant(){return this.getArgb(o.onPrimaryFixedVariant)}get secondaryFixed(){return this.getArgb(o.secondaryFixed)}get secondaryFixedDim(){return this.getArgb(o.secondaryFixedDim)}get onSecondaryFixed(){return this.getArgb(o.onSecondaryFixed)}get onSecondaryFixedVariant(){return this.getArgb(o.onSecondaryFixedVariant)}get tertiaryFixed(){return this.getArgb(o.tertiaryFixed)}get tertiaryFixedDim(){return this.getArgb(o.tertiaryFixedDim)}get onTertiaryFixed(){return this.getArgb(o.onTertiaryFixed)}get onTertiaryFixedVariant(){return this.getArgb(o.onTertiaryFixedVariant)}};var it=class t{constructor(e){this.input=e,this.hctsByTempCache=[],this.hctsByHueCache=[],this.tempsByHctCache=new Map,this.inputRelativeTemperatureCache=-1,this.complementCache=null}get hctsByTemp(){if(this.hctsByTempCache.length>0)return this.hctsByTempCache;let e=this.hctsByHue.concat([this.input]),r=this.tempsByHct;return e.sort((n,a)=>r.get(n)-r.get(a)),this.hctsByTempCache=e,e}get warmest(){return this.hctsByTemp[this.hctsByTemp.length-1]}get coldest(){return this.hctsByTemp[0]}analogous(e=5,r=12){let n=Math.round(this.input.hue),a=this.hctsByHue[n],i=this.relativeTemperature(a),s=[a],c=0;for(let f=0;f<360;f++){let l=at(n+f),x=this.hctsByHue[l],k=this.relativeTemperature(x),M=Math.abs(k-i);i=k,c+=M}let h=1,m=c/r,u=0;for(i=this.relativeTemperature(a);s.length<r;){let f=at(n+h),l=this.hctsByHue[f],x=this.relativeTemperature(l),k=Math.abs(x-i);u+=k;let M=s.length*m,b=u>=M,H=1;for(;b&&s.length<r;){s.push(l);let A=(s.length+H)*m;b=u>=A,H++}if(i=x,h++,h>360){for(;s.length<r;)s.push(l);break}}let y=[this.input],P=Math.floor((e-1)/2);for(let f=1;f<P+1;f++){let l=0-f;for(;l<0;)l=s.length+l;l>=s.length&&(l=l%s.length),y.splice(0,0,s[l])}let p=e-P-1;for(let f=1;f<p+1;f++){let l=f;for(;l<0;)l=s.length+l;l>=s.length&&(l=l%s.length),y.push(s[l])}return y}get complement(){if(this.complementCache!=null)return this.complementCache;let e=this.coldest.hue,r=this.tempsByHct.get(this.coldest),n=this.warmest.hue,i=this.tempsByHct.get(this.warmest)-r,s=t.isBetween(this.input.hue,e,n),c=s?n:e,h=s?e:n,m=1,u=1e3,y=this.hctsByHue[Math.round(this.input.hue)],P=1-this.inputRelativeTemperature;for(let p=0;p<=360;p+=1){let f=R(c+m*p);if(!t.isBetween(f,c,h))continue;let l=this.hctsByHue[Math.round(f)],x=(this.tempsByHct.get(l)-r)/i,k=Math.abs(P-x);k<u&&(u=k,y=l)}return this.complementCache=y,this.complementCache}relativeTemperature(e){let r=this.tempsByHct.get(this.warmest)-this.tempsByHct.get(this.coldest),n=this.tempsByHct.get(e)-this.tempsByHct.get(this.coldest);return r===0?.5:n/r}get inputRelativeTemperature(){return this.inputRelativeTemperatureCache>=0?this.inputRelativeTemperatureCache:(this.inputRelativeTemperatureCache=this.relativeTemperature(this.input),this.inputRelativeTemperatureCache)}get tempsByHct(){if(this.tempsByHctCache.size>0)return this.tempsByHctCache;let e=this.hctsByHue.concat([this.input]),r=new Map;for(let n of e)r.set(n,t.rawTemperature(n));return this.tempsByHctCache=r,r}get hctsByHue(){if(this.hctsByHueCache.length>0)return this.hctsByHueCache;let e=[];for(let r=0;r<=360;r+=1){let n=D.from(r,this.input.chroma,this.input.tone);e.push(n)}return this.hctsByHueCache=e,this.hctsByHueCache}static isBetween(e,r,n){return r<n?r<=e&&e<=n:r<=e||e<=n}static rawTemperature(e){let r=Ht(e.toInt()),n=R(Math.atan2(r[2],r[1])*180/Math.PI),a=Math.sqrt(r[1]*r[1]+r[2]*r[2]);return-.5+.02*Math.pow(a,1.07)*Math.cos(R(n-50)*Math.PI/180)}};var xt=class extends w{constructor(e,r,n){super({sourceColorArgb:e.toInt(),variant:T.CONTENT,contrastLevel:n,isDark:r,primaryPalette:d.fromHueAndChroma(e.hue,e.chroma),secondaryPalette:d.fromHueAndChroma(e.hue,Math.max(e.chroma-32,e.chroma*.5)),tertiaryPalette:d.fromInt(Q.fixIfDisliked(new it(e).analogous(3,6)[2]).toInt()),neutralPalette:d.fromHueAndChroma(e.hue,e.chroma/8),neutralVariantPalette:d.fromHueAndChroma(e.hue,e.chroma/8+4)})}};var nt=class t extends w{constructor(e,r,n){super({sourceColorArgb:e.toInt(),variant:T.EXPRESSIVE,contrastLevel:n,isDark:r,primaryPalette:d.fromHueAndChroma(R(e.hue+240),40),secondaryPalette:d.fromHueAndChroma(w.getRotatedHue(e,t.hues,t.secondaryRotations),24),tertiaryPalette:d.fromHueAndChroma(w.getRotatedHue(e,t.hues,t.tertiaryRotations),32),neutralPalette:d.fromHueAndChroma(e.hue+15,8),neutralVariantPalette:d.fromHueAndChroma(e.hue+15,12)})}};nt.hues=[0,21,51,121,151,191,271,321,360];nt.secondaryRotations=[45,95,45,20,45,90,45,45,45];nt.tertiaryRotations=[120,120,20,45,20,15,20,120,120];var bt=class extends w{constructor(e,r,n){super({sourceColorArgb:e.toInt(),variant:T.FIDELITY,contrastLevel:n,isDark:r,primaryPalette:d.fromHueAndChroma(e.hue,e.chroma),secondaryPalette:d.fromHueAndChroma(e.hue,Math.max(e.chroma-32,e.chroma*.5)),tertiaryPalette:d.fromInt(Q.fixIfDisliked(new it(e).complement).toInt()),neutralPalette:d.fromHueAndChroma(e.hue,e.chroma/8),neutralVariantPalette:d.fromHueAndChroma(e.hue,e.chroma/8+4)})}};var At=class extends w{constructor(e,r,n){super({sourceColorArgb:e.toInt(),variant:T.FRUIT_SALAD,contrastLevel:n,isDark:r,primaryPalette:d.fromHueAndChroma(R(e.hue-50),48),secondaryPalette:d.fromHueAndChroma(R(e.hue-50),36),tertiaryPalette:d.fromHueAndChroma(e.hue,36),neutralPalette:d.fromHueAndChroma(e.hue,10),neutralVariantPalette:d.fromHueAndChroma(e.hue,16)})}};var kt=class extends w{constructor(e,r,n){super({sourceColorArgb:e.toInt(),variant:T.MONOCHROME,contrastLevel:n,isDark:r,primaryPalette:d.fromHueAndChroma(e.hue,0),secondaryPalette:d.fromHueAndChroma(e.hue,0),tertiaryPalette:d.fromHueAndChroma(e.hue,0),neutralPalette:d.fromHueAndChroma(e.hue,0),neutralVariantPalette:d.fromHueAndChroma(e.hue,0)})}};var Mt=class extends w{constructor(e,r,n){super({sourceColorArgb:e.toInt(),variant:T.NEUTRAL,contrastLevel:n,isDark:r,primaryPalette:d.fromHueAndChroma(e.hue,12),secondaryPalette:d.fromHueAndChroma(e.hue,8),tertiaryPalette:d.fromHueAndChroma(e.hue,16),neutralPalette:d.fromHueAndChroma(e.hue,2),neutralVariantPalette:d.fromHueAndChroma(e.hue,2)})}};var It=class extends w{constructor(e,r,n){super({sourceColorArgb:e.toInt(),variant:T.RAINBOW,contrastLevel:n,isDark:r,primaryPalette:d.fromHueAndChroma(e.hue,48),secondaryPalette:d.fromHueAndChroma(e.hue,16),tertiaryPalette:d.fromHueAndChroma(R(e.hue+60),24),neutralPalette:d.fromHueAndChroma(e.hue,0),neutralVariantPalette:d.fromHueAndChroma(e.hue,0)})}};var Dt=class extends w{constructor(e,r,n){super({sourceColorArgb:e.toInt(),variant:T.TONAL_SPOT,contrastLevel:n,isDark:r,primaryPalette:d.fromHueAndChroma(e.hue,36),secondaryPalette:d.fromHueAndChroma(e.hue,16),tertiaryPalette:d.fromHueAndChroma(R(e.hue+60),24),neutralPalette:d.fromHueAndChroma(e.hue,6),neutralVariantPalette:d.fromHueAndChroma(e.hue,8)})}};var tt=class t extends w{constructor(e,r,n){super({sourceColorArgb:e.toInt(),variant:T.VIBRANT,contrastLevel:n,isDark:r,primaryPalette:d.fromHueAndChroma(e.hue,200),secondaryPalette:d.fromHueAndChroma(w.getRotatedHue(e,t.hues,t.secondaryRotations),24),tertiaryPalette:d.fromHueAndChroma(w.getRotatedHue(e,t.hues,t.tertiaryRotations),32),neutralPalette:d.fromHueAndChroma(e.hue,10),neutralVariantPalette:d.fromHueAndChroma(e.hue,12)})}};tt.hues=[0,41,61,101,131,181,251,301,360];tt.secondaryRotations=[18,15,10,12,15,18,15,12,12];tt.tertiaryRotations=[35,30,20,25,30,35,30,25,25];var ne={desired:4,fallbackColorARGB:4282549748,filter:!0};function oe(t,e){return t.score>e.score?-1:t.score<e.score?1:0}var K=class t{constructor(){}static score(e,r){let{desired:n,fallbackColorARGB:a,filter:i}={...ne,...r},s=[],c=new Array(360).fill(0),h=0;for(let[p,f]of e.entries()){let l=D.fromInt(p);s.push(l);let x=Math.floor(l.hue);c[x]+=f,h+=f}let m=new Array(360).fill(0);for(let p=0;p<360;p++){let f=c[p]/h;for(let l=p-14;l<p+16;l++){let x=at(l);m[x]+=f}}let u=new Array;for(let p of s){let f=at(Math.round(p.hue)),l=m[f];if(i&&(p.chroma<t.CUTOFF_CHROMA||l<=t.CUTOFF_EXCITED_PROPORTION))continue;let x=l*100*t.WEIGHT_PROPORTION,k=p.chroma<t.TARGET_CHROMA?t.WEIGHT_CHROMA_BELOW:t.WEIGHT_CHROMA_ABOVE,M=(p.chroma-t.TARGET_CHROMA)*k,b=x+M;u.push({hct:p,score:b})}u.sort(oe);let y=[];for(let p=90;p>=15;p--){y.length=0;for(let{hct:f}of u)if(y.find(x=>Bt(f.hue,x.hue)<p)||y.push(f),y.length>=n)break;if(y.length>=n)break}let P=[];y.length===0&&P.push(a);for(let p of y)P.push(p.toInt());return P}};K.TARGET_CHROMA=48;K.WEIGHT_PROPORTION=.7;K.WEIGHT_CHROMA_ABOVE=.3;K.WEIGHT_CHROMA_BELOW=.1;K.CUTOFF_CHROMA=5;K.CUTOFF_EXCITED_PROPORTION=.01;function Et(t){let e=lt(t),r=ut(t),n=mt(t),a=[e.toString(16),r.toString(16),n.toString(16)];for(let[i,s]of a.entries())s.length===1&&(a[i]="0"+s);return"#"+a.join("")}function jt(t){t=t.replace("#","");let e=t.length===3,r=t.length===6,n=t.length===8;if(!e&&!r&&!n)throw new Error("unexpected hex "+t);let a=0,i=0,s=0;return e?(a=J(t.slice(0,1).repeat(2)),i=J(t.slice(1,2).repeat(2)),s=J(t.slice(2,3).repeat(2))):r?(a=J(t.slice(0,2)),i=J(t.slice(2,4)),s=J(t.slice(4,6))):n&&(a=J(t.slice(2,4)),i=J(t.slice(4,6)),s=J(t.slice(6,8))),(255<<24|(a&255)<<16|(i&255)<<8|s&255)>>>0}function J(t){return parseInt(t,16)}var $t=["primary","onPrimary","primaryContainer","onPrimaryContainer","secondary","onSecondary","secondaryContainer","onSecondaryContainer","tertiary","onTertiary","tertiaryContainer","onTertiaryContainer","error","onError","errorContainer","onErrorContainer","surface","onSurface","surfaceVariant","onSurfaceVariant","outline","outlineVariant","inverseSurface","inverseOnSurface","inversePrimary","surfaceDim","surfaceBright","surfaceContainerLowest","surfaceContainerLow","surfaceContainer","surfaceContainerHigh","surfaceContainerHighest","scrim","shadow"],ae={tonalSpot:Dt,vibrant:tt,expressive:nt,neutral:Mt,monochrome:kt,fidelity:bt,content:xt,rainbow:It,fruitSalad:At},Wt=new Map;function se(t,e,r="vibrant"){let n=`${t}|${e?1:0}|${r}`,a=Wt.get(n);if(!a){let i=ae[r]||tt,s=new i(D.fromInt(jt(t)),e,0);a=$t.map(c=>Et(o[c].getArgb(s)).toUpperCase()),Wt.set(n,a)}return a}globalThis.MTB_ENGINE={roles:se,ROLES:$t};})();
+/*ENGINE:END*/</script>
 <script>
 /* Apply the saved theme before first paint (no flash). Data is generated by scripts/gen-landing-assets.mjs. */
-const THEMES = /*THEMES:START*/{"roles":["primary","onPrimary","primaryContainer","onPrimaryContainer","secondary","onSecondary","secondaryContainer","onSecondaryContainer","tertiary","onTertiary","tertiaryContainer","onTertiaryContainer","error","onError","errorContainer","onErrorContainer","surface","onSurface","surfaceVariant","onSurfaceVariant","outline","outlineVariant","inverseSurface","inverseOnSurface","inversePrimary","surfaceDim","surfaceBright","surfaceContainerLowest","surfaceContainerLow","surfaceContainer","surfaceContainerHigh","surfaceContainerHighest","scrim","shadow"],"themes":{"baseline":{"seed":"#6750A4","n":["Baseline","Mặc định"],"l":["#65558F","#FFFFFF","#E9DDFF","#4D3D75","#625B71","#FFFFFF","#E8DEF8","#4A4458","#7E5260","#FFFFFF","#FFD9E3","#633B48","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FDF7FF","#1D1B20","#E7E0EB","#49454E","#7A757F","#CAC4CF","#322F35","#F5EFF7","#CFBDFE","#DED8E0","#FDF7FF","#FFFFFF","#F8F2FA","#F2ECF4","#ECE6EE","#E6E0E9","#000000","#000000"],"d":["#CFBDFE","#36275D","#4D3D75","#E9DDFF","#CBC2DB","#332D41","#4A4458","#E8DEF8","#EFB8C8","#4A2532","#633B48","#FFD9E3","#FFB4AB","#690005","#93000A","#FFDAD6","#141218","#E6E0E9","#49454E","#CAC4CF","#948F99","#49454E","#E6E0E9","#322F35","#65558F","#141218","#3B383E","#0F0D13","#1D1B20","#211F24","#2B292F","#36343A","#000000","#000000"]},"red":{"seed":"#F44336","n":["Red","Đỏ"],"l":["#904A42","#FFFFFF","#FFDAD5","#73342C","#775652","#FFFFFF","#FFDAD5","#5D3F3B","#705C2E","#FFFFFF","#FCDFA6","#574419","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F7","#231918","#F5DDDA","#534341","#857370","#D8C2BE","#392E2C","#FFEDEA","#FFB4A9","#E8D6D3","#FFF8F7","#FFFFFF","#FFF0EE","#FCEAE7","#F7E4E1","#F1DEDC","#000000","#000000"],"d":["#FFB4A9","#561E18","#73342C","#FFDAD5","#E7BDB7","#442926","#5D3F3B","#FFDAD5","#DFC38C","#3E2E04","#574419","#FCDFA6","#FFB4AB","#690005","#93000A","#FFDAD6","#1A1110","#F1DEDC","#534341","#D8C2BE","#A08C89","#534341","#F1DEDC","#392E2C","#904A42","#1A1110","#423735","#140C0B","#231918","#271D1C","#322826","#3D3231","#000000","#000000"]},"pink":{"seed":"#E91E63","n":["Pink","Hồng"],"l":["#8E4957","#FFFFFF","#FFD9DE","#71333F","#75565B","#FFFFFF","#FFD9DE","#5C3F43","#795831","#FFFFFF","#FFDDBA","#5F411C","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F7","#22191A","#F3DDDF","#524345","#847375","#D6C2C3","#382E2F","#FEEDEE","#FFB2BE","#E7D6D7","#FFF8F7","#FFFFFF","#FFF0F1","#FBEAEB","#F5E4E5","#F0DEE0","#000000","#000000"],"d":["#FFB2BE","#561D2A","#71333F","#FFD9DE","#E5BDC2","#43292D","#5C3F43","#FFD9DE","#EBBF90","#452B08","#5F411C","#FFDDBA","#FFB4AB","#690005","#93000A","#FFDAD6","#191112","#F0DEE0","#524345","#D6C2C3","#9F8C8E","#524345","#F0DEE0","#382E2F","#8E4957","#191112","#413738","#140C0D","#22191A","#261D1E","#312829","#3C3233","#000000","#000000"]},"purple":{"seed":"#9C27B0","n":["Purple","Tím"],"l":["#7B4E7F","#FFFFFF","#FFD6FE","#613766","#6B586B","#FFFFFF","#F4DBF1","#534153","#82524A","#FFFFFF","#FFDAD4","#673B34","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF7FA","#1F1A1F","#ECDFE8","#4D444C","#7F747D","#D0C3CC","#352F34","#F9EEF5","#EBB5ED","#E2D7DE","#FFF7FA","#FFFFFF","#FCF0F7","#F6EBF2","#F0E5EC","#EBDFE6","#000000","#000000"],"d":["#EBB5ED","#49204E","#613766","#FFD6FE","#D7BFD5","#3B2B3C","#534153","#F4DBF1","#F6B8AD","#4C251F","#673B34","#FFDAD4","#FFB4AB","#690005","#93000A","#FFDAD6","#171216","#EBDFE6","#4D444C","#D0C3CC","#998D96","#4D444C","#EBDFE6","#352F34","#7B4E7F","#171216","#3E373D","#110D11","#1F1A1F","#231E23","#2E282D","#393338","#000000","#000000"]},"indigo":{"seed":"#3F51B5","n":["Indigo","Chàm"],"l":["#515B92","#FFFFFF","#DEE0FF","#394379","#5B5D72","#FFFFFF","#E0E1F9","#434659","#77536D","#FFFFFF","#FFD7F1","#5D3C55","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FBF8FF","#1B1B21","#E3E1EC","#46464F","#767680","#C7C5D0","#303036","#F2EFF7","#BAC3FF","#DBD9E0","#FBF8FF","#FFFFFF","#F5F2FA","#EFEDF4","#E9E7EF","#E4E1E9","#000000","#000000"],"d":["#BAC3FF","#222C61","#394379","#DEE0FF","#C3C5DD","#2D2F42","#434659","#E0E1F9","#E6BAD7","#44263D","#5D3C55","#FFD7F1","#FFB4AB","#690005","#93000A","#FFDAD6","#121318","#E4E1E9","#46464F","#C7C5D0","#90909A","#46464F","#E4E1E9","#303036","#515B92","#121318","#39393F","#0D0E13","#1B1B21","#1F1F25","#29292F","#34343A","#000000","#000000"]},"blue":{"seed":"#2196F3","n":["Blue","Xanh dương"],"l":["#36618E","#FFFFFF","#D1E4FF","#194975","#535F70","#FFFFFF","#D7E3F7","#3B4858","#6B5778","#FFFFFF","#F2DAFF","#523F5F","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F8F9FF","#191C20","#DFE2EB","#43474E","#73777F","#C3C7CF","#2E3135","#EFF0F7","#A0CAFD","#D8DAE0","#F8F9FF","#FFFFFF","#F2F3FA","#ECEEF4","#E6E8EE","#E1E2E8","#000000","#000000"],"d":["#A0CAFD","#003258","#194975","#D1E4FF","#BBC7DB","#253140","#3B4858","#D7E3F7","#D6BEE4","#3B2948","#523F5F","#F2DAFF","#FFB4AB","#690005","#93000A","#FFDAD6","#111418","#E1E2E8","#43474E","#C3C7CF","#8D9199","#43474E","#E1E2E8","#2E3135","#36618E","#111418","#36393E","#0B0E13","#191C20","#1D2024","#272A2F","#32353A","#000000","#000000"]},"cyan":{"seed":"#00BCD4","n":["Cyan","Lơ"],"l":["#006876","#FFFFFF","#A1EFFF","#004E59","#4A6268","#FFFFFF","#CDE7ED","#334A50","#545D7E","#FFFFFF","#DBE1FF","#3C4665","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F5FAFC","#171D1E","#DBE4E6","#3F484A","#6F797B","#BFC8CA","#2B3133","#ECF2F3","#83D3E3","#D5DBDC","#F5FAFC","#FFFFFF","#EFF5F6","#E9EFF0","#E3E9EB","#DEE3E5","#000000","#000000"],"d":["#83D3E3","#00363E","#004E59","#A1EFFF","#B1CBD1","#1C3439","#334A50","#CDE7ED","#BCC5EB","#262F4D","#3C4665","#DBE1FF","#FFB4AB","#690005","#93000A","#FFDAD6","#0E1416","#DEE3E5","#3F484A","#BFC8CA","#899295","#3F484A","#DEE3E5","#2B3133","#006876","#0E1416","#343A3C","#090F10","#171D1E","#1B2122","#252B2C","#303637","#000000","#000000"]},"teal":{"seed":"#009688","n":["Teal","Mòng két"],"l":["#006A60","#FFFFFF","#9EF2E4","#005048","#4A635F","#FFFFFF","#CCE8E2","#334B47","#456179","#FFFFFF","#CCE5FF","#2D4961","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F4FBF8","#161D1C","#DAE5E1","#3F4947","#6F7977","#BEC9C6","#2B3230","#ECF2EF","#82D5C8","#D5DBD9","#F4FBF8","#FFFFFF","#EFF5F2","#E9EFED","#E3EAE7","#DDE4E1","#000000","#000000"],"d":["#82D5C8","#003731","#005048","#9EF2E4","#B1CCC6","#1C3531","#334B47","#CCE8E2","#ADCAE6","#153349","#2D4961","#CCE5FF","#FFB4AB","#690005","#93000A","#FFDAD6","#0E1513","#DDE4E1","#3F4947","#BEC9C6","#899390","#3F4947","#DDE4E1","#2B3230","#006A60","#0E1513","#343B39","#090F0E","#161D1C","#1A2120","#252B2A","#303635","#000000","#000000"]},"green":{"seed":"#4CAF50","n":["Green","Xanh lá"],"l":["#3B6939","#FFFFFF","#BCF0B4","#235024","#52634F","#FFFFFF","#D5E8CF","#3B4B38","#38656A","#FFFFFF","#BCEBF0","#1F4D52","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F7FBF1","#191D17","#DEE5D8","#424940","#72796F","#C2C9BD","#2D322C","#EFF2E9","#A1D39A","#D8DBD2","#F7FBF1","#FFFFFF","#F1F5EC","#ECEFE6","#E6E9E0","#E0E4DB","#000000","#000000"],"d":["#A1D39A","#0A390F","#235024","#BCF0B4","#BACCB3","#253423","#3B4B38","#D5E8CF","#A0CFD4","#00363B","#1F4D52","#BCEBF0","#FFB4AB","#690005","#93000A","#FFDAD6","#10140F","#E0E4DB","#424940","#C2C9BD","#8C9388","#424940","#E0E4DB","#2D322C","#3B6939","#10140F","#363A34","#0B0F0A","#191D17","#1D211B","#272B25","#323630","#000000","#000000"]},"amber":{"seed":"#FFC107","n":["Amber","Hổ phách"],"l":["#775A0B","#FFFFFF","#FFDF9E","#5B4300","#6B5D3F","#FFFFFF","#F5E0BB","#52452A","#4A6547","#FFFFFF","#CCEBC4","#334D31","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F2","#1F1B13","#EDE1CF","#4D4639","#7F7667","#D0C5B4","#353027","#F9EFE2","#E9C16C","#E2D9CC","#FFF8F2","#FFFFFF","#FCF2E5","#F6ECDF","#F1E7D9","#EBE1D4","#000000","#000000"],"d":["#E9C16C","#3F2E00","#5B4300","#FFDF9E","#D8C4A0","#3A2F15","#52452A","#F5E0BB","#B0CFAA","#1D361C","#334D31","#CCEBC4","#FFB4AB","#690005","#93000A","#FFDAD6","#17130B","#EBE1D4","#4D4639","#D0C5B4","#998F80","#4D4639","#EBE1D4","#353027","#775A0B","#17130B","#3E382F","#110E07","#1F1B13","#231F17","#2E2921","#39342B","#000000","#000000"]},"orange":{"seed":"#FF9800","n":["Orange","Cam"],"l":["#855318","#FFFFFF","#FFDCBE","#693C00","#725A42","#FFFFFF","#FFDCBE","#59422C","#58633A","#FFFFFF","#DCE8B4","#414B24","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F5","#211A14","#F2DFD1","#51453A","#837468","#D5C3B5","#372F28","#FDEEE3","#FDB975","#E6D7CD","#FFF8F5","#FFFFFF","#FFF1E7","#FAEBE0","#F4E5DB","#EFE0D5","#000000","#000000"],"d":["#FDB975","#4A2800","#693C00","#FFDCBE","#E1C1A4","#402C18","#59422C","#FFDCBE","#C0CC9A","#2B3410","#414B24","#DCE8B4","#FFB4AB","#690005","#93000A","#FFDAD6","#19120C","#EFE0D5","#51453A","#D5C3B5","#9D8E81","#51453A","#EFE0D5","#372F28","#855318","#19120C","#403830","#130D07","#211A14","#261E18","#302822","#3C332C","#000000","#000000"]},"deepOrange":{"seed":"#FF5722","n":["Deep Orange","Cam đậm"],"l":["#8F4C38","#FFFFFF","#FFDBD1","#723523","#77574E","#FFFFFF","#FFDBD1","#5D4037","#6C5D2F","#FFFFFF","#F5E1A7","#534619","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F6","#231917","#F5DED8","#53433F","#85736E","#D8C2BC","#392E2B","#FFEDE8","#FFB5A0","#E8D6D2","#FFF8F6","#FFFFFF","#FFF1ED","#FCEAE5","#F7E4E0","#F1DFDA","#000000","#000000"],"d":["#FFB5A0","#561F0F","#723523","#FFDBD1","#E7BDB2","#442A22","#5D4037","#FFDBD1","#D8C58D","#3B2F05","#534619","#F5E1A7","#FFB4AB","#690005","#93000A","#FFDAD6","#1A110F","#F1DFDA","#53433F","#D8C2BC","#A08C87","#53433F","#F1DFDA","#392E2B","#8F4C38","#1A110F","#423734","#140C0A","#231917","#271D1B","#322825","#3D322F","#000000","#000000"]},"brown":{"seed":"#795548","n":["Brown","Nâu"],"l":["#8F4C33","#FFFFFF","#FFDBCF","#72361E","#77574C","#FFFFFF","#FFDBCF","#5D4035","#695E2F","#FFFFFF","#F2E2A8","#50471A","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F6","#231A16","#F5DED6","#53433E","#85736D","#D8C2BB","#392E2B","#FFEDE7","#FFB59A","#E8D6D1","#FFF8F6","#FFFFFF","#FFF1EC","#FCEAE4","#F7E4DF","#F1DFD9","#000000","#000000"],"d":["#FFB59A","#55200A","#72361E","#FFDBCF","#E7BEAF","#442A20","#5D4035","#FFDBCF","#D5C68E","#393005","#50471A","#F2E2A8","#FFB4AB","#690005","#93000A","#FFDAD6","#1A110E","#F1DFD9","#53433E","#D8C2BB","#A08D86","#53433E","#F1DFD9","#392E2B","#8F4C33","#1A110E","#423733","#140C09","#231A16","#271E1A","#322824","#3D322F","#000000","#000000"]}}}/*THEMES:END*/;
+const THEMES = /*THEMES:START*/{"themes":{"baseline":{"seed":"#6750A4","n":["Baseline","Mặc định"]},"red":{"seed":"#F44336","n":["Red","Đỏ"]},"pink":{"seed":"#E91E63","n":["Pink","Hồng"]},"purple":{"seed":"#9C27B0","n":["Purple","Tím"]},"indigo":{"seed":"#3F51B5","n":["Indigo","Chàm"]},"blue":{"seed":"#2196F3","n":["Blue","Xanh dương"]},"cyan":{"seed":"#00BCD4","n":["Cyan","Lơ"]},"teal":{"seed":"#009688","n":["Teal","Mòng két"]},"green":{"seed":"#4CAF50","n":["Green","Xanh lá"]},"amber":{"seed":"#FFC107","n":["Amber","Hổ phách"]},"orange":{"seed":"#FF9800","n":["Orange","Cam"]},"deepOrange":{"seed":"#FF5722","n":["Deep Orange","Cam đậm"]},"brown":{"seed":"#795548","n":["Brown","Nâu"]}}}/*THEMES:END*/;
 (function () {
   var s = {};
   try { s = JSON.parse(localStorage.getItem("mtb-landing") || "{}"); } catch (e) {}
@@ -64,11 +81,12 @@ const THEMES = /*THEMES:START*/{"roles":["primary","onPrimary","primaryContainer
   var root = document.documentElement;
   root.dataset.theme = dark ? "dark" : "light";
   root.style.colorScheme = dark ? "dark" : "light";
-  var t = THEMES.themes && THEMES.themes[theme];
-  if (t) {
-    var v = dark ? t.d : t.l;
+  var seed = theme === "custom" && /^#[0-9a-f]{6}$/i.test(s.custom || "") ? s.custom : (THEMES.themes[theme] || THEMES.themes.baseline).seed;
+  try {
+    var v = MTB_ENGINE.roles(seed, dark, s.variant || "vibrant");
+    THEMES.roles = MTB_ENGINE.ROLES;
     THEMES.roles.forEach(function (r, i) { root.style.setProperty("--md-" + r.replace(/[A-Z]/g, function (m) { return "-" + m.toLowerCase(); }), v[i]); });
-  }
+  } catch (e) {}
 })();
 </script>
 
@@ -250,7 +268,7 @@ nav.links a:hover{background:color-mix(in srgb,var(--md-primary) 10%,transparent
 .sw:hover .tip,.sw:focus-visible .tip{opacity:1;translate:-50% 0}
 
 /* hero */
-.hero{padding:clamp(36px,7vw,84px) 0 40px;position:relative}
+.hero{padding:clamp(36px,7vw,84px) 0 40px;position:relative;overflow-x:clip}
 .hero-grid{display:grid;gap:48px;grid-template-columns:1.02fr 1.1fr;align-items:center}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 8px;border-radius:999px;background:var(--md-tertiary-container);color:var(--md-on-tertiary-container);font-weight:600;font-size:.85rem}
 .eyebrow b{display:grid;place-items:center;width:26px;height:26px;background:var(--md-tertiary);color:var(--md-on-tertiary)}
@@ -485,6 +503,113 @@ footer{padding:48px 0 56px;margin-top:20px}
 @keyframes xwave{to{transform:translateX(-25px)}}
 @media (max-width:1000px){.xg{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:560px){.xg{grid-template-columns:1fr}.xc{min-height:0}}
+
+/* ---- skip link, comparison, demo video, OS-aware download ---- */
+.skip{position:absolute;left:12px;top:-60px;z-index:200;padding:10px 18px;border-radius:14px;background:var(--md-primary);color:var(--md-on-primary);font-weight:700;text-decoration:none;transition:top .2s}
+.skip:focus{top:10px}
+.cmp{border-radius:36px;background:var(--md-surface-container-low);overflow:hidden;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--md-outline-variant) 60%,transparent)}
+.cmp table{width:100%;border-collapse:collapse;table-layout:fixed}
+.cmp th,.cmp td{padding:18px 22px;text-align:left;vertical-align:top;border-top:1px solid color-mix(in srgb,var(--md-outline-variant) 55%,transparent)}
+.cmp thead th{border-top:0;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--md-on-surface-variant);font-weight:700;padding-block:20px;background:var(--md-surface-container)}
+.cmp thead th:last-child{background:var(--md-primary);color:var(--md-on-primary)}
+.cmp th[scope=row]{font-weight:700;width:30%}
+.cmp td:last-child{background:color-mix(in srgb,var(--md-primary-container) 46%,transparent)}
+.cmp tbody tr{transition:background-color .25s}
+.cmp tbody tr:hover{background:color-mix(in srgb,var(--md-primary) 5%,transparent)}
+.cmp .cell{display:flex;gap:12px;align-items:flex-start;font-size:.95rem;color:var(--md-on-surface-variant)}
+.cmp td:last-child .cell{color:var(--md-on-surface)}
+.bd{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--md-surface-container-highest);color:var(--md-on-surface-variant);transition:clip-path var(--spring-spatial-d) var(--spring-spatial),transform var(--spring-spatial-fast-d) var(--spring-spatial-fast)}
+.bd .i{width:17px;height:17px;stroke-width:2.4}
+[data-s=y] .bd{background:var(--md-primary);color:var(--md-on-primary);border-radius:0;clip-path:var(--shape-cookie)}
+[data-s=p] .bd{background:var(--md-tertiary-container);color:var(--md-on-tertiary-container)}
+.cmp tr:hover [data-s=y] .bd{clip-path:var(--shape-sunny);transform:rotate(12deg) scale(1.08)}
+.cmp .vs{display:none}
+.cmp-note{margin-top:18px;text-align:center;font-size:.85rem;color:var(--md-on-surface-variant);max-width:52em;margin-inline:auto}
+@media (max-width:760px){
+  .cmp{background:none;box-shadow:none;border-radius:0;overflow:visible}
+  .cmp table,.cmp tbody,.cmp tr,.cmp th,.cmp td{display:block;width:auto}
+  .cmp thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .cmp tbody{display:grid;gap:12px}
+  .cmp tr{border-radius:28px;background:var(--md-surface-container-low);overflow:hidden}
+  .cmp th,.cmp td{border:0;padding:14px 20px}
+  .cmp th[scope=row]{width:auto;padding-top:20px;font-size:1.05rem}
+  .cmp td:last-child{background:color-mix(in srgb,var(--md-primary-container) 55%,transparent);padding-bottom:18px}
+  .cmp .vs{display:block;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;opacity:.7;margin-bottom:6px}
+  .cmp .cell-w{display:block}
+}
+.demo{max-width:1040px;margin:clamp(48px,7vw,88px) auto 0}
+.demo h3{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-.025em;line-height:1.1}
+.demo .sh{margin-bottom:26px}
+.vwrap{position:relative;background:var(--md-surface-container)}
+.window video{display:block;width:100%;height:auto;aspect-ratio:1920/1200;background:var(--md-surface-container)}
+.vbtn{position:absolute;right:14px;bottom:14px;background:color-mix(in srgb,var(--md-surface) 82%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:var(--elev2);color:var(--md-on-surface)}
+.vbtn[hidden]{display:none}
+.vbtn:hover{background:var(--md-surface-container-high)}
+.os .o{min-width:0}
+.os .o h3 .rec{display:none;margin-left:auto;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--md-primary);color:var(--md-on-primary);font-weight:700;white-space:nowrap}
+.os .o.main h3 .rec{display:inline-block}
+.others{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:22px;font-size:.9rem}
+.others>span{font-weight:700;margin-right:6px}
+.others a{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;text-decoration:none;font-weight:600;background:color-mix(in srgb,var(--md-surface) 60%,transparent);transition:border-radius var(--spring-spatial-fast-d) var(--spring-spatial-fast),background-color .2s}
+.others a:hover{border-radius:12px;background:var(--md-surface)}
+.mnote,.osnote{display:none}
+.osnote{margin:-6px 0 18px;color:var(--md-on-surface-variant);font-size:.95rem;max-width:30em}
+.mnote{align-items:flex-start;gap:14px;flex-direction:column;margin-top:30px;padding:24px;border-radius:32px;background:var(--md-surface);color:var(--md-on-surface);box-shadow:var(--elev1)}
+.mnote p{font-size:1rem}
+.is-mobile .os,.is-mobile .others{display:none}
+.is-mobile .mnote{display:flex}
+.is-mobile .osnote{display:block}
+.mnote .btn{width:100%}
+/* ---- Navigation drawer, back-to-top, custom color, spotlight ---- */
+.ambient i{filter:none;opacity:1}
+.ambient i:nth-child(1){background:radial-gradient(closest-side,color-mix(in srgb,var(--md-primary) 22%,transparent),transparent)}
+.ambient i:nth-child(2){background:radial-gradient(closest-side,color-mix(in srgb,var(--md-tertiary) 20%,transparent),transparent)}
+.ambient i:nth-child(3){background:radial-gradient(closest-side,color-mix(in srgb,var(--md-secondary) 20%,transparent),transparent)}
+.menu-btn{display:none}
+.pop{max-height:calc(100vh - 84px);overflow:auto;overscroll-behavior:contain}
+.custom-row{display:flex;align-items:center;gap:10px}
+.cpick{position:relative;flex:none;width:44px;height:44px;border-radius:50%;cursor:pointer;background:conic-gradient(#f44336,#ffc107,#4caf50,#00bcd4,#3f51b5,#e91e63,#f44336);transition:border-radius .35s var(--ease),transform .3s var(--spring);box-shadow:inset 0 0 0 1px rgb(0 0 0/.1)}
+.cpick:hover{border-radius:34%;transform:scale(1.08)}
+.cpick input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.cpick span{position:absolute;inset:7px;border-radius:inherit;background:var(--cc,#6F19FF);box-shadow:0 0 0 2px var(--md-surface-container-high)}
+.hex{flex:1;min-width:0;height:44px;border-radius:14px;border:1.5px solid var(--md-outline-variant);background:transparent;color:var(--md-on-surface);padding:0 14px;font:600 .95rem ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase;letter-spacing:.04em;transition:border-color .2s,box-shadow .2s}
+.hex:focus{outline:none;border-color:var(--md-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--md-primary) 22%,transparent)}
+.hex[aria-invalid=true]{border-color:var(--md-error)}
+.vchips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vchips button{height:40px;border-radius:999px;border:1.5px solid var(--md-outline-variant);font-weight:600;font-size:.88rem;color:var(--md-on-surface-variant);transition:background-color .25s,color .25s,border-color .25s,border-radius var(--spring-spatial-fast-d) var(--spring-spatial-fast),transform .3s var(--spring)}
+.vchips button:hover{border-radius:14px}.vchips button:active{transform:scale(.95)}
+.vchips button[aria-pressed=true]{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-color:transparent;border-radius:14px}
+.sw.custom{background:conic-gradient(#f44336,#ffc107,#4caf50,#00bcd4,#3f51b5,#e91e63,#f44336)}
+.scrim{position:fixed;inset:0;z-index:90;background:color-mix(in srgb,var(--md-scrim) 42%,transparent);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.scrim.open{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;bottom:0;left:0;z-index:95;width:min(340px,86vw);display:flex;flex-direction:column;gap:8px;padding:16px 12px 24px;background:var(--md-surface-container-low);border-radius:0 32px 32px 0;box-shadow:var(--elev3);transform:translateX(-104%);transition:transform var(--spring-spatial-d) var(--spring-spatial),visibility 0s .5s;visibility:hidden}
+.drawer[hidden]{display:flex}
+.drawer.open{transform:none;visibility:visible;transition-delay:0s}
+.drawer .dh{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 8px 12px}
+.drawer nav{display:flex;flex-direction:column;gap:4px}
+.drawer nav a{display:flex;align-items:center;gap:14px;height:56px;padding:0 20px;border-radius:999px;text-decoration:none;font-weight:600;color:var(--md-on-surface-variant);transition:background-color .25s,color .25s,border-radius var(--spring-spatial-fast-d) var(--spring-spatial-fast),transform .3s var(--spring);opacity:0;transform:translateX(-16px)}
+.drawer.open nav a{opacity:1;transform:none;transition-delay:calc(var(--i,0) * 40ms + 80ms)}
+.drawer nav a:hover{background:color-mix(in srgb,var(--md-primary) 10%,transparent);border-radius:20px}
+.drawer nav a[aria-current=true]{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+.drawer nav .dl-link{margin-top:12px;background:var(--md-primary);color:var(--md-on-primary)}
+.drawer nav .dl-link:hover{background:var(--md-primary)}
+.totop{position:fixed;left:max(16px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom));z-index:60;display:grid;place-items:center;width:56px;height:56px;border-radius:20px;background:var(--md-primary-container);color:var(--md-on-primary-container);box-shadow:var(--elev2);opacity:0;transform:translateY(24px) scale(.7);pointer-events:none;transition:opacity .25s,transform var(--spring-spatial-d) var(--spring-spatial),border-radius var(--spring-spatial-fast-d) var(--spring-spatial-fast),background-color .25s,color .25s}
+.totop.show{opacity:1;transform:none;pointer-events:auto}
+.totop:hover{border-radius:50%;background:var(--md-primary);color:var(--md-on-primary)}
+.totop:active{transform:scale(.9)}
+.totop .i{width:24px;height:24px;transition:transform .35s var(--spring)}
+.totop:hover .i{transform:translateY(-3px)}
+.totop .ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);pointer-events:none}
+.totop .ring circle{fill:none;stroke-width:3}
+.totop .trk{stroke:color-mix(in srgb,currentColor 18%,transparent)}
+.totop .val{stroke:var(--md-primary);stroke-linecap:round;stroke-dasharray:157.08;stroke-dashoffset:157.08;transition:stroke .25s}
+.totop:hover .val{stroke:var(--md-on-primary)}
+.spot::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;opacity:0;transition:opacity .35s;background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--md-primary) 16%,transparent),transparent 70%)}
+.spot:hover::before{opacity:1}
+@media (max-width:480px){.bar .brand .mt{display:none}}
+@media (max-width:980px){.menu-btn{display:grid;order:-1;margin-left:-8px}.bar .brand{min-width:0;flex:0 1 auto}.bar .brand span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.bar .brand .mt{font-style:normal}}
+@media (max-width:620px){.totop{width:52px;height:52px;bottom:max(16px,env(safe-area-inset-bottom))}.pop{right:12px;left:12px;width:auto}}
+@media (prefers-reduced-motion:reduce){.drawer,.totop,.scrim{transition-duration:.01ms!important}.drawer nav a{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   .rv{opacity:1;transform:none}
@@ -492,6 +617,7 @@ footer{padding:48px 0 56px;margin-top:20px}
 </style>
 </head>
 <body>
+<a class="skip" href="#top" data-i18n="a11y.skip">Skip to content</a>
 <div id="progress" aria-hidden="true"></div>
 <div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
 
@@ -515,6 +641,8 @@ footer{padding:48px 0 56px;margin-top:20px}
 <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></symbol>
 <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
 <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+<symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></symbol>
 <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
 <symbol id="i-cpu" viewBox="0 0 24 24"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></symbol>
@@ -522,18 +650,28 @@ footer{padding:48px 0 56px;margin-top:20px}
 <symbol id="i-apple" viewBox="0 0 24 24"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></symbol>
 <symbol id="i-terminal" viewBox="0 0 24 24"><path d="m4 17 6-6-6-6"/><path d="M12 19h8"/></symbol>
 <symbol id="i-windows" viewBox="0 0 24 24"><path d="M3 5.5 10.5 4.5v7H3z"/><path d="M12 4.3 21 3v8.5h-9z"/><path d="M3 12.5h7.5v7L3 18.5z"/><path d="M12 12.5h9V21l-9-1.3z"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-partial" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><rect x="14" y="3" width="5" height="18" rx="1"/><rect x="5" y="3" width="5" height="18" rx="1"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M6 3l14 9-14 9z"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></symbol>
+<symbol id="i-columns" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/></symbol>
+<symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M5 7h14"/><path d="m5 7-3 8a4 4 0 0 0 6 0z"/><path d="m19 7-3 8a4 4 0 0 0 6 0z"/><path d="M8 21h8"/></symbol>
 </defs></svg>
 
 <header class="bar" id="bar">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="Material Theme Builder"><img src="assets/favicon.svg" alt="" width="38" height="38" /><span>Material Theme Builder</span></a>
+    <a class="brand" href="#top" aria-label="Material Theme Builder"><img src="assets/favicon.svg" alt="" width="38" height="38" /><span><i class="mt">Material </i>Theme Builder</span></a>
     <nav class="links" aria-label="Primary">
       <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#expressive" data-i18n="nav.expressive">Expressive</a>
+      <a href="#compare" data-i18n="nav.compare">Compare</a>
       <a href="#showcase" data-i18n="nav.showcase">Screenshots</a>
       <a href="#how" data-i18n="nav.how">How it works</a>
       <a href="#faq" data-i18n="nav.faq">FAQ</a>
     </nav>
     <div class="spacer"></div>
+    <button class="ibtn menu-btn" id="menuBtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="drawer" data-i18n-aria="nav.menu" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
     <button class="ibtn" id="custBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="pop" data-i18n-aria="aria.customize" aria-label="Customize"><svg class="i"><use href="#i-sliders"/></svg></button>
     <a class="btn sm" href="#download"><svg class="i"><use href="#i-download"/></svg><span class="lbl" data-i18n="nav.download">Download</span></a>
   </div>
@@ -560,6 +698,23 @@ footer{padding:48px 0 56px;margin-top:20px}
       <h3 data-i18n="pop.color">Theme color</h3>
       <div class="swatches" id="swatches" role="radiogroup"></div>
     </section>
+    <section>
+      <h3 data-i18n="pop.custom">Custom color</h3>
+      <div class="custom-row">
+        <label class="cpick" id="cpick"><input type="color" id="cInput" value="#6F19FF" aria-label="Pick a color" data-i18n-aria="pop.pick" /><span></span></label>
+        <input class="hex" id="hexIn" type="text" inputmode="text" spellcheck="false" maxlength="7" value="#6F19FF" aria-label="HEX" />
+        <button type="button" class="ibtn dice" id="cDice" data-i18n-aria="pop.random" aria-label="Random color"><svg class="i"><use href="#i-sparkles"/></svg></button>
+      </div>
+    </section>
+    <section>
+      <h3 data-i18n="pop.variant">Color style</h3>
+      <div class="vchips" id="vchips" role="group">
+        <button type="button" data-variant="tonalSpot" aria-pressed="false" data-i18n="var.tonalSpot">Tonal Spot</button>
+        <button type="button" data-variant="vibrant" aria-pressed="false" data-i18n="var.vibrant">Vibrant</button>
+        <button type="button" data-variant="expressive" aria-pressed="false" data-i18n="var.expressive">Expressive</button>
+        <button type="button" data-variant="neutral" aria-pressed="false" data-i18n="var.neutral">Neutral</button>
+      </div>
+    </section>
   </div>
 </header>
 
@@ -572,9 +727,10 @@ footer{padding:48px 0 56px;margin-top:20px}
       <h1 class="title rv" style="--d:80ms"><span data-i18n="hero.title1">Craft Material 3 themes</span> <span class="grad" data-i18n="hero.title2">that feel alive.</span></h1>
       <p class="lead rv" style="--d:160ms" data-i18n="hero.lead">Pick one color and get a complete, accessible Material Design 3 scheme. Preview it on real components, simulate color blindness, then export to CSS, Tailwind, Compose or Flutter.</p>
       <div class="cta rv" style="--d:240ms">
-        <a class="btn lg" id="dlMain" href="download/Material-Theme-Builder_1.0.0_x64-setup.exe" download><svg class="i"><use href="#i-download"/></svg><span data-i18n="hero.download">Download for Windows</span></a>
+        <a class="btn lg" id="dlMain" data-dl href="download/Material-Theme-Builder_1.0.0_x64-setup.exe" download><svg class="i"><use href="#i-download"/></svg><span data-i18n="hero.dl.win">Download for Windows</span></a>
         <a class="btn lg tonal" href="https://github.com/minhtrong67/material-theme-builder" target="_blank" rel="noopener"><svg class="i"><use href="#i-github"/></svg><span>GitHub</span></a>
       </div>
+      <p class="osnote" id="osNote" data-i18n="hero.mobile.note">Material Theme Builder is a desktop app for Windows, macOS and Linux. Open this page on a computer to download it.</p>
       <div class="meta rv" style="--d:320ms">
         <span><svg class="i"><use href="#i-check"/></svg><span data-i18n="hero.m1">MIT licensed</span></span>
         <span><svg class="i"><use href="#i-check"/></svg><span data-i18n="hero.m2">Tiny native app (Tauri)</span></span>
@@ -589,7 +745,7 @@ footer{padding:48px 0 56px;margin-top:20px}
       <div class="window" id="tilt">
         <div class="tb"><i></i><i></i><i></i><span>Material Theme Builder</span></div>
         <img class="shot-light" src="screenshots/image01.png" width="1920" height="1200" alt="Material Theme Builder — live preview in light mode" fetchpriority="high" />
-        <img class="shot-dark" src="screenshots/image02.png" width="1920" height="1200" alt="Material Theme Builder — live preview in dark mode" />
+        <img class="shot-dark" src="screenshots/image02.png" width="1920" height="1200" loading="lazy" alt="Material Theme Builder — live preview in dark mode" />
       </div>
     </div>
   </div>
@@ -604,7 +760,7 @@ footer{padding:48px 0 56px;margin-top:20px}
   <div class="wrap stats">
     <div class="stat rv"><b data-count="9">0</b><span data-i18n="stat.1">Dynamic color styles</span></div>
     <div class="stat rv" style="--d:80ms"><b data-count="6">0</b><span data-i18n="stat.2">Light &amp; dark contrast schemes</span></div>
-    <div class="stat rv" style="--d:160ms"><b data-count="8">0</b><span data-i18n="stat.3">Export formats</span></div>
+    <div class="stat rv" style="--d:160ms"><b data-count="10">0</b><span data-i18n="stat.3">Export formats</span></div>
     <div class="stat rv" style="--d:240ms"><b data-count="49">0</b><span data-i18n="stat.4">Color roles per scheme</span></div>
   </div>
 </section>
@@ -641,11 +797,22 @@ footer{padding:48px 0 56px;margin-top:20px}
         <h3 data-i18n="f5.h">Extract from image</h3>
         <p data-i18n="f5.p">Drop a photo or logo and pull its key colors straight into a new theme.</p>
       </article>
+      <article class="card sc w3 rv">
+        <div class="ic"><svg class="i"><use href="#i-upload"/></svg></div>
+        <h3 data-i18n="f11.h">Import existing themes</h3>
+        <p data-i18n="f11.p">Bring in Google Material Theme Builder JSON, CSS variables, Android colors.xml or a .mtb.json project and keep iterating.</p>
+        <div class="mini-row"><b>Google JSON</b><b>CSS vars</b><b>colors.xml</b><b>.mtb.json</b></div>
+      </article>
+      <article class="card w3 rv" style="--d:80ms">
+        <div class="ic"><svg class="i"><use href="#i-columns"/></svg></div>
+        <h3 data-i18n="f12.h">Compare side by side</h3>
+        <p data-i18n="f12.p">Put two themes next to each other and see exactly which roles, contrast ratios and previews changed.</p>
+      </article>
       <article class="card w3 rv">
         <div class="ic"><svg class="i"><use href="#i-code"/></svg></div>
         <h3 data-i18n="f6.h">Export anywhere</h3>
         <p data-i18n="f6.p">CSS variables, SCSS, Tailwind, JSON design tokens, Jetpack Compose, Flutter, Android XML and a re-importable project file.</p>
-        <div class="mini-row"><b>CSS</b><b>SCSS</b><b>Tailwind</b><b>JSON</b><b>Compose</b><b>Flutter</b><b>XML</b></div>
+        <div class="mini-row"><b>CSS</b><b>SCSS</b><b>Tailwind</b><b>JSON</b><b>Compose</b><b>Flutter</b><b>XML</b><b>SwiftUI</b><b>Figma</b><b>Project</b><b>.zip</b></div>
       </article>
       <article class="card w3 rv" style="--d:80ms">
         <div class="ic"><svg class="i"><use href="#i-library"/></svg></div>
@@ -671,7 +838,32 @@ footer{padding:48px 0 56px;margin-top:20px}
   </div>
 </section>
 
-<!-- ============================ SHOWCASE ============================ -->
+<!-- ============================ COMPARE ============================ -->
+<section class="s" id="compare" style="padding-top:20px">
+  <div class="wrap">
+    <div class="sh c rv"><span class="k" data-i18n="cmp.k">Compare</span><h2 data-i18n="cmp.h">How it differs from Google's Material Theme Builder</h2><p data-i18n="cmp.p">Google's web tool is great for quickly exploring a theme in the browser. This app is a native, offline workbench that goes further on import, comparison, accessibility and export.</p></div>
+    <div class="cmp rv">
+      <table>
+        <caption class="sr" data-i18n="cmp.cap">Feature comparison between Google's Material Theme Builder and this app</caption>
+        <thead><tr><th scope="col" data-i18n="cmp.feat">Feature</th><th scope="col" data-i18n="cmp.g">Google's Material Theme Builder</th><th scope="col" data-i18n="cmp.m">This app</th></tr></thead>
+        <tbody>
+          <tr><th scope="row" data-i18n="cmp.offline">Runs offline as a native app</th><td data-s="n"><span class="vs" data-i18n="cmp.g">Google’s Material Theme Builder</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-minus"/></svg></b><span><span class="sr" data-i18n="cmp.no">No. </span><span data-i18n="cmp.offline.g">A web app and Figma plugin that need a connection</span></span></span></td><td data-s="y"><span class="vs" data-i18n="cmp.m">This app</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></b><span><span class="sr" data-i18n="cmp.yes">Yes. </span><span data-i18n="cmp.offline.m">Native Tauri app. No internet or account needed</span></span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.import">Import from existing theme files</th><td data-s="p"><span class="vs" data-i18n="cmp.g">Google’s Material Theme Builder</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-partial"/></svg></b><span><span class="sr" data-i18n="cmp.part">Partly. </span><span data-i18n="cmp.import.g">Mainly starts from a source color or an image</span></span></span></td><td data-s="y"><span class="vs" data-i18n="cmp.m">This app</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></b><span><span class="sr" data-i18n="cmp.yes">Yes. </span><span data-i18n="cmp.import.m">Google Theme Builder JSON, CSS variables, Android colors.xml and .mtb.json</span></span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.compare">Side-by-side theme compare</th><td data-s="n"><span class="vs" data-i18n="cmp.g">Google’s Material Theme Builder</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-minus"/></svg></b><span><span class="sr" data-i18n="cmp.no">No. </span><span data-i18n="cmp.compare.g">One theme at a time</span></span></span></td><td data-s="y"><span class="vs" data-i18n="cmp.m">This app</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></b><span><span class="sr" data-i18n="cmp.yes">Yes. </span><span data-i18n="cmp.compare.m">Compare any two themes role by role</span></span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.image">Multi-color extraction from an image</th><td data-s="p"><span class="vs" data-i18n="cmp.g">Google’s Material Theme Builder</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-partial"/></svg></b><span><span class="sr" data-i18n="cmp.part">Partly. </span><span data-i18n="cmp.image.g">Picks a single source color from an image</span></span></span></td><td data-s="y"><span class="vs" data-i18n="cmp.m">This app</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></b><span><span class="sr" data-i18n="cmp.yes">Yes. </span><span data-i18n="cmp.image.m">A full palette from any image, plus a screen eyedropper</span></span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.library">Library with version history</th><td data-s="n"><span class="vs" data-i18n="cmp.g">Google’s Material Theme Builder</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-minus"/></svg></b><span><span class="sr" data-i18n="cmp.no">No. </span><span data-i18n="cmp.library.g">No built-in theme library</span></span></span></td><td data-s="y"><span class="vs" data-i18n="cmp.m">This app</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></b><span><span class="sr" data-i18n="cmp.yes">Yes. </span><span data-i18n="cmp.library.m">Searchable, taggable library with version history</span></span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.export">Export formats</th><td data-s="p"><span class="vs" data-i18n="cmp.g">Google’s Material Theme Builder</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-partial"/></svg></b><span><span class="sr" data-i18n="cmp.part">Partly. </span><span data-i18n="cmp.export.g">Compose, Android XML, Flutter and Web (CSS)</span></span></span></td><td data-s="y"><span class="vs" data-i18n="cmp.m">This app</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></b><span><span class="sr" data-i18n="cmp.yes">Yes. </span><span data-i18n="cmp.export.m">10 formats: CSS, Tailwind, SCSS, JSON, Compose, Flutter, Android XML, SwiftUI, Figma tokens, project file, plus a zip bundle</span></span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.apca">APCA + WCAG contrast checks</th><td data-s="p"><span class="vs" data-i18n="cmp.g">Google’s Material Theme Builder</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-partial"/></svg></b><span><span class="sr" data-i18n="cmp.part">Partly. </span><span data-i18n="cmp.apca.g">Adjustable contrast levels</span></span></span></td><td data-s="y"><span class="vs" data-i18n="cmp.m">This app</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></b><span><span class="sr" data-i18n="cmp.yes">Yes. </span><span data-i18n="cmp.apca.m">WCAG and APCA on every role pair</span></span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.cb">Color-blind simulation</th><td data-s="n"><span class="vs" data-i18n="cmp.g">Google’s Material Theme Builder</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-minus"/></svg></b><span><span class="sr" data-i18n="cmp.no">No. </span><span data-i18n="cmp.cb.g">No built-in simulation</span></span></span></td><td data-s="y"><span class="vs" data-i18n="cmp.m">This app</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></b><span><span class="sr" data-i18n="cmp.yes">Yes. </span><span data-i18n="cmp.cb.m">Protanopia, deuteranopia, tritanopia and achromatopsia</span></span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.upd">Automatic updates</th><td data-s="y"><span class="vs" data-i18n="cmp.g">Google’s Material Theme Builder</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></b><span><span class="sr" data-i18n="cmp.yes">Yes. </span><span data-i18n="cmp.upd.g">Always the latest version, since it is a website</span></span></span></td><td data-s="y"><span class="vs" data-i18n="cmp.m">This app</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></b><span><span class="sr" data-i18n="cmp.yes">Yes. </span><span data-i18n="cmp.upd.m">Built-in updater keeps the desktop app current</span></span></span></td></tr>
+          <tr><th scope="row" data-i18n="cmp.oss">Open source, MIT licensed</th><td data-s="p"><span class="vs" data-i18n="cmp.g">Google’s Material Theme Builder</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-partial"/></svg></b><span><span class="sr" data-i18n="cmp.part">Partly. </span><span data-i18n="cmp.oss.g">The core color library is open source; the tool itself is a hosted service</span></span></span></td><td data-s="y"><span class="vs" data-i18n="cmp.m">This app</span><span class="cell"><b class="bd"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></b><span><span class="sr" data-i18n="cmp.yes">Yes. </span><span data-i18n="cmp.oss.m">MIT licensed with the full source on GitHub</span></span></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cmp-note rv" data-i18n="cmp.note">Based on publicly documented features of Google's web tool as of October 2026, which may change. This project is independent and not affiliated with or endorsed by Google.</p>
+  </div>
+</section>
+
 <!-- ====================== EXPRESSIVE PLAYGROUND ====================== -->
 <section class="s" id="expressive">
   <div class="wrap">
@@ -713,6 +905,19 @@ footer{padding:48px 0 56px;margin-top:20px}
       <figure><div class="window"><div class="tb"><i></i><i></i><i></i><span>Material Theme Builder</span></div><img src="screenshots/image03.png" width="1920" height="1200" loading="lazy" alt="Tonal palettes" /></div><figcaption data-i18n="show.c3">Full tonal palettes from tone 0 to 100 — click any tone to copy it.</figcaption></figure>
       <figure><div class="window"><div class="tb"><i></i><i></i><i></i><span>Material Theme Builder</span></div><img src="screenshots/image04.png" width="1920" height="1200" loading="lazy" alt="Settings" /></div><figcaption data-i18n="show.c4">Personalize theme, accent color, font, language and window behavior.</figcaption></figure>
     </div>
+
+    <div class="demo rv" id="demo">
+      <div class="sh c"><h3 data-i18n="demo.h">See it move</h3><p data-i18n="demo.p">A short tour of building, comparing and exporting a theme.</p></div>
+      <div class="window"><div class="tb"><i></i><i></i><i></i><span>Material Theme Builder</span></div>
+        <div class="vwrap">
+          <video id="demoVid" muted loop playsinline preload="none" poster="screenshots/image01.png" width="1920" height="1200" aria-label="Screen recording of Material Theme Builder in use" data-i18n-aria="demo.aria">
+            <source src="demo/demo.webm" type="video/webm" />
+            <source src="demo/demo.mp4" type="video/mp4" />
+          </video>
+          <button class="ibtn vbtn" id="demoToggle" type="button" aria-label="Pause video"><svg class="i"><use href="#i-pause"/></svg></button>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -733,23 +938,33 @@ footer{padding:48px 0 56px;margin-top:20px}
   <div class="wrap">
     <div class="dl rv">
       <h2 data-i18n="dl.h">Get Material Theme Builder</h2>
-      <p data-i18n="dl.p">Free forever and open source. Download the installer, or build it yourself in three commands.</p>
+      <p data-i18n="dl.p">Free forever and open source. Download the installer for your system, or build it yourself in three commands.</p>
       <div class="os">
-        <div class="o main">
-          <h3><svg class="i"><use href="#i-windows"/></svg>Windows</h3>
+        <div class="o main" data-os="win">
+          <h3><svg class="i"><use href="#i-windows"/></svg>Windows<span class="rec" data-i18n="dl.rec">For your system</span></h3>
           <small data-i18n="dl.win">Windows 10 / 11 · 64-bit · v1.0.0</small>
-          <a class="btn" id="dlBtn" href="download/Material-Theme-Builder_1.0.0_x64-setup.exe" download><svg class="i"><use href="#i-download"/></svg><span data-i18n="dl.btn">Download installer</span></a>
+          <a class="btn" data-dl href="download/Material-Theme-Builder_1.0.0_x64-setup.exe" download><svg class="i"><use href="#i-download"/></svg><span data-i18n="dl.btn.win">Download installer</span></a>
         </div>
-        <div class="o">
-          <h3><svg class="i"><use href="#i-apple"/></svg>macOS</h3>
-          <small data-i18n="dl.mac">Build from source</small>
-          <code>npm install &amp;&amp; npm run build</code>
+        <div class="o" data-os="mac">
+          <h3><svg class="i"><use href="#i-apple"/></svg>macOS<span class="rec" data-i18n="dl.rec">For your system</span></h3>
+          <small data-i18n="dl.mac">Universal · Apple Silicon &amp; Intel · v1.0.0</small>
+          <a class="btn" data-dl href="download/Material-Theme-Builder_1.0.0_universal.dmg" download><svg class="i"><use href="#i-download"/></svg><span data-i18n="dl.btn.mac">Download .dmg</span></a>
         </div>
-        <div class="o">
-          <h3><svg class="i"><use href="#i-terminal"/></svg>Linux</h3>
-          <small data-i18n="dl.lin">Build from source (.deb / .AppImage)</small>
-          <code>npm install &amp;&amp; npm run build</code>
+        <div class="o" data-os="lin">
+          <h3><svg class="i"><use href="#i-terminal"/></svg>Linux<span class="rec" data-i18n="dl.rec">For your system</span></h3>
+          <small data-i18n="dl.lin">AppImage · x86_64 · v1.0.0</small>
+          <a class="btn" data-dl href="download/Material-Theme-Builder_1.0.0_amd64.AppImage" download><svg class="i"><use href="#i-download"/></svg><span data-i18n="dl.btn.lin">Download AppImage</span></a>
         </div>
+      </div>
+      <div class="others" id="others"><span data-i18n="dl.other">Other platforms</span>
+        <a data-dl href="download/Material-Theme-Builder_1.0.0_x64-setup.exe" download title="Material-Theme-Builder_1.0.0_x64-setup.exe"><svg class="i"><use href="#i-windows"/></svg>Windows (.exe)</a>
+        <a data-dl href="download/Material-Theme-Builder_1.0.0_universal.dmg" download title="Material-Theme-Builder_1.0.0_universal.dmg"><svg class="i"><use href="#i-apple"/></svg>macOS (.dmg)</a>
+        <a data-dl href="download/Material-Theme-Builder_1.0.0_amd64.AppImage" download title="Material-Theme-Builder_1.0.0_amd64.AppImage"><svg class="i"><use href="#i-terminal"/></svg>Linux (.AppImage)</a>
+        <a href="https://github.com/minhtrong67/material-theme-builder" target="_blank" rel="noopener"><svg class="i"><use href="#i-github"/></svg><span data-i18n="dl.src">Build from source</span></a>
+      </div>
+      <div class="mnote" id="mnote">
+        <p data-i18n="dl.mobile">Material Theme Builder is available for desktop (Windows, macOS and Linux). Open this page on a computer to download it, or explore the project on GitHub.</p>
+        <a class="btn" href="https://github.com/minhtrong67/material-theme-builder" target="_blank" rel="noopener"><svg class="i"><use href="#i-github"/></svg><span data-i18n="dl.mobile.btn">View on GitHub</span></a>
       </div>
       <div class="req"><span><svg class="i"><use href="#i-cpu"/></svg><span data-i18n="dl.r1">No account or internet required</span></span><span><svg class="i"><use href="#i-shield"/></svg><span data-i18n="dl.r2">No telemetry, all data stays on your device</span></span></div>
     </div>
@@ -766,6 +981,8 @@ footer{padding:48px 0 56px;margin-top:20px}
       <details class="rv" style="--d:120ms"><summary><span data-i18n="q3">Are the colors identical to Google's Material Theme Builder?</span><svg class="i"><use href="#i-chev"/></svg></summary><div class="a" data-i18n="a3">It uses the same official material-color-utilities library, so schemes match the Material 3 specification. The app adds extras such as color-blind simulation, image extraction and more export formats.</div></details>
       <details class="rv" style="--d:180ms"><summary><span data-i18n="q4">Where are my themes stored?</span><svg class="i"><use href="#i-chev"/></svg></summary><div class="a" data-i18n="a4">Locally on your computer. Nothing is uploaded. You can export any theme as a project file and re-import it later.</div></details>
       <details class="rv" style="--d:240ms"><summary><span data-i18n="q5">How do I run it from source?</span><svg class="i"><use href="#i-chev"/></svg></summary><div class="a" data-i18n="a5">Run <code>npm install</code>, then <code>npm run dev</code> to develop and <code>npm run build</code> to create the installer. You need Node.js and the Rust toolchain.</div></details>
+      <details class="rv" style="--d:300ms"><summary><span data-i18n="q6">How is it different from Google's Material Theme Builder?</span><svg class="i"><use href="#i-chev"/></svg></summary><div class="a" data-i18n="a6">Same official color science, different workflow. This app runs offline, imports existing themes, compares two themes side by side, extracts palettes from images, keeps version history and exports 10 formats. See the comparison table above.</div></details>
+      <details class="rv" style="--d:360ms"><summary><span data-i18n="q7">Does it update itself?</span><svg class="i"><use href="#i-chev"/></svg></summary><div class="a" data-i18n="a7">Not automatically. Settings has a Check for updates button that looks for the newest GitHub release and opens its download page, so you stay in control of when to update.</div></details>
     </div>
   </div>
 </section>
@@ -779,6 +996,22 @@ footer{padding:48px 0 56px;margin-top:20px}
     </div>
   </div>
 </footer>
+
+<div class="scrim" id="drawerScrim" aria-hidden="true"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Menu" data-i18n-aria="nav.menu" hidden>
+  <div class="dh"><a class="brand" href="#top"><img src="assets/favicon.svg" alt="" width="36" height="36" /><span>Material Theme Builder</span></a><button class="ibtn" id="drawerClose" type="button" data-i18n-aria="nav.close" aria-label="Close"><svg class="i"><use href="#i-close"/></svg></button></div>
+  <nav aria-label="Sections">
+    <a href="#features"><svg class="i"><use href="#i-layers"/></svg><span data-i18n="nav.features">Features</span></a>
+    <a href="#expressive"><svg class="i"><use href="#i-sparkles"/></svg><span data-i18n="nav.expressive">Expressive</span></a>
+    <a href="#compare"><svg class="i"><use href="#i-columns"/></svg><span data-i18n="nav.compare">Compare</span></a>
+    <a href="#showcase"><svg class="i"><use href="#i-image"/></svg><span data-i18n="nav.showcase">Screenshots</span></a>
+    <a href="#how"><svg class="i"><use href="#i-zap"/></svg><span data-i18n="nav.how">How it works</span></a>
+    <a href="#faq"><svg class="i"><use href="#i-eye"/></svg><span data-i18n="nav.faq">FAQ</span></a>
+    <a class="dl-link" href="#download"><svg class="i"><use href="#i-download"/></svg><span data-i18n="nav.download">Download</span></a>
+  </nav>
+</aside>
+
+<button class="totop" id="toTop" type="button" data-i18n-aria="nav.top" aria-label="Back to top"><svg class="ring" viewBox="0 0 56 56" aria-hidden="true"><circle class="trk" cx="28" cy="28" r="25"/><circle class="val" id="toTopRing" cx="28" cy="28" r="25"/></svg><svg class="i"><use href="#i-arrow-up"/></svg></button>
 
 <div class="fabm" id="fab">
   <div class="items" id="fabItems">
@@ -802,7 +1035,7 @@ footer{padding:48px 0 56px;margin-top:20px}
   var I18N = {
     en: {
       "fab.dl": "Download", "fab.theme": "Customize",
-      "nav.features": "Features", "nav.showcase": "Screenshots", "nav.how": "How it works", "nav.faq": "FAQ", "nav.download": "Download",
+      "nav.features": "Features", "nav.compare": "Compare", "nav.showcase": "Screenshots", "nav.how": "How it works", "nav.faq": "FAQ", "nav.download": "Download",
       "aria.customize": "Customize appearance",
       "pop.mode": "Appearance", "pop.light": "Light", "pop.dark": "Dark", "pop.system": "System", "pop.lang": "Language", "pop.color": "Theme color",
       "ex.k": "Material 3 Expressive", "ex.h": "Expressive, not just pretty", "ex.p": "The app is built on the 2026 Material 3 Expressive principles. Poke these four ideas, they are the same ones used across the interface.", "ex.play": "Play",
@@ -810,44 +1043,65 @@ footer{padding:48px 0 56px;margin-top:20px}
       "ex2.h": "Spring motion", "ex2.p": "Springs overshoot and settle like real objects. Compare them with a plain ease.",
       "ex3.h": "Emphasized type", "ex3.p": "Weight carries meaning. Drag to feel the range from calm to loud.",
       "ex4.h": "Living indicators", "ex4.p": "A morphing loader and a wavy progress line make waiting feel intentional.",
+      "nav.menu": "Menu", "nav.close": "Close menu", "nav.top": "Back to top", "nav.expressive": "Expressive",
+      "pop.custom": "Custom color", "pop.pick": "Pick a color", "pop.random": "Random color", "pop.variant": "Color style",
+      "var.tonalSpot": "Tonal Spot", "var.vibrant": "Vibrant", "var.expressive": "Expressive", "var.neutral": "Neutral",
       "hero.eyebrow": "Free & open source · Material 3 Expressive", "hero.title1": "Craft Material 3 themes", "hero.title2": "that feel alive.",
-      "hero.lead": "Pick one color and get a complete, accessible Material Design 3 scheme. Preview it on real components, simulate color blindness, then export to CSS, Tailwind, Compose or Flutter.",
-      "hero.download": "Download for Windows", "hero.m1": "MIT licensed", "hero.m2": "Tiny native app (Tauri)", "hero.m3": "Works offline",
+      "hero.lead": "Pick one color and get a complete, accessible Material Design 3 scheme. Preview it on real components, simulate color blindness, then export to CSS, Tailwind, Compose, Flutter, SwiftUI and more.",
+      "hero.dl.win": "Download for Windows", "hero.dl.mac": "Download for macOS", "hero.dl.lin": "Download for Linux", "hero.dl.mobile": "Available for desktop", "hero.mobile.note": "Material Theme Builder is a desktop app for Windows, macOS and Linux. Open this page on a computer to download it.", "hero.m1": "MIT licensed", "hero.m2": "Tiny native app (Tauri)", "hero.m3": "Works offline",
       "hero.chip1": "WCAG checked", "hero.chip2": "9 dynamic styles",
       "stat.1": "Dynamic color styles", "stat.2": "Light & dark contrast schemes", "stat.3": "Export formats", "stat.4": "Color roles per scheme",
       "feat.k": "Features", "feat.h": "Everything you need to ship a polished theme", "feat.p": "More than a color picker: a full workbench for designing, checking and exporting Material 3 themes.",
       "f1.h": "Dynamic color engine", "f1.p": "Powered by Google's HCT color science. Choose from Tonal Spot, Vibrant, Expressive, Neutral, Monochrome, Fidelity, Content, Rainbow and Fruit Salad — and override any core palette.",
-      "f2.h": "Live component preview", "f2.p": "Buttons, cards, inputs, navigation and more update instantly — in light, dark or side by side.",
-      "f3.h": "Accessibility built in", "f3.p": "WCAG contrast checks on every role pair, plus standard, medium and high contrast levels.",
+      "f2.h": "Live component preview", "f2.p": "Buttons, cards, inputs, navigation plus login, dashboard and list screens update instantly, in light, dark or side by side.",
+      "f3.h": "Accessibility built in", "f3.p": "WCAG and APCA contrast checks on every role pair, plus standard, medium and high contrast levels.",
       "f4.h": "Color-blind simulation", "f4.p": "See your theme through protanopia, deuteranopia, tritanopia and achromatopsia filters.",
-      "f5.h": "Extract from image", "f5.p": "Drop a photo or logo and pull its key colors straight into a new theme.",
-      "f6.h": "Export anywhere", "f6.p": "CSS variables, SCSS, Tailwind, JSON design tokens, Jetpack Compose, Flutter, Android XML and a re-importable project file.",
-      "f7.h": "Library, undo & custom colors", "f7.p": "Save themes, step back with undo/redo, and add brand or status colors that harmonize with your source color.",
+      "f5.h": "Palette from an image", "f5.p": "Drop a photo or logo to pull a multi-color palette into a new theme, or grab any pixel on screen with the eyedropper.",
+      "f6.h": "Export anywhere", "f6.p": "11 formats: CSS variables, SCSS, Tailwind, JSON tokens, Jetpack Compose, Compose Multiplatform, Flutter, Android XML, SwiftUI, Figma tokens and a re-importable project file. Grab everything as a zip bundle.",
+      "f7.h": "Library & version history", "f7.p": "Save themes to a searchable, taggable library, roll back through version history, undo and redo, and add brand or status colors that harmonize with your source color.",
       "f8.h": "Make it yours", "f8.p": "Light, dark or system, Material accent colors, 3 text sizes and 5 fonts including Roboto.",
       "f9.h": "English & Tiếng Việt", "f9.p": "Switch language on the fly. Every label, tooltip and message is translated.",
-      "f10.h": "Fast & tiny", "f10.p": "Built with Tauri and Rust — a small installer, instant startup and window size memory.",
+      "f10.h": "Fast, tiny & always current", "f10.p": "Built with Tauri and Rust: a small installer, instant startup, window size memory and a one-click update check.",
       "show.k": "Screenshots", "show.h": "See it in action", "show.t1": "Builder", "show.t2": "Dark preview", "show.t3": "Tonal palettes", "show.t4": "Settings",
       "show.c1": "Pick a source color, choose a style and watch every component adapt.", "show.c2": "A polished dark mode, with side-by-side light and dark previews.",
       "show.c3": "Full tonal palettes from tone 0 to 100 — click any tone to copy it.", "show.c4": "Personalize theme, accent color, font, language and window behavior.",
       "how.k": "How it works", "how.h": "From one color to a full theme in three steps",
-      "how.1h": "Pick a color", "how.1p": "Use the picker, type a hex, roll the dice or extract colors from an image.",
+      "how.1h": "Pick a color", "how.1p": "Use the picker, type a hex, roll the dice, extract colors from an image or import an existing theme.",
       "how.2h": "Tune the style", "how.2p": "Choose a dynamic style, set the contrast level and add custom brand colors.",
       "how.3h": "Export & ship", "how.3p": "Copy or save code for your stack, or keep the theme in your library for later.",
-      "dl.h": "Get Material Theme Builder", "dl.p": "Free forever and open source. Download the installer, or build it yourself in three commands.",
-      "dl.win": "Windows 10 / 11 · 64-bit · v1.0.0", "dl.btn": "Download installer", "dl.mac": "Build from source", "dl.lin": "Build from source (.deb / .AppImage)",
+      "dl.h": "Get Material Theme Builder", "dl.p": "Free forever and open source. Download the installer for your system, or build it yourself in three commands.",
+      "dl.win": "Windows 10 / 11 · 64-bit · v1.0.0", "dl.btn.win": "Download installer", "dl.btn.mac": "Download .dmg", "dl.btn.lin": "Download AppImage", "dl.mac": "Universal · Apple Silicon & Intel · v1.0.0", "dl.lin": "AppImage · x86_64 · v1.0.0", "dl.rec": "For your system", "dl.other": "Other platforms", "dl.src": "Build from source", "dl.mobile": "Material Theme Builder is available for desktop (Windows, macOS and Linux). Open this page on a computer to download it, or explore the project on GitHub.", "dl.mobile.btn": "View on GitHub", "dl.missing": "This download is not available yet. The file has not been added to the download/ folder.", "dl.fail": "Could not reach the download right now.", "a11y.skip": "Skip to content",
       "dl.r1": "No account or internet required", "dl.r2": "No telemetry, all data stays on your device",
       "faq.h": "Questions, answered",
       "q1": "Is it really free?", "a1": "Yes. Material Theme Builder is open source under the MIT license — use it for personal and commercial projects.",
-      "q2": "Which platforms are supported?", "a2": "The installer targets Windows 10/11. Because it is built with Tauri, you can also build it for macOS and Linux from source.",
-      "q3": "Are the colors identical to Google's Material Theme Builder?", "a3": "It uses the same official material-color-utilities library, so schemes match the Material 3 specification. The app adds extras such as color-blind simulation, image extraction and more export formats.",
-      "q4": "Where are my themes stored?", "a4": "Locally on your computer. Nothing is uploaded. You can export any theme as a project file and re-import it later.",
+      "q2": "Which platforms are supported?", "a2": "Windows 10/11 (.exe installer), macOS (universal .dmg for Apple Silicon and Intel) and Linux (.AppImage). Because it is built with Tauri, you can also build it from source on any of them.",
+      "q3": "Are the colors identical to Google's Material Theme Builder?", "a3": "It uses the same official material-color-utilities library, so schemes match the Material 3 specification. The app adds extras such as import, side-by-side compare, color-blind simulation, multi-color image extraction, APCA and more export formats.",
+      "q4": "Where are my themes stored?", "a4": "Locally on your computer. Nothing is uploaded. You can export any theme as a project file, or import Google Material Theme Builder JSON, CSS variables and Android colors.xml.",
       "q5": "How do I run it from source?", "a5": "Run <code>npm install</code>, then <code>npm run dev</code> to develop and <code>npm run build</code> to create the installer. You need Node.js and the Rust toolchain.",
+      "f11.h": "Import existing themes", "f11.p": "Bring in Google Material Theme Builder JSON, CSS variables, Android colors.xml or a .mtb.json project and keep iterating.",
+      "f12.h": "Compare side by side", "f12.p": "Put two themes next to each other and see exactly which roles, contrast ratios and previews changed.",
+      "cmp.k": "Compare", "cmp.h": "How it differs from Google's Material Theme Builder", "cmp.p": "Google's web tool is great for quickly exploring a theme in the browser. This app is a native, offline workbench that goes further on import, comparison, accessibility and export.",
+      "cmp.cap": "Feature comparison between Google's Material Theme Builder and this app", "cmp.feat": "Feature", "cmp.g": "Google's Material Theme Builder", "cmp.m": "This app", "cmp.yes": "Yes. ", "cmp.no": "No. ", "cmp.part": "Partly. ",
+      "cmp.note": "Based on publicly documented features of Google's web tool as of October 2026, which may change. This project is independent and not affiliated with or endorsed by Google.",
+      "demo.h": "See it move", "demo.p": "A short tour of building, comparing and exporting a theme.", "demo.aria": "Screen recording of Material Theme Builder in use", "demo.pause": "Pause video", "demo.play": "Play video",
+      "q6": "How is it different from Google's Material Theme Builder?", "a6": "Same official color science, different workflow. This app runs offline, imports existing themes, compares two themes side by side, extracts palettes from images, keeps version history and exports 10 formats. See the comparison table above.",
+      "q7": "Does it update itself?", "a7": "Not automatically. Settings has a Check for updates button that looks for the newest GitHub release and opens its download page, so you stay in control of when to update.",
+      "cmp.offline": "Runs offline as a native app", "cmp.offline.g": "A web app and Figma plugin that need a connection", "cmp.offline.m": "Native Tauri app. No internet or account needed",
+      "cmp.import": "Import from existing theme files", "cmp.import.g": "Mainly starts from a source color or an image", "cmp.import.m": "Google Theme Builder JSON, CSS variables, Android colors.xml and .mtb.json",
+      "cmp.compare": "Side-by-side theme compare", "cmp.compare.g": "One theme at a time", "cmp.compare.m": "Compare any two themes role by role",
+      "cmp.image": "Multi-color extraction from an image", "cmp.image.g": "Picks a single source color from an image", "cmp.image.m": "A full palette from any image, plus a screen eyedropper",
+      "cmp.library": "Library with version history", "cmp.library.g": "No built-in theme library", "cmp.library.m": "Searchable, taggable library with version history",
+      "cmp.export": "Export formats", "cmp.export.g": "Compose, Android XML, Flutter and Web (CSS)", "cmp.export.m": "11 formats: CSS, Tailwind, SCSS, JSON, Compose, Compose Multiplatform, Flutter, Android XML, SwiftUI, Figma tokens, project file, plus a zip bundle",
+      "cmp.apca": "APCA + WCAG contrast checks", "cmp.apca.g": "Adjustable contrast levels", "cmp.apca.m": "WCAG and APCA on every role pair",
+      "cmp.cb": "Color-blind simulation", "cmp.cb.g": "No built-in simulation", "cmp.cb.m": "Protanopia, deuteranopia, tritanopia and achromatopsia",
+      "cmp.upd": "Automatic updates", "cmp.upd.g": "Always the latest version, since it is a website", "cmp.upd.m": "Built-in update check opens the newest release in one click",
+      "cmp.oss": "Open source, MIT licensed", "cmp.oss.g": "The core color library is open source; the tool itself is a hosted service", "cmp.oss.m": "MIT licensed with the full source on GitHub",
       "foot.by": "by", "foot.ai": "built with the help of", "foot.made": "Made with",
       "title": "Material Theme Builder — Design, preview & export Material 3 Expressive themes"
     },
     vi: {
       "fab.dl": "Tải xuống", "fab.theme": "Tuỳ chỉnh",
-      "nav.features": "Tính năng", "nav.showcase": "Ảnh chụp", "nav.how": "Cách dùng", "nav.faq": "Hỏi đáp", "nav.download": "Tải về",
+      "nav.features": "Tính năng", "nav.compare": "So sánh", "nav.showcase": "Ảnh chụp", "nav.how": "Cách dùng", "nav.faq": "Hỏi đáp", "nav.download": "Tải về",
       "aria.customize": "Tùy chỉnh giao diện",
       "pop.mode": "Giao diện", "pop.light": "Sáng", "pop.dark": "Tối", "pop.system": "Hệ thống", "pop.lang": "Ngôn ngữ", "pop.color": "Màu chủ đề",
       "ex.k": "Material 3 Expressive", "ex.h": "Biểu cảm, không chỉ đẹp", "ex.p": "Ứng dụng được xây theo nguyên tắc Material 3 Expressive 2026. Hãy thử bốn ý tưởng này, chúng được dùng xuyên suốt giao diện.", "ex.play": "Chạy thử",
@@ -855,38 +1109,59 @@ footer{padding:48px 0 56px;margin-top:20px}
       "ex2.h": "Chuyển động lò xo", "ex2.p": "Lò xo vọt qua rồi ổn định như vật thật. So sánh với chuyển động tuyến tính.",
       "ex3.h": "Chữ nhấn mạnh", "ex3.p": "Độ đậm chữ mang ý nghĩa. Kéo để cảm nhận từ nhẹ nhàng đến mạnh mẽ.",
       "ex4.h": "Chỉ báo sống động", "ex4.p": "Vòng tải biến hình và thanh tiến trình lượn sóng khiến việc chờ đợi có chủ đích.",
+      "nav.menu": "Menu", "nav.close": "Đóng menu", "nav.top": "Lên đầu trang", "nav.expressive": "Biểu cảm",
+      "pop.custom": "Màu tùy chỉnh", "pop.pick": "Chọn màu", "pop.random": "Màu ngẫu nhiên", "pop.variant": "Phong cách màu",
+      "var.tonalSpot": "Tonal Spot", "var.vibrant": "Rực rỡ", "var.expressive": "Biểu cảm", "var.neutral": "Trung tính",
       "hero.eyebrow": "Miễn phí & mã nguồn mở · Material 3 Expressive", "hero.title1": "Tạo theme Material 3", "hero.title2": "sống động hơn.",
-      "hero.lead": "Chọn một màu và nhận ngay bộ màu Material Design 3 hoàn chỉnh, đạt chuẩn tiếp cận. Xem trước trên thành phần thật, mô phỏng mù màu rồi xuất ra CSS, Tailwind, Compose hoặc Flutter.",
-      "hero.download": "Tải cho Windows", "hero.m1": "Giấy phép MIT", "hero.m2": "Ứng dụng native nhỏ gọn (Tauri)", "hero.m3": "Dùng được offline",
+      "hero.lead": "Chọn một màu và nhận ngay bộ màu Material Design 3 hoàn chỉnh, đạt chuẩn tiếp cận. Xem trước trên thành phần thật, mô phỏng mù màu rồi xuất ra CSS, Tailwind, Compose, Flutter, SwiftUI và nhiều hơn.",
+      "hero.dl.win": "Tải cho Windows", "hero.dl.mac": "Tải cho macOS", "hero.dl.lin": "Tải cho Linux", "hero.dl.mobile": "Có sẵn cho máy tính", "hero.mobile.note": "Material Theme Builder là ứng dụng máy tính cho Windows, macOS và Linux. Hãy mở trang này trên máy tính để tải về.", "hero.m1": "Giấy phép MIT", "hero.m2": "Ứng dụng native nhỏ gọn (Tauri)", "hero.m3": "Dùng được offline",
       "hero.chip1": "Chuẩn WCAG", "hero.chip2": "9 phong cách động",
       "stat.1": "Phong cách màu động", "stat.2": "Bộ màu sáng & tối theo độ tương phản", "stat.3": "Định dạng xuất", "stat.4": "Vai trò màu mỗi bộ",
       "feat.k": "Tính năng", "feat.h": "Mọi thứ bạn cần để hoàn thiện một theme", "feat.p": "Không chỉ là bộ chọn màu: một xưởng làm việc đầy đủ để thiết kế, kiểm tra và xuất theme Material 3.",
       "f1.h": "Bộ máy màu động", "f1.p": "Dựa trên khoa học màu HCT của Google. Chọn Tonal Spot, Vibrant, Expressive, Neutral, Monochrome, Fidelity, Content, Rainbow, Fruit Salad — và ghi đè bất kỳ bảng màu lõi nào.",
-      "f2.h": "Xem trước thành phần trực tiếp", "f2.p": "Nút, thẻ, ô nhập, điều hướng… cập nhật tức thì — ở chế độ sáng, tối hoặc song song.",
-      "f3.h": "Tích hợp khả năng tiếp cận", "f3.p": "Kiểm tra độ tương phản WCAG cho từng cặp màu, cùng các mức tương phản chuẩn, vừa và cao.",
+      "f2.h": "Xem trước thành phần trực tiếp", "f2.p": "Nút, thẻ, ô nhập, điều hướng cùng các màn hình đăng nhập, bảng điều khiển và danh sách cập nhật tức thì, ở chế độ sáng, tối hoặc song song.",
+      "f3.h": "Tích hợp khả năng tiếp cận", "f3.p": "Kiểm tra độ tương phản WCAG và APCA cho từng cặp màu, cùng các mức tương phản chuẩn, vừa và cao.",
       "f4.h": "Mô phỏng mù màu", "f4.p": "Xem theme qua bộ lọc mù đỏ, mù lục, mù lam và mù màu hoàn toàn.",
-      "f5.h": "Lấy màu từ ảnh", "f5.p": "Thả ảnh hoặc logo để lấy màu chủ đạo vào theme mới.",
-      "f6.h": "Xuất ở mọi nơi", "f6.p": "CSS variables, SCSS, Tailwind, JSON design tokens, Jetpack Compose, Flutter, Android XML và tệp dự án có thể nhập lại.",
-      "f7.h": "Thư viện, hoàn tác & màu tùy chỉnh", "f7.p": "Lưu theme, hoàn tác/làm lại và thêm màu thương hiệu hoặc trạng thái được hòa hợp với màu gốc.",
+      "f5.h": "Bảng màu từ ảnh", "f5.p": "Thả ảnh hoặc logo để lấy bảng nhiều màu vào theme mới, hoặc chọn bất kỳ điểm ảnh nào trên màn hình bằng ống hút màu.",
+      "f6.h": "Xuất ở mọi nơi", "f6.p": "11 định dạng: CSS variables, SCSS, Tailwind, JSON tokens, Jetpack Compose, Compose Multiplatform, Flutter, Android XML, SwiftUI, Figma tokens và tệp dự án nhập lại được. Tải tất cả dưới dạng gói zip.",
+      "f7.h": "Thư viện & lịch sử phiên bản", "f7.p": "Lưu theme vào thư viện có tìm kiếm và gắn thẻ, quay lại qua lịch sử phiên bản, hoàn tác/làm lại và thêm màu thương hiệu hoặc trạng thái hòa hợp với màu gốc.",
       "f8.h": "Tùy biến theo ý bạn", "f8.p": "Sáng, tối hoặc theo hệ thống, màu nhấn Material, 3 cỡ chữ và 5 phông chữ gồm Roboto.",
       "f9.h": "English & Tiếng Việt", "f9.p": "Đổi ngôn ngữ ngay lập tức. Mọi nhãn, tooltip và thông báo đều được dịch.",
-      "f10.h": "Nhanh & nhẹ", "f10.p": "Xây dựng bằng Tauri và Rust — bộ cài nhỏ, khởi động tức thì và ghi nhớ kích thước cửa sổ.",
+      "f10.h": "Nhanh, nhẹ & luôn mới", "f10.p": "Xây dựng bằng Tauri và Rust: bộ cài nhỏ, khởi động tức thì, ghi nhớ kích thước cửa sổ và kiểm tra cập nhật chỉ một cú nhấp.",
       "show.k": "Ảnh chụp", "show.h": "Xem ứng dụng hoạt động", "show.t1": "Trình tạo", "show.t2": "Xem trước tối", "show.t3": "Bảng màu tonal", "show.t4": "Cài đặt",
       "show.c1": "Chọn màu gốc, chọn phong cách và xem mọi thành phần thay đổi theo.", "show.c2": "Chế độ tối tinh tế, kèm xem trước sáng và tối song song.",
       "show.c3": "Bảng màu tonal đầy đủ từ tone 0 đến 100 — bấm vào tone để sao chép.", "show.c4": "Tùy chỉnh giao diện, màu nhấn, phông chữ, ngôn ngữ và hành vi cửa sổ.",
       "how.k": "Cách dùng", "how.h": "Từ một màu đến theme hoàn chỉnh trong ba bước",
-      "how.1h": "Chọn một màu", "how.1p": "Dùng bộ chọn, nhập mã hex, tung xúc xắc hoặc lấy màu từ ảnh.",
+      "how.1h": "Chọn một màu", "how.1p": "Dùng bộ chọn, nhập mã hex, tung xúc xắc, lấy màu từ ảnh hoặc nhập một theme có sẵn.",
       "how.2h": "Tinh chỉnh phong cách", "how.2p": "Chọn phong cách động, đặt mức tương phản và thêm màu thương hiệu.",
       "how.3h": "Xuất & triển khai", "how.3p": "Sao chép hoặc lưu mã cho dự án của bạn, hoặc giữ theme trong thư viện để dùng sau.",
-      "dl.h": "Tải Material Theme Builder", "dl.p": "Miễn phí mãi mãi và mã nguồn mở. Tải bộ cài hoặc tự build chỉ với ba lệnh.",
-      "dl.win": "Windows 10 / 11 · 64-bit · v1.0.0", "dl.btn": "Tải bộ cài", "dl.mac": "Build từ mã nguồn", "dl.lin": "Build từ mã nguồn (.deb / .AppImage)",
+      "dl.h": "Tải Material Theme Builder", "dl.p": "Miễn phí mãi mãi và mã nguồn mở. Tải bộ cài cho hệ điều hành của bạn hoặc tự build chỉ với ba lệnh.",
+      "dl.win": "Windows 10 / 11 · 64-bit · v1.0.0", "dl.btn.win": "Tải bộ cài", "dl.btn.mac": "Tải .dmg", "dl.btn.lin": "Tải AppImage", "dl.mac": "Universal · Apple Silicon & Intel · v1.0.0", "dl.lin": "AppImage · x86_64 · v1.0.0", "dl.rec": "Cho máy của bạn", "dl.other": "Nền tảng khác", "dl.src": "Build từ mã nguồn", "dl.mobile": "Material Theme Builder có sẵn cho máy tính (Windows, macOS và Linux). Hãy mở trang này trên máy tính để tải về, hoặc xem dự án trên GitHub.", "dl.mobile.btn": "Xem trên GitHub", "dl.missing": "Tệp tải về chưa có sẵn. Tệp chưa được thêm vào thư mục download/.", "dl.fail": "Không thể tải tệp lúc này.", "a11y.skip": "Bỏ qua tới nội dung",
       "dl.r1": "Không cần tài khoản hay internet", "dl.r2": "Không theo dõi, dữ liệu luôn nằm trên máy bạn",
       "faq.h": "Giải đáp thắc mắc",
       "q1": "Có thật sự miễn phí không?", "a1": "Có. Material Theme Builder là mã nguồn mở theo giấy phép MIT — dùng cho cả dự án cá nhân và thương mại.",
-      "q2": "Hỗ trợ những nền tảng nào?", "a2": "Bộ cài dành cho Windows 10/11. Vì xây dựng bằng Tauri nên bạn cũng có thể tự build cho macOS và Linux từ mã nguồn.",
-      "q3": "Màu có giống Material Theme Builder của Google không?", "a3": "Ứng dụng dùng chính thư viện material-color-utilities chính thức nên bộ màu khớp đặc tả Material 3. Ngoài ra có thêm mô phỏng mù màu, lấy màu từ ảnh và nhiều định dạng xuất hơn.",
-      "q4": "Theme của tôi được lưu ở đâu?", "a4": "Ngay trên máy của bạn, không có gì được tải lên. Bạn có thể xuất theme thành tệp dự án và nhập lại sau.",
+      "q2": "Hỗ trợ những nền tảng nào?", "a2": "Windows 10/11 (bộ cài .exe), macOS (.dmg universal cho Apple Silicon và Intel) và Linux (.AppImage). Vì xây dựng bằng Tauri nên bạn cũng có thể tự build từ mã nguồn trên cả ba.",
+      "q3": "Màu có giống Material Theme Builder của Google không?", "a3": "Ứng dụng dùng chính thư viện material-color-utilities chính thức nên bộ màu khớp đặc tả Material 3. Ngoài ra có thêm nhập theme, so sánh cạnh nhau, mô phỏng mù màu, lấy nhiều màu từ ảnh, APCA và nhiều định dạng xuất hơn.",
+      "q4": "Theme của tôi được lưu ở đâu?", "a4": "Ngay trên máy của bạn, không có gì được tải lên. Bạn có thể xuất theme thành tệp dự án, hoặc nhập JSON của Google Material Theme Builder, CSS variables và colors.xml của Android.",
       "q5": "Chạy từ mã nguồn như thế nào?", "a5": "Chạy <code>npm install</code>, sau đó <code>npm run dev</code> để phát triển và <code>npm run build</code> để tạo bộ cài. Cần có Node.js và Rust.",
+      "f11.h": "Nhập theme có sẵn", "f11.p": "Nhập JSON của Google Material Theme Builder, CSS variables, colors.xml của Android hoặc dự án .mtb.json rồi tiếp tục chỉnh sửa.",
+      "f12.h": "So sánh cạnh nhau", "f12.p": "Đặt hai theme cạnh nhau và thấy chính xác vai trò màu, tỉ lệ tương phản và bản xem trước nào đã thay đổi.",
+      "cmp.k": "So sánh", "cmp.h": "Khác gì so với Material Theme Builder của Google", "cmp.p": "Công cụ web của Google rất hợp để khám phá nhanh một theme trên trình duyệt. Ứng dụng này là xưởng làm việc gốc, chạy offline, đi xa hơn ở nhập theme, so sánh, khả năng tiếp cận và xuất.",
+      "cmp.cap": "So sánh tính năng giữa Material Theme Builder của Google và ứng dụng này", "cmp.feat": "Tính năng", "cmp.g": "Material Theme Builder của Google", "cmp.m": "Ứng dụng này", "cmp.yes": "Có. ", "cmp.no": "Không. ", "cmp.part": "Một phần. ",
+      "cmp.note": "Dựa trên các tính năng được công bố công khai của công cụ web Google tính đến tháng 10/2026 và có thể thay đổi. Dự án này độc lập, không liên kết hay được Google bảo trợ.",
+      "demo.h": "Xem nó chuyển động", "demo.p": "Một chuyến tham quan ngắn: tạo, so sánh và xuất một theme.", "demo.aria": "Video quay màn hình Material Theme Builder đang hoạt động", "demo.pause": "Tạm dừng video", "demo.play": "Phát video",
+      "q6": "Khác gì so với Material Theme Builder của Google?", "a6": "Cùng khoa học màu chính thức nhưng quy trình khác. Ứng dụng này chạy offline, nhập theme có sẵn, so sánh hai theme cạnh nhau, lấy bảng màu từ ảnh, lưu lịch sử phiên bản và xuất 10 định dạng. Xem bảng so sánh ở trên.",
+      "q7": "Ứng dụng có tự cập nhật không?", "a7": "Không tự động. Trong Cài đặt có nút Kiểm tra cập nhật để tìm bản phát hành mới nhất trên GitHub và mở trang tải, nên bạn tự quyết định khi nào cập nhật.",
+      "cmp.offline": "Chạy offline như ứng dụng gốc", "cmp.offline.g": "Ứng dụng web và plugin Figma, cần có kết nối", "cmp.offline.m": "Ứng dụng Tauri gốc. Không cần internet hay tài khoản",
+      "cmp.import": "Nhập từ tệp theme có sẵn", "cmp.import.g": "Chủ yếu bắt đầu từ một màu gốc hoặc một ảnh", "cmp.import.m": "JSON của Google Theme Builder, CSS variables, colors.xml của Android và .mtb.json",
+      "cmp.compare": "So sánh hai theme cạnh nhau", "cmp.compare.g": "Mỗi lần một theme", "cmp.compare.m": "So sánh hai theme bất kỳ theo từng vai trò màu",
+      "cmp.image": "Lấy nhiều màu từ ảnh", "cmp.image.g": "Chọn một màu gốc duy nhất từ ảnh", "cmp.image.m": "Cả bảng màu từ ảnh bất kỳ, kèm ống hút màu trên màn hình",
+      "cmp.library": "Thư viện có lịch sử phiên bản", "cmp.library.g": "Không có thư viện theme tích hợp", "cmp.library.m": "Thư viện tìm kiếm, gắn thẻ được, có lịch sử phiên bản",
+      "cmp.export": "Định dạng xuất", "cmp.export.g": "Compose, Android XML, Flutter và Web (CSS)", "cmp.export.m": "11 định dạng: CSS, Tailwind, SCSS, JSON, Compose, Compose Multiplatform, Flutter, Android XML, SwiftUI, Figma tokens, tệp dự án, kèm gói zip",
+      "cmp.apca": "Kiểm tra tương phản APCA + WCAG", "cmp.apca.g": "Có các mức tương phản điều chỉnh được", "cmp.apca.m": "WCAG và APCA cho từng cặp vai trò màu",
+      "cmp.cb": "Mô phỏng mù màu", "cmp.cb.g": "Không có mô phỏng tích hợp", "cmp.cb.m": "Mù đỏ, mù lục, mù lam và mù màu hoàn toàn",
+      "cmp.upd": "Tự động cập nhật", "cmp.upd.g": "Luôn là bản mới nhất vì đây là trang web", "cmp.upd.m": "Có kiểm tra cập nhật tích hợp, mở bản mới nhất chỉ với một cú nhấp",
+      "cmp.oss": "Mã nguồn mở, giấy phép MIT", "cmp.oss.g": "Thư viện màu lõi là mã nguồn mở; bản thân công cụ là dịch vụ web", "cmp.oss.m": "Giấy phép MIT, toàn bộ mã nguồn trên GitHub",
       "foot.by": "bởi", "foot.ai": "với sự hỗ trợ của", "foot.made": "Làm với",
       "title": "Material Theme Builder — Thiết kế, xem trước & xuất theme Material 3 Expressive"
     }
@@ -895,11 +1170,19 @@ footer{padding:48px 0 56px;margin-top:20px}
   /* ---------------- state ---------------- */
   var saved = {};
   try { saved = JSON.parse(localStorage.getItem("mtb-landing") || "{}"); } catch (e) {}
+  var VARIANTS = ["tonalSpot", "vibrant", "expressive", "neutral"], HEX6 = /^#[0-9a-f]{6}$/i;
   var state = {
     mode: saved.mode || "system",
-    theme: saved.theme && THEMES.themes[saved.theme] ? saved.theme : "baseline",
+    theme: saved.theme === "custom" ? "custom" : (saved.theme && THEMES.themes[saved.theme] ? saved.theme : "baseline"),
+    custom: HEX6.test(saved.custom || "") ? saved.custom.toUpperCase() : "#6F19FF",
+    variant: VARIANTS.indexOf(saved.variant) >= 0 ? saved.variant : "vibrant",
     lang: saved.lang || ((navigator.language || "en").toLowerCase().indexOf("vi") === 0 ? "vi" : "en")
   };
+  THEMES.roles = MTB_ENGINE.ROLES;
+  var seedOf = function () { return state.theme === "custom" ? state.custom : THEMES.themes[state.theme].seed; };
+  var vals = function (dark) { return MTB_ENGINE.roles(seedOf(), dark, state.variant); };
+  var themeName = function (id) { return id === "custom" ? (state.lang === "vi" ? "Tùy chỉnh" : "Custom") : THEMES.themes[id].n[state.lang === "vi" ? 1 : 0]; };
+
   var persist = function () { try { localStorage.setItem("mtb-landing", JSON.stringify(state)); } catch (e) {} };
   var sysDark = matchMedia("(prefers-color-scheme: dark)");
   var isDark = function () { return state.mode === "dark" || (state.mode === "system" && sysDark.matches); };
@@ -912,7 +1195,7 @@ footer{padding:48px 0 56px;margin-top:20px}
   }
 
   function applyColors() {
-    var t = THEMES.themes[state.theme], v = isDark() ? t.d : t.l, dark = isDark();
+    var dark = isDark(), v = vals(dark);
     THEMES.roles.forEach(function (r, i) { root.style.setProperty("--md-" + kebab(r), v[i]); });
     root.dataset.theme = dark ? "dark" : "light";
     root.style.colorScheme = dark ? "dark" : "light";
@@ -920,7 +1203,12 @@ footer{padding:48px 0 56px;margin-top:20px}
     $$("[data-mode]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode)); });
     $$("#segMode .pill")[0].style.transform = "translateX(" + ["light", "dark", "system"].indexOf(state.mode) * 100 + "%)";
     $$("#swatches .sw").forEach(function (s) { s.setAttribute("aria-checked", String(s.dataset.theme === state.theme)); });
+    $$("#vchips [data-variant]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.variant === state.variant)); });
+    var cp = $("#cpick"); if (cp) cp.style.setProperty("--cc", state.custom);
+    var ci = $("#cInput"); if (ci && ci.value.toLowerCase() !== state.custom.toLowerCase()) ci.value = state.custom.toLowerCase();
+    var hx = $("#hexIn"); if (hx && document.activeElement !== hx) { hx.value = state.custom; hx.removeAttribute("aria-invalid"); }
   }
+  var onLang = [];
   function applyLang() {
     var d = I18N[state.lang];
     root.lang = state.lang;
@@ -932,9 +1220,10 @@ footer{padding:48px 0 56px;margin-top:20px}
     document.title = d.title;
     $$("[data-lang]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.lang === state.lang)); });
     $("#segLang .pill").style.transform = "translateX(" + (state.lang === "vi" ? 100 : 0) + "%)";
-    $$("#swatches .sw .tip").forEach(function (t) { t.textContent = THEMES.themes[t.parentNode.dataset.theme].n[state.lang === "vi" ? 1 : 0]; });
-    $$(".sw").forEach(function (s) { s.setAttribute("aria-label", THEMES.themes[s.dataset.theme].n[state.lang === "vi" ? 1 : 0]); });
+    $$("#swatches .sw .tip").forEach(function (t) { t.textContent = themeName(t.parentNode.dataset.theme); });
+    $$(".sw").forEach(function (s) { s.setAttribute("aria-label", themeName(s.dataset.theme)); });
     buildTones();
+    onLang.forEach(function (f) { f(); });
   }
 
   /* circular-reveal transition from the clicked control */
@@ -956,6 +1245,13 @@ footer{padding:48px 0 56px;margin-top:20px}
     b.addEventListener("click", function () { state.theme = id; persist(); applyColors(); applyLang(); });
     sw.appendChild(b);
   });
+  (function () {
+    var b = document.createElement("button");
+    b.className = "sw custom"; b.dataset.theme = "custom"; b.setAttribute("role", "radio");
+    b.innerHTML = '<span class="tip"></span>';
+    b.addEventListener("click", function () { state.theme = "custom"; persist(); applyColors(); applyLang(); });
+    sw.appendChild(b);
+  })();
   $$("[data-mode]").forEach(function (b) {
     b.addEventListener("click", function () { withTransition(b, function () { state.mode = b.dataset.mode; persist(); applyColors(); }); });
   });
@@ -973,14 +1269,92 @@ footer{padding:48px 0 56px;margin-top:20px}
   document.addEventListener("click", function (e) { if (!pop.contains(e.target)) togglePop(false); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") { togglePop(false); cb.focus(); } });
 
+  /* ---------------- custom color + color style ---------------- */
+  function hslHex(h, sa, l) {
+    sa /= 100; l /= 100;
+    var k = function (n) { return (n + h / 30) % 12; }, a = sa * Math.min(l, 1 - l);
+    var f = function (n) { var c = l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1))); return ("0" + Math.round(255 * c).toString(16)).slice(-2); };
+    return ("#" + f(0) + f(8) + f(4)).toUpperCase();
+  }
+  function setCustom(hex) { state.custom = hex.toUpperCase(); state.theme = "custom"; persist(); applyColors(); applyLang(); }
+  $("#cInput").addEventListener("input", function (e) { setCustom(e.target.value); });
+  $("#hexIn").addEventListener("input", function (e) {
+    var v = e.target.value.trim(); if (v && v.charAt(0) !== "#") v = "#" + v;
+    if (/^#[0-9a-f]{3}$/i.test(v)) v = "#" + v.slice(1).replace(/./g, "$&$&");
+    if (HEX6.test(v)) { e.target.removeAttribute("aria-invalid"); setCustom(v); }
+    else if (e.target.value.trim()) e.target.setAttribute("aria-invalid", "true");
+  });
+  $("#hexIn").addEventListener("blur", function (e) { e.target.value = state.custom; e.target.removeAttribute("aria-invalid"); });
+  $("#cDice").addEventListener("click", function () { setCustom(hslHex(Math.floor(Math.random() * 360), 62 + Math.random() * 28, 42 + Math.random() * 16)); });
+  $$("#vchips [data-variant]").forEach(function (b) {
+    b.addEventListener("click", function () { state.variant = b.dataset.variant; persist(); applyColors(); applyLang(); });
+  });
+
+  /* ---------------- navigation drawer (mobile) ---------------- */
+  var drawer = $("#drawer"), dScrim = $("#drawerScrim"), menuBtn = $("#menuBtn");
+  function setDrawer(open) {
+    if (open === drawer.classList.contains("open")) return;
+    drawer.classList.toggle("open", open); dScrim.classList.toggle("open", open);
+    menuBtn.setAttribute("aria-expanded", String(open));
+    document.body.style.overflow = open ? "hidden" : "";
+    if (open) setTimeout(function () { $("#drawerClose").focus(); }, 60); else menuBtn.focus({ preventScroll: true });
+  }
+  menuBtn.addEventListener("click", function (e) { e.stopPropagation(); setDrawer(true); });
+  $("#drawerClose").addEventListener("click", function () { setDrawer(false); });
+  dScrim.addEventListener("click", function () { setDrawer(false); });
+  drawer.addEventListener("keydown", function (e) {
+    if (e.key !== "Tab") return;
+    var f = $$("a[href], button", drawer).filter(function (x) { return x.offsetParent !== null; });
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") setDrawer(false); });
+  matchMedia("(min-width: 981px)").addEventListener("change", function (e) { if (e.matches) setDrawer(false); });
+
+  /* ---------------- smooth in-page navigation + back to top ---------------- */
+  function goTo(hash) {
+    var top = hash === "#top" || hash === "#";
+    var el = top ? null : $(hash);
+    if (!top && !el) return false;
+    if (top) scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    else el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    try { history.replaceState(null, "", top ? location.pathname + location.search : hash); } catch (e) {}
+    if (el) { if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1"); setTimeout(function () { el.focus({ preventScroll: true }); }, reduce ? 0 : 700); }
+    return true;
+  }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    var h = a.getAttribute("href");
+    if (h === "#" || !(h === "#top" || $(h))) return;
+    e.preventDefault();
+    var wasOpen = drawer.classList.contains("open");
+    if (wasOpen) { drawer.classList.remove("open"); dScrim.classList.remove("open"); menuBtn.setAttribute("aria-expanded", "false"); document.body.style.overflow = ""; }
+    goTo(h);
+  });
+  $("#toTop").addEventListener("click", function () { goTo("#top"); });
+  if (location.hash.length > 1 && $(location.hash)) setTimeout(function () { goTo(location.hash); }, 350);
+
+  /* ---------------- pointer spotlight on cards ---------------- */
+  $$(".card, .xc, .step").forEach(function (el) { el.classList.add("spot"); });
+  document.addEventListener("pointermove", function (e) {
+    if (e.pointerType === "touch") return;
+    var el = e.target.closest && e.target.closest(".spot");
+    if (!el) return;
+    var r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", e.clientX - r.left + "px"); el.style.setProperty("--my", e.clientY - r.top + "px");
+  }, { passive: true });
+
   /* ---------------- decorative builders ---------------- */
-  var FORMATS = ["CSS Variables", "SCSS", "Tailwind CSS", "JSON Tokens", "Jetpack Compose", "Flutter", "Android XML", "Project file"];
+  var FORMATS = ["CSS Variables", "SCSS", "Tailwind CSS", "JSON Tokens", "Jetpack Compose", "Flutter", "Android XML", "SwiftUI", "Figma tokens", "Project file"];
   var track = $("#track");
   track.innerHTML = FORMATS.concat(FORMATS).map(function (f) { return '<span><svg class="i"><use href="#i-code"/></svg>' + f + "</span>"; }).join("");
 
   function buildTones() {
     var box = $("#tones"); if (!box) return;
-    var t = THEMES.themes[state.theme], v = isDark() ? t.d : t.l;
+    var v = vals(isDark());
     box.innerHTML = ["primaryContainer", "secondaryContainer", "tertiaryContainer", "surfaceContainerHighest", "inversePrimary", "secondary", "tertiary", "errorContainer"]
       .map(function (r) { return '<i style="background:' + v[THEMES.roles.indexOf(r)] + '"></i>'; }).join("");
   }
@@ -1004,6 +1378,8 @@ footer{padding:48px 0 56px;margin-top:20px}
     var h = document.documentElement.scrollHeight - innerHeight;
     prog.style.width = (h > 0 ? scrollY / h * 100 : 0) + "%";
     fab.classList.toggle("show-fab", scrollY > 520);
+    var tt = $("#toTop"), ring = $("#toTopRing");
+    if (tt) { tt.classList.toggle("show", scrollY > 640); ring.style.strokeDashoffset = 157.08 * (1 - (h > 0 ? Math.min(1, scrollY / h) : 0)); }
     ticking = false;
   }
   addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
@@ -1049,11 +1425,15 @@ footer{padding:48px 0 56px;margin-top:20px}
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") setFab(false); });
 
   // scroll-spy for the top nav
-  var links = $$("nav.links a"), secs = links.map(function (a) { return $(a.getAttribute("href")); });
+  var spyLinks = $$('nav.links a, .drawer nav a[href^="#"]'), secs = [];
+  spyLinks.forEach(function (a) { var t = $(a.getAttribute("href")); if (t && secs.indexOf(t) < 0) secs.push(t); });
   var spy = new IntersectionObserver(function (es) {
-    es.forEach(function (e) { if (e.isIntersecting) links.forEach(function (a, i) { if (secs[i] === e.target) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); }); });
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      spyLinks.forEach(function (a) { if ($(a.getAttribute("href")) === e.target) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); });
+    });
   }, { rootMargin: "-40% 0px -55% 0px" });
-  secs.forEach(function (x) { x && spy.observe(x); });
+  secs.forEach(function (x) { spy.observe(x); });
 
   // showcase tabs
   var tabs = $$("#showTabs button"), figs = $$("#show figure");
@@ -1069,7 +1449,7 @@ footer{padding:48px 0 56px;margin-top:20px}
     });
   });
 
-  // Friendly snackbar when the installer has not been dropped into download/ yet.
+  // OS-aware downloads + friendly snackbar when a file has not been dropped into download/ yet.
   var snack = document.createElement("div");
   snack.setAttribute("role", "status");
   snack.style.cssText = "position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;pointer-events:none;background:var(--md-inverse-surface);color:var(--md-inverse-on-surface);padding:14px 20px;border-radius:16px;box-shadow:var(--elev3);font-weight:600;font-size:.92rem;max-width:min(92vw,460px);transition:transform .4s var(--spring),opacity .25s;z-index:120";
@@ -1080,19 +1460,77 @@ footer{padding:48px 0 56px;margin-top:20px}
     clearTimeout(snackTimer);
     snackTimer = setTimeout(function () { snack.style.opacity = 0; snack.style.transform = "translate(-50%,30px)"; }, 4200);
   }
-  ["dlMain", "dlBtn"].forEach(function (id) {
-    var a = document.getElementById(id);
-    a.addEventListener("click", function (e) {
-      if (location.protocol === "file:") return;
-      e.preventDefault();
-      fetch(a.getAttribute("href"), { method: "HEAD" }).then(function (r) {
-        if (r.ok) { var t = document.createElement("a"); t.href = a.href; t.download = ""; document.body.appendChild(t); t.click(); t.remove(); }
-        else toast(state.lang === "vi" ? "Tệp cài đặt chưa được thêm vào thư mục download/." : "The installer has not been added to the download/ folder yet.");
-      }).catch(function () { toast(state.lang === "vi" ? "Không thể tải tệp lúc này." : "Could not reach the installer right now."); });
-    });
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a[data-dl]");
+    if (!a || location.protocol === "file:") return;
+    e.preventDefault();
+    fetch(a.getAttribute("href"), { method: "HEAD" }).then(function (r) {
+      if (r.ok) { var t = document.createElement("a"); t.href = a.href; t.download = ""; document.body.appendChild(t); t.click(); t.remove(); }
+      else toast(I18N[state.lang]["dl.missing"]);
+    }).catch(function () { toast(I18N[state.lang]["dl.fail"]); });
   });
 
+  var GH = "https://github.com/minhtrong67/material-theme-builder";
+  var FILES = { win: "download/Material-Theme-Builder_1.0.0_x64-setup.exe", mac: "download/Material-Theme-Builder_1.0.0_universal.dmg", lin: "download/Material-Theme-Builder_1.0.0_amd64.AppImage" };
+  function detectOS() {
+    var ud = navigator.userAgentData, plat = ((ud && ud.platform) || navigator.platform || "").toLowerCase(), ua = (navigator.userAgent || "").toLowerCase();
+    if (ud && ud.mobile) return "mobile";
+    if (/android|iphone|ipad|ipod/.test(ua) || /android|iphone|ipad|ipod/.test(plat)) return "mobile";
+    if (/mac/.test(plat) && navigator.maxTouchPoints > 1) return "mobile"; // iPadOS
+    if (/win/.test(plat) || /windows/.test(ua)) return "win";
+    if (/mac/.test(plat) || /mac os x|macintosh/.test(ua)) return "mac";
+    if (/linux|x11/.test(plat) || /linux|x11/.test(ua)) return "lin";
+    return "win";
+  }
+  var OS = detectOS();
+  (function () {
+    var hero = $("#dlMain"), lbl = $("span", hero), ico = $("use", hero);
+    if (OS === "mobile") {
+      root.classList.add("is-mobile");
+      hero.href = GH; hero.removeAttribute("download"); hero.removeAttribute("data-dl");
+      hero.target = "_blank"; hero.rel = "noopener";
+      lbl.dataset.i18n = "hero.dl.mobile"; ico.setAttribute("href", "#i-monitor");
+      return;
+    }
+    hero.href = FILES[OS]; ico.setAttribute("href", OS === "mac" ? "#i-apple" : OS === "lin" ? "#i-terminal" : "#i-windows"); lbl.dataset.i18n = "hero.dl." + OS;
+    $$(".os .o").forEach(function (c) {
+      var on = c.dataset.os === OS;
+      c.classList.toggle("main", on);
+      c.style.order = on ? -1 : 0;
+    });
+  })();
+
   applyColors(); applyLang();
+
+  /* ---- Demo video: lazy-load near the viewport, play only while visible ---- */
+  (function () {
+    var demo = $("#demo"), v = $("#demoVid"), btn = $("#demoToggle"); if (!demo || !v || !btn) return;
+    var srcs = $$("source", v), failed = 0, loaded = false, userPaused = false;
+    function hide() { demo.hidden = true; try { v.pause(); } catch (e) {} }
+    srcs.forEach(function (x) { x.addEventListener("error", function () { if (++failed >= srcs.length) hide(); }); });
+    v.addEventListener("error", hide);
+    function load() { if (loaded) return; loaded = true; v.preload = "metadata"; v.load(); }
+    function label() {
+      var d = I18N[state.lang], paused = v.paused;
+      btn.setAttribute("aria-label", d[paused ? "demo.play" : "demo.pause"]);
+      $("use", btn).setAttribute("href", paused ? "#i-play" : "#i-pause");
+    }
+    onLang.push(label);
+    v.addEventListener("play", label); v.addEventListener("pause", label);
+    label();
+    if (reduce) { v.controls = true; btn.hidden = true; }
+    btn.addEventListener("click", function () {
+      if (v.paused) { userPaused = false; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      else { userPaused = true; v.pause(); }
+    });
+    if (!("IntersectionObserver" in window)) return;
+    new IntersectionObserver(function (es, o) { if (es[0].isIntersecting) { load(); o.disconnect(); } }, { rootMargin: "700px 0px" }).observe(demo);
+    if (reduce) return;
+    new IntersectionObserver(function (es) {
+      if (es[0].isIntersecting) { if (!userPaused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } }
+      else v.pause();
+    }, { threshold: 0.4 }).observe(v);
+  })();
 
   /* ---- Expressive playground ---- */
   (function () {

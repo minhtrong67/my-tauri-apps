@@ -1,18 +1,13 @@
 # Download folder
 
-Put the Windows installer here. The landing page (`index.html`) links to:
+`npm run build` builds the installer and copies it here automatically as
 
 ```
-download/Material-Music_1.3.0_x64-setup.exe
+download/Material-Music_<version>_x64-setup.exe
 ```
 
-After `npm run build`, copy `target/release/bundle/nsis/Material Music_1.3.0_x64-setup.exe`
-(path is relative to your Tauri workspace) into this folder and rename it to the name above (no spaces).
+The landing page (`index.html`) links to that exact name (currently `Material-Music_1.3.0_x64-setup.exe`),
+so after each build just deploy the project folder again. The app does not update itself:
+users download the new installer from the landing page and run it.
 
-## Auto-update files
-
-`npm run release` also writes `latest.json` here and copies the signed installer. The app reads `download/latest.json` to find new versions. Do not edit it by hand, and delete any test `latest.json` before deploying.
-
-## Portable build
-
-`npm run portable` (after `npm run build`) creates `Material-Music_<version>_x64-portable.zip` here.
+`npm run portable` (after `npm run build`) also creates `Material-Music_<version>_x64-portable.zip` here.

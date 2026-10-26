@@ -80,7 +80,7 @@ export function fmtBytes(n) {
 
 /** Sites where the page URL itself should go to yt-dlp (streams are blob/MSE based). */
 export const PAGE_SITES =
-  /(youtube\.com\/(watch|shorts)|youtu\.be\/|vimeo\.com\/\d|facebook\.com\/.*(videos|watch|reel)|fb\.watch|tiktok\.com\/|twitter\.com\/.*\/status|x\.com\/.*\/status|instagram\.com\/(p|reel|tv)\/|dailymotion\.com\/video|twitch\.tv\/(videos|clip)|bilibili\.com\/video|reddit\.com\/r\/.*\/comments)/i;
+  /(youtube\.com\/(watch|shorts|live)|youtu\.be\/|vimeo\.com\/\d|facebook\.com\/.*(\/videos\/|\/watch\/?\?v=|\/reel\/|\/posts\/|\/share\/[rv]\/)|fb\.watch|tiktok\.com\/(@[\w.-]*\/(video|photo)\/\d+|(t|embed)\/|v\/)|vt\.tiktok\.com|vm\.tiktok\.com|(twitter|x)\.com\/.*\/status\/\d+|instagram\.com\/(p|reel|reels|tv)\/[\w-]+|instagram\.com\/stories\/[\w.]+\/\d+|threads\.(net|com)\/.*\/post\/|reddit\.com\/.*\/comments\/|dailymotion\.com\/video|twitch\.tv\/(videos|clip)|clips\.twitch\.tv|bilibili\.com\/video|pinterest\.[a-z.]+\/pin\/\d+|bsky\.app\/.*\/post\/|linkedin\.com\/(feed\/update|posts|video)|vk\.com\/video|rumble\.com\/v|douyin\.com\/(video|note)\/\d+)/i;
 
 /** Requests that are only pieces of a stream (byte ranges, ad pings): never useful as a download. */
 export function isNoise(url) {

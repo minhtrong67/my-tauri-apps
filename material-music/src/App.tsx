@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useRef } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { LoadingIndicator } from './components/Expressive';
 import { tr, resolveLang } from './lib/i18n';
 import { setWindowTracking } from './lib/tauri';
@@ -62,6 +62,10 @@ export default function App() {
   const settings = useStore((s) => s.settings);
   const showQueue = useStore((s) => s.showQueue);
   const showNow = useStore((s) => s.showNowPlaying);
+  // the full-screen view stays mounted while its closing animation runs
+  const [nowMounted, setNowMounted] = useState(false);
+  useEffect(() => { if (showNow) setNowMounted(true); }, [showNow]);
+  useEffect(() => { const id = window.setTimeout(() => void import('./components/NowPlaying'), 3000); return () => window.clearTimeout(id); }, []);
   const mini = useStore((s) => s.miniMode);
   const viewName = useStore((s) => s.view.name);
   const hasQuery = useStore((s) => !!s.query.trim());
@@ -283,7 +287,7 @@ export default function App() {
         {showQueue && <QueuePanel />}
       </div>
       <PlayerBar />
-      {showNow && current && <Suspense fallback={null}><NowPlaying /></Suspense>}
+      {(showNow || nowMounted) && current && <Suspense fallback={null}><NowPlaying open={showNow} onClosed={() => setNowMounted(false)} /></Suspense>}
       {hasDialog && <Suspense fallback={null}><Dialogs /></Suspense>}
       <ContextMenu />
       <Snackbar />

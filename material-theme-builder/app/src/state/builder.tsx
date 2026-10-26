@@ -3,12 +3,23 @@ import { load, save } from "../lib/storage";
 import { DEFAULT_CONFIG, generate, type GeneratedTheme, type ThemeConfig } from "../lib/theme";
 import { uid } from "../lib/utils";
 
+export interface ThemeVersion {
+  at: number;
+  config: ThemeConfig;
+}
+
 export interface SavedTheme {
   id: string;
   name: string;
   config: ThemeConfig;
   updatedAt: number;
+  /** Older saves of this theme, newest first. */
+  versions?: ThemeVersion[];
+  tags?: string[];
 }
+
+export const VERSION_LIMIT = 15;
+const sameConfig = (a: ThemeConfig, b: ThemeConfig) => JSON.stringify(a) === JSON.stringify(b);
 
 interface Ctx {
   config: ThemeConfig;
@@ -25,6 +36,8 @@ interface Ctx {
   saveCurrent: (name: string) => SavedTheme;
   remove: (id: string) => SavedTheme | undefined;
   restore: (item: SavedTheme) => void;
+  setTags: (id: string, tags: string[]) => void;
+  restoreVersion: (id: string, at: number) => void;
 }
 
 const BuilderContext = createContext<Ctx | null>(null);
@@ -99,11 +112,14 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
   const saveCurrent = useCallback(
     (name: string): SavedTheme => {
       const existing = currentId ? saved.find((s) => s.id === currentId && s.name === name) : undefined;
+      const versions = existing && !sameConfig(existing.config, config) ? [{ at: existing.updatedAt, config: existing.config }, ...(existing.versions ?? [])].slice(0, VERSION_LIMIT) : existing?.versions;
       const item: SavedTheme = {
         id: existing?.id ?? uid(),
         name,
         config,
         updatedAt: Date.now(),
+        ...(versions?.length ? { versions } : {}),
+        ...(existing?.tags?.length ? { tags: existing.tags } : {}),
       };
       persistLibrary([item, ...saved.filter((s) => s.id !== item.id)]);
       setCurrentId(item.id);
@@ -130,6 +146,26 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     [saved],
   );
 
+  const setTags = useCallback(
+    (id: string, tags: string[]) => {
+      persistLibrary(saved.map((s) => (s.id === id ? { ...s, tags: tags.length ? tags : undefined } : s)));
+    },
+    [saved],
+  );
+
+  const restoreVersion = useCallback(
+    (id: string, at: number) => {
+      const item = saved.find((s) => s.id === id);
+      const v = item?.versions?.find((x) => x.at === at);
+      if (!item || !v) return;
+      const versions = [{ at: item.updatedAt, config: item.config }, ...(item.versions ?? []).filter((x) => x.at !== at)].slice(0, VERSION_LIMIT);
+      const next: SavedTheme = { ...item, config: v.config, updatedAt: Date.now(), versions };
+      persistLibrary([next, ...saved.filter((s) => s.id !== id)]);
+      if (currentId === id) commit(v.config);
+    },
+    [saved, currentId, commit],
+  );
+
   const value = useMemo<Ctx>(
     () => ({
       config,
@@ -146,8 +182,10 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
       saveCurrent,
       remove,
       restore,
+      setTags,
+      restoreVersion,
     }),
-    [config, theme, update, replace, undo, redo, past.length, future.length, saved, currentId, currentName, saveCurrent, remove, restore],
+    [config, theme, update, replace, undo, redo, past.length, future.length, saved, currentId, currentName, saveCurrent, remove, restore, setTags, restoreVersion],
   );
 
   return <BuilderContext.Provider value={value}>{children}</BuilderContext.Provider>;

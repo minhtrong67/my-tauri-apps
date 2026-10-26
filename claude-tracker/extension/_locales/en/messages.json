@@ -1,0 +1,5 @@
+{
+  "extDesc": {
+    "message": "Reports the Claude limit status of this Chrome profile to the Claude Tracker app (via 127.0.0.1 only)."
+  }
+}

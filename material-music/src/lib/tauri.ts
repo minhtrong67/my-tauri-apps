@@ -74,7 +74,8 @@ export const scrobbleNowPlaying = (token: string, meta: ListenMeta) => invoke<vo
 export const scrobbleListen = (token: string, meta: ListenMeta) => invoke<void>('scrobble_listen', { token, meta });
 export const scrobbleValidate = (token: string) => invoke<string>('scrobble_validate', { token });
 
-export interface OnlineLyrics { synced: string; plain: string }
+/** `title` / `artist` = the song LRCLIB matched, so the user can see it is the right one */
+export interface OnlineLyrics { synced: string; plain: string; title: string; artist: string }
 export const fetchLyricsOnline = (title: string, artist: string, album: string, duration: number) =>
   invoke<OnlineLyrics | null>('fetch_lyrics_online', { title, artist, album, duration });
 

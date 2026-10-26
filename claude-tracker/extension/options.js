@@ -1,18 +1,19 @@
 const $ = (id) => document.getElementById(id);
-const fields = ["port", "token", "intervalMin"];
+const fields = ["port", "token", "intervalMin", "lang"];
 
 async function load() {
   const s = await chrome.storage.local.get([...fields, "info"]);
+  $("lang").value = s.lang ?? "auto";
   $("port").value = s.port ?? 47821;
   $("token").value = s.token ?? "";
   $("intervalMin").value = s.intervalMin ?? 5;
   const i = s.info || {};
   $("info").innerHTML = `
-    <dt>Email Claude</dt><dd>${i.email || "—"}</dd>
-    <dt>Tổ chức</dt><dd>${i.org || "—"}</dd>
-    <dt>Gói</dt><dd>${i.plan || "—"}</dd>
-    <dt>Email Chrome</dt><dd>${i.chromeEmail || "Chưa đăng nhập Chrome — app sẽ không tự gán được Chrome Profile"}</dd>
-    <dt>Đồng bộ gần nhất</dt><dd>${i.lastSync ? new Date(i.lastSync).toLocaleString("vi-VN") : "—"}</dd>`;
+    <dt>${t("claudeEmail")}</dt><dd>${i.email || "—"}</dd>
+    <dt>${t("org")}</dt><dd>${i.org || "—"}</dd>
+    <dt>${t("plan")}</dt><dd>${i.plan || "—"}</dd>
+    <dt>${t("chromeEmail")}</dt><dd>${i.chromeEmail || t("noChromeLong")}</dd>
+    <dt>${t("lastSync")}</dt><dd>${i.lastSync ? new Date(i.lastSync).toLocaleString(locale()) : "—"}</dd>`;
 }
 
 function conn(kind, text) {
@@ -31,29 +32,35 @@ async function test() {
   const port = Number($("port").value) || 47821;
   try {
     const r = await fetch(`http://127.0.0.1:${port}/ping`, { headers: { "x-tracker-token": $("token").value.trim() } });
-    if (r.ok) conn("ok", "Kết nối thành công");
-    else if (r.status === 401) conn("bad", "Token không đúng");
-    else conn("warn", `App phản hồi HTTP ${r.status}`);
+    if (r.ok) conn("ok", t("ok"));
+    else if (r.status === 401) conn("bad", t("badToken"));
+    else conn("warn", t("httpErr", { n: r.status }));
     return r.ok;
   } catch (_) {
-    conn("bad", "Không kết nối được — app đã chạy chưa?");
+    conn("bad", t("noApp"));
     return false;
   }
 }
 
 $("eye").onclick = () => {
   const t = $("token"); const show = t.type === "password";
-  t.type = show ? "text" : "password"; $("eye").textContent = show ? "Ẩn" : "Hiện";
+  t.type = show ? "text" : "password"; $("eye").textContent = show ? t("hide") : t("show");
 };
 $("test").onclick = test;
+$("lang").onchange = async () => {
+  await chrome.storage.local.set({ lang: $("lang").value });
+  await initLang();
+  applyI18n();
+  load();
+};
 $("save").onclick = async () => {
   await save();
-  conn("idle", "Đang kết nối…");
+  conn("idle", t("connecting"));
   if (await test()) await chrome.runtime.sendMessage("collect-now");
   load();
 };
 chrome.storage.onChanged.addListener(load);
-load();
+initLang().then(() => { applyI18n(); document.title = t("optTitle"); load(); });
 
 // ---- Dò endpoint ----
 const RE = /reset|limit|remain|quota|utiliz|usage|window/i;
@@ -72,7 +79,7 @@ async function getJ(p) {
   try { return { status: r.status, json: JSON.parse(t) }; } catch { return { status: r.status, json: null }; }
 }
 $("probe").onclick = async () => {
-  const out = $("out"); out.style.display = "block"; out.textContent = "Đang dò…";
+  const out = $("out"); out.style.display = "block"; out.textContent = t("probing");
   const orgs = await getJ("/api/organizations");
   const uuid = Array.isArray(orgs.json) && orgs.json[0] ? orgs.json[0].uuid : null;
   const paths = ["/api/organizations", "/api/bootstrap", ...(uuid ? [`/api/organizations/${uuid}`, `/api/organizations/${uuid}/usage`] : [])];
@@ -80,7 +87,7 @@ $("probe").onclick = async () => {
   for (const p of paths) {
     const r = p === "/api/organizations" ? orgs : await getJ(p).catch((e) => ({ status: String(e), json: null }));
     const hits = []; walk(r.json, "", hits);
-    text += `\n## ${p.replace(uuid || "@@", "{org}")}  [HTTP ${r.status}]\n` + (hits.join("\n") || "(không có khóa liên quan)") + "\n";
+    text += `\n## ${p.replace(uuid || "@@", "{org}")}  [HTTP ${r.status}]\n` + (hits.join("\n") || t("noKeys")) + "\n";
   }
   out.textContent = text;
 };

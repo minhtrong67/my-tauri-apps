@@ -1,5 +1,8 @@
 """
-Generates every icon of Material Music (app, setup, uninstall, installer artwork) in the brand colour #E91E63.
+Generates every icon of Material Music (app, setup, uninstall, installer artwork) in Material 3 Expressive style:
+a vivid pink squircle, a big scalloped "cookie" shape in the light pink container tone and a bold rounded music note.
+The pinks are the tones of the Material 3 pink tonal palette (hue 8, from the seed #E91E63):
+  tone 30 #900038 · 40 #BC004B · 50 #E61A61 · 60 #FF4E7C · 80 #FFB2BE · 90 #FFD9DE · 95 #FFECEE
 
     pip install pillow
     python scripts/generate-icons.py          # or: npm run icons
@@ -23,10 +26,13 @@ PUBLIC = os.path.join(ROOT, 'public')
 os.makedirs(ICONS, exist_ok=True)
 os.makedirs(PUBLIC, exist_ok=True)
 
-BRAND = (0xE9, 0x1E, 0x63)  # #E91E63 (Material Pink 500)
-TOP = (0xF0, 0x4F, 0x88)    # lighter tone, top-left of the gradient
-BOTTOM = (0xC2, 0x18, 0x5B) # #C2185B (Material Pink 700), bottom-right
-BIG = 1024                  # everything is drawn at 1024 px and down-sampled for crisp edges
+BRAND = (0xE6, 0x1A, 0x61)   # tone 50  #E61A61
+TOP = (0xFF, 0x4E, 0x7C)     # tone 60  #FF4E7C, top-left of the gradient
+BOTTOM = (0xBC, 0x00, 0x4B)  # tone 40  #BC004B, bottom-right
+DEEP = (0x90, 0x00, 0x38)    # tone 30  #900038, the note
+CONTAINER = (0xFF, 0xD9, 0xDE)  # tone 90 #FFD9DE, the cookie
+SOFT = (0xFF, 0xB2, 0xBE)    # tone 80  #FFB2BE, sparkle
+BIG = 1024                   # everything is drawn at 1024 px and down-sampled for crisp edges
 
 
 def lerp(a, b, t):
@@ -64,52 +70,103 @@ def gradient(size):
     return g
 
 
-def note_glyph(size):
-    """White beamed double music note, rounded joins"""
+def cookie_mask(size, radius_ratio=0.39, lobes=12, depth=0.036):
+    """Scalloped 'cookie' (one of the Material 3 Expressive shapes): a circle with soft, evenly spaced bumps"""
+    big = size * 2
+    m = Image.new('L', (big, big), 0)
+    c = big / 2
+    pts = []
+    for i in range(720):
+        t = i / 720 * math.tau
+        r = big * radius_ratio * (1 + depth * math.cos(lobes * t))
+        pts.append((c + r * math.cos(t - math.pi / 2), c + r * math.sin(t - math.pi / 2)))
+    ImageDraw.Draw(m).polygon(pts, fill=255)
+    return m.resize((size, size), Image.LANCZOS)
+
+
+def sparkle(size, cx, cy, r):
+    """Four-point rounded star, an Expressive accent"""
+    m = Image.new('L', (size * 2, size * 2), 0)
+    pts = []
+    for i in range(240):
+        t = i / 240 * math.tau
+        k = abs(math.cos(2 * t)) ** 1.6  # pinches into 4 points
+        rr = r * 2 * (0.2 + 0.8 * k)
+        pts.append((cx * 2 + rr * math.cos(t), cy * 2 + rr * math.sin(t)))
+    ImageDraw.Draw(m).polygon(pts, fill=255)
+    return m.resize((size, size), Image.LANCZOS)
+
+
+def note_glyph(size, k=1.0):
+    """Bold beamed double music note with fully rounded joins, scaled by k around the centre"""
     s = size
     layer = Image.new('L', (s, s), 0)
     d = ImageDraw.Draw(layer)
-    stem_w = s * 0.062
-    # note heads (tilted ellipses)
-    def head(cx, cy, rx, ry, ang):
+
+    def P(x, y):
+        return (0.5 + (x - 0.5) * k) * s, (0.5 + (y - 0.5) * k + 0.012) * s
+
+    stem_w = s * 0.074 * k
+
+    def head(x, y, rx, ry, ang):
+        cx, cy = P(x, y)
         e = Image.new('L', (s, s), 0)
-        ImageDraw.Draw(e).ellipse((cx - rx, cy - ry, cx + rx, cy + ry), fill=255)
+        ImageDraw.Draw(e).ellipse((cx - rx * s * k, cy - ry * s * k, cx + rx * s * k, cy + ry * s * k), fill=255)
         e = e.rotate(ang, center=(cx, cy), resample=Image.BICUBIC)
         layer.paste(255, (0, 0), e)
-    lx, rx_ = s * 0.385, s * 0.665          # stem x positions
-    ly, ry_ = s * 0.655, s * 0.59           # head centres y
-    head(s * 0.335, s * 0.678, s * 0.108, s * 0.082, 22)
-    head(s * 0.615, s * 0.612, s * 0.108, s * 0.082, 22)
-    # stems
-    d.rounded_rectangle((lx - stem_w / 2, s * 0.34, lx + stem_w / 2, ly + s * 0.02), radius=stem_w / 2, fill=255)
-    d.rounded_rectangle((rx_ - stem_w / 2, s * 0.28, rx_ + stem_w / 2, ry_ + s * 0.02), radius=stem_w / 2, fill=255)
-    # beam (slightly rising to the right)
-    beam = [(lx - stem_w / 2, s * 0.30), (rx_ + stem_w / 2, s * 0.245), (rx_ + stem_w / 2, s * 0.345), (lx - stem_w / 2, s * 0.40)]
+
+    head(0.372, 0.665, 0.098, 0.078, 22)
+    head(0.62, 0.615, 0.098, 0.078, 22)
+    lx, _ = P(0.405, 0)
+    rx_, _ = P(0.653, 0)
+    d.rounded_rectangle((lx - stem_w / 2, P(0, 0.355)[1], lx + stem_w / 2, P(0, 0.665)[1]), radius=stem_w / 2, fill=255)
+    d.rounded_rectangle((rx_ - stem_w / 2, P(0, 0.305)[1], rx_ + stem_w / 2, P(0, 0.615)[1]), radius=stem_w / 2, fill=255)
+    beam = [(lx - stem_w / 2, P(0, 0.325)[1]), (rx_ + stem_w / 2, P(0, 0.272)[1]), (rx_ + stem_w / 2, P(0, 0.372)[1]), (lx - stem_w / 2, P(0, 0.425)[1])]
     d.polygon(beam, fill=255)
+    # round the beam ends a little so nothing looks sharp
+    for x, y in ((lx, P(0, 0.375)[1]), (rx_, P(0, 0.322)[1])):
+        d.ellipse((x - stem_w / 2, y - s * 0.052 * k, x + stem_w / 2, y + s * 0.052 * k), fill=255)
     return layer
 
 
 def base_icon(size=BIG):
-    mask = squircle_mask(size)
+    mask = squircle_mask(size, margin_ratio=0.03, n=4.6)
     img = gradient(size).convert('RGBA')
     img.putalpha(mask)
-    # soft inner highlight on the upper edge for depth
+
+    # soft light from the top for depth
     hi = Image.new('L', (size, size), 0)
-    ImageDraw.Draw(hi).ellipse((-size * 0.2, -size * 0.75, size * 1.2, size * 0.42), fill=20)
-    hi = hi.filter(ImageFilter.GaussianBlur(size * 0.055))
+    ImageDraw.Draw(hi).ellipse((-size * 0.2, -size * 0.8, size * 1.2, size * 0.45), fill=34)
+    hi = hi.filter(ImageFilter.GaussianBlur(size * 0.06))
     hi_rgba = Image.new('RGBA', (size, size), (255, 255, 255, 0))
     hi_rgba.putalpha(Image.composite(hi, Image.new('L', (size, size), 0), mask))
     img = Image.alpha_composite(img, hi_rgba)
-    # note with a soft shadow
+
+    # the cookie: a soft shadow, then the light pink container tone
+    cookie = cookie_mask(size)
+    sh = Image.new('RGBA', (size, size), (110, 0, 40, 0))
+    sh.putalpha(cookie.filter(ImageFilter.GaussianBlur(size * 0.025)).point(lambda v: int(v * 0.38)))
+    moved = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    moved.paste(sh, (0, int(size * 0.022)))
+    img = Image.alpha_composite(img, moved)
+    fill = Image.new('RGBA', (size, size), CONTAINER + (0,))
+    fill.putalpha(cookie)
+    img = Image.alpha_composite(img, fill)
+
+    # the note in the deep tone, slightly lifted by a thin light edge underneath
     glyph = note_glyph(size)
-    shadow = Image.new('RGBA', (size, size), (120, 0, 40, 0))
-    shadow.putalpha(glyph.filter(ImageFilter.GaussianBlur(size * 0.012)).point(lambda v: int(v * 0.30)))
-    shifted = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    shifted.paste(shadow, (0, int(size * 0.012)))
-    img = Image.alpha_composite(img, shifted)
-    white = Image.new('RGBA', (size, size), (255, 255, 255, 0))
-    white.putalpha(glyph)
-    return Image.alpha_composite(img, white)
+    ink = Image.new('RGBA', (size, size), DEEP + (0,))
+    ink.putalpha(glyph)
+    img = Image.alpha_composite(img, ink)
+
+    # sparkle accent top-right
+    sp = sparkle(size, size * 0.80, size * 0.215, size * 0.075)
+    spark = Image.new('RGBA', (size, size), SOFT + (0,))
+    spark.putalpha(sp)
+    spark2 = sparkle(size, size * 0.215, size * 0.80, size * 0.045)
+    sk2 = Image.new('RGBA', (size, size), SOFT + (0,))
+    sk2.putalpha(spark2)
+    return Image.alpha_composite(Image.alpha_composite(img, spark), sk2)
 
 
 def badge(img, kind):
@@ -120,7 +177,7 @@ def badge(img, kind):
     b = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     d = ImageDraw.Draw(b)
     d.ellipse((cx - r - size * 0.018, cy - r - size * 0.018, cx + r + size * 0.018, cy + r + size * 0.018), fill=(255, 255, 255, 255))
-    fill = (0x88, 0x0E, 0x4F, 255) if kind == 'uninstall' else (0x2E, 0x2E, 0x3A, 255)
+    fill = (0x40, 0x00, 0x14, 255) if kind == 'uninstall' else (0x66, 0x00, 0x25, 255)
     d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=fill)
     w = size * 0.034
     white = (255, 255, 255, 255)

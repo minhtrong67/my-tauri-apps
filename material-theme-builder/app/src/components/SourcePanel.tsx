@@ -1,13 +1,13 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
-import { Contrast, ImagePlus, Layers, Pipette, Plus, RotateCcw, Shapes, SwatchBook, Trash2 } from "lucide-react";
-import { colorsFromImage, hctFromHex, readableOn } from "../lib/color";
+import { ClipboardPaste, Contrast, Crosshair, ImagePlus, Layers, Pipette, Plus, RotateCcw, Shapes, SwatchBook, Trash2, Wand2 } from "lucide-react";
+import { colorsFromImage, hctFromHex, normalizeHex, readableOn } from "../lib/color";
 import { CORE_KEYS, QUICK_PICKS, VARIANT_IDS, variantPreview, type CoreKey, type VariantId } from "../lib/theme";
 import { cn, uid } from "../lib/utils";
 import { useBuilder } from "../state/builder";
 import { useSettings } from "../state/settings";
 import { useToast } from "../state/toast";
 import { HctPicker, HexField } from "./ColorPicker";
-import { Chip, IconButton, LoadingIndicator, Range, Section, Switch } from "./ui";
+import { Button, Chip, IconButton, LoadingIndicator, Range, Section, Switch } from "./ui";
 
 const CONTRAST_STEPS: [number, "contrast.reduced" | "contrast.standard" | "contrast.medium" | "contrast.high"][] = [
   [-1, "contrast.reduced"],
@@ -24,11 +24,73 @@ export function SourcePanel() {
   const [thumb, setThumb] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [pick, setPick] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const hct = useMemo(() => hctFromHex(config.source), [config.source]);
   const deferredSource = useDeferredValue(config.source);
 
   useEffect(() => () => void (thumb && URL.revokeObjectURL(thumb)), [thumb]);
+
+  const applyPasted = (text: string): boolean => {
+    const hex = normalizeHex(text.split(/\s+/)[0] ?? "");
+    if (!hex) return false;
+    update({ source: hex });
+    toast.success(t("source.pasted", { hex }));
+    return true;
+  };
+
+  // Ctrl+V anywhere (outside text fields) with a hex color on the clipboard sets the source color.
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
+      if (applyPasted(e.clipboardData?.getData("text") ?? "")) e.preventDefault();
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [update]);
+
+  const pasteFromClipboard = async () => {
+    try {
+      if (!applyPasted(await navigator.clipboard.readText())) toast.warning(t("import.unknown"));
+    } catch {
+      toast.warning(t("import.clipboardFailed"));
+    }
+  };
+
+  const eyedrop = async () => {
+    const ED = (window as unknown as { EyeDropper?: new () => { open: () => Promise<{ sRGBHex: string }> } }).EyeDropper;
+    if (!ED) {
+      toast.warning(t("source.eyedropperFailed"));
+      return;
+    }
+    try {
+      const { sRGBHex } = await new ED().open();
+      const hex = normalizeHex(sRGBHex);
+      if (hex) update({ source: hex });
+    } catch {
+      /* cancelled with Esc */
+    }
+  };
+
+  const assign = (hex: string, role: "primary" | "secondary" | "tertiary") => {
+    if (role === "primary") update({ source: hex });
+    else update({ core: { ...config.core, [role]: hex } });
+    toast.success(t("source.assigned", { role: t(`core.${role}` as never), hex }));
+    setPick(null);
+  };
+
+  const autoAssign = () => {
+    const [p, s2, t2] = suggestions;
+    if (!p) return;
+    const core = { ...config.core };
+    if (s2) core.secondary = s2;
+    if (t2) core.tertiary = t2;
+    update({ source: p, core });
+    toast.success(t("source.autoAssigned"));
+    setPick(null);
+  };
 
   const handleFile = async (file: File | undefined) => {
     if (!file) return;
@@ -43,6 +105,7 @@ export function SourcePanel() {
       if (!colors.length) throw new Error("empty");
       setThumb(url);
       setSuggestions(colors);
+      setPick(null);
       update({ source: colors[0] });
     } catch {
       URL.revokeObjectURL(url);
@@ -99,10 +162,20 @@ export function SourcePanel() {
           </label>
         </div>
 
-        <HexField value={config.source} onChange={(source) => update({ source })} label={t("source.hex")} className="mb-4" />
+        <div className="mb-4 flex items-center gap-1">
+          <HexField value={config.source} onChange={(source) => update({ source })} label={t("source.hex")} className="min-w-0 flex-1" />
+          {typeof window !== "undefined" && "EyeDropper" in window && (
+            <IconButton label={t("source.eyedropper")} tone="tonal" onClick={() => void eyedrop()}>
+              <Crosshair className="size-5" />
+            </IconButton>
+          )}
+          <IconButton label={t("import.paste")} onClick={() => void pasteFromClipboard()}>
+            <ClipboardPaste className="size-5" />
+          </IconButton>
+        </div>
         <HctPicker value={config.source} onChange={(source) => update({ source })} />
 
-        <div className="mt-4 grid grid-cols-6 gap-2">
+        <div className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(2.5rem,1fr))] justify-items-center gap-2">
           {QUICK_PICKS.map((hex, i) => (
             <button
               key={hex}
@@ -113,7 +186,7 @@ export function SourcePanel() {
               onClick={() => update({ source: hex })}
               style={{ background: hex, "--d": `${i * 25}ms` } as React.CSSProperties}
               className={cn(
-                "anim-pop shape aspect-square transition-transform duration-(--spring-spatial-fast-d) ease-emphasized hover:scale-110 active:scale-90",
+                "anim-pop shape size-10 transition-transform duration-(--spring-spatial-fast-d) ease-emphasized hover:scale-110 active:scale-90",
                 config.source === hex ? "shape-cookie scale-105" : "shape-circle hover-shape-cookie",
               )}
             />
@@ -153,18 +226,41 @@ export function SourcePanel() {
           </button>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => void handleFile(e.target.files?.[0]).then(() => (e.target.value = ""))} />
           {suggestions.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {suggestions.map((hex, i) => (
-                <button
-                  key={hex}
-                  type="button"
-                  data-tip={hex}
-                  aria-label={hex}
-                  onClick={() => update({ source: hex })}
-                  style={{ background: hex, "--d": `${i * 40}ms` } as React.CSSProperties}
-                  className={cn("anim-pop shape shape-cookie size-8 transition-transform hover:scale-110", config.source === hex && "scale-110 shape-circle")}
-                />
-              ))}
+            <div className="mt-3">
+              <div className="flex flex-wrap items-center gap-2">
+                {suggestions.map((hex, i) => (
+                  <button
+                    key={hex}
+                    type="button"
+                    data-tip={hex}
+                    aria-label={hex}
+                    aria-pressed={pick === hex}
+                    onClick={() => setPick(pick === hex ? null : hex)}
+                    style={{ background: hex, "--d": `${i * 40}ms` } as React.CSSProperties}
+                    className={cn("anim-pop shape size-8 transition-transform hover:scale-110", pick === hex ? "shape-circle scale-110 ring-2 ring-primary ring-offset-2 ring-offset-surface-container-low" : "shape-cookie")}
+                  />
+                ))}
+                {suggestions.length > 1 && (
+                  <IconButton label={t("source.autoAssign")} tone="tonal" className="ml-auto size-8" onClick={autoAssign}>
+                    <Wand2 className="size-4" />
+                  </IconButton>
+                )}
+              </div>
+              {pick && (
+                <div key={pick} className="anim-fade-up mt-3 rounded-2xl bg-surface-container-high p-3">
+                  <div className="mb-2 flex items-center gap-2 text-xs text-on-surface-variant">
+                    <span className="size-3 rounded-full" style={{ background: pick }} />
+                    {t("source.assignAs", { hex: pick })}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {(["primary", "secondary", "tertiary"] as const).map((role) => (
+                      <Button key={role} size="xs" variant={role === "primary" ? "filled" : role === "secondary" ? "tonal" : "success"} onClick={() => assign(pick, role)}>
+                        {t(`core.${role}` as never)}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

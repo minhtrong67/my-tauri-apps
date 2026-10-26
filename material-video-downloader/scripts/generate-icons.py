@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Generate every icon the app needs (Material Design style, flat + tonal).
+"""Generate every icon the app needs in the Material 3 Expressive style:
+layered "cookie" / "sunny" shapes in vivid M3 tonal colors with a bold rounded glyph.
 
     pip install pillow
     npm run icons
@@ -24,55 +25,86 @@ for p in (ICONS, EXT, PUBLIC):
 S = 1024  # master canvas
 AA = 2    # supersample factor
 
-# Material palette
-DEEP_PURPLE_600 = (94, 53, 177)
-DEEP_PURPLE_500 = (103, 58, 183)
-DEEP_PURPLE_300 = (149, 117, 205)
-DEEP_PURPLE_100 = (209, 196, 233)
-RED_700 = (211, 47, 47)
-RED_500 = (244, 67, 54)
-RED_900 = (183, 28, 28)
+# Material 3 Expressive tonal colors (baseline M3 palette, the vivid purple/rose family)
+PRIMARY = (103, 80, 164)          # #6750A4
+PRIMARY_LIGHT = (127, 103, 190)   # #7F67BE
+PRIMARY_CONTAINER = (234, 221, 255)  # #EADDFF
+PRIMARY_FIXED_DIM = (208, 188, 255)  # #D0BCFF
+TERTIARY = (125, 82, 96)          # #7D5260
+TERTIARY_LIGHT = (156, 104, 121)
+TERTIARY_CONTAINER = (255, 216, 228)  # #FFD8E4
+ERROR = (179, 38, 30)             # #B3261E
+ERROR_LIGHT = (214, 72, 62)
+ERROR_CONTAINER = (249, 222, 220)  # #F9DEDC
+ON_DARK_ERROR = (96, 20, 16)
 WHITE = (255, 255, 255)
+
+import math
 
 
 def lerp(a, b, t):
     return tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(3))
 
 
-def squircle_mask(size, margin_ratio=0.0625, radius_ratio=0.225):
-    m = Image.new("L", (size, size), 0)
-    d = ImageDraw.Draw(m)
-    mg = int(size * margin_ratio)
-    d.rounded_rectangle([mg, mg, size - mg - 1, size - mg - 1], radius=int(size * radius_ratio), fill=255)
-    return m
+def lobed_points(size, radius, lobes, depth, rot_deg=0.0, cx=None, cy=None):
+    """Closed polar curve r = R(1 + depth*cos(n*theta)): M3 Expressive cookie / sunny shapes."""
+    cx = size / 2 if cx is None else cx
+    cy = size / 2 if cy is None else cy
+    rot = math.radians(rot_deg)
+    pts = []
+    for i in range(1440):
+        th = i / 1440 * math.tau
+        r = radius * (1 + depth * math.cos(lobes * (th - rot)))
+        pts.append((cx + r * math.cos(th), cy + r * math.sin(th)))
+    return pts
 
 
-def background(size, top, bottom):
-    """Flat Material tile with a very soft vertical tone shift."""
-    bg = Image.new("RGB", (size, size), top)
-    px = bg.load()
+def gradient(size, top, bottom):
+    col = Image.new("RGB", (1, size))
+    px = col.load()
     for y in range(size):
-        c = lerp(top, bottom, y / (size - 1))
-        for x in range(size):
-            px[x, y] = c
-    return bg
+        px[0, y] = lerp(top, bottom, y / (size - 1))
+    return col.resize((size, size))
 
 
-def tile(top, bottom):
+def layer_shape(size, pts, top, bottom=None, shadow=0):
+    """Return an RGBA layer holding one filled shape (vertical tonal gradient) with an optional soft shadow."""
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    mask = Image.new("L", (size, size), 0)
+    ImageDraw.Draw(mask).polygon(pts, fill=255)
+    if shadow:
+        sh = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        sm = Image.new("L", (size, size), 0)
+        ImageDraw.Draw(sm).polygon([(x, y + size * 0.012) for x, y in pts], fill=shadow)
+        sh.putalpha(sm.filter(ImageFilter.GaussianBlur(size * 0.014)))
+        out = Image.alpha_composite(out, sh)
+    fill = gradient(size, top, bottom or top).convert("RGBA")
+    out.paste(fill, (0, 0), mask)
+    return out
+
+
+def tile(front, front_light, back, simple=False):
+    """Layered M3E badge: a big pale 'sunny' behind a saturated 'cookie' in front."""
     size = S * AA
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    # soft elevation shadow
-    shadow = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    sd = ImageDraw.Draw(shadow)
-    mg = int(size * 0.0625)
-    off = int(size * 0.012)
-    sd.rounded_rectangle([mg, mg + off, size - mg - 1, size - mg - 1 + off], radius=int(size * 0.225), fill=(0, 0, 0, 70))
-    shadow = shadow.filter(ImageFilter.GaussianBlur(size * 0.012))
-    img = Image.alpha_composite(img, shadow)
-    bg = background(size, top, bottom).convert("RGBA")
-    mask = squircle_mask(size)
-    img.paste(bg, (0, 0), mask)
-    return img, mask
+    if not simple:
+        img = Image.alpha_composite(img, layer_shape(size, lobed_points(size, size * 0.455, 12, 0.062, rot_deg=7), back, back, shadow=70))
+        r = size * 0.375
+    else:
+        r = size * 0.43
+    img = Image.alpha_composite(img, layer_shape(size, lobed_points(size, r, 9, 0.055, rot_deg=-10), front_light, front, shadow=0 if not simple else 70))
+    return img, r / (size * 0.5)
+
+
+def glyph_layer(drawer, size, k, *args):
+    """Draw a glyph on its own layer and scale it to fit inside the front shape."""
+    layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    drawer(layer, *args)
+    small = layer.resize((int(size * k), int(size * k)), Image.LANCZOS)
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    off = (size - small.size[0]) // 2
+    out.paste(small, (off, off), small)
+    return out
 
 
 def poly_round(draw, pts, radius, fill):
@@ -134,7 +166,7 @@ def draw_setup(img, accent, glyph=WHITE):
     poly_round(d, inset(head, cx, 446 * u, 24 * u), 24 * u, glyph)
 
 
-def draw_trash(img, glyph=WHITE, tone=RED_900):
+def draw_trash(img, glyph=WHITE, tone=ON_DARK_ERROR):
     size = img.size[0]
     u = size / 1024
     d = ImageDraw.Draw(img)
@@ -155,60 +187,66 @@ def finish(img):
     return img.resize((S, S), Image.LANCZOS)
 
 
-def make_app():
-    img, _ = tile(DEEP_PURPLE_500, DEEP_PURPLE_600)
-    draw_download(img, DEEP_PURPLE_100)
+def build(front, front_light, back, drawer, accent, simple=False):
+    img, fr = tile(front, front_light, back, simple)
+    k = fr * 1.2
+    img = Image.alpha_composite(img, glyph_layer(drawer, img.size[0], k, accent, WHITE) if drawer is not draw_trash else glyph_layer(drawer, img.size[0], k, WHITE, accent))
     return finish(img)
 
 
-def make_setup():
-    img, _ = tile(DEEP_PURPLE_300, DEEP_PURPLE_500)
-    draw_setup(img, DEEP_PURPLE_300)
-    return finish(img)
+def make_app(simple=False):
+    return build(PRIMARY, PRIMARY_LIGHT, TERTIARY_CONTAINER, draw_download, PRIMARY_FIXED_DIM, simple)
 
 
-def make_uninstall():
-    img, _ = tile(RED_500, RED_700)
-    draw_trash(img)
-    return finish(img)
+def make_setup(simple=False):
+    return build(TERTIARY, TERTIARY_LIGHT, PRIMARY_FIXED_DIM, draw_setup, TERTIARY_CONTAINER, simple)
+
+
+def make_uninstall(simple=False):
+    return build(ERROR, ERROR_LIGHT, ERROR_CONTAINER, draw_trash, ON_DARK_ERROR, simple)
 
 
 def resize(master, px):
     return master.resize((px, px), Image.LANCZOS)
 
 
-def save_ico(master, path, sizes=(16, 24, 32, 48, 64, 128, 256)):
-    master.save(path, format="ICO", sizes=[(s, s) for s in sizes])
+def save_ico(master, path, small=None, sizes=(16, 24, 32, 48, 64, 128, 256)):
+    """Small sizes use the simplified (single-shape) artwork so they stay crisp."""
+    frames = []
+    for n in sizes:
+        src = small if (small is not None and n <= 48) else master
+        frames.append(resize(src, n))
+    frames[-1].save(path, format="ICO", sizes=[(f.size[0], f.size[1]) for f in frames], append_images=frames[:-1])
 
 
-app = make_app()
-setup = make_setup()
-uninstall = make_uninstall()
+app, app_s = make_app(), make_app(True)
+setup, setup_s = make_setup(), make_setup(True)
+uninstall, uninstall_s = make_uninstall(), make_uninstall(True)
 
 # --- Tauri icon set --------------------------------------------------------
-resize(app, 32).save(ICONS / "32x32.png")
-resize(app, 64).save(ICONS / "64x64.png")
+resize(app_s, 32).save(ICONS / "32x32.png")
+resize(app_s, 64).save(ICONS / "64x64.png")
 resize(app, 128).save(ICONS / "128x128.png")
 resize(app, 256).save(ICONS / "128x128@2x.png")
 resize(app, 512).save(ICONS / "icon.png")
-save_ico(app, ICONS / "icon.ico")
+save_ico(app, ICONS / "icon.ico", app_s)
 app.save(ICONS / "icon.icns", format="ICNS")
 for n in (30, 44, 71, 89, 107, 142, 150, 284, 310):
-    resize(app, n).save(ICONS / f"Square{n}x{n}Logo.png")
+    resize(app_s if n <= 48 else app, n).save(ICONS / f"Square{n}x{n}Logo.png")
 resize(app, 50).save(ICONS / "StoreLogo.png")
 
 # --- Installer / uninstaller -------------------------------------------------
-save_ico(setup, ICONS / "setup.ico")
-save_ico(uninstall, ICONS / "uninstall.ico")
+save_ico(setup, ICONS / "setup.ico", setup_s)
+save_ico(uninstall, ICONS / "uninstall.ico", uninstall_s)
 resize(setup, 256).save(ICONS / "setup.png")
 resize(uninstall, 256).save(ICONS / "uninstall.png")
 
 # --- Chrome extension --------------------------------------------------------
 for n in (16, 32, 48, 128):
-    resize(app, n).save(EXT / f"icon{n}.png")
+    resize(app_s if n <= 48 else app, n).save(EXT / f"icon{n}.png")
 
 # --- Web ---------------------------------------------------------------------
-resize(app, 192).save(PUBLIC / "favicon.png")
+resize(app_s, 192).save(PUBLIC / "favicon.png")
 resize(app, 512).save(PUBLIC / "app-icon.png")
 resize(app, 512).save(ROOT / "screenshots" / ".icon-preview.png") if (ROOT / "screenshots").exists() else None
 print("Icons generated.")

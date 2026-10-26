@@ -1,7 +1,7 @@
 {
   "name": "claude-tracker",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Track Claude usage limits across multiple Chrome profiles.",
   "license": "MIT",
   "author": "minhtrong67",
@@ -18,6 +18,11 @@
     "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/noto-sans": "^5.3.0",
+    "@fontsource-variable/open-sans": "^5.3.0",
+    "@fontsource/be-vietnam-pro": "^5.3.0",
+    "@fontsource/roboto": "^5.3.0",
     "@tauri-apps/api": "^2.0.0",
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
@@ -29,6 +34,9 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.31",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5.5.4",
     "vite": "^5.4.0"
   }

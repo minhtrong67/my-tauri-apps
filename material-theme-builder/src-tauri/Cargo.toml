@@ -11,11 +11,14 @@ name = "material_theme_builder_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2", features = [] }
+tauri-build = { version = "~2.7", features = [] }
 
+# Keep the minor version of every Tauri crate identical to its npm counterpart in package.json
+# (the CLI refuses to start when they differ, and a shared workspace Cargo.lock may pin older crates).
 [dependencies]
-tauri = { version = "2", features = [] }
-tauri-plugin-dialog = "2"
-tauri-plugin-fs = "2"
+tauri = { version = "~2.12", features = [] }
+tauri-plugin-dialog = "~2.8"
+tauri-plugin-fs = "~2.7"
+tauri-plugin-opener = "~2.7"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

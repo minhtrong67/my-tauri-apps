@@ -83,6 +83,27 @@ export async function saveTextFile(defaultName: string, content: string, ext: st
   return true;
 }
 
+/** Saves binary data (e.g. a .zip): native "Save as" dialog in the desktop app, a download in the browser. */
+export async function saveBinaryFile(defaultName: string, data: Uint8Array, ext: string, mime = "application/octet-stream"): Promise<boolean> {
+  if (isTauri()) {
+    const { save } = await import("@tauri-apps/plugin-dialog");
+    const path = await save({ defaultPath: defaultName, filters: [{ name: ext.toUpperCase(), extensions: [ext] }] });
+    if (!path) return false;
+    const { writeFile } = await import("@tauri-apps/plugin-fs");
+    await writeFile(path, data);
+    return true;
+  }
+  const url = URL.createObjectURL(new Blob([data as BlobPart], { type: mime }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = defaultName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return true;
+}
+
 export async function copyText(text: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(text);
@@ -97,5 +118,16 @@ export async function copyText(text: string): Promise<boolean> {
     const ok = document.execCommand("copy");
     ta.remove();
     return ok;
+  }
+}
+
+/** Opens an http(s) URL in the system browser (falls back to a new tab on the web). */
+export async function openExternal(url: string): Promise<void> {
+  if (!/^https?:\/\//i.test(url)) return;
+  if (isTauri()) {
+    const { openUrl } = await import("@tauri-apps/plugin-opener");
+    await openUrl(url);
+  } else {
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 }

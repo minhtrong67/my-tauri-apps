@@ -18,6 +18,8 @@
     "core:window:allow-scale-factor",
     "dialog:allow-save",
     "dialog:allow-open",
-    "fs:allow-write-text-file"
+    "fs:allow-write-text-file",
+    "fs:allow-write-file",
+    "opener:allow-open-url"
   ]
 }

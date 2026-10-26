@@ -1,9 +1,9 @@
 const $ = (id) => document.getElementById(id);
-const clock = (ms) => new Date(ms).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: false });
+const clock = (ms) => new Date(ms).toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit", hour12: false });
 const ago = (ms) => {
   if (!ms) return "—";
   const s = Math.floor((Date.now() - ms) / 1000);
-  return s < 60 ? "vừa xong" : s < 3600 ? `${Math.floor(s / 60)} phút trước` : `${Math.floor(s / 3600)} giờ trước`;
+  return s < 60 ? t("justNow") : s < 3600 ? t("minAgo", { n: Math.floor(s / 60) }) : t("hrAgo", { n: Math.floor(s / 3600) });
 };
 
 async function render() {
@@ -11,31 +11,31 @@ async function render() {
   const active = info.limited && info.resetsAt && Date.parse(info.resetsAt) > Date.now();
 
   if (active) {
-    $("state").innerHTML = `<div class="muted small">Đang bị giới hạn · reset xong lúc</div><div class="time">${clock(Date.parse(info.resetsAt))}</div>`;
+    $("state").innerHTML = `<div class="muted small">${t("limited")}</div><div class="time">${clock(Date.parse(info.resetsAt))}</div>`;
   } else if (info.limited === false) {
-    $("state").innerHTML = `<div class="muted small">Trạng thái</div><div class="big ok">Dùng được</div>`;
+    $("state").innerHTML = `<div class="muted small">${t("status")}</div><div class="big ok">${t("usable")}</div>`;
   } else {
-    $("state").innerHTML = `<div class="muted small">Trạng thái</div><div class="big">Chưa xác định</div><div class="hint">Mở claude.ai/new để xác nhận</div>`;
+    $("state").innerHTML = `<div class="muted small">${t("status")}</div><div class="big">${t("unknown")}</div><div class="hint">${t("openClaude")}</div>`;
   }
 
-  let pill = ["idle", "Chưa cấu hình"];
-  if (token) pill = info.appOk ? ["ok", "Đã kết nối app"] : info.appOk === false ? ["bad", "Mất kết nối app"] : ["warn", "Đang chờ đồng bộ"];
-  if (info.claudeError) pill = ["warn", "Chưa đăng nhập claude.ai"];
+  let pill = ["idle", t("notConfigured")];
+  if (token) pill = info.appOk ? ["ok", t("connected")] : info.appOk === false ? ["bad", t("disconnected")] : ["warn", t("waitingSync")];
+  if (info.claudeError) pill = ["warn", t("notLoggedIn")];
 
   $("info").innerHTML = `
-    <dt>Kết nối</dt><dd><span class="pill ${pill[0]}">${pill[1]}</span></dd>
-    <dt>Tài khoản</dt><dd>${info.email || "—"}</dd>
-    <dt>Chrome profile</dt><dd>${info.chromeEmail || "Chưa đăng nhập Chrome"}</dd>
-    <dt>Đồng bộ</dt><dd>${ago(info.lastSync)}</dd>`;
-  $("status").textContent = info.claudeError || (token ? info.status || "" : "Mở Cài đặt để nhập token từ app.");
+    <dt>${t("connection")}</dt><dd><span class="pill ${pill[0]}">${pill[1]}</span></dd>
+    <dt>${t("account")}</dt><dd>${info.email || "—"}</dd>
+    <dt>${t("chromeProfile")}</dt><dd>${info.chromeEmail || t("noChrome")}</dd>
+    <dt>${t("lastSync")}</dt><dd>${ago(info.lastSync)}</dd>`;
+  $("status").textContent = info.claudeError ? (info.claudeError === "not_logged_in" ? t("notLoggedIn") : info.claudeError) : token ? statusText(info.status) : t("enterToken");
 }
 
 $("sync").onclick = async () => {
-  $("sync").disabled = true; $("sync").textContent = "Đang đồng bộ…";
+  $("sync").disabled = true; $("sync").textContent = t("syncing");
   await chrome.runtime.sendMessage("collect-now");
-  $("sync").disabled = false; $("sync").textContent = "Đồng bộ ngay";
+  $("sync").disabled = false; $("sync").textContent = t("sync");
   render();
 };
 $("opts").onclick = () => chrome.runtime.openOptionsPage();
 chrome.storage.onChanged.addListener(render);
-render();
+initLang().then(() => { applyI18n(); render(); });

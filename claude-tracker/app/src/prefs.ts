@@ -4,6 +4,7 @@ import type { AccentId } from "./accents";
 
 export type ThemePref = "system" | "light" | "dark";
 export type FontPref = "sm" | "md" | "lg";
+export type FontFamilyId = "system" | "roboto" | "inter" | "vietnam" | "noto" | "opensans";
 export type ViewMode = "grid" | "list";
 export interface Prefs {
   theme: ThemePref;
@@ -11,11 +12,12 @@ export interface Prefs {
   lang: LangPref;
   view: ViewMode;
   accent: AccentId;
+  ff: FontFamilyId;
   filtersOpen: boolean;
 }
 
 const KEY = "claude-tracker.prefs";
-const DEFAULTS: Prefs = { theme: "system", font: "md", lang: "system", view: "grid", accent: "terracotta", filtersOpen: true };
+const DEFAULTS: Prefs = { theme: "system", font: "md", lang: "system", view: "grid", accent: "terracotta", ff: "system", filtersOpen: true };
 
 export function loadPrefs(): Prefs {
   try {
@@ -66,9 +68,10 @@ export function usePrefs() {
     r.dataset.theme = theme;
     r.dataset.font = prefs.font;
     r.dataset.accent = prefs.accent;
+    r.dataset.ff = prefs.ff;
     r.lang = lang;
     document.title = "Claude Tracker";
-  }, [theme, prefs.font, prefs.accent, lang]);
+  }, [theme, prefs.font, prefs.accent, prefs.ff, lang]);
 
   // Đồng bộ thanh tiêu đề gốc của Windows với lựa chọn của người dùng
   useEffect(() => {

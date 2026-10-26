@@ -1,5 +1,5 @@
 import { useCallback, useDeferredValue, useEffect, useState } from "react";
-import { Accessibility, Bookmark, Check, Code, Download, Eye, EyeOff, Grid3x3, Keyboard, Moon, Palette, Redo2, RotateCcw, Shuffle, Sun, Undo2, X } from "lucide-react";
+import { Accessibility, Bookmark, Check, Code, Download, Eye, EyeOff, Grid3x3, Keyboard, Moon, Palette, Redo2, RotateCcw, Shuffle, Sun, Undo2, Upload, X } from "lucide-react";
 import { PreviewScene } from "../components/PreviewScene";
 import { SourcePanel } from "../components/SourcePanel";
 import { AccessibilityTab } from "../components/tabs/AccessibilityTab";
@@ -7,6 +7,7 @@ import { ColorsTab } from "../components/tabs/ColorsTab";
 import { ExportTab } from "../components/tabs/ExportTab";
 import { PalettesTab } from "../components/tabs/PalettesTab";
 import { Button, IconButton, Segmented } from "../components/ui";
+import { ImportSheet } from "../components/ImportSheet";
 import { ConfirmDialog, PromptDialog, Select, Sheet } from "../components/overlays";
 import { DEFAULT_CONFIG } from "../lib/theme";
 import { randomSeed } from "../lib/color";
@@ -39,6 +40,7 @@ export function BuilderPage() {
   const [saveOpen, setSaveOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
   const [keysOpen, setKeysOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [cvd, setCvd] = useState<Cvd>("normal");
   const theme = useDeferredValue(b.theme);
 
@@ -69,6 +71,9 @@ export function BuilderPage() {
         </IconButton>
         <IconButton label={t("builder.shortcuts")} onClick={() => setKeysOpen(true)}>
           <Keyboard className="size-5" />
+        </IconButton>
+        <IconButton label={t("import.tooltip")} onClick={() => setImportOpen(true)}>
+          <Upload className="size-5" />
         </IconButton>
         <IconButton label={t("builder.reset")} onClick={() => setResetOpen(true)}>
           <RotateCcw className="size-5" />
@@ -158,6 +163,7 @@ export function BuilderPage() {
         </main>
       </div>
 
+      <ImportSheet open={importOpen} onClose={() => setImportOpen(false)} />
       <PromptDialog
         open={saveOpen}
         title={t("builder.saveTitle")}
@@ -204,6 +210,9 @@ export function BuilderPage() {
               ["shortcuts.redo", "Ctrl + Shift + Z"],
               ["shortcuts.save", "Ctrl + S"],
               ["shortcuts.settings", "Ctrl + ,"],
+              ["shortcuts.pages", "Ctrl + 1–4"],
+              ["shortcuts.rail", "Ctrl + B"],
+              ["shortcuts.tabs", "← →  Home  End"],
               ["shortcuts.help", "?"],
             ] as const
           ).map(([k, keys]) => (

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { tr } from '../lib/i18n';
 import { Cover } from './Cover';
 import { Button, Icon, IconButton, Segmented } from './ui';
@@ -9,8 +9,9 @@ import { WindowControls } from './TitleBar';
 import { useCurrent, useStore } from '../lib/store';
 import { useCover } from '../lib/cover';
 import { engine } from '../lib/audio';
-import { fetchLyricsOnline, readLyrics, writeTextFile } from '../lib/tauri';
+import { fetchLyricsOnline, readLyrics, writeTextFile, type OnlineLyrics } from '../lib/tauri';
 import { activeLine, parseLyrics, type Lyrics } from '../lib/lrc';
+import { playClose, playOpen, prefersReducedMotion, type MorphTargets } from '../lib/morph';
 
 type VizStyle = 'bars' | 'wave' | 'circle';
 
@@ -111,6 +112,10 @@ function OffsetControl({ id }: { id: string }) {
   );
 }
 
+/** Lyrics found online during this session (null = looked up, nothing found); `autoTried` stops automatic lookups from repeating */
+const lyricsCache = new Map<string, OnlineLyrics | null>();
+const autoTried = new Set<string>();
+
 function LyricsPane() {
   const t = useCurrent();
   const position = useStore((s) => s.position);
@@ -118,25 +123,36 @@ function LyricsPane() {
   const seek = useStore((s) => s.seek);
   const [lyrics, setLyrics] = useState<Lyrics | null>(null);
   const [loading, setLoading] = useState(false);
-  const [online, setOnline] = useState<{ raw: string; saved: boolean } | null>(null);
+  const [online, setOnline] = useState<{ raw: string; saved: boolean; source: string } | null>(null);
+  const autoLyrics = useStore((s) => s.settings.autoLyrics);
   const [searching, setSearching] = useState(false);
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const scroller = useRef<HTMLDivElement>(null);
 
-  const searchOnline = async () => {
+  const show = (res: OnlineLyrics) => {
+    const raw = res.synced.trim() ? res.synced : res.plain;
+    setLyrics(parseLyrics(raw));
+    setOnline({ raw, saved: false, source: [res.artist, res.title].filter(Boolean).join(' – ') });
+  };
+
+  /** `silent` = started by the "find lyrics automatically" setting: no toast when nothing is found */
+  const searchOnline = async (silent = false) => {
     if (!t || searching) return;
     const toast = useStore.getState().showToast;
     setSearching(true);
     try {
       const res = await fetchLyricsOnline(t.title, t.artist === tr('unknownArtist') ? '' : t.artist, t.album, t.duration);
       const raw = res ? (res.synced.trim() ? res.synced : res.plain) : '';
-      if (!raw.trim()) toast(tr('lyricsNotFoundOnline'), undefined, undefined, 'warning');
-      else {
-        setLyrics(parseLyrics(raw));
-        setOnline({ raw, saved: false });
+      if (res && raw.trim()) {
+        lyricsCache.set(t.id, res);
+        show(res);
+      } else {
+        lyricsCache.set(t.id, null);
+        if (!silent) toast(tr('lyricsNotFoundOnline'), undefined, undefined, 'warning');
       }
     } catch (e) {
-      toast(tr('lyricsOnlineFailed', { e: String(e) }), undefined, undefined, 'error');
+      // network / server problems are not "not found": offer to try again
+      if (!silent) toast(tr('lyricsOnlineFailed', { e: String(e) }), tr('retry'), () => void searchOnline(false), 'error');
     } finally {
       setSearching(false);
     }
@@ -167,6 +183,18 @@ function LyricsPane() {
     return () => { alive = false; };
   }, [t?.id]);
 
+  // no saved lyrics: show what was already found for this song, or look it up when the setting is on
+  useEffect(() => {
+    if (!t || loading || (lyrics && lyrics.lines.length)) return;
+    const hit = lyricsCache.get(t.id);
+    if (hit) show(hit);
+    else if (autoLyrics && hit === undefined && !autoTried.has(t.id)) {
+      autoTried.add(t.id);
+      void searchOnline(true);
+    }
+     
+  }, [t?.id, loading, lyrics, autoLyrics]);
+
   const active = useMemo(() => (lyrics?.synced ? activeLine(lyrics.lines, position + offsetMs / 1000) : -1), [lyrics, position, offsetMs]);
   useEffect(() => {
     // scroll only the lyrics box: scrollIntoView would also scroll the (overflow: hidden) page around it and push the whole screen up
@@ -185,7 +213,7 @@ function LyricsPane() {
         <Icon name="lyrics" size={48} />
         <div className="text-title-md text-on-surface">{tr('noLyrics')}</div>
         <div className="text-body-md">{tr('noLyricsHelp')}</div>
-        <Button variant="tonal" icon="cloud_download" className="mt-2" disabled={searching} onClick={searchOnline}>{searching ? tr('lyricsSearching') : tr('lyricsSearchOnline')}</Button>
+        <Button variant="tonal" icon="cloud_download" className="mt-2" disabled={searching} onClick={() => void searchOnline(false)}>{searching ? tr('lyricsSearching') : tr('lyricsSearchOnline')}</Button>
         <div className="text-body-sm">{tr('lyricsOnlineNote')}</div>
       </div>
     );
@@ -196,7 +224,7 @@ function LyricsPane() {
           {lyrics.synced && t && <div className="absolute top-3 left-4"><OffsetControl id={t.id} /></div>}
           {online && (
             <div className="absolute top-3 right-4 flex items-center gap-2 animate-fade-in">
-              <span className="px-3 h-8 inline-flex items-center rounded-full bg-surface-container-high text-label-md text-on-surface-variant">{tr('lyricsFromOnline')}</span>
+              <span title={online.source} className="px-3 h-8 max-w-[300px] inline-flex items-center rounded-full bg-surface-container-high text-label-md text-on-surface-variant"><span className="truncate">{tr('lyricsFromOnline')}{online.source ? ` · ${online.source}` : ''}</span></span>
               {!online.saved && <Button variant="tonal" icon="save" onClick={saveLrc}>{tr('lyricsSaveLrc')}</Button>}
             </div>
           )}
@@ -237,8 +265,38 @@ function VizTab() {
   );
 }
 
-export function NowPlaying() {
+export function NowPlaying({ open = true, onClosed }: { open?: boolean; onClosed?: () => void }) {
   const t = useCurrent();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const coverRef = useRef<HTMLDivElement>(null);
+  const opening = useRef<{ cancel: () => void } | null>(null);
+  const closing = useRef(false);
+
+  const targets = (): MorphTargets | null => {
+    const root = rootRef.current;
+    if (!root) return null;
+    return { root, cover: coverRef.current, items: [...root.querySelectorAll<HTMLElement>('[data-np]')] };
+  };
+
+  // opens: the player bar grows into this view (before the first paint, so there is no flash)
+  useLayoutEffect(() => {
+    const tg = targets();
+    if (!tg || prefersReducedMotion()) return;
+    opening.current = playOpen(tg);
+    return () => opening.current?.cancel();
+     
+  }, []);
+
+  // closes: the same movement backwards, then the parent unmounts the view
+  useEffect(() => {
+    if (open || closing.current) return;
+    closing.current = true;
+    const tg = targets();
+    opening.current?.cancel();
+    if (!tg || prefersReducedMotion()) { onClosed?.(); return; }
+    void playClose(tg).then(() => onClosed?.());
+     
+  }, [open]);
   const cover = useCover(t);
   const liked = useStore((s) => (t ? !!s.liked[t.id] : false));
   const [tab, setTab] = useState<'lyrics' | 'viz' | 'queue'>('lyrics');
@@ -246,20 +304,20 @@ export function NowPlaying() {
   const st = useStore.getState();
   if (!t) return null;
   return (
-    <div className="fixed inset-0 z-40 bg-surface animate-slide-up overflow-clip flex flex-col">
+    <div ref={rootRef} className="fixed inset-0 z-40 bg-surface overflow-clip flex flex-col" style={{ pointerEvents: open ? undefined : 'none' }}>
       {cover && <img src={cover} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20 blur-3xl scale-125 pointer-events-none" />}
       <div className="aurora w-[55vw] h-[55vw] bg-primary -top-[20vw] -left-[15vw]" />
       <div className="aurora w-[45vw] h-[45vw] bg-tertiary -bottom-[18vw] -right-[10vw]" style={{ animationDelay: '-7s' }} />
       <div className="absolute inset-0 bg-gradient-to-b from-primary-container/30 to-surface/80 pointer-events-none" />
-      <div data-tauri-drag-region className="relative h-14 shrink-0 flex items-center justify-between px-3">
+      <div data-np data-tauri-drag-region className="relative h-14 shrink-0 flex items-center justify-between px-3">
         <IconButton icon="expand_more" title={`${tr('collapse')} (Esc)`} onClick={() => st.set({ showNowPlaying: false })} />
         <div className="text-title-sm text-on-surface-variant pointer-events-none">{tr('nowPlaying')}</div>
         <WindowControls />
       </div>
       <div className="relative flex-1 min-h-0 grid grid-cols-1 md:grid-cols-[minmax(340px,5fr)_6fr] gap-8 px-10 pb-8">
         <div className="flex flex-col items-center justify-center min-h-0 gap-5">
-          <Cover key={t.id} track={t} eager className={`cover-in w-[min(46vh,100%)] aspect-square max-w-[440px] rounded-[40px] shadow-2xl transition-transform duration-500 ${playing ? 'breathe' : 'scale-95'}`} iconSize={96} />
-          <div className="w-full max-w-[440px]">
+          <div ref={coverRef} className="w-[min(46vh,100%)] aspect-square max-w-[440px]"><Cover key={t.id} track={t} eager className={`cover-in w-full h-full rounded-[40px] shadow-2xl transition-transform duration-500 ${playing ? 'breathe' : 'scale-95'}`} iconSize={96} /></div>
+          <div data-np className="w-full max-w-[440px]">
             <div className="flex items-center gap-2">
               <div className="min-w-0 flex-1">
                 <div className="truncate text-headline-sm">{t.title}</div>
@@ -271,7 +329,7 @@ export function NowPlaying() {
             <div className="flex justify-center mt-2"><TransportControls size="lg" /></div>
           </div>
         </div>
-        <div className="min-h-0 flex flex-col rounded-[32px] bg-surface-container/70 backdrop-blur overflow-hidden">
+        <div data-np className="min-h-0 flex flex-col rounded-[32px] bg-surface-container/70 backdrop-blur overflow-hidden">
           <div className="p-4 flex justify-center shrink-0">
             <Segmented value={tab} onChange={setTab} options={[{ value: 'lyrics', label: tr('tabLyrics'), icon: 'lyrics' }, { value: 'viz', label: tr('tabEffects'), icon: 'equalizer' }, { value: 'queue', label: tr('tabQueue'), icon: 'queue_music' }]} />
           </div>

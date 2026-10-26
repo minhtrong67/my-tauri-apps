@@ -5,6 +5,7 @@ import {
   argbFromHex,
   argbFromRgb,
   hexFromArgb,
+  labFromArgb,
   lstarFromArgb,
   yFromLstar,
 } from "@material/material-color-utilities";
@@ -92,4 +93,41 @@ export async function colorsFromImage(url: string): Promise<string[]> {
   if (!pixels.length) return [];
   const map = QuantizerCelebi.quantize(pixels, 128);
   return Score.score(map, { desired: 6 }).map(toHex);
+}
+
+
+/** Perceptual distance (CIE76 ΔE in L*a*b*) between two hex colors. */
+export function labDistance(a: string, b: string): number {
+  const [l1, a1, b1] = labFromArgb(toArgb(a));
+  const [l2, a2, b2] = labFromArgb(toArgb(b));
+  return Math.hypot(l1 - l2, a1 - a2, b1 - b2);
+}
+
+/**
+ * APCA lightness contrast (Lc) of text on a background, per APCA-W3 0.0.98G-4g.
+ * Positive for dark text on light, negative for light text on dark. |Lc| 75+ is body text,
+ * 60+ large text, 45+ UI elements, 30+ the absolute minimum.
+ */
+export function apcaLc(textHex: string, bgHex: string): number {
+  const lum = (hex: string) => {
+    const n = toArgb(hex);
+    const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => Math.pow(v / 255, 2.4));
+    const y = 0.2126729 * c[0] + 0.7151522 * c[1] + 0.072175 * c[2];
+    return y < 0.022 ? y + Math.pow(0.022 - y, 1.414) : y;
+  };
+  const yt = lum(textHex);
+  const yb = lum(bgHex);
+  if (Math.abs(yb - yt) < 0.0005) return 0;
+  if (yb > yt) {
+    const sapc = (Math.pow(yb, 0.56) - Math.pow(yt, 0.57)) * 1.14;
+    return sapc < 0.1 ? 0 : (sapc - 0.027) * 100;
+  }
+  const sapc = (Math.pow(yb, 0.65) - Math.pow(yt, 0.62)) * 1.14;
+  return sapc > -0.1 ? 0 : (sapc + 0.027) * 100;
+}
+
+export type ApcaLevel = "body" | "large" | "ui" | "min" | "fail";
+export function apcaLevel(lc: number): ApcaLevel {
+  const v = Math.abs(lc);
+  return v >= 75 ? "body" : v >= 60 ? "large" : v >= 45 ? "ui" : v >= 30 ? "min" : "fail";
 }

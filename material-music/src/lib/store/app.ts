@@ -1,5 +1,4 @@
 import { engine } from '../audio';
-import { checkForUpdate } from '../updater';
 import { replayGainDb } from './helpers';
 import { tr, setActiveLang, resolveLang } from '../i18n';
 import * as api from '../tauri';
@@ -48,27 +47,6 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
 
   return {
     ready: false,
-    updateInfo: null,
-    checkingUpdate: false,
-
-    checkUpdates: async (silent = false) => {
-      if (get().checkingUpdate) return;
-      set({ checkingUpdate: true });
-      const known = get().updateInfo?.version;
-      try {
-        const info = await checkForUpdate();
-        set({ updateInfo: info });
-        if (info) {
-          const open = () => get().openDialog({ type: 'update', ...info });
-          if (!silent) open();
-          else if (info.version !== known) get().showToast(tr('updateAvailable', { v: info.version }), tr('updateView'), open, 'info');
-        } else if (!silent) get().showToast(tr('upToDate', { v: __APP_VERSION__ }), undefined, undefined, 'success');
-      } catch (e) {
-        if (!silent) get().showToast(tr('updateCheckFailed', { e: String(e) }), undefined, undefined, 'error');
-      } finally {
-        set({ checkingUpdate: false });
-      }
-    },
     settings: defaultSettings,
 
     saveSession: () => scheduleSave('user'),
@@ -192,11 +170,6 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
 
       set({ ready: true });
       if (recovered) window.setTimeout(() => get().showToast(tr('dataRecovered'), undefined, undefined, 'warning'), 600);
-      // automatic update check: a few seconds after start, then every 6 hours (not in `npm run dev`)
-      if (!import.meta.env.DEV) {
-        window.setTimeout(() => get().settings.autoUpdate && void get().checkUpdates(true), 8000);
-        window.setInterval(() => get().settings.autoUpdate && void get().checkUpdates(true), 6 * 3600 * 1000);
-      }
       syncNext();
       void syncWatchers();
       subscribe((st, prev) => {

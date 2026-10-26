@@ -1,8 +1,24 @@
-// Vector artwork for every icon of Material Theme Builder (Material 3 Expressive style).
-// Shared by scripts/make-icons.mjs and the in-app logo so they always match.
+// Vector artwork for every icon of Material Theme Builder, in the Material 3 Expressive style:
+// flat tonal color blocks, bold geometry, expressive shapes (cookie, flower, squircle, soft diamond),
+// no gradients, glossy highlights or drop shadows - so it stays crisp from 16px to 1024px.
+//
+// Colors are roles of the official Material "Vibrant" dynamic scheme (@material/material-color-utilities), the
+// saturated look used by Material 3 Expressive:
+//   violet (source #6F19FF)  primary #6F18FF, onPrimaryContainer #5400CC, primaryContainer #E9DDFF, tertiaryContainer #FFD6FC
+//   teal   (source #00BFA5)  primaryContainer #00FEDC, onPrimaryContainer #005145
+//   yellow (source #FFD400)  primaryContainer #FFE177
+//   coral  (source #FF5A36)  secondaryContainer #FFDBC9
+//   red    (source #E5231B)  primary #C00006, primaryContainer #FFDAD5, onPrimaryContainer #930003
+// Shared by scripts/make-icons.mjs, scripts/gen-landing-assets.mjs and the in-app logo.
 
-/** 12-lobed "cookie" shape - one of the signature M3 Expressive shapes. */
-export function cookiePath(cx = 512, cy = 512, r = 452, amp = 24, lobes = 12, steps = 360) {
+export const PALETTE = {
+  violet: { base: "#6F18FF", deep: "#5400CC", light: "#E9DDFF", lilac: "#F3DAFF", pink: "#FFD6FC", mint: "#00FEDC", yellow: "#FFE177", peach: "#FFDBC9" },
+  teal: { base: "#00FEDC", deep: "#005145", light: "#BBECEA", dark: "#00382F" },
+  red: { base: "#C00006", deep: "#930003", light: "#FFDAD5" },
+};
+
+/** Smooth n-lobed "cookie" outline, one of the signature M3 Expressive shapes. */
+export function cookiePath(cx = 512, cy = 512, r = 440, amp = 40, lobes = 9, steps = 360) {
   const pts = [];
   for (let i = 0; i < steps; i++) {
     const a = (i / steps) * Math.PI * 2 - Math.PI / 2;
@@ -14,71 +30,63 @@ export function cookiePath(cx = 512, cy = 512, r = 452, amp = 24, lobes = 12, st
 
 export const COOKIE = cookiePath();
 
-/** Four-petal clover built from circles (a "flower" shape). */
-const clover = (cx, cy, fill) => {
-  const r = 58, o = 54;
-  return `<g fill="${fill}"><circle cx="${cx - o}" cy="${cy - o}" r="${r}"/><circle cx="${cx + o}" cy="${cy - o}" r="${r}"/><circle cx="${cx - o}" cy="${cy + o}" r="${r}"/><circle cx="${cx + o}" cy="${cy + o}" r="${r}"/><rect x="${cx - o}" y="${cy - o}" width="${o * 2}" height="${o * 2}"/></g>`;
+/**
+ * A "petal": a square with three fully rounded corners and one small corner (index 0 TL, 1 TR, 2 BR, 3 BL).
+ * Four of them, each pointing outward, make the pinwheel of tonal swatches at the heart of the icon.
+ */
+const petal = (x, y, s, sharp, fill) => {
+  const r = [0, 1, 2, 3].map((i) => (i === sharp ? s * 0.1 : s / 2));
+  return `<path d="M${x + r[0]} ${y}H${x + s - r[1]}A${r[1]} ${r[1]} 0 0 1 ${x + s} ${y + r[1]}V${y + s - r[2]}A${r[2]} ${r[2]} 0 0 1 ${x + s - r[2]} ${y + s}H${x + r[3]}A${r[3]} ${r[3]} 0 0 1 ${x} ${y + s - r[3]}V${y + r[0]}A${r[0]} ${r[0]} 0 0 1 ${x + r[0]} ${y}Z" fill="${fill}"/>`;
 };
 
-const defs = (id, from, to) => `<defs>
-  <linearGradient id="bg${id}" x1="0.1" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="${from}"/><stop offset="1" stop-color="${to}"/></linearGradient>
-  <radialGradient id="hl${id}" cx="0.3" cy="0.2" r="0.75"><stop offset="0" stop-color="#fff" stop-opacity="0.34"/><stop offset="0.6" stop-color="#fff" stop-opacity="0"/></radialGradient>
-  <filter id="sh${id}" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#1c0b45" flood-opacity="0.28"/></filter>
-</defs>`;
+/** Inner markup of the app icon (no <svg> wrapper): a violet cookie holding a pinwheel of four tonal petals. */
+export const appInner = () => {
+  const c = PALETTE.violet;
+  const s = 260, g = 8, lo = 512 - g - s, hi = 512 + g;
+  return `<path d="${COOKIE}" fill="${c.base}"/>
+  ${petal(lo, lo, s, 0, c.pink)}${petal(hi, lo, s, 1, c.yellow)}${petal(hi, hi, s, 2, c.peach)}${petal(lo, hi, s, 3, c.mint)}
+  <circle cx="512" cy="512" r="62" fill="${c.light}"/><circle cx="512" cy="512" r="28" fill="${c.deep}"/>`;
+};
 
-const base = (id, from, to, inner) => `${defs(id, from, to)}
-  <path d="${COOKIE}" fill="url(#bg${id})"/>
-  <path d="${COOKIE}" fill="url(#hl${id})"/>
-  ${inner}`;
+const wrap = (inner) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">${inner}</svg>`;
+export const appSvg = () => wrap(appInner());
 
-/** Main app icon: palette of four expressive shapes on a violet cookie. */
-export const appInner = () => `<g filter="url(#shAPP)">
-    <rect x="262" y="262" width="232" height="232" rx="82" fill="#EADDFF"/>
-    <circle cx="640" cy="378" r="118" fill="#D0BCFF"/>
-    ${clover(378, 646, "#FFD8E4")}
-    <rect x="534" y="534" width="212" height="212" rx="56" transform="rotate(45 640 640)" fill="#CCC2DC" />
-  </g>`;
+const glyphIcon = (c, tile, glyph) =>
+  wrap(`<path d="${COOKIE}" fill="${c.base}"/>
+  <rect x="226" y="226" width="572" height="572" rx="190" fill="${tile}"/>
+  ${glyph}`);
 
-export const appSvg = (id = "APP") =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">${base(id, "#9A82DB", "#4F378B", appInner().replace("shAPP", "sh" + id))}</svg>`;
-
-/** Setup (installer) icon: same family, teal cookie with a download tray. */
+/** Setup (installer) icon: mint cookie, deep teal tile and a download tray. */
 export const setupSvg = () =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">${base(
-    "SET",
-    "#7C6FE0",
-    "#3B2A8F",
-    `<g filter="url(#shSET)">
-      <rect x="236" y="236" width="552" height="552" rx="176" fill="#EADDFF"/>
-      <path d="M512 330v230m0 0-92-92m92 92 92-92" fill="none" stroke="#4F378B" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M356 662h312" fill="none" stroke="#7D5260" stroke-width="56" stroke-linecap="round"/>
-    </g>`,
-  )}</svg>`;
+  glyphIcon(
+    PALETTE.teal,
+    PALETTE.teal.dark,
+    `<path d="M512 322v246m0 0-100-100m100 100 100-100" fill="none" stroke="${PALETTE.teal.base}" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M342 690h340" fill="none" stroke="${PALETTE.violet.yellow}" stroke-width="64" stroke-linecap="round"/>`,
+  );
 
-/** Uninstall icon: warm (error-toned) cookie with a bin. */
+/** Uninstall icon: red cookie, pale tile and a bin. */
 export const uninstallSvg = () =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">${base(
-    "UNI",
-    "#E4685D",
-    "#8C1D18",
-    `<g filter="url(#shUNI)">
-      <rect x="236" y="236" width="552" height="552" rx="176" fill="#FFDAD6"/>
-      <g fill="none" stroke="#93000A" stroke-width="52" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M344 372h336M432 372v-36a24 24 0 0 1 24-24h112a24 24 0 0 1 24 24v36"/>
-        <path d="M388 372l22 296a36 36 0 0 0 36 34h132a36 36 0 0 0 36-34l22-296"/>
-        <path d="M468 468v140M556 468v140"/>
-      </g>
-    </g>`,
-  )}</svg>`;
+  glyphIcon(
+    PALETTE.red,
+    PALETTE.red.light,
+    `<g fill="none" stroke="${PALETTE.red.deep}" stroke-width="58" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M338 372h348M430 372v-38a26 26 0 0 1 26-26h112a26 26 0 0 1 26 26v38"/>
+    <path d="M382 372l24 304a38 38 0 0 0 38 36h136a38 38 0 0 0 38-36l24-304"/>
+    <path d="M468 470v146M556 470v146"/>
+  </g>`,
+  );
 
-/** Wide gradient art used for the NSIS installer header / sidebar bitmaps. */
+/** Flat art used for the NSIS installer header / sidebar bitmaps. */
 export const bannerSvg = (w, h, vertical = false) => {
+  const c = PALETTE.violet;
   const s = Math.min(w, h) * (vertical ? 1.15 : 1.3);
+  const size = vertical ? s * 0.68 : h * 0.8;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="${vertical ? 0.4 : 1}" y2="1"><stop offset="0" stop-color="#6750A4"/><stop offset="1" stop-color="#2B1B63"/></linearGradient></defs>
-  <rect width="${w}" height="${h}" fill="url(#g)"/>
-  <circle cx="${w * (vertical ? 0.95 : 0.12)}" cy="${h * (vertical ? 0.1 : 1.1)}" r="${s * 0.55}" fill="#D0BCFF" opacity="0.14"/>
-  <circle cx="${w * (vertical ? 0.05 : 0.96)}" cy="${h * (vertical ? 0.78 : -0.1)}" r="${s * 0.5}" fill="#EFB8C8" opacity="0.16"/>
-  <g transform="translate(${vertical ? w / 2 - s * 0.34 : w - h * 0.9 - 6} ${vertical ? h * 0.2 : h * 0.1}) scale(${(vertical ? s * 0.68 : h * 0.8) / 1024})">${appSvg("BN").replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "")}</g>
+  <rect width="${w}" height="${h}" fill="${c.deep}"/>
+  <circle cx="${w * (vertical ? 0.95 : 0.12)}" cy="${h * (vertical ? 0.1 : 1.1)}" r="${s * 0.55}" fill="${c.base}"/>
+  <circle cx="${w * (vertical ? 0.05 : 0.96)}" cy="${h * (vertical ? 0.82 : -0.1)}" r="${s * 0.46}" fill="${c.pink}" opacity="0.9"/>
+  <circle cx="${w * (vertical ? 0.78 : 0.7)}" cy="${h * (vertical ? 0.7 : 0.05)}" r="${s * 0.14}" fill="${c.mint}"/>
+  <g transform="translate(${vertical ? w / 2 - size / 2 : w - h * 0.9 - 6} ${vertical ? h * 0.2 : h * 0.1}) scale(${size / 1024})">${appInner()}</g>
 </svg>`;
 };

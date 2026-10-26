@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi"><head><meta charset="utf-8" /><link rel="stylesheet" href="ui.css" />
+<html lang="en"><head><meta charset="utf-8" /><link rel="stylesheet" href="ui.css" />
 <style>
   body { width: 340px; padding: 14px; }
   header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -10,11 +10,11 @@
 </style></head>
 <body>
   <header>
-    <div class="brand"><img src="icons/48.png" alt="" /><div><b>Claude Tracker Reporter</b><span>Chrome Profile này</span></div></div>
+    <div class="brand"><img src="icons/48.png" alt="" /><div><b>Claude Tracker Reporter</b><span data-i="profile"></span></div></div>
   </header>
   <div class="card state" id="state"></div>
   <div class="card"><dl class="kv" id="info"></dl></div>
   <p class="hint" id="status" style="margin:10px 2px"></p>
-  <div class="row"><button class="btn primary" id="sync">Đồng bộ ngay</button><button class="btn" id="opts">Cài đặt</button></div>
-  <script src="popup.js"></script>
+  <div class="row"><button class="btn primary" id="sync" data-i="sync"></button><button class="btn" id="opts" data-i="settings"></button></div>
+  <script src="i18n.js"></script><script src="popup.js"></script>
 </body></html>

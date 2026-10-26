@@ -1,10 +1,14 @@
 import { Moon, ShieldCheck, Sun, TriangleAlert, TrendingUp } from "lucide-react";
-import { ratioOfHex } from "../../lib/color";
+import { useState } from "react";
+import { apcaLc, apcaLevel, ratioOfHex } from "../../lib/color";
 import { CONTRAST_PAIRS, type GeneratedTheme, type Roles } from "../../lib/theme";
 import { cn, humanize } from "../../lib/utils";
+import type { Key } from "../../lib/i18n";
 import { useBuilder } from "../../state/builder";
 import { useSettings } from "../../state/settings";
-import { Button } from "../ui";
+import { Button, Segmented } from "../ui";
+
+type Method = "wcag" | "apca";
 
 function level(ratio: number): "AAA" | "AA" | "UI" | "fail" {
   if (ratio >= 7) return "AAA";
@@ -13,11 +17,13 @@ function level(ratio: number): "AAA" | "AA" | "UI" | "fail" {
   return "fail";
 }
 
-function SchemeReport({ roles, mode }: { roles: Roles; mode: "light" | "dark" }) {
+function SchemeReport({ roles, mode, method }: { roles: Roles; mode: "light" | "dark"; method: Method }) {
   const { t } = useSettings();
   const rows = CONTRAST_PAIRS.map(([fg, bg, min]) => {
     const ratio = ratioOfHex(roles[fg], roles[bg]);
-    return { fg, bg, min, ratio, pass: ratio >= min };
+    const lc = apcaLc(roles[fg], roles[bg]);
+    const lcMin = min >= 4.5 ? 60 : 45;
+    return { fg, bg, min, ratio, lc, lcMin, pass: method === "wcag" ? ratio >= min : Math.abs(lc) >= lcMin };
   });
   const passed = rows.filter((r) => r.pass).length;
   const pct = Math.round((passed / rows.length) * 100);
@@ -50,17 +56,17 @@ function SchemeReport({ roles, mode }: { roles: Roles; mode: "light" | "dark" })
                   {humanize(r.fg)} <span className="text-on-surface-variant">/ {humanize(r.bg)}</span>
                 </span>
                 <span className="block text-xs text-on-surface-variant">
-                  {t("access.min", { value: r.min })}
+                  {method === "wcag" ? t("access.min", { value: r.min }) : t("access.lcMin", { value: r.lcMin })}
                 </span>
               </span>
-              <span className="font-mono text-sm tabular-nums">{r.ratio.toFixed(2)}</span>
+              <span className="font-mono text-sm tabular-nums">{method === "wcag" ? r.ratio.toFixed(2) : `Lc ${Math.abs(r.lc).toFixed(0)}`}</span>
               <span
                 className={cn(
                   "w-12 rounded-full py-0.5 text-center text-[11px] font-semibold",
                   r.pass ? "bg-primary-container text-on-primary-container" : "bg-error-container text-on-error-container",
                 )}
               >
-                {lv === "fail" ? t("access.fail") : lv === "UI" ? "UI" : lv}
+                {method === "wcag" ? (lv === "fail" ? t("access.fail") : lv === "UI" ? "UI" : lv) : apcaLevel(r.lc) === "fail" ? t("access.fail") : t(`access.apca.${apcaLevel(r.lc)}` as Key)}
               </span>
             </li>
           );
@@ -73,7 +79,10 @@ function SchemeReport({ roles, mode }: { roles: Roles; mode: "light" | "dark" })
 export function AccessibilityTab({ theme }: { theme: GeneratedTheme }) {
   const { t } = useSettings();
   const { config, update } = useBuilder();
-  const failing = [theme.light, theme.dark].some((roles) => CONTRAST_PAIRS.some(([fg, bg, min]) => ratioOfHex(roles[fg], roles[bg]) < min));
+  const [method, setMethod] = useState<Method>("wcag");
+  const failing = [theme.light, theme.dark].some((roles) =>
+    CONTRAST_PAIRS.some(([fg, bg, min]) => (method === "wcag" ? ratioOfHex(roles[fg], roles[bg]) < min : Math.abs(apcaLc(roles[fg], roles[bg])) < (min >= 4.5 ? 60 : 45))),
+  );
 
   return (
     <div className="space-y-4">
@@ -89,9 +98,20 @@ export function AccessibilityTab({ theme }: { theme: GeneratedTheme }) {
           </Button>
         )}
       </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <Segmented<Method>
+          value={method}
+          onChange={setMethod}
+          options={[
+            { value: "wcag", label: "WCAG 2.x", title: t("access.wcagTip") },
+            { value: "apca", label: "APCA", title: t("access.apcaTip") },
+          ]}
+        />
+        <p className="min-w-0 flex-1 text-sm text-on-surface-variant">{method === "wcag" ? t("access.wcagTip") : t("access.apcaTip")}</p>
+      </div>
       <div className="grid gap-4 min-[1180px]:grid-cols-2">
-        <SchemeReport roles={theme.light} mode="light" />
-        <SchemeReport roles={theme.dark} mode="dark" />
+        <SchemeReport roles={theme.light} mode="light" method={method} />
+        <SchemeReport roles={theme.dark} mode="dark" method={method} />
       </div>
     </div>
   );

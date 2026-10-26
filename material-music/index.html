@@ -110,7 +110,7 @@ nav.links a.on{background:var(--secondary-container);color:var(--on-secondary-co
 .hero-txt>:nth-child(2){animation-delay:.1s}.hero-txt>:nth-child(3){animation-delay:.25s}.hero-txt>:nth-child(4){animation-delay:.35s}.hero-txt>:nth-child(5){animation-delay:.45s}
 @keyframes rise{from{opacity:0;transform:translateY(36px) scale(.96)}}
 .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:99px;background:var(--tertiary-container);color:var(--on-tertiary-container);font-size:14px;font-weight:600;margin-bottom:22px}
-h1{font-size:clamp(40px,7vw,86px);line-height:1.02;font-weight:800;letter-spacing:-.025em;margin-bottom:24px;overflow-wrap:anywhere;font-variation-settings:"wdth" 112;animation:wght 1.6s var(--ease) .1s both}
+h1{font-size:clamp(36px,5.8vw,74px);line-height:1.02;font-weight:800;letter-spacing:-.025em;margin-bottom:24px;overflow-wrap:anywhere;font-variation-settings:"wdth" 112;animation:wght 1.6s var(--ease) .1s both}
 @keyframes wght{from{font-variation-settings:"wght" 100,"wdth" 50;opacity:0;letter-spacing:.04em}}
 .lead{font-size:clamp(17px,2vw,20px);color:var(--on-surface-variant);max-width:34em;margin-bottom:32px}
 .cta{display:flex;flex-wrap:wrap;gap:12px}
@@ -135,8 +135,8 @@ h1{font-size:clamp(40px,7vw,86px);line-height:1.02;font-weight:800;letter-spacin
 @keyframes shine{0%,58%{transform:translateX(-120%)}78%,100%{transform:translateX(120%)}}
 /* sections */
 section{padding:96px 0}.alt{background:var(--c-low)}
-.title{margin-bottom:44px;max-width:30em}
-.title h2{font-size:clamp(30px,4.6vw,52px);font-weight:750;line-height:1.1;letter-spacing:-.02em;font-variation-settings:"wdth" 108}
+.title{margin-bottom:44px;max-width:44em}
+.title h2{max-width:17em;font-size:clamp(30px,4.6vw,52px);font-weight:750;line-height:1.1;letter-spacing:-.02em;font-variation-settings:"wdth" 108}
 .title p{color:var(--on-surface-variant);margin-top:12px;font-size:17px}
 .bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
 .s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}
@@ -165,7 +165,7 @@ section{padding:96px 0}.alt{background:var(--c-low)}
 /* gallery */
 .gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
 .gallery img{width:100%;aspect-ratio:16/9;object-fit:contain;background:var(--c);border-radius:36px;border:1px solid var(--outline-variant);cursor:zoom-in;transition:transform .6s var(--spring),border-radius .6s var(--spring),box-shadow .4s}
-.gallery img:nth-child(even){margin-top:40px}
+.gallery img:nth-child(2){margin-top:40px}.gallery img:nth-child(3){grid-column:1/-1;justify-self:center;width:calc(50% - 9px)}
 .gallery img:hover{transform:translateY(-8px) scale(1.02) rotate(-.6deg);border-radius:20px 56px 20px 56px;box-shadow:0 24px 50px color-mix(in srgb,var(--primary) 25%,transparent)}
 /* steps */
 .steps{counter-reset:s;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -198,21 +198,38 @@ footer{padding:36px 0 56px;text-align:center;color:var(--on-surface-variant);fon
 .lb-prev{left:22px}.lb-next{right:22px}.lb-nav svg{width:26px;height:26px}
 .lb-count{position:absolute;bottom:22px;left:50%;translate:-50% 0;padding:6px 18px;border-radius:99px;background:rgba(255,255,255,.16);color:#fff;font-size:14px;font-weight:600;backdrop-filter:blur(8px)}
 .lightbox img{touch-action:pan-y}
+/* scroll progress + FAQ + facts */
+.prog{position:fixed;inset:0 0 auto;height:3px;z-index:60;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,var(--primary),var(--tertiary));pointer-events:none}
+.faq{display:grid;gap:10px;max-width:880px}
+.faq details{border-radius:28px;background:var(--c);overflow:hidden;transition:background .35s,border-radius .6s var(--spring)}
+.faq details:hover{background:color-mix(in srgb,var(--c) 85%,var(--primary-container))}
+.faq details[open]{background:var(--primary-container);color:var(--on-primary-container);border-radius:40px 28px 40px 28px}
+.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:16px;padding:20px 22px 20px 26px;font-weight:650;font-size:18px;line-height:1.3}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:after{content:"+";margin-left:auto;flex:none;width:40px;height:40px;border-radius:14px;display:grid;place-items:center;font-size:26px;font-weight:500;line-height:1;background:var(--secondary-container);color:var(--on-secondary-container);transition:transform .55s var(--spring),border-radius .55s var(--spring),background .3s}
+.faq details[open] summary:after{transform:rotate(135deg);border-radius:50%;background:var(--primary);color:var(--on-primary)}
+.faq summary:focus-visible{outline:3px solid var(--primary);outline-offset:-3px;border-radius:inherit}
+.faq .ans{padding:0 26px 24px;font-size:16px;line-height:1.6;opacity:.9;animation:faqin .5s var(--ease)}
+.faq code{padding:2px 8px;border-radius:8px;background:color-mix(in srgb,var(--on-primary-container) 12%,transparent);font-size:.92em}
+@keyframes faqin{from{opacity:0;transform:translateY(-10px)}}
+.facts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:24px}
+.facts span{padding:7px 16px;border-radius:99px;background:color-mix(in srgb,var(--on-primary-container) 10%,transparent);font-size:14px;font-weight:600}
 /* reveal */
 .rv{opacity:0;transform:translateY(40px) scale(.95);transition:opacity .7s var(--ease),transform .8s var(--spring),border-radius .6s var(--spring)}
 .rv.in{opacity:1;transform:none}
 .card.rv.in:hover{transform:translateY(-6px)}
 @media (max-width:900px){nav.links{display:none}.hero-grid{grid-template-columns:1fr}.orb{width:min(70%,300px)}.bento{grid-template-columns:repeat(2,1fr)}.s2,.s3,.s4{grid-column:span 1}.card.big{grid-column:span 2}.steps{grid-template-columns:1fr}}
-@media (max-width:720px){section{padding:64px 0}.hero{padding-top:36px}.btn.lg{width:100%}.cta{width:100%}.bar>.btn.fill{padding-inline:18px}.gallery{grid-template-columns:1fr}.gallery img:nth-child(even){margin-top:0}.shot{margin-top:40px;border-radius:24px 24px 0 0}.dl{padding:56px 20px;border-radius:44px 20px 44px 20px}.to-top{right:16px;bottom:16px}.eq{gap:3px}}
+@media (max-width:720px){section{padding:64px 0}.hero{padding-top:36px}.btn.lg{width:100%}.cta{width:100%}.bar>.btn.fill{padding-inline:18px}.gallery{grid-template-columns:1fr}.gallery img:nth-child(2){margin-top:0}.gallery img:nth-child(3){width:100%}.shot{margin-top:40px;border-radius:24px 24px 0 0}.dl{padding:56px 20px;border-radius:44px 20px 44px 20px}.to-top{right:16px;bottom:16px}.eq{gap:3px}}
 @media (max-width:560px){.bento{grid-template-columns:1fr}.card.big{grid-column:span 1}.bar{padding-left:14px}.brand span{display:none}}
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.shot.rv{translate:0 0}.eq i,.mini i{transform:scaleY(.5)}}
 </style>
 </head>
 <body>
+<div class="prog" id="prog" aria-hidden="true"></div>
 <header id="top">
   <div class="bar">
     <a class="brand" href="#top"><img src="src-tauri/icons/icon.png" alt="" width="36" height="36" /><span>Material Music</span></a>
-    <nav class="links" id="nav"><a href="#features" data-i="navFeatures">Features</a><a href="#formats" data-i="navFormats">Formats</a><a href="#screenshots" data-i="navShots">Screenshots</a><a href="#install" data-i="navInstall">Install</a></nav>
+    <nav class="links" id="nav"><a href="#features" data-i="navFeatures">Features</a><a href="#formats" data-i="navFormats">Formats</a><a href="#screenshots" data-i="navShots">Screenshots</a><a href="#install" data-i="navInstall">Install</a><a href="#faq" data-i="navFaq">FAQ</a></nav>
     <div class="spacer"></div>
     <button class="icon-btn" id="themeToggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="pop" aria-label="Theme" title="Theme">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 22a10 10 0 1 1 10-10c0 3-2 4-4 4h-2a2 2 0 0 0-1 3.7c.6.5.3 2.3-3 2.3z"/></svg>
@@ -289,7 +306,6 @@ footer{padding:36px 0 56px;text-align:center;color:var(--on-surface-variant);fon
     <img class="rv" src="screenshots/image02.png" alt="Songs" loading="lazy" width="1280" height="720" />
     <img class="rv" src="screenshots/image03.png" alt="Albums" loading="lazy" width="1280" height="720" />
     <img class="rv" src="screenshots/image04.png" alt="Now playing" loading="lazy" width="1280" height="720" />
-    <img class="rv" src="screenshots/image05.png" alt="Settings" loading="lazy" width="1280" height="720" />
   </div>
 </div></section>
 
@@ -302,11 +318,24 @@ footer{padding:36px 0 56px;text-align:center;color:var(--on-surface-variant);fon
   </div>
 </div></section>
 
+<section id="faq"><div class="wrap">
+  <div class="title rv"><h2 data-i="faqT">Questions, answered</h2></div>
+  <div class="faq">
+    <details class="rv"><summary data-i="q1">Is Material Music really free?</summary><div class="ans" data-i="a1">Yes. It is free, ad-free and open source under the MIT license. There is no account to create.</div></details>
+    <details class="rv"><summary data-i="q2">Why does Windows show a SmartScreen warning?</summary><div class="ans" data-i="a2">The installer is not code-signed yet (certificates are paid). Choose “More info → Run anyway”. The source code is public, so you can also build it yourself.</div></details>
+    <details class="rv"><summary data-i="q3">How do I get a new version?</summary><div class="ans" data-i="a3">The app does not update itself. Download the latest installer from this page and run it: it updates your existing installation and keeps your library, playlists and settings.</div></details>
+    <details class="rv"><summary data-i="q4">Where is my data stored?</summary><div class="ans" data-i="a4">In <code>%APPDATA%\com.minhtrong67.material-music</code>. A backup of your playlists and settings is saved there every day. Delete the folder to erase everything.</div></details>
+    <details class="rv"><summary data-i="q5">Does it need an internet connection?</summary><div class="ans" data-i="a5">No, everything works offline. The internet is used only when you press “search lyrics online” or turn on ListenBrainz scrobbling.</div></details>
+    <details class="rv"><summary data-i="q6">Which audio formats can it play?</summary><div class="ans" data-i="a6">MP3, FLAC, WAV, OGG, Opus, M4A and AAC, with tags and cover art. Anything the Windows WebView2 player can decode will play.</div></details>
+  </div>
+</div></section>
+
 <section id="download"><div class="wrap">
   <div class="dl rv">
     <h2 data-i="dT">Ready to listen?</h2>
     <p data-i="dP">Free forever, open source under the MIT license.</p>
     <a class="btn fill lg" href="download/Material-Music_1.3.0_x64-setup.exe" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg><span data-i="dl">Download for Windows</span></a>
+    <div class="facts"><span data-i="fc1">Windows 10 / 11 · 64-bit</span><span data-i="fc2">No account · No ads</span><span data-i="fc3">Open source · MIT</span></div>
   </div>
 </div></section>
 </main>
@@ -346,6 +375,14 @@ footer{padding:36px 0 56px;text-align:center;color:var(--on-surface-variant);fon
     f12t:'An toàn & có sao lưu',f12p:'Lưu nguyên tử, sao lưu tự động mỗi ngày và tự khôi phục nếu file bị hỏng.',
     f13t:'Phím tắt của bạn',f13p:'Đổi mọi phím tắt và điều khiển nhạc từ bất kỳ app nào bằng phím tắt toàn hệ thống.',
     f14t:'Chọn loa của bạn',f14p:'Chọn thiết bị phát, giảm âm lượng dần khi hẹn giờ và chỉnh độ lệch lời theo từng bài.',
+    navFaq:'Hỏi đáp',faqT:'Giải đáp thắc mắc',
+    q1:'Material Music có thật sự miễn phí?',a1:'Có. App miễn phí, không quảng cáo và là mã nguồn mở theo giấy phép MIT. Bạn không cần tạo tài khoản.',
+    q2:'Vì sao Windows hiện cảnh báo SmartScreen?',a2:'Bộ cài chưa được ký số (chứng chỉ phải trả phí). Hãy chọn “More info → Run anyway”. Mã nguồn công khai nên bạn cũng có thể tự build.',
+    q3:'Làm sao để dùng phiên bản mới?',a3:'App không tự cập nhật. Hãy tải bộ cài mới nhất ở trang này rồi chạy: nó cập nhật bản đang cài và giữ nguyên thư viện, playlist và cài đặt của bạn.',
+    q4:'Dữ liệu của tôi nằm ở đâu?',a4:'Trong <code>%APPDATA%\\com.minhtrong67.material-music</code>. Mỗi ngày app lưu một bản sao playlist và cài đặt ở đó. Xóa thư mục này là xóa sạch dữ liệu.',
+    q5:'App có cần kết nối Internet không?',a5:'Không, mọi thứ chạy offline. Internet chỉ được dùng khi bạn bấm “tìm lời bài hát trên mạng” hoặc bật scrobble ListenBrainz.',
+    q6:'App phát được những định dạng nào?',a6:'MP3, FLAC, WAV, OGG, Opus, M4A và AAC, kèm thẻ nhạc và ảnh bìa. Bất kỳ định dạng nào trình phát WebView2 của Windows giải mã được đều phát được.',
+    fc1:'Windows 10 / 11 · 64-bit',fc2:'Không tài khoản · Không quảng cáo',fc3:'Mã nguồn mở · MIT',
     f9t:'Phím media toàn cục',f9p:'Phát, tạm dừng và chuyển bài bằng bàn phím kể cả khi app chạy nền hoặc nằm trong khay.',
     fmT:'Phát đúng những định dạng bạn đang có',fmS:'Thẻ nhạc và ảnh bìa được đọc từ mọi định dạng dưới đây. Thả tệp hoặc cả thư mục vào là xong.',
     f6t:'Tiếng Anh & Tiếng Việt',f6p:'Tự nhận diện ngôn ngữ hệ thống, ghi nhớ kích thước cửa sổ hoặc luôn mở phóng to.',
@@ -356,7 +393,7 @@ footer{padding:36px 0 56px;text-align:center;color:var(--on-surface-variant);fon
     dT:'Sẵn sàng nghe nhạc?',dP:'Miễn phí mãi mãi, mã nguồn mở theo giấy phép MIT.',by:'Thiết kế & phát triển bởi',with:'với sự hỗ trợ của AI',thMode:'Chế độ',thColor:'Màu chủ đề',thCustom:'Màu tùy chọn'}};
   var root=document.documentElement,$=function(s){return document.querySelector(s)},$$=function(s){return[].slice.call(document.querySelectorAll(s))};
   var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches,dq=matchMedia('(prefers-color-scheme:dark)');
-  var SEEDS=['#C2185B','#6750A4','#B3261E','#006C4C','#8B5000','#36618E','#00696D','#5B5F00'];
+  var SEEDS=['#E91E63','#6750A4','#B3261E','#006C4C','#8B5000','#36618E','#00696D','#5B5F00'];
   var mode='system',seed=SEEDS[0],H=360,C=.15;
   function get(k){try{return localStorage.getItem(k)}catch(x){return null}}
   function put(k,v){try{localStorage.setItem(k,v)}catch(x){}}
@@ -429,6 +466,15 @@ footer{padding:36px 0 56px;text-align:center;color:var(--on-surface-variant);fon
   btn.onclick=function(){set(cur==='en'?'vi':'en')};
   var auto=(navigator.languages&&navigator.languages[0]||navigator.language||'en').toLowerCase().indexOf('vi')===0?'vi':'en';
   if((get('mmp-lang')||auto)==='vi')set('vi');
+  /* scroll progress + active section in the nav */
+  var prog=$('#prog'),tick=false;
+  function onScroll(){if(tick)return;tick=true;requestAnimationFrame(function(){var h=document.documentElement.scrollHeight-innerHeight;prog.style.transform='scaleX('+(h>0?Math.min(1,scrollY/h):0)+')';tick=false})}
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+  if('IntersectionObserver' in window){
+    var links={};$$('#nav a').forEach(function(a){links[a.getAttribute('href').slice(1)]=a});
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){for(var k in links)links[k].classList.toggle('on',k===e.target.id)}})},{rootMargin:'-45% 0px -50% 0px'});
+    Object.keys(links).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el)});
+  }
   /* hero equalizer + mini bars + formats marquee */
   function bars(host,n,lo,hi){for(var i=0;i<n;i++){var b=document.createElement('i');b.style.setProperty('--d',(.8+Math.random()*1.6).toFixed(2)+'s');b.style.setProperty('--lo',(lo+Math.random()*.2).toFixed(2));b.style.setProperty('--hi',(hi+Math.random()*(1-hi)).toFixed(2));b.style.animationDelay='-'+(Math.random()*3).toFixed(2)+'s';host.appendChild(b)}}
   bars($('#eq'),Math.round(Math.min(56,Math.max(24,innerWidth/24))),.1,.4);bars($('#mini'),10,.2,.5);

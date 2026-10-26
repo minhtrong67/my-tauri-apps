@@ -326,3 +326,9 @@ html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
 .toast-btn:hover { background: rgb(var(--tf) / 0.12); }
 @keyframes toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 .toast-timer { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgb(var(--ta) / 0.65); transform-origin: left; animation: toast-timer linear forwards; }
+
+/* soft morphing blobs behind hero cards (decoration) */
+.morph-slow { border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%; animation: morph-slow 14s ease-in-out infinite alternate; }
+@keyframes morph-slow {
+  to { border-radius: 40% 60% 45% 55% / 60% 40% 60% 40%; transform: rotate(30deg) scale(1.08); }
+}

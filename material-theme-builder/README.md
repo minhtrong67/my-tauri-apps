@@ -34,39 +34,39 @@ It is built with Tauri, so it is tiny, starts instantly and works fully offline.
 ## Features
 
 **Theme generation**
-- Source color picker with HEX input and HCT (hue / chroma / tone) sliders
-- Quick swatches, random color, and **extract key colors from an image**
+- Source color picker with HEX input, HCT (hue / chroma / tone) sliders, random color, paste from clipboard and a screen eyedropper (where the webview supports it)
+- Extract a whole palette from an image and assign its colors to primary, secondary and tertiary in one click
 - 9 dynamic-color variants: Tonal Spot, Vibrant, Expressive, Neutral, Monochrome, Fidelity, Content, Rainbow, Fruit Salad
-- Standard, medium and high contrast for both light and dark schemes
+- Standard, medium and high contrast for both light and dark schemes, plus custom brand colors that harmonize with the source
 - Undo / redo history
 
+**Import and export**
+- Import from Material Theme Builder JSON, CSS variables, Android `colors.xml`, Compose / Flutter sources or a `.mtb.json` project file (paste or open a file)
+- Export to CSS variables, Tailwind CSS, SCSS, JSON, Jetpack Compose, Compose Multiplatform, Flutter, SwiftUI, Android XML, Figma / design tokens and a re-importable project file
+- Download every format at once as a zip bundle, or copy / save a single file through the native dialog
+
 **Preview and inspection**
-- Live preview on a phone mockup and component gallery (buttons, cards, chips, inputs, tabs, snackbar, FAB…)
-- Light, dark or both side by side
-- Color vision deficiency simulation
+- Live preview on a phone mockup (Home, Explore, Saved, Profile) and a component gallery with expressive components
+- Light, dark or both side by side; color vision deficiency simulation
 - Full color-role table and tonal palettes
-- Accessibility tab with WCAG contrast checks for role pairs
+- Accessibility tab with WCAG and APCA contrast checks for role pairs
 
-**Export**
-- CSS variables, Tailwind CSS, SCSS, JSON, Jetpack Compose, Flutter, Android XML
-- Project file (`.mtb.json`) to save and reopen a theme
-- Copy to clipboard or save to disk through the native dialog
-
-**Library**
-- Save themes, rename, duplicate, delete and reopen them anytime
+**Library and comparison**
+- Save, rename, duplicate, delete and reopen themes; search, tag and sort them
+- Version history per theme with one-click restore
+- Compare any two themes side by side, role by role
 
 **Settings**
-- Light / dark / system mode
-- Theme accent color from the Material palette
-- Font size: small, medium, large
-- 5 fonts: system default, Roboto, Inter, Nunito, Be Vietnam Pro
+- Light / dark / system mode and a theme accent color from the Material palette
+- Font size: small, medium, large; 5 fonts: system default, Roboto, Inter, Nunito, Be Vietnam Pro
 - Language: English and Tiếng Việt
 - Window behavior: remember last size, or always start maximized
+- Check for updates against the latest GitHub release
 
 **Experience**
 - Material 3 Expressive (2026) throughout: shape morphing, spring motion, emphasized type, wavy progress, morphing loading indicator, connected button groups, expandable navigation rail
 - Custom tooltips, toasts (info / success / warning / error), dropdowns and dialogs that follow light and dark themes
-- Keyboard shortcuts (press `?` in the builder)
+- Keyboard shortcuts (press `?` in the builder): `Ctrl+1` to `Ctrl+4` switch pages, `Ctrl+B` toggles the sidebar, arrow keys move between tabs
 - Custom app, installer and uninstaller icons
 
 ## Installation
@@ -120,6 +120,7 @@ Other scripts:
 | `npm run dev` | Run the desktop app in development |
 | `npm run build` | Build the production installers |
 | `npm run build:web` | Typecheck and build the frontend only |
+| `npm test` | Run the unit tests (Vitest) |
 | `npm run icons` | Regenerate all app, setup and uninstall icons |
 
 ## Build
@@ -128,7 +129,9 @@ Other scripts:
 npm run build
 ```
 
-Installers are written to `target/release/bundle/` of the shared Cargo workspace (one level above this folder).
+Installers are written to `target/release/bundle/` of the shared Cargo workspace (one level above this folder). To publish a release with GitHub Actions, see [docs/RELEASING.md](docs/RELEASING.md); for signing, see [docs/CODE_SIGNING.md](docs/CODE_SIGNING.md).
+
+Contributions are welcome, please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
 ## Project structure
 
@@ -138,16 +141,20 @@ material-theme-builder/
 │   ├── index.html
 │   ├── public/
 │   └── src/
-│       ├── components/   # UI kit, tooltip, dialogs, color picker, tabs
-│       ├── lib/          # theme engine, export, i18n, tauri bridge
-│       ├── pages/        # Builder, Library, Settings
+│       ├── components/   # UI kit, tooltip, dialogs, color picker, import sheet, previews, tabs
+│       ├── lib/          # theme engine, import / export, zip, update check, i18n, tauri bridge (+ *.test.ts)
+│       ├── pages/        # Builder, Library, Compare, Settings
 │       └── state/        # builder, settings, toast contexts
 ├── src-tauri/            # Rust shell, capabilities, icons, installer assets
+├── .github/              # CI and release workflows, issue and PR templates
+├── docs/                 # Releasing and code signing guides
 ├── scripts/              # Icon, landing asset and screenshot generators
 ├── screenshots/          # README images (image01 – image04)
+├── demo/                 # Screen recording used by the landing page
 ├── download/             # Put installer files here for the landing page
 ├── assets/               # Landing page favicon and social image
 ├── index.html            # Landing page (single file)
+├── CONTRIBUTING.md
 └── package.json
 ```
 

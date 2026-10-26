@@ -1,9 +1,12 @@
-import type { CSSProperties, ReactNode } from "react";
-import { AppWindow, Check, Languages, Maximize2, Monitor, Moon, Palette, Settings as SettingsIcon, Sun, Type } from "lucide-react";
+import { useState, type CSSProperties, type ReactNode } from "react";
+import { AppWindow, Check, Download, Github, Languages, RefreshCw, Maximize2, Monitor, Moon, Palette, Settings as SettingsIcon, Sun, Type } from "lucide-react";
 import { AppLogo } from "../components/AppLogo";
 import { cn } from "../lib/utils";
 import { ACCENTS, FONTS, useSettings, type FontId, type FontSize, type Lang, type ThemeMode } from "../state/settings";
-import { isTauri, type WindowMode } from "../lib/tauri";
+import { isTauri, openExternal, type WindowMode } from "../lib/tauri";
+import { APP_VERSION, REPO, checkForUpdate, type UpdateResult } from "../lib/update";
+import { Button, LoadingIndicator } from "../components/ui";
+import { useToast } from "../state/toast";
 
 function Group({ icon, title, desc, children, delay }: { icon: ReactNode; title: string; desc: string; children: ReactNode; delay: number }) {
   return (
@@ -52,6 +55,23 @@ const MODE_PREVIEW: Record<ThemeMode, string> = {
 
 export function SettingsPage() {
   const { t, settings, set, dark } = useSettings();
+  const toast = useToast();
+  const [checking, setChecking] = useState(false);
+  const [update, setUpdate] = useState<UpdateResult | null>(null);
+  const runCheck = async () => {
+    setChecking(true);
+    try {
+      const r = await checkForUpdate();
+      setUpdate(r);
+      if (r.status === "available") toast.info(t("update.available", { version: r.version }));
+      else if (r.status === "latest") toast.success(t("update.latest"));
+      else toast.info(t("update.none"));
+    } catch {
+      toast.error(t("update.failed"));
+    } finally {
+      setChecking(false);
+    }
+  };
   const accent = ACCENTS.find((a) => a.hex.toLowerCase() === settings.accent.toLowerCase());
   const lang = settings.lang;
 
@@ -195,16 +215,29 @@ export function SettingsPage() {
             </div>
           </Group>
 
-          <section className="anim-fade-up flex items-center gap-4 rounded-[28px] bg-surface-container-low p-5" style={{ "--d": "200ms" } as CSSProperties}>
+          <section className="anim-fade-up flex flex-wrap items-center gap-4 rounded-[28px] bg-surface-container-low p-5" style={{ "--d": "200ms" } as CSSProperties}>
             <AppLogo size={56} />
             <div className="min-w-0 text-sm">
               <div className="text-base font-medium">Material Theme Builder</div>
               <div className="text-on-surface-variant">
-                {t("settings.version")} 1.0.0 · MIT · {dark ? t("common.dark") : t("common.light")}
+                {t("settings.version")} {APP_VERSION} · MIT · {dark ? t("common.dark") : t("common.light")}
               </div>
               <div className="mt-1 text-on-surface-variant">
                 {t("settings.author")}: <span className="font-medium text-on-surface">minhtrong67</span> · {t("settings.builtWith")}
               </div>
+            </div>
+            <div className="ml-auto flex shrink-0 flex-wrap justify-end gap-2">
+              <Button variant="tonal" icon={checking ? <LoadingIndicator size={18} /> : <RefreshCw className="size-4" />} disabled={checking} onClick={() => void runCheck()}>
+                {checking ? t("update.checking") : t("update.check")}
+              </Button>
+              {update?.status === "available" && (
+                <Button icon={<Download className="size-4" />} onClick={() => void openExternal(update.url)}>
+                  {t("update.get", { version: update.version })}
+                </Button>
+              )}
+              <Button variant="outlined" icon={<Github className="size-4" />} onClick={() => void openExternal(`https://github.com/${REPO}`)}>
+                GitHub
+              </Button>
             </div>
           </section>
         </div>
@@ -212,3 +245,4 @@ export function SettingsPage() {
     </div>
   );
 }
+

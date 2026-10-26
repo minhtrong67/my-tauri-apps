@@ -39,7 +39,7 @@ async function identity() {
   const orgs = await getJson("/api/organizations");
   const list = Array.isArray(orgs) ? orgs : [];
   const org = list.find((o) => (o.capabilities || []).includes("chat")) || list[0];
-  if (!org) throw new Error("Chưa đăng nhập claude.ai");
+  if (!org) throw new Error("not_logged_in");
   let account = {};
   try {
     const me = await getJson("/api/account");
@@ -52,7 +52,7 @@ async function identity() {
 // light = true: bỏ qua gọi /usage (gói Free luôn trả rỗng) để gửi banner nhanh hơn
 async function collect(banner, light = false) {
   const c = await cfg();
-  if (!c.token) return setInfo({ appOk: null, status: "Chưa nhập token" });
+  if (!c.token) return setInfo({ appOk: null, status: "no_token" });
   const chromeEmail = await profileEmail();
   let payload;
   try {
@@ -76,7 +76,7 @@ async function collect(banner, light = false) {
     });
     await setInfo({
       appOk: r.ok,
-      status: r.ok ? "Đã đồng bộ" : r.status === 401 ? "Token không đúng" : `App từ chối (HTTP ${r.status})`,
+      status: r.ok ? "synced" : r.status === 401 ? "bad_token" : `http:${r.status}`,
       claudeError: null,
       email: payload.account.email || null,
       org: payload.account.org_name || null,
@@ -86,7 +86,7 @@ async function collect(banner, light = false) {
       ...(banner ? { limited: banner.limited, resetsAt: banner.resets_at } : {}),
     });
   } catch (_) {
-    await setInfo({ appOk: false, status: "Không kết nối được app (đã mở chưa?)", chromeEmail });
+    await setInfo({ appOk: false, status: "offline", chromeEmail });
   }
 }
 

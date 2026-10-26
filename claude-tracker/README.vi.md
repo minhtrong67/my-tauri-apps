@@ -37,17 +37,21 @@ Toàn bộ ảnh dùng dữ liệu demo.
 
 ## Tính năng
 
-- **Một dashboard cho mọi profile.** Mỗi thẻ hiện tài khoản Claude, Chrome Profile (`Profile 4 · 01 - Work`) và tên tài khoản Google đăng nhập trong profile đó. Không cắt chữ.
-- **Đếm ngược reset trực tiếp.** Thời gian còn lại viết đầy đủ ("2 giờ 31 phút"), kèm thanh tiến độ.
-- **Avatar thật của Chrome profile**, đọc từ ảnh đại diện Chrome đã lưu (không có ảnh thì dùng chữ cái đầu).
-- **Dạng lưới hoặc danh sách**, kèm panel **Bộ lọc** thu gọn được (lọc trạng thái, tìm theo tên, email, profile).
-- **Mở tất cả Chrome** bằng một cú nhấp: mọi profile đang theo dõi mở ở trang chủ claude.ai.
-- **Thông báo Windows** đúng giờ dự kiến reset, ngưỡng mức dùng tuỳ chỉnh.
-- **Giao diện:** sáng, tối hoặc theo hệ thống (áp dụng ngay), ba cỡ chữ, tám màu chủ đề Material, font hệ thống và icon [Lucide](https://lucide.dev).
-- **Tiếng Việt và English.** Tự nhận diện ngôn ngữ, đổi bất cứ lúc nào.
-- **Cửa sổ:** ghi nhớ kích thước/vị trí lần trước, hoặc luôn mở phóng to tối đa.
-- **Riêng tư.** Không đám mây, không đăng nhập. App chỉ lắng nghe `127.0.0.1` và yêu cầu token bí mật.
-- **Responsive và mượt.** Bố cục co giãn tới cửa sổ hẹp; animation tôn trọng `prefers-reduced-motion`.
+- **Một dashboard cho mọi profile.** Mỗi thẻ hiện tài khoản Claude, Chrome Profile (`Profile 4 · 01 - Work`) và tài khoản Google đang đăng nhập trong profile đó. Không cắt chữ.
+- **Ô tổng quan.** Sẵn sàng, đang chờ, hồi sớm nhất — bấm vào ô để lọc — cùng nút **Mở tài khoản tốt nhất** (chọn tài khoản sẵn sàng có mức dùng thấp nhất).
+- **Đếm ngược reset trực tiếp** với thanh tiến độ *gợn sóng* của Material 3 Expressive; thời gian còn lại viết đầy đủ ("2 giờ 31 phút"). Thẻ có hiệu ứng chúc mừng khi tài khoản vừa hồi.
+- **Lịch sử mức dùng và dự báo.** Biểu đồ nhỏ theo từng tài khoản và dự đoán "dự kiến chạm giới hạn lúc 15:40" theo tốc độ dùng gần đây. Xuất lịch sử ra CSV.
+- **Thông báo thông minh.** Cảnh báo khi mức dùng chạm ngưỡng, báo đúng giờ dự kiến reset và có giờ yên lặng.
+- **Sắp xếp.** Ghim, đổi tên, ghi chú; ẩn tài khoản (khôi phục được, không tự hiện lại); dạng lưới hoặc danh sách; bộ lọc và tìm kiếm.
+- **Avatar thật của Chrome profile**, đọc từ ảnh Chrome đã lưu (không có thì dùng chữ cái đầu).
+- **Mở tất cả Chrome** bằng một cú nhấp, hoặc chỉ tài khoản tốt nhất.
+- **Khay hệ thống.** Tooltip động ("3 sẵn sàng · 2 đang chờ · sớm nhất 15:40"), menu nhanh, tuỳ chọn khởi động cùng Windows (thu nhỏ) và chỉ cho chạy một bản.
+- **Giao diện.** Sáng, tối hoặc theo hệ thống; tám màu chủ đề Material; ba cỡ chữ; sáu phông chữ (mặc định font hệ thống, kèm Roboto, Inter, Be Vietnam Pro, Noto Sans, Open Sans đóng gói sẵn); icon [Lucide](https://lucide.dev).
+- **Tiếng Việt và English**, tự nhận diện và đổi bất cứ lúc nào (cả extension).
+- **Cửa sổ.** Ghi nhớ kích thước/vị trí lần trước, hoặc luôn mở phóng to tối đa.
+- **Phím tắt.** `Ctrl+R` làm mới · `Ctrl+F` tìm kiếm · `Ctrl+1` dashboard · `Ctrl+,` cài đặt.
+- **Riêng tư.** Không đám mây, không đăng nhập. App chỉ lắng nghe `127.0.0.1`, yêu cầu token bí mật, từ chối origin của trang web và ghi dữ liệu an toàn (atomic).
+- **Responsive và mượt.** Navigation rail trên cửa sổ rộng, navigation bar trên cửa sổ hẹp; tooltip, dropdown, toast và dialog tuỳ biến cho cả sáng/tối; animation tôn trọng `prefers-reduced-motion`.
 
 ### Trạng thái tài khoản
 
@@ -69,18 +73,18 @@ Tải `ClaudeTracker-Setup.exe` trong thư mục [`downloads/`](downloads/) (ho�
 
 1. Mở `chrome://extensions` trong profile, bật **Developer mode**.
 2. Chọn **Load unpacked** và trỏ vào thư mục [`extension/`](extension/).
-3. Mở cài đặt của extension, nhập **cổng** và **token** hiện trong app ở **Cài đặt → Kết nối extension**, rồi bấm **Lưu & kết nối**.
+3. Mở cài đặt của extension, nhập **cổng** và **token** hiện trong app ở **Cài đặt → Kết nối**, rồi bấm **Lưu & kết nối**.
 4. Profile cần đăng nhập claude.ai và đăng nhập Chrome (tài khoản Google) để app tự gán đúng Chrome Profile.
 
 ### Giới hạn đã biết
 
-- Endpoint usage của claude.ai là nội bộ và có thể đổi. Nếu thanh usage trống, xem **Cài đặt → Chẩn đoán dữ liệu thô**, rồi chỉnh `parse_usage` trong `src-tauri/src/main.rs` và `getJson` trong `extension/background.js`.
+- Endpoint usage của claude.ai là nội bộ và có thể đổi. Nếu thanh usage trống, xem **Cài đặt → Kết nối → Chẩn đoán dữ liệu thô**, rồi chỉnh `parse_usage` trong `src-tauri/src/main.rs` và `getJson` trong `extension/background.js`.
 - App phải đang chạy (kể cả dưới khay) mới nhận dữ liệu và gửi thông báo.
 - Tài khoản Free được nhận diện qua banner trên trang, cần có tab claude.ai đang mở trong profile đó.
 
 ## Tech stack
 
-Tauri 2 (Rust) · `tiny_http` · React 18 + TypeScript + Vite 5 · lucide-react · CSS thuần theo token Material 3 · Chrome MV3 · NSIS.
+Tauri 2 (Rust) · `tiny_http` · React 18 + TypeScript + Vite 5 + Tailwind CSS 3 · lucide-react · token Material 3 Expressive (CSS variables) · font đóng gói bằng @fontsource · Chrome MV3 · NSIS.
 
 ## Phát triển
 

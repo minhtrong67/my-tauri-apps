@@ -80,6 +80,7 @@
 - **Smart playlist do bạn tự tạo** theo điều kiện (thể loại, năm, bitrate, định dạng, thời lượng, mới thêm, đã / chưa nghe, yêu thích), có xem trước số bài ngay khi chỉnh.
 - **Tìm bài trùng:** gom các bài giống nhau, giữ bản tốt nhất (lossless trước, rồi bitrate) và chuyển lượt nghe, yêu thích, playlist sang bản đó. Chỉ xóa khỏi thư viện, không đụng tới file nhạc.
 - **Thống kê:** bài hát và nghệ sĩ nghe nhiều nhất, thời gian nghe và 7 ngày gần đây. Một bài chỉ được tính sau 30 giây hoặc một nửa thời lượng nên bấm qua bài không làm sai số liệu.
+- **Trang chủ** mở đầu bằng thẻ *Tiếp tục nghe* (phát tiếp, phát ngẫu nhiên) cùng các lối tắt một chạm; *Settings* có thanh mục dính phía trên để nhảy nhanh giữa các phần.
 
 #### Định dạng âm thanh được hỗ trợ
 
@@ -104,6 +105,8 @@ App phát nhạc bằng bộ giải mã media của Microsoft Edge WebView2, nê
 - **Lời bài hát đồng bộ** (tệp `.lrc` cạnh bài hoặc nhúng trong thẻ) – bấm vào dòng để tua. Chưa có lời? **Tìm trên mạng** (LRCLIB, chỉ khi bạn bấm nút) rồi lưu thành tệp `.lrc` cạnh bài hát.
 - Ba kiểu **visualizer** (cột, sóng, vòng tròn), màn hình *Đang phát* toàn khung và **trình phát mini** luôn ở trên cùng.
 - **Chỉnh độ lệch lời bài hát:** −/+ 0,1 giây cho từng bài khi file `.lrc` bị lệch.
+- **Tìm lời trên mạng đáng tin cậy hơn:** tên bài được làm sạch (`(Official Video)`, `ft. …`, kiểu `Nghệ sĩ - Tên bài`), thử nhiều cách đọc tên trên LRCLIB, chấm điểm mỗi kết quả theo tên bài, nghệ sĩ và thời lượng để không hiện nhầm bài, và tự thử lại khi mạng chập chờn. Bài được khớp hiện cạnh nhãn *Nguồn LRCLIB*; bật *Settings → Trực tuyến → Tự động tìm lời bài hát* để app tự làm.
+- **Trình phát toàn màn hình mượt mà:** thanh player nở ra thành màn hình *Đang phát* (container transform) trong khi ảnh bìa bay về đúng vị trí; khi đóng thì chạy ngược lại.
 - **Thiết bị phát âm thanh:** chọn loa / tai nghe dùng để phát nhạc (*Settings → Phát nhạc*).
 - **Lưu hàng đợi thành playlist** chỉ với một cú bấm.
 - Hẹn giờ tắt (15 – 120 phút hoặc hết bài hiện tại) có **giảm âm lượng dần**, **phím tắt toàn hệ thống** tùy chọn (`Ctrl+Alt+Space / ← / → / M / T`), **phím media toàn cục** (Phát/Tạm dừng, Bài kế, Bài trước, Dừng – hoạt động khi chạy nền và từ khay hệ thống; lớp phủ media của Windows hiển thị ảnh bìa và tiến trình), khôi phục phiên trước.
@@ -112,7 +115,6 @@ App phát nhạc bằng bộ giải mã media của Microsoft Edge WebView2, nê
 - Chủ đề sáng, tối hoặc theo hệ thống; màu có sẵn + màu tùy chọn; **màu động theo ảnh bìa**.
 - Giao diện Tiếng Việt / English, mặc định tự theo hệ thống.
 - **Material 3 Expressive:** chuyển động spring (nhanh / mặc định / chậm, spatial và effects, lấy mẫu thành easing `linear()` của CSS), nút có năm kích cỡ vẫn tròn nhưng vuông bo lại khi nhấn hoặc được chọn, nút biểu tượng bật/tắt đổi hình từ tròn sang vuông bo, nhóm nút liền (connected button group), slider kiểu mới (track dày, tay cầm dạng thanh, bong bóng giá trị), **thanh tua dạng sóng** chạy khi đang phát và phẳng lại khi tạm dừng, **loading indicator** đổi hình, thanh phát nhạc dạng toolbar nổi và tiêu đề nhấn mạnh.
-- **Tự động cập nhật:** kiểm tra bản mới đã ký số khi mở app và mỗi 6 giờ, hiển thị ghi chú phát hành, tải kèm thanh tiến trình, cài đặt rồi khởi động lại (xem [Tự động cập nhật](#tự-động-cập-nhật)).
 - **Hiệu ứng đổi giao diện:** khi chuyển sáng / tối / màu chủ đề, giao diện mới lan ra dạng vòng tròn từ chỗ bạn bấm (View Transitions, có phương án mờ dần dự phòng). Lời bài hát mờ và nhòe dần ra xa dòng đang hát, ảnh bìa phóng vào mỗi khi đổi bài.
 - Chuyển động mượt kiểu Material: thẻ xuất hiện lần lượt, nhấc lên khi rê chuột, nút chuyển trượt, phản hồi khi bấm và chuyển màn hình (tự giảm khi tắt hiệu ứng động của Windows).
 
@@ -219,7 +221,6 @@ npm run dev
 | `npm test` | Test đơn vị Vitest (lời bài hát, M3U, smart playlist, bài trùng, thống kê, phím tắt…) |
 | `npm run check:i18n` | Tiếng Anh và tiếng Việt phải có cùng nội dung và placeholder |
 | `cargo test` / `cargo check` (trong `src-tauri`) | Test / kiểm tra kiểu backend Rust |
-| `npm run release -- "ghi chú"` | Bộ cài đã ký + `download/latest.json` cho tự động cập nhật |
 | `npm run portable` | File zip bản portable (sau `npm run build`) |
 
 **Dùng trong workspace Cargo có sẵn** – thêm vào `members`:
@@ -274,32 +275,16 @@ Muốn dùng hình khác, thay `src-tauri/icons/icon.png` (vuông, ≥ 512 px), 
 
 **Landing page** – `index.html` ở thư mục gốc là trang giới thiệu một tệp HTML theo phong cách Material Design (responsive, đủ thẻ meta SEO và chia sẻ mạng xã hội, song ngữ EN/VI). Nút Download trỏ tới `download/Material-Music_1.3.0_x64-setup.exe`; hãy chép bộ cài đã build vào thư mục [`download`](download) với đúng tên này. Mở bằng cách nhấp đúp, hoặc host thư mục gốc (ví dụ GitHub Pages).
 
-### Tự động cập nhật
-
-App kiểm tra phiên bản mới sau khi mở vài giây và cứ 6 giờ một lần (*Cài đặt → Giới thiệu → Tự động cập nhật*, hoặc bấm **Kiểm tra cập nhật**). App đọc một tệp khai báo nhỏ `download/latest.json` trên website; nếu có bản mới hơn đã được **ký số**, toast và hộp thoại sẽ hiện ra để tải về, xem ghi chú phát hành và thanh tiến trình, cài đặt rồi tự khởi động lại. Mọi bản cập nhật đều được xác minh bằng khóa công khai của bạn trước khi cài.
-
-### Thiết lập một lần
-> Khóa công khai đã được điền sẵn trong `src-tauri/tauri.conf.json`. Hãy giữ bí mật **khóa riêng** tương ứng (`material-music.key`), đừng commit và nhớ sao lưu: mất khóa là không phát hành cập nhật được nữa. Muốn dùng cặp khóa của bạn thì làm theo các bước dưới.
-
-1. Tạo cặp khóa ký (giữ khóa riêng bí mật, đừng commit, nhớ sao lưu: mất khóa là không phát hành cập nhật được nữa):
-   ```powershell
-   npx tauri signer generate -w "$env:USERPROFILE\.tauri\material-music.key"
-   ```
-2. Mở `material-music.key.pub`, chép toàn bộ nội dung và dán vào `src-tauri/tauri.conf.json` → `plugins.updater.pubkey` (thay chỗ giữ chỗ).
-3. Kiểm tra `plugins.updater.endpoints` (mặc định `https://material-music-player-delta.vercel.app/download/latest.json`). Nếu website nằm ở nơi khác thì đổi lại và đặt `UPDATE_BASE_URL` cho bước 2 bên dưới.
-
 ### Phát hành phiên bản mới
-1. Tăng version trong `package.json`, `src-tauri/Cargo.toml` và `src-tauri/tauri.conf.json`.
-2. Build, ký và tạo tệp khai báo trong một lệnh (PowerShell):
-   ```powershell
-   $env:TAURI_SIGNING_PRIVATE_KEY = "$env:USERPROFILE\.tauri\material-music.key"
-   $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = "mat-khau-cua-ban"   # chỉ khi bạn có đặt mật khẩu
-   npm run release -- "Điểm mới của phiên bản này"
-   ```
-   Lệnh này chạy `tauri build` kèm gói cập nhật, chép bộ cài vào `download/Material-Music_<version>_x64-setup.exe` và ghi `download/latest.json`.
-3. Deploy website (đẩy thư mục `download` lên). Các app đã cài sẽ nhận bản mới ở lần kiểm tra kế tiếp.
 
-`npm run build` không đổi: vẫn tạo bộ cài thường, không ký và không cần khóa. Bản cài trước khi có tự cập nhật (1.1.0 trở xuống) cần cập nhật thủ công một lần.
+App **không tự cập nhật**: người dùng tải bộ cài mới ngay trên landing page rồi chạy, nó cập nhật bản đang cài và giữ nguyên dữ liệu.
+
+1. Nâng số phiên bản ở **3 nơi** cho giống nhau: `package.json`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`.
+2. Chạy `npm run build`. Lệnh này tạo bộ cài và **tự chép** vào `download/Material-Music_<version>_x64-setup.exe` (đúng tên mà nút Download trên landing page trỏ tới).
+3. (Tùy chọn) `npm run portable` tạo thêm `download/Material-Music_<version>_x64-portable.zip`.
+4. Cập nhật `CHANGELOG.md`, deploy lại thư mục dự án (landing page + `download/`).
+
+Không cần khóa ký hay cấu hình gì thêm.
 
 ## Cấu trúc project
 
@@ -332,7 +317,7 @@ material-music/
 │  └─ views/                  Library (trang chủ, bài hát, album, nghệ sĩ, playlist, tìm kiếm), Settings, Extra (thống kê, bài trùng, smart playlist)
 ├─ scripts/
 │  ├─ generate-icons.py       tạo toàn bộ icon (app, setup, uninstall)
-│  ├─ make-update-manifest.mjs · make-portable.mjs · check-i18n.mjs
+│  ├─ copy-installer.mjs · make-portable.mjs · check-i18n.mjs
 ├─ tests/                     test đơn vị Vitest
 ├─ .github/                   workflow CI + phát hành, mẫu issue
 ├─ src-tauri/                 backend Rust

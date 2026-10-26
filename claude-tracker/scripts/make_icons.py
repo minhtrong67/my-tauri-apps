@@ -1,57 +1,62 @@
 """Sinh toàn bộ icon của Claude Tracker (cần Pillow): python scripts/make_icons.py
 
+Phong cách Material 3 Expressive: khối "cookie" 12 cánh phẳng màu Claude (#D97757) + ba cột mức dùng màu kem.
 Một hình học chung -> app icon, setup icon (huy hiệu mũi tên tải xuống), uninstall icon (huy hiệu thùng rác).
-Xuất: src-tauri/icons, extension/icons, assets, app/public.
+Xuất: src-tauri/icons, extension/icons, assets (icon, logo.svg, preview), app/public.
 """
+import math
 from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
-S = 1024  # canvas gốc, vẽ ở 1024 rồi thu nhỏ bằng LANCZOS cho mép mượt
-TOP, BOT = (236, 140, 108), (192, 85, 52)  # gradient accent
+S = 1024
+CLAUDE = (217, 119, 87, 255)   # #D97757
+CREAM = (250, 249, 245, 255)   # #FAF9F5
+DARK = (20, 20, 19, 255)       # #141413
+DEEP = (176, 84, 52, 255)      # sắc đậm hơn của cam Claude cho nét trên nền trắng
 
 
-def squircle_mask(size, margin, radius):
-    m = Image.new("L", (size, size), 0)
-    ImageDraw.Draw(m).rounded_rectangle([margin, margin, size - margin, size - margin], radius, fill=255)
-    return m
+def cookie_points(cx=512, cy=512, r0=488, lobes=12, depth=0.04):
+    pts = []
+    for i in range(0, 360, 1):
+        a = math.radians(i)
+        r = r0 * (1 + depth * math.cos(lobes * a)) / (1 + depth)
+        pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    return pts
 
 
 def base_icon():
     img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
-    grad = Image.new("RGBA", (S, S))
-    px = grad.load()
-    for y in range(S):
-        for x in range(S):
-            t = (x + y) / (2 * S - 2)
-            px[x, y] = tuple(int(TOP[i] + (BOT[i] - TOP[i]) * t) for i in range(3)) + (255,)
-    img.paste(grad, (0, 0), squircle_mask(S, 40, 232))
     d = ImageDraw.Draw(img, "RGBA")
+    d.polygon(cookie_points(), fill=CLAUDE)
     # ba cột "mức dùng": hai cột đặc + một cột mờ (phần còn lại tới lúc reset)
-    for x, top, a in [(236, 470, 255), (452, 330, 255), (668, 200, 105)]:
-        d.rounded_rectangle([x, top, x + 120, 790], 60, fill=(255, 255, 255, a))
+    # cột thứ ba = kem pha 50% với cam (màu đặc, không dùng alpha để không "đục lỗ" nền trong suốt)
+    soft = tuple((c + k) // 2 for c, k in zip(CLAUDE[:3], CREAM[:3])) + (255,)
+    for x, top, col in [(236, 470, CREAM), (452, 330, CREAM), (668, 200, soft)]:
+        d.rounded_rectangle([x, top, x + 120, 790], 60, fill=col)
     return img
 
 
 def badge(img, kind):
+    cx, cy, r = 770, 770, 235
+    shadow = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    ImageDraw.Draw(shadow).polygon(cookie_points(cx, cy, r + 14, 8, 0.035), fill=(0, 0, 0, 45))
+    img = Image.alpha_composite(img, shadow)  # trộn đúng alpha, không ghi đè pixel
     d = ImageDraw.Draw(img, "RGBA")
-    cx, cy, r = 760, 760, 250
     if kind == "setup":
-        d.ellipse([cx - r - 14, cy - r - 14, cx + r + 14, cy + r + 14], fill=(0, 0, 0, 40))
-        d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, 255, 255, 255))
-        c = (190, 80, 48, 255)
-        d.rounded_rectangle([cx - 28, cy - 140, cx + 28, cy + 30], 28, fill=c)
-        d.polygon([(cx - 100, cy - 10), (cx + 100, cy - 10), (cx, cy + 100)], fill=c)
-        d.rounded_rectangle([cx - 120, cy + 120, cx + 120, cy + 160], 20, fill=c)
+        d.polygon(cookie_points(cx, cy, r, 8, 0.035), fill=CREAM)
+        c = DEEP
+        d.rounded_rectangle([cx - 30, cy - 140, cx + 30, cy + 20], 30, fill=c)
+        d.polygon([(cx - 104, cy - 14), (cx + 104, cy - 14), (cx, cy + 96)], fill=c)
+        d.rounded_rectangle([cx - 124, cy + 120, cx + 124, cy + 160], 20, fill=c)
     else:
-        d.ellipse([cx - r - 14, cy - r - 14, cx + r + 14, cy + r + 14], fill=(0, 0, 0, 40))
-        d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(43, 35, 32, 255))
-        w = (255, 255, 255, 255)
-        d.rounded_rectangle([cx - 120, cy - 120, cx + 120, cy - 84], 18, fill=w)  # nắp
-        d.rounded_rectangle([cx - 36, cy - 150, cx + 36, cy - 110], 14, fill=w)  # quai
-        d.polygon([(cx - 96, cy - 62), (cx + 96, cy - 62), (cx + 78, cy + 130), (cx - 78, cy + 130)], fill=w)
+        d.polygon(cookie_points(cx, cy, r, 8, 0.035), fill=DARK)
+        w = CREAM
+        d.rounded_rectangle([cx - 120, cy - 118, cx + 120, cy - 82], 18, fill=w)
+        d.rounded_rectangle([cx - 36, cy - 150, cx + 36, cy - 108], 14, fill=w)
+        d.polygon([(cx - 96, cy - 60), (cx + 96, cy - 60), (cx + 78, cy + 130), (cx - 78, cy + 130)], fill=w)
         for dx in (-34, 0, 34):
-            d.rounded_rectangle([cx + dx - 8, cy - 30, cx + dx + 8, cy + 96], 8, fill=(43, 35, 32, 255))
+            d.rounded_rectangle([cx + dx - 8, cy - 28, cx + dx + 8, cy + 96], 8, fill=DARK)
     return img
 
 
@@ -60,8 +65,20 @@ def sized(img, n):
 
 
 def save_ico(img, path, sizes=(16, 24, 32, 48, 64, 128, 256)):
-    # PNG nhúng từng kích cỡ -> hiển thị sắc nét ở mọi mức scale của Windows
+    # PNG nhúng từng kích cỡ -> sắc nét ở mọi mức scale của Windows
     img.save(path, format="ICO", sizes=[(n, n) for n in sizes])
+
+
+def svg_logo():
+    pts = cookie_points(r0=488)
+    path = "M" + "L".join(f"{x:.1f} {y:.1f}" for x, y in pts[::2]) + "Z"
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">'
+        f'<path d="{path}" fill="#D97757"/>'
+        '<rect x="236" y="470" width="120" height="320" rx="60" fill="#FAF9F5"/>'
+        '<rect x="452" y="330" width="120" height="460" rx="60" fill="#FAF9F5"/>'
+        '<rect x="668" y="200" width="120" height="590" rx="60" fill="#FAF9F5" fill-opacity=".5"/></svg>'
+    )
 
 
 def main():
@@ -76,20 +93,22 @@ def main():
     save_ico(app, ti / "icon.ico")
     save_ico(setup, ti / "setup.ico")
     save_ico(unins, ti / "uninstall.ico")
-    # logo cho Microsoft Store / MSIX (Tauri tham chiếu khi build gói Appx)
     for n in (30, 44, 71, 89, 107, 142, 150, 284, 310):
         sized(app, n).save(ti / f"Square{n}x{n}Logo.png")
     sized(app, 50).save(ti / "StoreLogo.png")
 
     ei = ROOT / "extension" / "icons"
+    ei.mkdir(parents=True, exist_ok=True)
     for n in (16, 32, 48, 128):
         sized(app, n).save(ei / f"{n}.png")
 
-    (ROOT / "assets").mkdir(exist_ok=True)
-    sized(app, 512).save(ROOT / "assets" / "icon-512.png")
-    sized(app, 180).save(ROOT / "assets" / "apple-touch-icon.png")
-    sized(setup, 256).save(ROOT / "assets" / "setup-preview.png")
-    sized(unins, 256).save(ROOT / "assets" / "uninstall-preview.png")
+    a = ROOT / "assets"
+    a.mkdir(exist_ok=True)
+    sized(app, 512).save(a / "icon-512.png")
+    sized(app, 180).save(a / "apple-touch-icon.png")
+    sized(setup, 256).save(a / "setup-preview.png")
+    sized(unins, 256).save(a / "uninstall-preview.png")
+    (a / "logo.svg").write_text(svg_logo(), encoding="utf-8")
     print("OK")
 
 
