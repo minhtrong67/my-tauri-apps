@@ -564,29 +564,61 @@ fn in_quiet(st: &Settings) -> bool {
     }
 }
 
+/// Thời gian "yên" sau khi mở app / sau khi máy thức dậy từ chế độ ngủ: extension cần vài phút để đồng bộ lại,
+/// trong lúc đó dữ liệu còn cũ nên không bắn thông báo (tránh dồn hàng loạt thông báo lúc vừa mở máy).
+const SETTLE_START_MS: i64 = 150_000;
+const SETTLE_RESUME_MS: i64 = 180_000;
+/// Giờ reset đã trôi qua quá lâu (máy tắt/ngủ) thì không còn ý nghĩa để báo nữa
+const STALE_RESET_MS: i64 = 15 * 60_000;
+/// Dữ liệu cũ hơn mức này thì không dùng để cảnh báo "sắp hết lượt"
+const FRESH_MS: i64 = 30 * 60_000;
+const MAX_NOTES: usize = 3;
+
+/// Hai mốc reset có phải là cùng một chu kỳ không. Claude trả giờ reset lệch vài giây/phút giữa các lần lấy,
+/// nên so sánh chuỗi sẽ khiến cùng một cảnh báo bị bắn lại sau mỗi lần đồng bộ -> so theo thời gian, dung sai 10 phút.
+fn same_reset(prev: Option<&str>, cur: &str) -> bool {
+    let (Some(p), Ok(c)) = (prev, DateTime::parse_from_rfc3339(cur)) else { return false };
+    match DateTime::parse_from_rfc3339(p) {
+        Ok(p) => (p.timestamp_millis() - c.timestamp_millis()).abs() <= 600_000,
+        Err(_) => p == cur,
+    }
+}
+
 fn start_watcher(app: AppHandle, st: Arc<Mutex<Store>>, path: PathBuf) {
-    thread::spawn(move || loop {
-        thread::sleep(Duration::from_secs(20));
-        let mut notes: Vec<(String, String)> = vec![];
-        {
-            let mut s = lock(&st);
-            if s.settings.notify_enabled && !in_quiet(&s.settings) {
+    thread::spawn(move || {
+        let mut settle_until = Utc::now().timestamp_millis() + SETTLE_START_MS;
+        let mut last_tick = Utc::now().timestamp_millis();
+        loop {
+            thread::sleep(Duration::from_secs(20));
+            let now_ms = Utc::now().timestamp_millis();
+            // Vòng lặp lệch > 60 giây so với 20 giây dự kiến = máy vừa ngủ/ngủ đông rồi thức dậy
+            if now_ms - last_tick > 60_000 {
+                settle_until = now_ms + SETTLE_RESUME_MS;
+            }
+            last_tick = now_ms;
+
+            let mut notes: Vec<(String, String)> = vec![];
+            let lang;
+            {
+                let mut s = lock(&st);
+                let allow = s.settings.notify_enabled && !in_quiet(&s.settings) && now_ms >= settle_until;
                 let thr = s.settings.notify_threshold;
                 let warn_on = s.settings.warn_enabled;
                 let warn_at = s.settings.warn_at;
-                let lang = s.lang.clone();
+                lang = s.lang.clone();
                 let now = Utc::now();
                 let mut dirty = false;
                 for a in s.accounts.iter_mut().filter(|a| !a.hidden) {
                     let who = a.alias.clone().unwrap_or_else(|| a.label.clone());
+                    let fresh = a.fetched_at.map_or(false, |f| now_ms - f <= FRESH_MS);
                     for l in a.limits.iter_mut() {
                         let (Some(r), Some(u)) = (l.resets_at.clone(), l.utilization) else { continue };
                         let Ok(t) = DateTime::parse_from_rfc3339(&r) else { continue };
                         let t = t.with_timezone(&Utc);
                         let at = t.with_timezone(&Local).format("%H:%M").to_string();
                         let name = limit_name(&lang, l);
-                        // 1) Sắp hết lượt: đã dùng >= warn_at% nhưng chưa chạm 100%
-                        if warn_on && u >= warn_at && u < 100.0 && t > now && l.warned_for.as_deref() != Some(r.as_str()) {
+                        // 1) Sắp hết lượt: chỉ khi được phép báo và dữ liệu còn mới
+                        if allow && fresh && warn_on && u >= warn_at && u < 100.0 && t > now && !same_reset(l.warned_for.as_deref(), &r) {
                             notes.push(if lang == "en" {
                                 (format!("{who} · {:.0}% used", u), format!("{name} is almost used up. It resets at {at}."))
                             } else {
@@ -595,19 +627,23 @@ fn start_watcher(app: AppHandle, st: Arc<Mutex<Store>>, path: PathBuf) {
                             l.warned_for = Some(r.clone());
                             dirty = true;
                         }
-                        // 2) Tới giờ dự kiến reset
-                        if u >= thr && t <= now && l.notified_for.as_deref() != Some(r.as_str()) {
-                            notes.push(if lang == "en" {
-                                (
-                                    format!("{who} · expected to reset"),
-                                    format!("{name} is expected to recover at {at}. Not confirmed yet — open Claude to check."),
-                                )
-                            } else {
-                                (
-                                    format!("{who} · dự kiến đã reset"),
-                                    format!("{name} dự kiến hồi lúc {at}. Chưa xác nhận — mở Claude để kiểm tra."),
-                                )
-                            });
+                        // 2) Tới giờ dự kiến reset. Luôn "đánh dấu đã xử lý"; chỉ bắn thông báo khi được phép
+                        //    và giờ reset vừa mới trôi qua (không báo lại chuyện cũ khi máy vừa mở/thức dậy/hết giờ yên lặng)
+                        if u >= thr && t <= now && !same_reset(l.notified_for.as_deref(), &r) {
+                            let recent = now_ms - t.timestamp_millis() <= STALE_RESET_MS;
+                            if allow && recent {
+                                notes.push(if lang == "en" {
+                                    (
+                                        format!("{who} · expected to reset"),
+                                        format!("{name} is expected to recover at {at}. Not confirmed yet — open Claude to check."),
+                                    )
+                                } else {
+                                    (
+                                        format!("{who} · dự kiến đã reset"),
+                                        format!("{name} dự kiến hồi lúc {at}. Chưa xác nhận — mở Claude để kiểm tra."),
+                                    )
+                                });
+                            }
                             l.notified_for = Some(r);
                             dirty = true;
                         }
@@ -617,11 +653,19 @@ fn start_watcher(app: AppHandle, st: Arc<Mutex<Store>>, path: PathBuf) {
                     persist(&path, &s);
                 }
             }
+            // Quá nhiều thông báo cùng lúc thì gộp thành một
+            if notes.len() > MAX_NOTES {
+                let n = notes.len();
+                let head = notes.iter().take(MAX_NOTES).map(|(t, _)| t.clone()).collect::<Vec<_>>().join(" · ");
+                let body = if lang == "en" { format!("{head} · and {} more", n - MAX_NOTES) } else { format!("{head} · và {} mục khác", n - MAX_NOTES) };
+                let title = if lang == "en" { format!("Claude Tracker · {n} updates") } else { format!("Claude Tracker · {n} cập nhật") };
+                notes = vec![(title, body)];
+            }
+            for (t, b) in notes {
+                let _ = app.notification().builder().title(t).body(b).show();
+            }
+            refresh_tray(&app);
         }
-        for (t, b) in notes {
-            let _ = app.notification().builder().title(t).body(b).show();
-        }
-        refresh_tray(&app);
     });
 }
 
@@ -671,7 +715,9 @@ fn refresh_tray(app: &AppHandle) {
         }
         t
     };
-    if let Ok(g) = st.tray.lock() {
+    // Gán ra biến để khoá được thả trước khi `st` bị huỷ (tránh lỗi E0597 do temporary ở cuối hàm)
+    let guard = st.tray.lock();
+    if let Ok(g) = guard {
         if let Some(h) = g.as_ref() {
             let _ = h.icon.set_tooltip(Some(tip));
         }

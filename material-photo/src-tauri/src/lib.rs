@@ -1,10 +1,13 @@
-use base64::{engine::general_purpose::STANDARD, Engine};
+mod exif_util;
+
 use serde::{Deserialize, Serialize};
 use std::hash::{Hash, Hasher};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
+use std::sync::Mutex;
 use tauri::{Emitter, Manager};
 use tauri_plugin_dialog::DialogExt;
+use notify::{RecursiveMode, Watcher};
 use tauri_plugin_window_state::StateFlags;
 
 const EXTS: [&str; 10] = ["png", "jpg", "jpeg", "jfif", "gif", "webp", "bmp", "ico", "avif", "svg"];
@@ -35,6 +38,11 @@ struct Opened {
     dir: String,
     entries: Vec<Entry>,
     current: Option<String>,
+}
+
+/// Lets the webview load pictures from a folder the user chose (asset protocol scope).
+fn allow_dir(app: &tauri::AppHandle, dir: &Path, recursive: bool) {
+    let _ = app.asset_protocol_scope().allow_directory(dir, recursive);
 }
 
 /// Runs blocking file work on a worker thread so the window never freezes.
@@ -165,12 +173,16 @@ fn scan_deep(root: &Path) -> Vec<Entry> {
 #[tauri::command]
 async fn library(app: tauri::AppHandle) -> Result<Opened, String> {
     let dir = app.path().picture_dir().map_err(|e| e.to_string())?;
+    allow_dir(&app, &dir, true);
     blocking(move || Ok(Opened { dir: dir.to_string_lossy().into_owned(), entries: scan_deep(&dir), current: None })).await
 }
 
 /// Opens a folder, or the folder that contains the given picture, and lists its pictures.
 #[tauri::command]
-async fn open_target(path: String) -> Result<Opened, String> {
+async fn open_target(app: tauri::AppHandle, path: String) -> Result<Opened, String> {
+    let p0 = PathBuf::from(&path);
+    let d0 = if p0.is_dir() { p0.clone() } else { p0.parent().map(|p| p.to_path_buf()).unwrap_or(p0.clone()) };
+    allow_dir(&app, &d0, false);
     blocking(move || {
         let p = PathBuf::from(&path);
         if p.is_dir() {
@@ -199,21 +211,23 @@ fn startup_path() -> Option<String> {
 }
 
 /// Returns the path of a cached square JPEG thumbnail, creating it on first use.
-/// Thumbnails live in the app cache folder, so scrolling a big library stays fast and later launches are instant.
+/// The EXIF orientation is applied, so phone photos are never rotated wrongly.
 #[tauri::command]
 async fn thumb(app: tauri::AppHandle, path: String, size: u32) -> Result<String, String> {
     let dir = app.path().app_cache_dir().map_err(|e| e.to_string())?.join("thumbs");
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     let meta = std::fs::metadata(&path).map_err(|e| e.to_string())?;
     let mut h = std::collections::hash_map::DefaultHasher::new();
-    (&path, meta.len(), ms(&meta), size).hash(&mut h);
+    (&path, meta.len(), ms(&meta), size, 2u8).hash(&mut h);
     let out = dir.join(format!("{:016x}.jpg", h.finish()));
     if out.exists() {
         return Ok(out.to_string_lossy().into_owned());
     }
     let o = out.clone();
-    tauri::async_runtime::spawn_blocking(move || -> Result<(), String> {
-        let img = image::open(&path).map_err(|e| e.to_string())?;
+    blocking(move || {
+        let p = Path::new(&path);
+        let img = image::open(p).map_err(|e| e.to_string())?;
+        let img = exif_util::apply_orientation(img, exif_util::orientation(p));
         let t = img.resize_to_fill(size, size, image::imageops::FilterType::Triangle);
         let mut cur = std::io::Cursor::new(Vec::new());
         image::DynamicImage::ImageRgb8(t.to_rgb8())
@@ -223,34 +237,44 @@ async fn thumb(app: tauri::AppHandle, path: String, size: u32) -> Result<String,
         std::fs::write(&tmp, cur.into_inner()).map_err(|e| e.to_string())?;
         std::fs::rename(&tmp, &o).map_err(|e| e.to_string())
     })
-    .await
-    .map_err(|e| e.to_string())??;
+    .await?;
     Ok(out.to_string_lossy().into_owned())
 }
 
-/// Reads a picture and returns (mime type, base64 data) so it can be edited on a canvas.
+/// Reads size and metadata for a list of paths (favourites and albums can live in any folder).
 #[tauri::command]
-async fn read_image(path: String) -> Result<(String, String), String> {
-    blocking(move || {
-        let ext = Path::new(&path).extension().and_then(|e| e.to_str()).unwrap_or("").to_lowercase();
-        let mime = match ext.as_str() {
-            "png" => "image/png",
-            "jpg" | "jpeg" | "jfif" => "image/jpeg",
-            "gif" => "image/gif",
-            "webp" => "image/webp",
-            "bmp" => "image/bmp",
-            "ico" => "image/x-icon",
-            "avif" => "image/avif",
-            "svg" => "image/svg+xml",
-            _ => return Err("unsupported".into()),
-        };
-        let bytes = std::fs::read(&path).map_err(|e| e.to_string())?;
-        if bytes.len() > 120_000_000 {
-            return Err("too large".into());
+async fn stat_paths(app: tauri::AppHandle, paths: Vec<String>) -> Result<Vec<Entry>, String> {
+    for p in &paths {
+        if let Some(d) = Path::new(p).parent() {
+            allow_dir(&app, d, false);
         }
-        Ok((mime.into(), STANDARD.encode(bytes)))
+    }
+    blocking(move || {
+        Ok(paths
+            .into_iter()
+            .filter_map(|p| {
+                let pb = PathBuf::from(&p);
+                let m = std::fs::metadata(&pb).ok()?;
+                if !m.is_file() || !is_img(&pb) {
+                    return None;
+                }
+                Some(Entry {
+                    name: pb.file_name()?.to_string_lossy().into_owned(),
+                    folder: pb.parent()?.to_string_lossy().into_owned(),
+                    size: m.len(),
+                    mtime: ms(&m),
+                    path: p,
+                })
+            })
+            .collect())
     })
     .await
+}
+
+/// EXIF details (camera, lens, exposure, GPS...) of a picture.
+#[tauri::command]
+async fn exif_info(path: String) -> Result<exif_util::ExifInfo, String> {
+    blocking(move || Ok(exif_util::read_info(Path::new(&path)))).await
 }
 
 /// Writes bytes to a temporary file first, then swaps it in, so a crash never leaves a half written picture.
@@ -263,19 +287,36 @@ fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), String> {
     })
 }
 
-/// Overwrites an existing picture with base64 encoded data.
+fn decode_header(v: Option<&tauri::http::HeaderValue>) -> Option<String> {
+    let s = v?.to_str().ok()?;
+    Some(percent_encoding::percent_decode_str(s).decode_utf8_lossy().into_owned())
+}
+
+/// Writes raw picture bytes (sent as a binary request body) to `x-path`.
+/// With `x-keep-exif: 1` the EXIF block of the JPEG named in `x-exif-src` (default: the target itself) is copied into the new file.
 #[tauri::command]
-async fn write_image(path: String, data: String) -> Result<(), String> {
+async fn write_image(request: tauri::ipc::Request<'_>) -> Result<(), String> {
+    let tauri::ipc::InvokeBody::Raw(bytes) = request.body() else { return Err("missing data".into()) };
+    let path = decode_header(request.headers().get("x-path")).ok_or("missing path")?;
+    let keep = request.headers().get("x-keep-exif").and_then(|v| v.to_str().ok()) == Some("1");
+    let exif_src = decode_header(request.headers().get("x-exif-src")).unwrap_or_else(|| path.clone());
+    let bytes = bytes.clone();
     blocking(move || {
-        let bytes = STANDARD.decode(data).map_err(|e| e.to_string())?;
-        write_atomic(Path::new(&path), &bytes)
+        let p = Path::new(&path);
+        let mut data = bytes;
+        if keep {
+            if let Ok(orig) = std::fs::read(&exif_src) {
+                data = exif_util::carry_exif(&orig, data);
+            }
+        }
+        write_atomic(p, &data)
     })
     .await
 }
 
-/// Shows a native save dialog, writes the picture and returns the chosen path (None if cancelled).
+/// Native "save as" dialog. Returns the chosen path, or None when cancelled.
 #[tauri::command]
-async fn save_image(app: tauri::AppHandle, name: String, data: String, dir: Option<String>) -> Result<Option<String>, String> {
+async fn pick_save_path(app: tauri::AppHandle, name: String, dir: Option<String>) -> Result<Option<String>, String> {
     let ext = name.rsplit('.').next().unwrap_or("png").to_string();
     let mut b = app.dialog().file().set_file_name(&name).add_filter(ext.to_uppercase(), &[ext.as_str()]);
     if let Some(d) = dir {
@@ -283,15 +324,236 @@ async fn save_image(app: tauri::AppHandle, name: String, data: String, dir: Opti
     }
     let Some(fp) = b.blocking_save_file() else { return Ok(None) };
     let path = fp.into_path().map_err(|e| e.to_string())?;
-    let bytes = STANDARD.decode(data).map_err(|e| e.to_string())?;
-    std::fs::write(&path, bytes).map_err(|e| e.to_string())?;
+    if let Some(d) = path.parent() {
+        allow_dir(&app, d, false);
+    }
     Ok(Some(path.to_string_lossy().into_owned()))
+}
+
+/// Rotates a picture on disk by 90, 180 or 270 degrees (clockwise). JPEG keeps its EXIF block.
+#[tauri::command]
+async fn rotate_file(path: String, deg: u32) -> Result<(), String> {
+    blocking(move || {
+        let p = Path::new(&path);
+        let ext = p.extension().and_then(|e| e.to_str()).unwrap_or("").to_lowercase();
+        let img = image::open(p).map_err(|e| e.to_string())?;
+        let img = exif_util::apply_orientation(img, exif_util::orientation(p));
+        let img = match deg % 360 {
+            90 => img.rotate90(),
+            180 => img.rotate180(),
+            270 => img.rotate270(),
+            _ => img,
+        };
+        let mut buf = Vec::new();
+        match ext.as_str() {
+            "jpg" | "jpeg" | "jfif" => {
+                let enc = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut buf, 95);
+                image::DynamicImage::ImageRgb8(img.to_rgb8()).write_with_encoder(enc).map_err(|e| e.to_string())?;
+                if let Ok(orig) = std::fs::read(p) {
+                    buf = exif_util::carry_exif(&orig, buf);
+                }
+            }
+            "png" | "bmp" | "webp" => {
+                let fmt = match ext.as_str() {
+                    "png" => image::ImageFormat::Png,
+                    "bmp" => image::ImageFormat::Bmp,
+                    _ => image::ImageFormat::WebP,
+                };
+                img.write_to(&mut std::io::Cursor::new(&mut buf), fmt).map_err(|e| e.to_string())?;
+            }
+            _ => return Err("unsupported".into()),
+        }
+        write_atomic(p, &buf)
+    })
+    .await
 }
 
 /// Moves a picture to the Recycle Bin.
 #[tauri::command]
 async fn delete_file(path: String) -> Result<(), String> {
     blocking(move || trash::delete(&path).map_err(|e| e.to_string())).await
+}
+
+/// Puts the most recently deleted copy of a picture back where it was (Windows Recycle Bin).
+#[tauri::command]
+async fn restore_file(path: String) -> Result<(), String> {
+    blocking(move || {
+        #[cfg(windows)]
+        {
+            let mut items: Vec<_> = trash::os_limited::list()
+                .map_err(|e| e.to_string())?
+                .into_iter()
+                .filter(|i| i.original_path().to_string_lossy().to_lowercase() == path.to_lowercase())
+                .collect();
+            items.sort_by_key(|i| i.time_deleted);
+            let last = items.pop().ok_or("not in the Recycle Bin")?;
+            trash::os_limited::restore_all([last]).map_err(|e| e.to_string())
+        }
+        #[cfg(not(windows))]
+        {
+            let _ = path;
+            Err("unsupported".to_string())
+        }
+    })
+    .await
+}
+
+fn unique(dest: PathBuf) -> PathBuf {
+    if !dest.exists() {
+        return dest;
+    }
+    let stem = dest.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default();
+    let ext = dest.extension().map(|s| format!(".{}", s.to_string_lossy())).unwrap_or_default();
+    let dir = dest.parent().map(|p| p.to_path_buf()).unwrap_or_default();
+    for n in 2..10_000 {
+        let c = dir.join(format!("{stem} ({n}){ext}"));
+        if !c.exists() {
+            return c;
+        }
+    }
+    dest
+}
+
+/// Copies (or moves) pictures into a folder. Name clashes get " (2)", " (3)"... Returns how many succeeded.
+#[tauri::command]
+async fn transfer_files(app: tauri::AppHandle, paths: Vec<String>, dest: String, mv: bool) -> Result<usize, String> {
+    allow_dir(&app, Path::new(&dest), false);
+    blocking(move || {
+        let d = PathBuf::from(&dest);
+        std::fs::create_dir_all(&d).map_err(|e| e.to_string())?;
+        let mut ok = 0;
+        for p in paths {
+            let src = PathBuf::from(&p);
+            let Some(name) = src.file_name() else { continue };
+            let target = unique(d.join(name));
+            if target == src {
+                continue;
+            }
+            let done = if mv {
+                std::fs::rename(&src, &target).or_else(|_| std::fs::copy(&src, &target).and_then(|_| std::fs::remove_file(&src))).is_ok()
+            } else {
+                std::fs::copy(&src, &target).is_ok()
+            };
+            if done {
+                ok += 1;
+            }
+        }
+        Ok(ok)
+    })
+    .await
+}
+
+/// Renames a picture inside its folder and returns the new path.
+#[tauri::command]
+async fn rename_file(path: String, new_name: String) -> Result<String, String> {
+    blocking(move || {
+        let bad = |c: char| matches!(c, '\\' | '/' | ':' | '*' | '?' | '"' | '<' | '>' | '|');
+        let n = new_name.trim();
+        if n.is_empty() || n.chars().any(bad) {
+            return Err("invalid name".into());
+        }
+        let src = PathBuf::from(&path);
+        let target = src.with_file_name(n);
+        if target == src {
+            return Ok(path);
+        }
+        if target.exists() {
+            return Err("exists".into());
+        }
+        std::fs::rename(&src, &target).map_err(|e| e.to_string())?;
+        Ok(target.to_string_lossy().into_owned())
+    })
+    .await
+}
+
+/// Groups byte-identical pictures. Only files with the same size are hashed.
+#[tauri::command]
+async fn find_duplicates(paths: Vec<String>) -> Result<Vec<Vec<String>>, String> {
+    blocking(move || {
+        let mut by_size: std::collections::HashMap<u64, Vec<String>> = std::collections::HashMap::new();
+        for p in paths {
+            if let Ok(m) = std::fs::metadata(&p) {
+                by_size.entry(m.len()).or_default().push(p);
+            }
+        }
+        let mut groups = Vec::new();
+        for (_, files) in by_size.into_iter().filter(|(_, f)| f.len() > 1) {
+            let mut by_hash: std::collections::HashMap<u64, Vec<String>> = std::collections::HashMap::new();
+            for f in files {
+                if let Ok(bytes) = std::fs::read(&f) {
+                    let mut h = std::collections::hash_map::DefaultHasher::new();
+                    bytes.hash(&mut h);
+                    by_hash.entry(h.finish()).or_default().push(f);
+                }
+            }
+            groups.extend(by_hash.into_values().filter(|g| g.len() > 1));
+        }
+        groups.sort_by(|a, b| b.len().cmp(&a.len()));
+        Ok(groups)
+    })
+    .await
+}
+
+/// Sets the Windows desktop wallpaper.
+#[tauri::command]
+async fn set_wallpaper(path: String) -> Result<(), String> {
+    blocking(move || {
+        #[cfg(windows)]
+        {
+            use std::os::windows::process::CommandExt;
+            let script = "Add-Type -TypeDefinition 'using System.Runtime.InteropServices; public class WP { [DllImport(\"user32.dll\", CharSet=CharSet.Unicode)] public static extern int SystemParametersInfo(int a, int b, string c, int d); }'; [WP]::SystemParametersInfo(20, 0, $env:MP_WALLPAPER, 3) | Out-Null";
+            let st = std::process::Command::new("powershell")
+                .args(["-NoProfile", "-NonInteractive", "-WindowStyle", "Hidden", "-Command", script])
+                .env("MP_WALLPAPER", &path)
+                .creation_flags(0x0800_0000)
+                .status()
+                .map_err(|e| e.to_string())?;
+            if st.success() { Ok(()) } else { Err("failed".into()) }
+        }
+        #[cfg(not(windows))]
+        {
+            let _ = path;
+            Err("unsupported".to_string())
+        }
+    })
+    .await
+}
+
+struct Watch(Mutex<Option<notify::RecommendedWatcher>>);
+
+/// Watches folders and emits "fs-changed" (debounced) when pictures are added, removed or modified.
+#[tauri::command]
+fn watch_dirs(app: tauri::AppHandle, state: tauri::State<Watch>, dirs: Vec<String>, recursive: bool) -> Result<(), String> {
+    let (tx, rx) = std::sync::mpsc::channel::<()>();
+    let mut w = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
+        if let Ok(ev) = res {
+            let relevant = matches!(ev.kind, notify::EventKind::Create(_) | notify::EventKind::Remove(_) | notify::EventKind::Modify(_));
+            if relevant && ev.paths.iter().any(|p| is_img(p) || p.extension().is_none()) {
+                let _ = tx.send(());
+            }
+        }
+    })
+    .map_err(|e| e.to_string())?;
+    for d in dirs {
+        let mode = if recursive { RecursiveMode::Recursive } else { RecursiveMode::NonRecursive };
+        let _ = w.watch(Path::new(&d), mode);
+    }
+    std::thread::spawn(move || {
+        // Ends by itself when the watcher (and its sender) is dropped.
+        while rx.recv().is_ok() {
+            while rx.recv_timeout(Duration::from_millis(700)).is_ok() {}
+            let _ = app.emit("fs-changed", ());
+        }
+    });
+    *state.0.lock().map_err(|e| e.to_string())? = Some(w);
+    Ok(())
+}
+
+#[tauri::command]
+fn unwatch(state: tauri::State<Watch>) {
+    if let Ok(mut g) = state.0.lock() {
+        *g = None;
+    }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -315,6 +577,7 @@ pub fn run() {
         )
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .manage(Watch(Mutex::new(None)))
         .setup(|app| {
             if let Some(w) = app.get_webview_window("main") {
                 // The window is created hidden. Saved size and position are already restored by the window state plugin.
@@ -336,7 +599,8 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            thumb, library, open_target, startup_path, read_image, write_image, save_image, delete_file,
+            thumb, library, open_target, startup_path, stat_paths, exif_info, write_image, pick_save_path, rotate_file,
+            delete_file, restore_file, transfer_files, rename_file, find_duplicates, set_wallpaper, watch_dirs, unwatch,
             get_window_mode, set_window_mode, show_window
         ])
         .run(tauri::generate_context!())

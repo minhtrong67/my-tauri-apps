@@ -111,14 +111,30 @@ function syncNow() {
   if (!syncing) syncing = doSync().finally(() => (syncing = null));
   return syncing;
 }
+// Chrome vừa khởi động (nhất là khi khôi phục phiên): chưa nên đụng vào cửa sổ/tab của người dùng
+const BOOT_GRACE_MS = 120000;
+async function browserSettled() {
+  const { bootAt } = await chrome.storage.local.get("bootAt");
+  return !bootAt || Date.now() - bootAt > BOOT_GRACE_MS;
+}
+
 async function doSync() {
   let tabs = await claudeTabs();
-  let created = null;
-  if (!tabs.length) {
-    const wins = await chrome.windows.getAll().catch(() => []);
-    if (wins.length) {
-      created = await chrome.tabs.create({ url: "https://claude.ai/new", active: false });
-      tabs = [created];
+  let created = null; // { windowId, tabId } của cửa sổ riêng do extension tự mở
+  if (!tabs.length && (await browserSettled())) {
+    // Chỉ mở khi người dùng đang có ít nhất một cửa sổ Chrome thường đã có tab
+    const wins = await chrome.windows.getAll({ populate: true, windowTypes: ["normal"] }).catch(() => []);
+    if (wins.some((w) => (w.tabs || []).length > 0)) {
+      try {
+        // Dùng một cửa sổ thu nhỏ RIÊNG thay vì chèn tab vào cửa sổ của người dùng:
+        // đóng nó đi không bao giờ làm mất tab cuối cùng của cửa sổ người dùng (nguyên nhân Chrome tự đóng).
+        const w = await chrome.windows.create({ url: "https://claude.ai/new", state: "minimized", focused: false });
+        const t = w.tabs && w.tabs[0];
+        if (t) {
+          created = { windowId: w.id, tabId: t.id };
+          tabs = [t];
+        }
+      } catch (_) {}
     }
   }
   if (!tabs.length) { await collect(); return; }
@@ -139,7 +155,19 @@ async function doSync() {
   await pump;
   // Luôn lấy đủ usage (gói trả phí) + banner (gói Free) trong cùng một lần gửi
   await collect(latestBanner, false);
-  if (created) chrome.tabs.remove(created.id).catch(() => {});
+  if (created) await closeCreated(created);
+}
+
+// Chỉ đóng cửa sổ do extension tự mở, và chỉ khi nó vẫn chỉ chứa đúng tab đó và vẫn còn cửa sổ khác của người dùng.
+// Nếu không chắc chắn thì để yên, tuyệt đối không đóng thứ có thể là của người dùng (đóng cửa sổ cuối = Chrome thoát).
+async function closeCreated(c) {
+  try {
+    const wins = await chrome.windows.getAll({ windowTypes: ["normal"] });
+    if (!wins.some((w) => w.id !== c.windowId)) return;
+    const own = await chrome.tabs.query({ windowId: c.windowId });
+    if (own.length === 1 && own[0].id === c.tabId) await chrome.windows.remove(c.windowId);
+    else await chrome.tabs.remove(c.tabId); // người dùng đã thêm tab vào cửa sổ này: chỉ đóng tab của mình
+  } catch (_) {}
 }
 
 // App có nút "Làm mới": app tăng số thứ tự, /wait trả về ngay và extension đồng bộ trong ~1 giây
@@ -216,3 +244,6 @@ chrome.runtime.onMessage.addListener((msg, _s, send) => {
   }
 });
 longPoll();
+
+// Đánh dấu thời điểm Chrome khởi động để chờ trình duyệt ổn định (khôi phục phiên) rồi mới tự mở cửa sổ đọc dữ liệu
+chrome.runtime.onStartup.addListener(() => chrome.storage.local.set({ bootAt: Date.now() }));

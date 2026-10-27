@@ -1,43 +1,15 @@
-<!DOCTYPE html>
-<html lang="vi"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>Material Photo</title>
-<link rel="icon" href="data:,">
-<link rel="stylesheet" href="fonts/fonts.css">
-<link rel="stylesheet" href="css/app.css">
-</head><body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="7.6" fill="#00BCD4"/><rect x="6.5" y="8" width="19" height="15.6" rx="2.4" fill="#fff"/><rect x="8" y="9.5" width="16" height="12.6" rx="1.4" fill="#E0F7FA"/><path d="M8 22.1l5.5-7.8 3.8 4.9 2.5-3.2 4.2 6.1z" fill="#00A9BF"/><circle cx="20.6" cy="12.8" r="2.1" fill="#FFC107"/></symbol></svg>
-<div class="app">
-<nav id="rail"><button class="ri sl on" data-nav="gal"><span class="pill"><svg class="i" data-ic="grid" viewBox="0 0 24 24"></svg></span><span data-i="navGal"></span></button>
-<button class="ri sl" data-nav="view" disabled><span class="pill"><svg class="i" data-ic="image" viewBox="0 0 24 24"></svg></span><span data-i="navView"></span></button>
-<button class="ri sl" data-nav="edit" disabled><span class="pill"><svg class="i" data-ic="edit" viewBox="0 0 24 24"></svg></span><span data-i="navEdit"></span></button><div class="sp"></div>
-<button class="ri sl" id="bSet" data-t="settings"><span class="pill"><svg class="i" data-ic="settings" viewBox="0 0 24 24"></svg></span><span data-i="settings"></span></button></nav>
-<div class="col">
-<header class="tb"><button class="ib sl" id="bBack" hidden data-t="back"><svg class="i" data-ic="back" viewBox="0 0 24 24"></svg></button><div class="ttl"><h1 id="tTitle"></h1><div id="tSub"></div></div><div class="sp"></div>
-<div class="acts" data-act="gal"><button class="ib sl" id="bRefresh" data-t="refresh"><svg class="i" data-ic="refresh" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="bLib" data-t="library"><svg class="i" data-ic="lib" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="bOpenF" data-t="openFile"><svg class="i" data-ic="addimg" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="bOpenD" data-t="openFolder"><svg class="i" data-ic="folder" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="bSlide0" data-t="slideshow"><svg class="i" data-ic="play" viewBox="0 0 24 24"></svg></button></div>
-<div class="acts" data-act="view" hidden><button class="ib sl" id="bInfo" data-t="info"><svg class="i" data-ic="info" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="bPrint" data-t="print"><svg class="i" data-ic="print" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="bReveal" data-t="reveal"><svg class="i" data-ic="folder" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="bFs" data-t="fullscreen"><svg class="i" data-ic="fs" viewBox="0 0 24 24"></svg></button></div>
-<div class="acts" data-act="edit" hidden><button class="ib sl" id="eUndo" data-t="undo"><svg class="i" data-ic="undo" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="eRedo" data-t="redo"><svg class="i" data-ic="redo" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="eCmp" data-t="compare"><svg class="i" data-ic="compare" viewBox="0 0 24 24"></svg></button></div>
-<button class="ib sl" id="bAbout" data-t="about"><svg class="i" data-ic="help" viewBox="0 0 24 24"></svg></button></header><div class="prog" id="prog" hidden><i></i></div>
-<section class="view" id="vGal"><div class="gtool"><label class="search"><svg class="i" data-ic="search" viewBox="0 0 24 24"></svg><input id="q" data-t="search" autocomplete="off"></label>
-<button class="chip sl" id="bSort"><svg class="i" data-ic="sort" viewBox="0 0 24 24"></svg><span id="sortL"></span></button><button class="chip sl" id="bFolder" hidden><svg class="i" data-ic="folder" viewBox="0 0 24 24"></svg><span id="folderL"></span></button><input type="range" id="tsr" min="110" max="340" step="10" style="width:140px" data-t="tileSize"></div>
-<div id="grid"></div><div class="empty" id="gEmpty"><div><svg class="lg" viewBox="0 0 32 32" aria-hidden="true"><use href="#logo"/></svg><h2 data-i="emptyT"></h2><p data-i="emptyH"></p><div class="row"><button class="btn filled sl" id="eOpenD"><svg class="i" data-ic="folder" viewBox="0 0 24 24"></svg><span data-i="openFolder"></span></button><button class="btn tonal sl" id="eOpenF"><svg class="i" data-ic="addimg" viewBox="0 0 24 24"></svg><span data-i="openFile"></span></button></div></div></div></section>
-<section class="view" id="vView" hidden><div class="vmain"><div id="vstage"><img id="vimg" alt="" draggable="false"><button class="ib nav l sl" id="vPrev" data-t="prev"><svg class="i" data-ic="chl" viewBox="0 0 24 24"></svg></button><button class="ib nav r sl" id="vNext" data-t="next"><svg class="i" data-ic="chr" viewBox="0 0 24 24"></svg></button></div>
-<div id="strip"></div>
-<div class="ftool"><button class="ib sl" id="fPrev" data-t="prev"><svg class="i" data-ic="chl" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="fNext" data-t="next"><svg class="i" data-ic="chr" viewBox="0 0 24 24"></svg></button><span class="vl"></span>
-<button class="ib sl" id="zOut" data-t="zoomOut"><svg class="i" data-ic="zout" viewBox="0 0 24 24"></svg></button><span class="zv" id="zv">100%</span><button class="ib sl" id="zIn" data-t="zoomIn"><svg class="i" data-ic="zin" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="zFit" data-t="fit"><svg class="i" data-ic="fit" viewBox="0 0 24 24"></svg></button><span class="vl"></span>
-<button class="ib sl" id="rL" data-t="rotL"><svg class="i" data-ic="rl" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="rR" data-t="rotR"><svg class="i" data-ic="rr" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="bEdit" data-t="edit"><svg class="i" data-ic="edit" viewBox="0 0 24 24"></svg></button><span class="vl"></span>
-<button class="ib sl" id="bCopy" data-t="copy"><svg class="i" data-ic="copy" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="bDel" data-t="del"><svg class="i" data-ic="del" viewBox="0 0 24 24"></svg></button><button class="ib sl" id="bSlide" data-t="slideshow"><svg class="i" data-ic="play" viewBox="0 0 24 24"></svg></button></div></div>
-<aside id="info" hidden></aside></section>
-<section class="view" id="vEdit" hidden><div id="estage"><canvas id="ecv"></canvas><div id="cbox" hidden><i data-h="nw"></i><i data-h="n"></i><i data-h="ne"></i><i data-h="e"></i><i data-h="se"></i><i data-h="s"></i><i data-h="sw"></i><i data-h="w"></i></div><div id="sbox" hidden><i data-h="rot"></i><i data-h="se"></i></div></div><aside id="epanel"></aside></section>
-</div></div>
-<dialog id="dSet" aria-labelledby="setT"><div class="sh"><span class="bub"><svg class="i" data-ic="settings" viewBox="0 0 24 24" aria-hidden="true"></svg></span><div style="flex:1;min-width:0"><h2 id="setT" data-i="settings"></h2><small data-i="setSub"></small></div><button class="ib sl" data-close data-t="close"><svg class="i" data-ic="x" viewBox="0 0 24 24"></svg></button></div>
-<div class="sbody" id="setBody"></div>
-<div class="sf"><div class="who"><span class="hl a"><svg class="i" data-ic="person" viewBox="0 0 24 24"></svg><b>minhtrong67</b></span><span class="hl c"><svg class="i" data-ic="sparkles" viewBox="0 0 24 24"></svg><b>Claude</b> · Anthropic</span></div><div class="sp"></div><button class="btn text sl" id="sReset"><svg class="i" data-ic="reset" viewBox="0 0 24 24"></svg><span data-i="resetApp"></span></button><button class="btn filled sl" data-close data-i="ok"></button></div></dialog>
-<dialog id="dAbout" aria-label="Material Photo"><svg class="lg" viewBox="0 0 32 32" aria-hidden="true"><use href="#logo"/></svg><h2 style="margin-top:16px">Material Photo</h2><div style="color:var(--on-var)"><span data-i="version"></span> 1.0.0</div><div class="hint" style="margin-top:2px" data-i="license"></div>
-<div class="who"><div><small data-i="authorL"></small><span class="hl a"><svg class="i" data-ic="person" viewBox="0 0 24 24"></svg><b>minhtrong67</b></span></div><div><small data-i="aiBy"></small><span class="hl c"><svg class="i" data-ic="sparkles" viewBox="0 0 24 24"></svg><b>Claude</b> · Anthropic</span></div></div><div class="da"><button class="btn text sl" data-close data-i="ok"></button></div></dialog>
-<dialog id="dAsk"><h2 id="askT"></h2><p id="askP" style="margin:0;color:var(--on-var)"></p><div class="da"><button class="btn text sl" id="askNo"></button><button class="btn text sl" id="askYes"></button></div></dialog>
-<div id="sb"></div><input type="file" id="file" accept="image/*" hidden><input type="color" id="cc" hidden><img id="printimg" alt="">
-<script src="vendor/mcu.js"></script>
-<script src="js/app.js"></script>
-</body></html>
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Material Photo</title>
+    <style>html,body{margin:0;background:#1a1b25}@media (prefers-color-scheme:light){html,body{background:#fbf8ff}}</style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/main.tsx"></script>
+  </body>
+</html>

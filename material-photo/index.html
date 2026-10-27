@@ -1,161 +1,420 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="system">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Material Photo – Trình xem và chỉnh sửa ảnh cho Windows</title>
-<meta name="description" content="Material Photo là trình xem và chỉnh sửa ảnh miễn phí, mã nguồn mở cho Windows 10/11: tự nhập ảnh từ thư mục Pictures, chỉnh sửa đầy đủ, giao diện Material Design 3, đổi màu và phông chữ, hỗ trợ tiếng Việt và English.">
-<meta name="keywords" content="Material Photo, trình xem ảnh, chỉnh sửa ảnh, photo viewer, photo editor, Windows, Tauri, Material Design 3, mã nguồn mở, open source, minhtrong67">
+<title>Material Photo – Trình xem và chỉnh sửa ảnh Material 3 Expressive cho Windows</title>
+<meta name="description" content="Material Photo là trình xem và chỉnh sửa ảnh miễn phí, mã nguồn mở cho Windows 10/11: thư viện theo ngày, yêu thích và album, xem EXIF, chỉnh sửa đầy đủ, giao diện Material 3 Expressive, tiếng Việt và tiếng Anh.">
+<meta name="keywords" content="Material Photo, trình xem ảnh, chỉnh sửa ảnh, photo viewer, photo editor, Windows, Tauri, React, Material 3 Expressive, mã nguồn mở, open source, minhtrong67">
 <meta name="author" content="minhtrong67">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#F9F9FF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)">
-<!-- After deploying, replace the relative URLs below (canonical, og:url, og:image, twitter:image) with your absolute site URL. Social networks require absolute image URLs. -->
-<link rel="canonical" href="index.html">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7.6' fill='%2300BCD4'/%3E%3Crect x='6.5' y='8' width='19' height='15.6' rx='2.4' fill='%23fff'/%3E%3Crect x='8' y='9.5' width='16' height='12.6' rx='1.4' fill='%23E0F7FA'/%3E%3Cpath d='M8 22.1l5.5-7.8 3.8 4.9 2.5-3.2 4.2 6.1z' fill='%2300A9BF'/%3E%3Ccircle cx='20.6' cy='12.8' r='2.1' fill='%23FFC107'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="src-tauri/icons/128x128@2x.png">
+<meta name="theme-color" content="#FBF8FF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121318" media="(prefers-color-scheme: dark)">
+<!-- After deploying (for example GitHub Pages), keep these absolute URLs in sync with your real address. Social networks need absolute image URLs. -->
+<link rel="canonical" href="https://minhtrong67.github.io/material-photo/">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Material Photo">
-<meta property="og:title" content="Material Photo – Trình xem và chỉnh sửa ảnh cho Windows">
-<meta property="og:description" content="Xem và chỉnh sửa ảnh nhẹ nhàng, nhanh và đẹp. Miễn phí, mã nguồn mở, giao diện Material Design 3.">
-<meta property="og:url" content="index.html">
-<meta property="og:image" content="screenshots/image01.png">
+<meta property="og:title" content="Material Photo – Xem và chỉnh sửa ảnh đẹp, nhanh, miễn phí">
+<meta property="og:description" content="Thư viện ảnh, trình xem EXIF, trình chỉnh sửa đầy đủ với giao diện Material 3 Expressive. Mã nguồn mở, dành cho Windows.">
+<meta property="og:url" content="https://minhtrong67.github.io/material-photo/">
+<meta property="og:image" content="https://minhtrong67.github.io/material-photo/screenshots/image01.png">
 <meta property="og:image:width" content="1280">
 <meta property="og:image:height" content="800">
-<meta property="og:image:alt" content="Giao diện Material Photo">
+<meta property="og:image:alt" content="Giao diện thư viện của Material Photo">
 <meta property="og:locale" content="vi_VN">
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Material Photo – Photo viewer and editor for Windows">
-<meta name="twitter:description" content="Light, fast and beautiful photo viewer and editor. Free, open source, Material Design 3.">
-<meta name="twitter:image" content="screenshots/image01.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material Photo","applicationCategory":"MultimediaApplication","operatingSystem":"Windows 10, Windows 11","softwareVersion":"1.0.0","description":"Photo viewer and editor for Windows built with Tauri and Material Design 3.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"minhtrong67"},"license":"https://opensource.org/licenses/MIT","image":"screenshots/image01.png","inLanguage":["vi","en"]}</script>
+<meta name="twitter:title" content="Material Photo – A beautiful, fast photo viewer and editor">
+<meta name="twitter:description" content="Gallery, EXIF viewer and a full photo editor with a Material 3 Expressive design. Free and open source for Windows.">
+<meta name="twitter:image" content="https://minhtrong67.github.io/material-photo/screenshots/image01.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material Photo","applicationCategory":"MultimediaApplication","operatingSystem":"Windows 10, Windows 11","softwareVersion":"1.1.0","description":"Free open source photo viewer and editor with a Material 3 Expressive design.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"minhtrong67"},"license":"https://opensource.org/licenses/MIT","image":"https://minhtrong67.github.io/material-photo/screenshots/image01.png"}</script>
 <style>
-:root{--p:#415F91;--on-p:#fff;--pc:#D6E3FF;--on-pc:#284777;--sc:#DAE2F9;--on-sc:#3E4759;--tc:#FAD8FD;--on-tc:#573E5C;--bg:#F9F9FF;--tx:#191C20;--tx2:#44474E;--ol:#74777F;--olv:#C4C6D0;--s1:#F3F3FA;--s2:#EDEDF4;--s3:#E7E8EE;--s4:#E2E2E9;--cy:#00BCD4;--e:cubic-bezier(.05,.7,.1,1);--f:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color-scheme:light}
-:root[data-t=dark]{--p:#AAC7FF;--on-p:#0A305F;--pc:#284777;--on-pc:#D6E3FF;--sc:#3E4759;--on-sc:#DAE2F9;--tc:#573E5C;--on-tc:#FAD8FD;--bg:#111318;--tx:#E2E2E9;--tx2:#C4C6D0;--ol:#8E9099;--olv:#44474E;--s1:#191C20;--s2:#1D2024;--s3:#282A2F;--s4:#33353A;color-scheme:dark}
-@media(prefers-color-scheme:dark){:root:not([data-t=light]){--p:#AAC7FF;--on-p:#0A305F;--pc:#284777;--on-pc:#D6E3FF;--sc:#3E4759;--on-sc:#DAE2F9;--tc:#573E5C;--on-tc:#FAD8FD;--bg:#111318;--tx:#E2E2E9;--tx2:#C4C6D0;--ol:#8E9099;--olv:#44474E;--s1:#191C20;--s2:#1D2024;--s3:#282A2F;--s4:#33353A;color-scheme:dark}}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:80px}
-body{margin:0;font:400 16px/1.6 var(--f);color:var(--tx);background:var(--bg);overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
-a{color:inherit;text-decoration:none}img{max-width:100%;height:auto;display:block}
-.ic{width:24px;height:24px;flex:none}
-.wrap{width:min(1120px,100% - 40px);margin:0 auto}
-:focus-visible{outline:2px solid var(--p);outline-offset:3px;border-radius:8px}
-/* top app bar */
-header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s}
-header.sc{border-color:var(--olv)}
-.bar{display:flex;align-items:center;gap:8px;height:64px}
-.brand{display:flex;align-items:center;gap:12px;font-weight:600;font-size:18px;margin-right:auto}.brand svg{width:36px;height:36px}
-nav.links{display:flex;gap:4px}nav.links a{padding:8px 16px;border-radius:20px;font-weight:500;font-size:14px;color:var(--tx2);transition:background .2s,color .2s}nav.links a:hover{background:var(--s3);color:var(--tx)}
-.ib{width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:var(--tx2);display:grid;place-items:center;cursor:pointer;transition:background .2s}.ib:hover{background:var(--s3)}
-.lg{border:1px solid var(--ol);border-radius:20px;height:36px;padding:0 14px;background:transparent;color:var(--tx);font:500 13px var(--f);cursor:pointer}.lg:hover{background:var(--s3)}
-.menu-b{display:none}
-/* buttons */
-.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 28px;border:0;border-radius:24px;font:500 15px var(--f);letter-spacing:.1px;cursor:pointer;transition:transform .2s var(--e),box-shadow .2s,background .2s}
-.btn.f{background:var(--p);color:var(--on-p)}.btn.f:hover{box-shadow:0 4px 14px color-mix(in srgb,var(--p) 40%,transparent);transform:translateY(-2px)}
-.btn.t{background:var(--sc);color:var(--on-sc)}.btn.t:hover{transform:translateY(-2px);box-shadow:0 2px 8px rgba(0,0,0,.12)}
-.btn:active{transform:scale(.96)}.btn.big{height:56px;padding:0 36px;font-size:16px;border-radius:28px}
-.rip{position:absolute;border-radius:50%;background:currentColor;opacity:.2;transform:scale(0);animation:rip .6s var(--e) forwards;pointer-events:none}@keyframes rip{to{transform:scale(1);opacity:0}}
-/* hero */
-.hero{position:relative;padding:72px 0 40px;overflow:hidden}
-.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;z-index:-1;animation:drift 14s ease-in-out infinite alternate}
-.b1{width:420px;height:420px;background:var(--pc);top:-120px;left:-100px}.b2{width:360px;height:360px;background:color-mix(in srgb,var(--cy) 30%,transparent);right:-80px;top:80px;animation-delay:-5s}.b3{width:300px;height:300px;background:var(--tc);left:40%;bottom:-120px;animation-delay:-9s}
-@keyframes drift{to{transform:translate(40px,30px) scale(1.12)}}
-.hgrid{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center}
-.tag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 10px;border-radius:16px;background:var(--pc);color:var(--on-pc);font-size:13px;font-weight:500}.tag .ic{width:18px;height:18px}
-h1{margin:20px 0 16px;font:400 clamp(34px,5.4vw,60px)/1.1 var(--f);letter-spacing:-.5px}h1 b{display:block;font-weight:600;background:linear-gradient(90deg,var(--p),var(--cy));-webkit-background-clip:text;background-clip:text;color:transparent}
-.lead{font-size:18px;color:var(--tx2);max-width:540px;margin:0 0 28px}
-.cta{display:flex;flex-wrap:wrap;gap:12px}
-.meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:26px;color:var(--tx2);font-size:14px}.meta span{display:inline-flex;align-items:center;gap:8px}.meta .ic{width:18px;height:18px;color:var(--p)}
-.win{border-radius:18px;background:var(--s3);padding:10px;box-shadow:0 24px 60px -18px rgba(0,0,0,.35),0 0 0 1px var(--olv);animation:float 6s ease-in-out infinite;transform-origin:center}
-.win .dots{display:flex;gap:6px;padding:2px 6px 10px}.win .dots i{width:10px;height:10px;border-radius:50%;background:var(--ol);opacity:.5}
-.win img{border-radius:10px;width:100%}
-@keyframes float{50%{transform:translateY(-10px) rotate(-.4deg)}}
-/* sections */
-section{padding:84px 0}.hd{text-align:center;max-width:640px;margin:0 auto 48px}.hd h2{margin:0 0 12px;font:400 clamp(28px,4vw,40px)/1.2 var(--f)}.hd p{margin:0;color:var(--tx2)}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.card{padding:24px;border-radius:24px;background:var(--s2);transition:transform .3s var(--e),background .3s,box-shadow .3s}.card:hover{transform:translateY(-6px);background:var(--s3);box-shadow:0 12px 28px -12px rgba(0,0,0,.25)}
-.ficon{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:var(--pc);color:var(--on-pc);margin-bottom:16px;transition:transform .4s var(--e),border-radius .3s}.card:hover .ficon{transform:rotate(-8deg) scale(1.08);border-radius:50%}
-.card h3{margin:0 0 6px;font:500 18px/1.3 var(--f)}.card p{margin:0;color:var(--tx2);font-size:14.5px}
-.alt{background:var(--s1)}
-.tabs{display:flex;gap:8px;overflow-x:auto;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
-.tab{height:36px;padding:0 18px;border-radius:12px;border:1px solid var(--ol);background:transparent;color:var(--tx2);font:500 14px var(--f);cursor:pointer;transition:all .25s var(--e)}.tab:hover{background:var(--s3)}.tab.on{background:var(--sc);color:var(--on-sc);border-color:transparent}
-.stage{position:relative;width:min(960px,100%);margin:0 auto;border-radius:20px;background:var(--s3);padding:12px;box-shadow:0 24px 60px -24px rgba(0,0,0,.4),0 0 0 1px var(--olv);aspect-ratio:1280/800;aspect-ratio:auto}
-.stage-in{position:relative;aspect-ratio:1280/800;border-radius:10px;overflow:hidden}
-.shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.03);transition:opacity .5s var(--e),transform .6s var(--e);cursor:zoom-in}.shot.on{opacity:1;transform:none}
-.dlbox{position:relative;overflow:hidden;border-radius:32px;background:linear-gradient(135deg,var(--pc),color-mix(in srgb,var(--cy) 28%,var(--pc)));color:var(--on-pc);padding:56px 32px;text-align:center}
-.dlbox .logo{width:88px;height:88px;margin:0 auto 20px;filter:drop-shadow(0 10px 22px color-mix(in srgb,var(--cy) 50%,transparent));animation:float 5s ease-in-out infinite}
-.dlbox h2{margin:0 0 8px;font:400 clamp(28px,4vw,40px)/1.2 var(--f)}.dlbox p{margin:0 auto 24px;max-width:520px;opacity:.85}
-.dlbox .btn.f{background:var(--on-pc);color:var(--pc)}.dlbox small{display:block;margin-top:14px;opacity:.8;font-size:13px}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:32px auto 0;max-width:820px;text-align:left}
-.step{padding:18px 20px;border-radius:20px;background:color-mix(in srgb,var(--bg) 55%,transparent)}.step b{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--tx)}.step b i{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--p);color:var(--on-p);font:600 13px var(--f);font-style:normal}.step span{display:block;margin-top:6px;font-size:14px;color:var(--tx2)}
-.req{margin-top:20px;font-size:13px;color:var(--tx2);text-align:center}
-footer{padding:36px 0 48px;text-align:center;color:var(--tx2);font-size:14px}
-.who{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin-bottom:10px}
-.hl{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 10px;border-radius:16px;font-weight:600;font-size:14px;color:var(--tx)}.hl .ic{width:18px;height:18px}
-.hl.a{background:linear-gradient(135deg,var(--p),#705575);color:var(--on-p)}.hl.c{background:color-mix(in srgb,#d97757 20%,var(--bg));box-shadow:inset 0 0 0 1.5px #d97757}.hl.c .ic{color:#d97757}
-/* lightbox */
-.lb{position:fixed;inset:0;z-index:100;display:none;place-items:center;background:rgba(0,0,0,.8);padding:20px;cursor:zoom-out}.lb.on{display:grid;animation:fade .25s ease both}.lb img{max-height:92vh;border-radius:12px;animation:pop .35s var(--e) both}
-@keyframes fade{from{opacity:0}}@keyframes pop{from{opacity:0;transform:scale(.92)}}
-/* reveal on scroll */
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s var(--e) var(--d,0ms),transform .7s var(--e) var(--d,0ms)}.reveal.in{opacity:1;transform:none}
-.hero .tag,.hero h1,.hero .lead,.hero .cta,.hero .meta,.hero .win{animation:up .8s var(--e) both}.hero h1{animation-delay:.08s}.hero .lead{animation-delay:.16s}.hero .cta{animation-delay:.24s}.hero .meta{animation-delay:.32s}.hero .win{animation:up .9s .2s var(--e) both,float 6s 1.1s ease-in-out infinite}
-@keyframes up{from{opacity:0;transform:translateY(26px)}}
-@media(max-width:960px){.hgrid{grid-template-columns:1fr;text-align:center}.lead{margin-inline:auto}.cta,.meta{justify-content:center}.grid{grid-template-columns:repeat(2,1fr)}.hero{padding-top:40px}}
-@media(max-width:720px){nav.links{position:absolute;top:64px;left:0;right:0;flex-direction:column;padding:8px 20px 16px;background:var(--bg);border-bottom:1px solid var(--olv);display:none}nav.links.open{display:flex;animation:fade .2s both}nav.links a{padding:12px 16px}.menu-b{display:grid}section{padding:56px 0}.grid{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.dlbox{padding:40px 20px;border-radius:24px}.btn.big{width:100%}.win{padding:6px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none}}
+/* ===================== Tokens (Material 3 Expressive) ===================== */
+:root{--h:272;--c:1;
+  --sp:cubic-bezier(.34,1.56,.64,1);--em:cubic-bezier(.2,0,0,1);
+  --f:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --p:oklch(.46 calc(.19*var(--c)) var(--h));--on-p:#fff;
+  --pc:oklch(.91 calc(.065*var(--c)) var(--h));--on-pc:oklch(.27 calc(.12*var(--c)) var(--h));
+  --sc:oklch(.92 calc(.035*var(--c)) calc(var(--h) + 18));--on-sc:oklch(.3 calc(.06*var(--c)) calc(var(--h) + 18));
+  --tc:oklch(.92 calc(.07*var(--c)) calc(var(--h) + 85));--on-tc:oklch(.3 calc(.09*var(--c)) calc(var(--h) + 85));--t:oklch(.78 .15 calc(var(--h) + 85));
+  --bg:oklch(.985 calc(.007*var(--c)) var(--h));--s1:oklch(.968 calc(.012*var(--c)) var(--h));--s2:oklch(.952 calc(.017*var(--c)) var(--h));--s3:oklch(.935 calc(.022*var(--c)) var(--h));
+  --tx:oklch(.22 .02 var(--h));--tx2:oklch(.45 .03 var(--h));--ol:oklch(.62 .03 var(--h));--olv:oklch(.86 .02 var(--h));
+  --sh:0 1px 3px rgb(0 0 0/.12),0 4px 14px rgb(0 0 0/.06);--sh2:0 18px 50px -12px oklch(.35 .12 var(--h)/.38);}
+:root.dark{--p:oklch(.8 calc(.12*var(--c)) var(--h));--on-p:oklch(.28 calc(.13*var(--c)) var(--h));
+  --pc:oklch(.37 calc(.13*var(--c)) var(--h));--on-pc:oklch(.92 calc(.05*var(--c)) var(--h));
+  --sc:oklch(.36 calc(.05*var(--c)) calc(var(--h) + 18));--on-sc:oklch(.92 calc(.03*var(--c)) calc(var(--h) + 18));
+  --tc:oklch(.4 calc(.09*var(--c)) calc(var(--h) + 85));--on-tc:oklch(.93 calc(.05*var(--c)) calc(var(--h) + 85));--t:oklch(.82 .14 calc(var(--h) + 85));
+  --bg:oklch(.18 calc(.012*var(--c)) var(--h));--s1:oklch(.215 calc(.014*var(--c)) var(--h));--s2:oklch(.24 calc(.017*var(--c)) var(--h));--s3:oklch(.27 calc(.02*var(--c)) var(--h));
+  --tx:oklch(.93 .01 var(--h));--tx2:oklch(.76 .025 var(--h));--ol:oklch(.58 .03 var(--h));--olv:oklch(.36 .025 var(--h));
+  --sh:0 1px 3px rgb(0 0 0/.5),0 4px 14px rgb(0 0 0/.3);--sh2:0 18px 50px -12px rgb(0 0 0/.7);}
+*{box-sizing:border-box}
+html{overflow-x:clip;scroll-behavior:smooth;scroll-padding-top:88px;-webkit-text-size-adjust:100%}
+body{margin:0;font:400 1rem/1.6 var(--f);background:var(--bg);color:var(--tx);overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+a{color:inherit;text-decoration:none}img{max-width:100%;height:auto;display:block}main{overflow-x:clip}button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+svg.i{width:1.25em;height:1.25em;flex:none}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:3px solid color-mix(in oklch,var(--p) 70%,transparent);outline-offset:3px;border-radius:12px}
+::selection{background:var(--pc);color:var(--on-pc)}
+.wrap{width:min(1180px,100% - 40px);margin-inline:auto}
+section{padding:clamp(64px,10vw,120px) 0;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .9rem;border-radius:12px;background:var(--tc);color:var(--on-tc);font-weight:700;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase}
+h2.t{font-size:clamp(2rem,5.4vw,3.6rem);line-height:1.04;letter-spacing:-.03em;font-weight:800;margin:.9rem 0 .8rem}
+p.lead{font-size:clamp(1rem,2vw,1.2rem);color:var(--tx2);max-width:60ch}
+.center{text-align:center}.center p.lead{margin-inline:auto}
+/* buttons: pill -> squircle on press */
+.btn{position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;height:3rem;padding:0 1.5rem;border-radius:999px;font-weight:700;font-size:.95rem;white-space:nowrap;transition:border-radius .4s var(--sp),transform .4s var(--sp),box-shadow .3s,background .3s}
+.btn::before{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .2s;z-index:-1}
+.btn:hover::before{opacity:.09}.btn:active::before{opacity:.16}.btn:active{border-radius:16px;transform:scale(.96)}
+.btn.fill{background:var(--p);color:var(--on-p)}.btn.fill:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.btn.tonal{background:var(--sc);color:var(--on-sc)}.btn.out{border:1.5px solid var(--ol);color:var(--p)}
+.btn.xl{height:3.8rem;padding:0 1.8rem;font-size:1.02rem}
+.btn.ic{width:2.8rem;height:2.8rem;padding:0;color:var(--tx2)}.btn.ic:hover{color:var(--tx)}
+/* ===================== Header ===================== */
+header.nav{position:fixed;inset:12px 0 auto;z-index:50;pointer-events:none;padding-top:env(safe-area-inset-top)}
+.bar{pointer-events:auto;width:min(1180px,100% - 24px);margin-inline:auto;height:64px;padding:0 10px 0 18px;display:flex;align-items:center;gap:.4rem;border-radius:32px;background:color-mix(in oklch,var(--s2) 78%,transparent);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--sh);border:1px solid color-mix(in oklch,var(--olv) 60%,transparent);transition:border-radius .5s var(--sp),box-shadow .3s}
+header.nav.stuck .bar{box-shadow:var(--sh2)}
+.brand{display:flex;align-items:center;gap:.7rem;font-weight:800;font-size:1.1rem;letter-spacing:-.02em;margin-right:auto}
+.brand img{width:38px;height:38px}
+.links{display:flex;gap:.2rem}
+.links a{padding:.55rem 1rem;border-radius:999px;font-weight:600;font-size:.92rem;color:var(--tx2);transition:all .35s var(--sp)}
+.links a:hover{background:color-mix(in oklch,var(--tx) 8%,transparent);color:var(--tx)}
+.links a.on{background:var(--pc);color:var(--on-pc)}
+.menu-btn{display:none}
+.pop{position:relative}
+.panel{position:absolute;right:0;top:calc(100% + 12px);width:min(320px,86vw);padding:16px;border-radius:28px;background:var(--s2);box-shadow:var(--sh2);border:1px solid var(--olv);opacity:0;visibility:hidden;transform:translateY(-8px) scale(.94);transform-origin:top right;transition:all .4s var(--sp);z-index:5;text-align:left}
+.pop.open .panel{opacity:1;visibility:visible;transform:none}
+.panel h4{margin:0 0 .6rem;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--tx2)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px;border-radius:999px;background:var(--s3);margin-bottom:1rem}
+.seg button{height:2.4rem;border-radius:999px;font-weight:700;font-size:.82rem;display:flex;align-items:center;justify-content:center;gap:.35rem;color:var(--tx2);transition:all .35s var(--sp)}
+.seg button.on{background:var(--p);color:var(--on-p);box-shadow:var(--sh)}
+.swatches{display:flex;flex-wrap:wrap;gap:.55rem}
+.swatches button{width:2.1rem;height:2.1rem;border-radius:50%;display:grid;place-items:center;color:#fff;transition:all .45s var(--sp)}
+.swatches button:hover{border-radius:12px;transform:scale(1.12)}
+.swatches button.on{border-radius:12px;transform:scale(1.15);box-shadow:0 0 0 2px var(--s2),0 0 0 4px var(--tx)}
+.swatches label{width:2.1rem;height:2.1rem;border-radius:50%;background:conic-gradient(red,yellow,lime,aqua,blue,magenta,red);position:relative;cursor:pointer;overflow:hidden}
+.swatches input{position:absolute;inset:0;opacity:0;cursor:pointer}
+/* ===================== Hero ===================== */
+.hero{padding-top:clamp(120px,16vw,170px);padding-bottom:40px;overflow:hidden}
+.blob{position:absolute;z-index:0;filter:blur(2px);opacity:.9;animation:morph 14s ease-in-out infinite,drift 22s ease-in-out infinite}
+.b1{width:min(52vw,560px);aspect-ratio:1;right:-8%;top:6%;background:var(--pc);border-radius:42% 58% 60% 40%/46% 42% 58% 54%}
+.b2{width:min(30vw,300px);aspect-ratio:1;left:-6%;top:42%;background:var(--tc);border-radius:58% 42% 38% 62%/52% 58% 42% 48%;animation-delay:-5s}
+.b3{width:min(18vw,170px);aspect-ratio:1;left:44%;top:6%;background:var(--sc);border-radius:50%;animation-delay:-9s}
+@keyframes morph{50%{border-radius:60% 40% 42% 58%/58% 38% 62% 42%}}
+@keyframes drift{50%{translate:20px -26px;rotate:8deg}}
+.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.02fr 1fr;gap:clamp(24px,5vw,60px);align-items:center}
+h1{font-size:clamp(2.5rem,6vw,4.7rem);line-height:1;letter-spacing:-.045em;font-weight:900;margin:1.1rem 0 1.2rem}
+h1 .grad{background:linear-gradient(100deg,var(--p),oklch(.62 .2 calc(var(--h) + 70)),var(--p));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 6s linear infinite}
+@keyframes flow{to{background-position:200% 0}}
+.cta{display:flex;flex-wrap:wrap;gap:.8rem;margin:2rem 0 1.4rem}
+.meta{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;color:var(--tx2);font-size:.88rem;font-weight:600}
+.meta span{display:inline-flex;align-items:center;gap:.4rem}
+.stage{position:relative;perspective:1400px}
+.win{border-radius:28px;overflow:hidden;background:var(--s1);box-shadow:var(--sh2);border:1px solid var(--olv);transform:rotateY(-9deg) rotateX(4deg);transition:transform .5s var(--em);transform-style:preserve-3d;will-change:transform}
+.win .dots{height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;background:var(--s3)}
+.win .dots i{width:11px;height:11px;border-radius:50%;background:var(--ol);opacity:.5}
+.win img{width:100%;aspect-ratio:16/10;object-fit:cover}
+.float{position:absolute;z-index:2;padding:.7rem 1rem;border-radius:20px;background:var(--s2);box-shadow:var(--sh2);display:flex;gap:.6rem;align-items:center;font-weight:700;font-size:.85rem;animation:bob 6s ease-in-out infinite;border:1px solid var(--olv)}
+.float .dot{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:var(--pc);color:var(--on-pc)}
+.f1{left:-4%;bottom:14%}.f2{right:-3%;top:10%;animation-delay:-2s}.f3{right:8%;bottom:-5%;animation-delay:-4s}
+@keyframes bob{50%{translate:0 -12px}}
+/* ===================== Marquee ===================== */
+.marq{padding:26px 0;background:var(--pc);color:var(--on-pc);overflow:hidden;transform:rotate(-1.4deg) scaleX(1.04);margin:30px 0;border-radius:0}
+.track{display:flex;gap:2.4rem;width:max-content;animation:scroll 38s linear infinite;font-weight:800;font-size:1.25rem;letter-spacing:-.01em}
+.track span{display:inline-flex;align-items:center;gap:2.4rem}.track span::after{content:"";width:14px;height:14px;background:var(--p);border-radius:35% 65% 55% 45%;display:inline-block}
+@keyframes scroll{to{transform:translateX(-50%)}}
+/* ===================== Bento features ===================== */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-top:3rem}
+.card{position:relative;overflow:hidden;padding:clamp(22px,3vw,34px);border-radius:32px;background:var(--s1);border:1px solid var(--olv);transition:border-radius .6s var(--sp),transform .5s var(--sp),box-shadow .4s}
+.card:hover{border-radius:52px 24px 52px 24px;transform:translateY(-5px);box-shadow:var(--sh2)}
+.card .spot{position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),color-mix(in oklch,var(--p) 14%,transparent),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.card:hover .spot{opacity:1}
+.card .ico{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;background:var(--pc);color:var(--on-pc);margin-bottom:1.1rem;font-size:1.5rem;transition:all .6s var(--sp)}
+.card:hover .ico{border-radius:50%;transform:rotate(-8deg) scale(1.08)}
+.card h3{font-size:1.35rem;letter-spacing:-.02em;margin-bottom:.45rem}
+.card p{color:var(--tx2);font-size:.97rem}
+.c-a{grid-column:span 3;background:var(--pc);color:var(--on-pc);border-color:transparent}.c-a p{color:inherit;opacity:.85}.c-a .ico{background:var(--p);color:var(--on-p)}
+.c-b{grid-column:span 3}.c-c{grid-column:span 2}.c-d{grid-column:span 2;background:var(--tc);color:var(--on-tc);border-color:transparent}.c-d p{color:inherit;opacity:.85}.c-d .ico{background:var(--t);color:#2a1b00}
+.c-e{grid-column:span 2}.c-f{grid-column:span 3;background:var(--sc);color:var(--on-sc);border-color:transparent}.c-f p{color:inherit;opacity:.85}.c-f .ico{background:var(--p);color:var(--on-p)}.c-g{grid-column:span 3}
+.chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:1rem}
+.chip{display:inline-flex;align-items:center;gap:.4rem;height:2rem;padding:0 .8rem;border-radius:10px;background:color-mix(in oklch,currentColor 10%,transparent);font-weight:700;font-size:.8rem}
+/* ===================== Screens ===================== */
+.tabs{display:inline-flex;flex-wrap:wrap;gap:6px;padding:6px;border-radius:999px;background:var(--s3);margin:2rem 0 1.6rem}
+.tabs button{height:2.9rem;padding:0 1.3rem;border-radius:999px;font-weight:700;color:var(--tx2);display:inline-flex;align-items:center;gap:.5rem;transition:all .45s var(--sp)}
+.tabs button.on{background:var(--p);color:var(--on-p);box-shadow:var(--sh);transform:scale(1.04)}
+.shot{position:relative;border-radius:36px;overflow:hidden;box-shadow:var(--sh2);border:1px solid var(--olv);background:var(--s1);aspect-ratio:16/10}
+.shot img{position:absolute;inset:0;width:100%;height:100%!important;object-fit:cover;opacity:0;transform:scale(1.06);transition:opacity .7s var(--em),transform 1.1s var(--em)}
+.shot img.on{opacity:1;transform:none}
+.shot-cap{margin-top:1.1rem;color:var(--tx2);font-weight:600}
+/* ===================== Customize ===================== */
+.demo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,4vw,48px);align-items:center}
+.mock{padding:26px;border-radius:40px;background:var(--s2);border:1px solid var(--olv);box-shadow:var(--sh2)}
+.mock .row{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;margin-top:1rem}
+.mock .tile{aspect-ratio:1;border-radius:24px;background:linear-gradient(135deg,var(--pc),var(--tc));transition:border-radius .6s var(--sp)}
+.mock .tile:hover{border-radius:50%}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tg{height:1rem;border-radius:99px;background:linear-gradient(90deg,var(--p) 60%,var(--sc) 60%);margin-top:1rem}
+/* ===================== Steps / shortcuts / faq ===================== */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:2.6rem;counter-reset:s}
+.step{padding:28px;border-radius:32px;background:var(--s1);border:1px solid var(--olv);counter-increment:s;transition:border-radius .6s var(--sp),transform .5s var(--sp)}
+.step:hover{border-radius:50px 22px;transform:translateY(-4px)}
+.step::before{content:counter(s);display:grid;place-items:center;width:46px;height:46px;border-radius:16px 16px 4px 16px;background:var(--p);color:var(--on-p);font-weight:900;font-size:1.2rem;margin-bottom:1rem}
+.keys{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:2.4rem}
+.key{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.9rem 1.1rem;border-radius:20px;background:var(--s1);border:1px solid var(--olv);font-weight:600;font-size:.92rem}
+kbd{font:700 .78rem var(--f);padding:.2rem .55rem;border-radius:8px;background:var(--s3);border:1px solid var(--olv);border-bottom-width:3px;margin-left:.2rem}
+.faq{max-width:820px;margin:2.4rem auto 0;display:grid;gap:10px}
+details{border-radius:26px;background:var(--s1);border:1px solid var(--olv);overflow:hidden;transition:border-radius .5s var(--sp),background .3s}
+details[open]{background:var(--pc);color:var(--on-pc);border-radius:32px 32px 32px 12px}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.15rem 1.4rem;font-weight:700}
+summary::-webkit-details-marker{display:none}
+summary svg{transition:transform .5s var(--sp)}details[open] summary svg{transform:rotate(180deg)}
+details p{padding:0 1.4rem 1.3rem;opacity:.9}
+/* ===================== Download / footer ===================== */
+.dl{border-radius:56px;padding:clamp(34px,6vw,76px);background:linear-gradient(135deg,var(--p),oklch(.45 .18 calc(var(--h) + 40)));color:var(--on-p);position:relative;overflow:hidden;text-align:center}
+.dl .blob{opacity:.18;background:#fff}.dl>*{position:relative;z-index:1}
+.dl .btn.fill{background:#fff;color:var(--p)}.dl h2{font-size:clamp(2rem,5vw,3.6rem);line-height:1.05;letter-spacing:-.03em;margin:.8rem 0}
+.dl p{opacity:.9;max-width:56ch;margin:0 auto 1.8rem}
+.req{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:1.6rem}
+.req .chip{background:rgb(255 255 255/.16)}
+footer{padding:48px 0 calc(48px + env(safe-area-inset-bottom));border-top:1px solid var(--olv);margin-top:70px}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1.5rem;align-items:center}
+.foot small{color:var(--tx2);display:block}
+/* ===================== Reveal / FAB ===================== */
+.rv{opacity:0;transform:translateY(36px) scale(.97);transition:opacity .8s var(--em),transform .9s var(--sp);transition-delay:var(--d,0s)}
+.rv.in{opacity:1;transform:none}
+#top{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:40;width:3.6rem;height:3.6rem;border-radius:20px;background:var(--pc);color:var(--on-pc);display:grid;place-items:center;box-shadow:var(--sh2);transform:translateY(90px) scale(.6);opacity:0;transition:all .6s var(--sp)}
+#top.show{transform:none;opacity:1}#top:hover{border-radius:50%;transform:translateY(-3px)}#top:active{transform:scale(.9)}
+.progress{position:fixed;left:0;top:0;height:3px;width:100%;transform-origin:left;transform:scaleX(0);background:var(--p);z-index:60}
+/* ===================== Responsive ===================== */
+@media(max-width:980px){.hero .wrap,.demo{grid-template-columns:1fr}.win{transform:none}.f1,.f2,.f3{display:none}.bento{grid-template-columns:repeat(2,1fr)}.c-a,.c-b,.c-c,.c-d,.c-e,.c-f,.c-g{grid-column:span 2}.steps{grid-template-columns:1fr}.links{display:none}.menu-btn{display:grid}}
+@media(max-width:560px){.bar{padding-left:14px}.brand span.nm{display:none}.btn.xl{width:100%}.cta .btn{flex:1 1 100%}.tabs{display:flex;overflow-x:auto;border-radius:28px;max-width:100%}.tabs button{flex:none}}
+.mobile{position:fixed;inset:0;z-index:70;background:color-mix(in oklch,black 45%,transparent);opacity:0;visibility:hidden;transition:opacity .3s}
+.mobile.open{opacity:1;visibility:visible}
+.mobile nav{position:absolute;left:12px;right:12px;bottom:12px;padding:18px;border-radius:36px;background:var(--s2);display:grid;gap:6px;transform:translateY(40px);transition:transform .5s var(--sp)}
+.mobile.open nav{transform:none}
+.mobile nav a{padding:1rem 1.2rem;border-radius:20px;font-weight:700;font-size:1.1rem;background:var(--s1)}
+.mobile nav a:active{background:var(--pc)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}.rv{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="7.6" fill="#00BCD4"/><rect x="6.5" y="8" width="19" height="15.6" rx="2.4" fill="#fff"/><rect x="8" y="9.5" width="16" height="12.6" rx="1.4" fill="#E0F7FA"/><path d="M8 22.1l5.5-7.8 3.8 4.9 2.5-3.2 4.2 6.1z" fill="#00A9BF"/><circle cx="20.6" cy="12.8" r="2.1" fill="#FFC107"/></symbol><symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/> <circle cx="9" cy="9" r="2"/> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/> <path d="m15 5 4 4"/></symbol><symbol id="i-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/> <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/></symbol><symbol id="i-languages" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/> <path d="m4 14 6-6 2-3"/> <path d="M2 5h12"/> <path d="M7 2h1"/> <path d="m22 22-5-10-5 10"/> <path d="M14 18h6"/></symbol><symbol id="i-app-window" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/> <path d="M10 4v4"/> <path d="M2 8h20"/> <path d="M6 4v4"/></symbol><symbol id="i-folder-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1"/> <path d="m21 21-1.9-1.9"/> <circle cx="17" cy="17" r="3"/></symbol><symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></symbol><symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/> <path d="m7 10 5 5 5-5"/></symbol><symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/> <path d="M12 2v2"/> <path d="M12 20v2"/> <path d="m4.93 4.93 1.41 1.41"/> <path d="m17.66 17.66 1.41 1.41"/> <path d="M2 12h2"/> <path d="M20 12h2"/> <path d="m6.34 17.66-1.41 1.41"/> <path d="m19.07 4.93-1.41 1.41"/></symbol><symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol><symbol id="i-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/> <line x1="8" x2="16" y1="21" y2="21"/> <line x1="12" x2="12" y1="17" y2="21"/></symbol><symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/> <path d="M4 12h16"/> <path d="M4 19h16"/></symbol><symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/> <path d="m6 6 12 12"/></symbol><symbol id="i-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/> <path d="M20 2v4"/> <path d="M22 4h-4"/> <circle cx="4" cy="20" r="2"/></symbol><symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/> <circle cx="12" cy="7" r="4"/></symbol><symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/> <path d="m9 12 2 2 4-4"/></symbol><symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/> <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/> <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></symbol><symbol id="i-maximize" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/> <path d="M21 8V5a2 2 0 0 0-2-2h-3"/> <path d="M3 16v3a2 2 0 0 0 2 2h3"/> <path d="M16 21h3a2 2 0 0 0 2-2v-3"/></symbol><symbol id="i-chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></symbol><symbol id="i-scale" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/> <path d="m19 8 3 8a5 5 0 0 1-6 0zV7"/> <path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"/> <path d="m5 8 3 8a5 5 0 0 1-6 0zV7"/> <path d="M7 21h10"/></symbol><symbol id="i-rotate-cw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/> <path d="M21 3v5h-5"/></symbol><symbol id="i-sliders-horizontal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H3"/> <path d="M12 19H3"/> <path d="M14 3v4"/> <path d="M16 17v4"/> <path d="M21 12h-9"/> <path d="M21 19h-5"/> <path d="M21 5h-7"/> <path d="M8 10v4"/> <path d="M8 12H3"/></symbol><symbol id="i-type" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/> <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"/> <path d="M9 20h6"/></symbol><symbol id="i-wand-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/> <path d="m14 7 3 3"/> <path d="M5 6v4"/> <path d="M19 14v4"/> <path d="M10 2v2"/> <path d="M7 8H3"/> <path d="M21 16h-4"/> <path d="M11 3H9"/></symbol><symbol id="i-images" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/> <path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/> <circle cx="13" cy="7" r="1" fill="currentColor"/> <rect x="8" y="2" width="14" height="14" rx="2"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol></svg>
-<header id="top"><div class="wrap bar">
-<a class="brand" href="#top" aria-label="Material Photo"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#logo"/></svg>Material Photo</a>
-<nav class="links" id="nav"><a href="#features" data-i="nFeat"></a><a href="#screenshots" data-i="nShots"></a><a href="#download" data-i="nDl"></a></nav>
-<button class="lg" id="lang" type="button" aria-label="Language">VI</button>
-<button class="ib" id="theme" type="button" data-i-t="theme"><svg class="ic " aria-hidden="true"><use href="#i-monitor"/></svg></button>
-<button class="ib menu-b" id="mb" type="button" aria-label="Menu"><svg class="ic " aria-hidden="true"><use href="#i-menu"/></svg></button>
-</div></header>
+<div class="progress" id="prog" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol><symbol id="i-sliders-horizontal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></symbol><symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol><symbol id="i-folder-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol><symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol><symbol id="i-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></symbol><symbol id="i-languages" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></symbol><symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></symbol><symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol><symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol><symbol id="i-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></symbol><symbol id="i-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol><symbol id="i-chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol><symbol id="i-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></symbol><symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></symbol><symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol><symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></symbol><symbol id="i-wand-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></symbol><symbol id="i-keyboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></symbol><symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol><symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol><symbol id="i-trash-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></symbol><symbol id="i-files" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-3a2 2 0 0 1-2-2V2"/><path d="M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z"/><path d="M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8"/></symbol><symbol id="i-crop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></symbol><symbol id="i-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></symbol><symbol id="i-type" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></symbol><symbol id="i-smile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></symbol><symbol id="i-droplets" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></symbol><symbol id="i-maximize" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></symbol><symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></symbol><symbol id="i-folder-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v1.5"/><path d="M13.9 17.45c-1.2-1.2-1.14-2.8-.2-3.73a2.43 2.43 0 0 1 3.44 0l.36.34.34-.34a2.43 2.43 0 0 1 3.45-.01c.95.95 1 2.53-.2 3.74L17.5 21Z"/></symbol><symbol id="i-rotate-cw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></symbol><symbol id="i-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol><symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol><symbol id="i-wallpaper" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="2"/><path d="m9 17 6.1-6.1a2 2 0 0 1 2.81.01L22 15V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2"/><path d="M8 21h8"/><path d="M12 17v4"/></symbol><symbol id="i-printer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></symbol><symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol><symbol id="i-scan-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="m16 16-1.9-1.9"/></symbol><symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol><symbol id="i-heart-handshake" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/><path d="m18 15-2-2"/><path d="m15 18-2-2"/></symbol><symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol><symbol id="i-refresh-cw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol><symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol></defs></svg>
+
+<header class="nav" id="nav">
+  <div class="bar">
+    <a class="brand" href="#home" data-go aria-label="Material Photo"><img src="favicon.svg" alt="" width="38" height="38"><span class="nm">Material Photo</span></a>
+    <nav class="links" aria-label="Main">
+      <a href="#features" data-go data-i18n="n.features">Tính năng</a>
+      <a href="#screens" data-go data-i18n="n.screens">Giao diện</a>
+      <a href="#custom" data-go data-i18n="n.custom">Tùy chỉnh</a>
+      <a href="#shortcuts" data-go data-i18n="n.keys">Phím tắt</a>
+      <a href="#faq" data-go data-i18n="n.faq">Hỏi đáp</a>
+    </nav>
+    <div class="pop" id="pop">
+      <button class="btn ic" id="popBtn" aria-label="Appearance" aria-expanded="false" title="Theme · Language · Color"><svg class="i"><use href="#i-palette"/></svg></button>
+      <div class="panel" role="dialog" aria-label="Appearance">
+        <h4 data-i18n="p.theme">Giao diện</h4>
+        <div class="seg" id="segTheme">
+          <button data-v="system"><svg class="i"><use href="#i-monitor"/></svg><span data-i18n="p.system">Hệ thống</span></button>
+          <button data-v="light"><svg class="i"><use href="#i-sun"/></svg><span data-i18n="p.light">Sáng</span></button>
+          <button data-v="dark"><svg class="i"><use href="#i-moon"/></svg><span data-i18n="p.dark">Tối</span></button>
+        </div>
+        <h4 data-i18n="p.lang">Ngôn ngữ</h4>
+        <div class="seg" id="segLang"><button data-v="vi">Tiếng Việt</button><button data-v="en">English</button></div>
+        <h4 data-i18n="p.color">Màu chủ đề</h4>
+        <div class="swatches" id="swatches"></div>
+      </div>
+    </div>
+    <a class="btn fill" href="downloads/Material%20Photo_1.1.0_x64-setup.exe" download><svg class="i"><use href="#i-download"/></svg><span data-i18n="n.dl">Tải về</span></a>
+    <button class="btn ic menu-btn" id="menuBtn" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
+  </div>
+</header>
+<div class="mobile" id="mobile"><nav aria-label="Mobile">
+  <a href="#features" data-go data-i18n="n.features">Tính năng</a><a href="#screens" data-go data-i18n="n.screens">Giao diện</a><a href="#custom" data-go data-i18n="n.custom">Tùy chỉnh</a>
+  <a href="#shortcuts" data-go data-i18n="n.keys">Phím tắt</a><a href="#faq" data-go data-i18n="n.faq">Hỏi đáp</a><a href="#download" data-go data-i18n="n.dl">Tải về</a></nav></div>
+
 <main>
-<section class="hero"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><div class="wrap hgrid">
-<div><span class="tag"><svg class="ic " aria-hidden="true"><use href="#i-sparkles"/></svg><span data-i="heroTag"></span></span>
-<h1><span data-i="h1a"></span><b data-i="h1b"></b></h1>
-<p class="lead" data-i="heroP"></p>
-<div class="cta"><a class="btn f big" href="downloads/Material%20Photo_1.0.0_x64-setup.exe" download><svg class="ic " aria-hidden="true"><use href="#i-download"/></svg><span data-i="dl"></span></a><a class="btn t big" href="#features" data-i="see"></a></div>
-<div class="meta"><span><svg class="ic " aria-hidden="true"><use href="#i-zap"/></svg><span data-i="meta1"></span></span><span><svg class="ic " aria-hidden="true"><use href="#i-shield-check"/></svg><span data-i="meta2"></span></span></div></div>
-<div class="win"><div class="dots"><i></i><i></i><i></i></div><img src="screenshots/image01.png" alt="Material Photo" width="1280" height="800" fetchpriority="high"></div>
+<section class="hero" id="home">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="wrap">
+    <div>
+      <span class="eyebrow rv"><svg class="i"><use href="#i-sparkles"/></svg><span data-i18n="h.eyebrow">Mã nguồn mở · Windows 10/11</span></span>
+      <h1 class="rv" style="--d:.08s" data-i18n-h="h.title">Ảnh của bạn, <span class="grad">đẹp hơn</span> từng khung hình.</h1>
+      <p class="lead rv" style="--d:.16s" data-i18n="h.lead">Material Photo là trình xem và chỉnh sửa ảnh nhanh, nhẹ, mang phong cách Material 3 Expressive: thư viện theo ngày, xem EXIF, yêu thích, album và một trình chỉnh sửa đầy đủ.</p>
+      <div class="cta rv" style="--d:.24s">
+        <a class="btn fill xl" id="dlMain" href="downloads/Material%20Photo_1.1.0_x64-setup.exe" download><svg class="i"><use href="#i-download"/></svg><span data-i18n="h.dl">Tải xuống cho Windows</span></a>
+        <a class="btn tonal xl" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="i"><use href="#i-github"/></svg><span data-i18n="h.src">Mã nguồn</span></a>
+      </div>
+      <div class="meta rv" style="--d:.3s"><span><svg class="i"><use href="#i-heart-handshake"/></svg><span data-i18n="h.m1">Miễn phí, mã nguồn mở</span></span><span><svg class="i"><use href="#i-shield-check"/></svg><span data-i18n="h.m2">Không quảng cáo, không theo dõi</span></span><span><svg class="i"><use href="#i-info"/></svg>v1.1.0</span></div>
+    </div>
+    <div class="stage rv" style="--d:.2s" id="stage">
+      <div class="win" id="win"><div class="dots"><i></i><i></i><i></i></div><img src="screenshots/image01.png" width="1280" height="800" alt="Material Photo" fetchpriority="high"></div>
+      <div class="float f1"><span class="dot"><svg class="i"><use href="#i-camera"/></svg></span><span data-i18n="h.f1">Xem EXIF &amp; histogram</span></div>
+      <div class="float f2"><span class="dot"><svg class="i"><use href="#i-wand-sparkles"/></svg></span><span data-i18n="h.f2">Chỉnh sửa đầy đủ</span></div>
+      <div class="float f3"><span class="dot"><svg class="i"><use href="#i-folder-heart"/></svg></span><span data-i18n="h.f3">Yêu thích &amp; Album</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="marq" aria-hidden="true"><div class="track" id="track"></div></div>
+
+<section id="features"><div class="wrap">
+  <div class="center rv"><span class="eyebrow" data-i18n="f.eyebrow">Tính năng</span><h2 class="t" data-i18n="f.title">Mọi thứ bạn cần cho ảnh</h2><p class="lead" data-i18n="f.lead">Từ lướt xem hàng chục nghìn ảnh đến chỉnh sửa từng chi tiết, trong một ứng dụng nhẹ và mượt.</p></div>
+  <div class="bento">
+    <article class="card c-a rv"><i class="spot"></i><div class="ico"><svg class="i"><use href="#i-image"/></svg></div><h3 data-i18n="c1.t">Thư viện thông minh</h3><p data-i18n="c1.p">Tự nhập thư mục Pictures, nhóm theo ngày, cuộn ảo hóa mượt với hàng chục nghìn ảnh, tìm kiếm, lọc theo thư mục và định dạng.</p></article>
+    <article class="card c-b rv" style="--d:.08s"><i class="spot"></i><div class="ico"><svg class="i"><use href="#i-scan-search"/></svg></div><h3 data-i18n="c2.t">Trình xem tập trung</h3><p data-i18n="c2.p">Zoom theo con trỏ, kéo thả, bản đồ thu nhỏ, dải ảnh, trình chiếu có hiệu ứng, toàn màn hình và đầy đủ phím tắt.</p></article>
+    <article class="card c-c rv"><i class="spot"></i><div class="ico"><svg class="i"><use href="#i-sliders-horizontal"/></svg></div><h3 data-i18n="c3.t">11 mức điều chỉnh</h3><p data-i18n="c3.p">Sáng, tương phản, bão hòa, độ ấm, vùng sáng/tối, độ nét, tối viền và nhiều hơn. Có tự động cải thiện.</p></article>
+    <article class="card c-d rv" style="--d:.08s"><i class="spot"></i><div class="ico"><svg class="i"><use href="#i-pencil"/></svg></div><h3 data-i18n="c4.t">Vẽ, chữ, nhãn dán</h3><p data-i18n="c4.p">Bút, mũi tên, hình khối, chữ xoay được, emoji, hình mờ và làm mờ vùng nhạy cảm.</p></article>
+    <article class="card c-e rv" style="--d:.16s"><i class="spot"></i><div class="ico"><svg class="i"><use href="#i-heart"/></svg></div><h3 data-i18n="c5.t">Sắp xếp dễ dàng</h3><p data-i18n="c5.p">Yêu thích, album, chọn nhiều ảnh, đổi tên hàng loạt và tìm ảnh trùng.</p></article>
+    <article class="card c-f rv"><i class="spot"></i><div class="ico"><svg class="i"><use href="#i-camera"/></svg></div><h3 data-i18n="c6.t">EXIF &amp; histogram</h3><p data-i18n="c6.p">Xem máy ảnh, ống kính, ISO, khẩu độ, tốc độ, ngày chụp, GPS và biểu đồ màu của từng ảnh.</p><div class="chips"><span class="chip">ISO 200</span><span class="chip">f/2.8</span><span class="chip">1/500 s</span><span class="chip">23 mm</span></div></article>
+    <article class="card c-g rv" style="--d:.08s"><i class="spot"></i><div class="ico"><svg class="i"><use href="#i-shield-check"/></svg></div><h3 data-i18n="c7.t">An toàn và nhanh</h3><p data-i18n="c7.p">Cache thumbnail, ghi tệp an toàn, xoá vào Thùng rác có hoàn tác, giữ dữ liệu EXIF khi lưu, tự cập nhật khi thư mục thay đổi.</p></article>
+  </div>
 </div></section>
-<section id="features" class="alt"><div class="wrap"><div class="hd reveal"><h2 data-i="fTitle"></h2><p data-i="fSub"></p></div><div class="grid"><article class="card reveal" style="--d:0ms"><span class="ficon"><svg class="ic " aria-hidden="true"><use href="#i-images"/></svg></span><h3 data-i="fLib"></h3><p data-i="fLibD"></p></article><article class="card reveal" style="--d:60ms"><span class="ficon"><svg class="ic " aria-hidden="true"><use href="#i-image"/></svg></span><h3 data-i="fView"></h3><p data-i="fViewD"></p></article><article class="card reveal" style="--d:120ms"><span class="ficon"><svg class="ic " aria-hidden="true"><use href="#i-pencil"/></svg></span><h3 data-i="fEdit"></h3><p data-i="fEditD"></p></article><article class="card reveal" style="--d:180ms"><span class="ficon"><svg class="ic " aria-hidden="true"><use href="#i-wand-sparkles"/></svg></span><h3 data-i="fStick"></h3><p data-i="fStickD"></p></article><article class="card reveal" style="--d:240ms"><span class="ficon"><svg class="ic " aria-hidden="true"><use href="#i-palette"/></svg></span><h3 data-i="fTheme"></h3><p data-i="fThemeD"></p></article><article class="card reveal" style="--d:300ms"><span class="ficon"><svg class="ic " aria-hidden="true"><use href="#i-type"/></svg></span><h3 data-i="fFont"></h3><p data-i="fFontD"></p></article><article class="card reveal" style="--d:360ms"><span class="ficon"><svg class="ic " aria-hidden="true"><use href="#i-languages"/></svg></span><h3 data-i="fLang"></h3><p data-i="fLangD"></p></article><article class="card reveal" style="--d:420ms"><span class="ficon"><svg class="ic " aria-hidden="true"><use href="#i-app-window"/></svg></span><h3 data-i="fWin"></h3><p data-i="fWinD"></p></article></div></div></section>
-<section id="screenshots"><div class="wrap"><div class="hd reveal"><h2 data-i="sTitle"></h2></div><div class="tabs reveal" role="tablist"><button class="tab on" data-s="0" data-i="sh1"></button><button class="tab" data-s="1" data-i="sh2"></button><button class="tab" data-s="2" data-i="sh3"></button><button class="tab" data-s="3" data-i="sh4"></button><button class="tab" data-s="4" data-i="sh5"></button><button class="tab" data-s="5" data-i="sh6"></button></div><div class="stage reveal"><div class="stage-in"><img class="shot on" data-s="0" src="screenshots/image01.png" alt="Material Photo screenshot 1" width="1280" height="800" loading="eager"><img class="shot" data-s="1" src="screenshots/image03.png" alt="Material Photo screenshot 2" width="1280" height="800" loading="lazy"><img class="shot" data-s="2" src="screenshots/image04.png" alt="Material Photo screenshot 3" width="1280" height="800" loading="lazy"><img class="shot" data-s="3" src="screenshots/image05.png" alt="Material Photo screenshot 4" width="1280" height="800" loading="lazy"><img class="shot" data-s="4" src="screenshots/image06.png" alt="Material Photo screenshot 5" width="1280" height="800" loading="lazy"><img class="shot" data-s="5" src="screenshots/image02.png" alt="Material Photo screenshot 6" width="1280" height="800" loading="lazy"></div></div></div></section>
-<section id="download" class="alt"><div class="wrap"><div class="dlbox reveal"><svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><use href="#logo"/></svg><h2 data-i="dTitle"></h2><p data-i="dP"></p>
-<a class="btn f big" href="downloads/Material%20Photo_1.0.0_x64-setup.exe" download><svg class="ic " aria-hidden="true"><use href="#i-download"/></svg><span data-i="dBtn"></span></a><small data-i="dFile"></small>
-<div class="steps"><div class="step"><b><i>1</i><span data-i="st1" style="margin:0;color:inherit;font-size:inherit"></span></b><span data-i="st1d"></span></div><div class="step"><b><i>2</i><span data-i="st2" style="margin:0;color:inherit;font-size:inherit"></span></b><span data-i="st2d"></span></div><div class="step"><b><i>3</i><span data-i="st3" style="margin:0;color:inherit;font-size:inherit"></span></b><span data-i="st3d"></span></div></div></div>
-<p class="req" data-i="req"></p></div></section>
+
+<section id="screens"><div class="wrap">
+  <div class="center rv"><span class="eyebrow" data-i18n="s.eyebrow">Giao diện</span><h2 class="t" data-i18n="s.title">Thiết kế Material 3 Expressive</h2><p class="lead" data-i18n="s.lead">Hình khối biến đổi, chuyển động bật nảy và màu sắc theo chủ đề của bạn, ở cả chế độ sáng và tối.</p>
+    <div class="tabs" id="tabs" role="tablist"></div></div>
+  <div class="shot rv" id="shot">
+    <img class="on" src="screenshots/image01.png" alt="Gallery" loading="lazy"><img src="screenshots/image02.png" alt="Viewer" loading="lazy"><img src="screenshots/image03.png" alt="Editor" loading="lazy"><img src="screenshots/image04.png" alt="Settings" loading="lazy">
+  </div>
+  <p class="shot-cap center" id="cap"></p>
+</div></section>
+
+<section id="custom"><div class="wrap demo">
+  <div class="rv"><span class="eyebrow" data-i18n="u.eyebrow">Cá nhân hóa</span><h2 class="t" data-i18n="u.title">Của riêng bạn</h2><p class="lead" data-i18n="u.lead">Chọn chế độ sáng, tối hoặc theo hệ thống; 16 màu chủ đề Material hay màu tùy chọn; 3 cỡ chữ; 7 phông chữ gồm Roboto; tiếng Việt và tiếng Anh. Thử ngay: màu của trang này sẽ đổi theo.</p>
+    <div class="swatches" id="swatches2" style="margin-top:1.4rem"></div></div>
+  <div class="mock rv" style="--d:.1s"><div class="grid3"><div class="tile"></div><div class="tile" style="background:linear-gradient(135deg,var(--sc),var(--pc))"></div><div class="tile" style="background:linear-gradient(135deg,var(--tc),var(--sc))"></div></div>
+    <div class="tg"></div>
+    <div class="row"><button class="btn fill" tabindex="-1"><svg class="i"><use href="#i-heart"/></svg><span data-i18n="u.b1">Yêu thích</span></button><button class="btn tonal" tabindex="-1"><svg class="i"><use href="#i-pencil"/></svg><span data-i18n="u.b2">Chỉnh sửa</span></button><button class="btn out" tabindex="-1"><svg class="i"><use href="#i-download"/></svg><span data-i18n="u.b3">Xuất ảnh</span></button></div></div>
+</div></section>
+
+<section id="start"><div class="wrap">
+  <div class="center rv"><span class="eyebrow" data-i18n="g.eyebrow">Bắt đầu</span><h2 class="t" data-i18n="g.title">Ba bước là xong</h2></div>
+  <div class="steps">
+    <div class="step rv"><h3 data-i18n="g1.t">Tải bộ cài</h3><p style="color:var(--tx2)" data-i18n="g1.p">Nhấn nút tải xuống để lấy tệp cài đặt cho Windows.</p></div>
+    <div class="step rv" style="--d:.08s"><h3 data-i18n="g2.t">Cài đặt</h3><p style="color:var(--tx2)" data-i18n="g2.p">Chạy tệp .exe và làm theo hướng dẫn, không cần quyền quản trị.</p></div>
+    <div class="step rv" style="--d:.16s"><h3 data-i18n="g3.t">Mở ảnh</h3><p style="color:var(--tx2)" data-i18n="g3.p">Ứng dụng tự nạp thư mục Pictures, hoặc kéo thả ảnh và thư mục vào cửa sổ.</p></div>
+  </div>
+</div></section>
+
+<section id="shortcuts"><div class="wrap">
+  <div class="center rv"><span class="eyebrow" data-i18n="k.eyebrow">Phím tắt</span><h2 class="t" data-i18n="k.title">Thao tác bằng bàn phím</h2></div>
+  <div class="keys" id="keys"></div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <div class="center rv"><span class="eyebrow" data-i18n="q.eyebrow">Hỏi đáp</span><h2 class="t" data-i18n="q.title">Câu hỏi thường gặp</h2></div>
+  <div class="faq" id="faqList"></div>
+</div></section>
+
+<section id="download" style="padding-top:20px"><div class="wrap">
+  <div class="dl rv"><div class="blob b1" style="right:-10%;top:-30%"></div><div class="blob b2" style="left:-8%;bottom:-30%;top:auto"></div>
+    <span class="eyebrow"><svg class="i"><use href="#i-download"/></svg><span data-i18n="d.eyebrow">Tải về miễn phí</span></span>
+    <h2 data-i18n="d.title">Sẵn sàng làm đẹp ảnh của bạn?</h2><p data-i18n="d.p">Tải Material Photo cho Windows và bắt đầu xem, sắp xếp và chỉnh sửa ảnh ngay hôm nay.</p>
+    <a class="btn fill xl" href="downloads/Material%20Photo_1.1.0_x64-setup.exe" download><svg class="i"><use href="#i-download"/></svg><span data-i18n="d.btn">Tải Material Photo 1.1.0</span></a>
+    <div class="req"><span class="chip">Windows 10 / 11 (64-bit)</span><span class="chip">WebView2</span><span class="chip">MIT License</span></div></div>
+</div></section>
 </main>
-<footer><div class="wrap"><div class="who"><span data-i="by"></span><span class="hl a"><svg class="ic " aria-hidden="true"><use href="#i-user"/></svg>minhtrong67</span><span data-i="ai"></span><span class="hl c"><svg class="ic " aria-hidden="true"><use href="#i-sparkles"/></svg>Claude · Anthropic</span></div><div data-i="lic"></div><div style="margin-top:6px">© 2026 minhtrong67 · Material Photo</div></div></footer>
-<div class="lb" id="lb" role="dialog" aria-modal="true"><img alt=""></div>
+
+<footer><div class="wrap foot">
+  <div class="brand"><img src="favicon.svg" alt="" width="38" height="38"><div>Material Photo<small data-i18n="ft.by">Tác giả: minhtrong67 · Xây dựng với sự hỗ trợ của Claude (Anthropic)</small></div></div>
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap"><a class="btn tonal" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="i"><use href="#i-github"/></svg>GitHub</a><span class="btn out" style="cursor:default">MIT License</span></div>
+</div></footer>
+
+<button id="top" aria-label="Back to top" title="Back to top"><svg class="i" style="width:1.6em;height:1.6em"><use href="#i-arrow-up"/></svg></button>
 <script>
-const T={"vi": {"title": "Material Photo – Trình xem và chỉnh sửa ảnh cho Windows", "nFeat": "Tính năng", "nShots": "Ảnh chụp", "nDl": "Tải về", "nGet": "Tải xuống", "heroTag": "Miễn phí · Mã nguồn mở · Windows 10/11", "h1a": "Xem và chỉnh sửa ảnh", "h1b": "nhẹ nhàng, nhanh và đẹp", "heroP": "Material Photo tự động nhập ảnh từ thư mục Pictures, mở ảnh tức thì và có đủ công cụ chỉnh sửa cơ bản. Thiết kế Material Design 3, tùy chỉnh màu sắc và phông chữ theo ý bạn.", "dl": "Tải về cho Windows", "see": "Xem tính năng", "meta1": "Nhẹ, không kèm trình duyệt", "meta2": "Không cần quyền quản trị", "fTitle": "Mọi thứ bạn cần để quản lý ảnh", "fSub": "Một ứng dụng gọn nhẹ thay thế trình xem ảnh mặc định, với công cụ chỉnh sửa đầy đủ.", "fLib": "Thư viện tự động", "fLibD": "Quét thư mục Pictures cùng thư mục con, tạo ảnh thu nhỏ nền và lưu đệm nên cuộn thư viện lớn vẫn mượt.", "fView": "Trình xem mượt mà", "fViewD": "Thu phóng quanh con trỏ, kéo, thanh ảnh nhỏ, trình chiếu, toàn màn hình, in và xóa vào Thùng rác.", "fEdit": "Chỉnh sửa đầy đủ", "fEditD": "Cắt, xoay, lật, căn thẳng, độ sáng, tương phản, bộ lọc, vẽ và hoàn tác không giới hạn.", "fStick": "Nhãn dán và nét vẽ", "fStickD": "Bút, bút dạ, mũi tên, hình khối, nhãn dán mũi tên và emoji có thể di chuyển, đổi cỡ, xoay.", "fTheme": "Màu chủ đề Material", "fThemeD": "Sáng, tối hoặc theo hệ thống, cùng bảng màu Material 3 sinh từ màu bạn chọn.", "fFont": "Phông chữ tùy chọn", "fFontD": "Mặc định dùng phông hệ thống, hoặc chọn Roboto, Inter, Open Sans, Be Vietnam Pro và nhiều phông khác.", "fLang": "Tiếng Việt và English", "fLangD": "Tự nhận diện ngôn ngữ thiết bị khi mở lần đầu và đổi được bất cứ lúc nào.", "fWin": "Cửa sổ theo ý bạn", "fWinD": "Ghi nhớ kích thước lần trước hoặc luôn mở phóng to tối đa, giao diện thích ứng cửa sổ nhỏ.", "sTitle": "Xem thử giao diện", "sub1": "Bộ sưu tập", "sh1": "Bộ sưu tập", "sh2": "Trình xem", "sh3": "Cắt và xoay", "sh4": "Nhãn dán", "sh5": "Cài đặt", "sh6": "Giao diện tối", "dTitle": "Sẵn sàng thử chưa?", "dP": "Tải trình cài đặt, chạy và bắt đầu xem ảnh trong vài giây.", "dBtn": "Tải Material Photo 1.0.0", "dFile": "Windows 10/11 · 64-bit · cài cho người dùng hiện tại", "st1": "Tải về", "st1d": "Nhấn nút tải về và lưu tệp cài đặt.", "st2": "Cài đặt", "st2d": "Chạy tệp, không cần quyền quản trị.", "st3": "Tận hưởng", "st3d": "Mở ảnh bằng Material Photo hoặc đặt làm ứng dụng mặc định.", "req": "Cần Microsoft Edge WebView2 Runtime (có sẵn trên Windows 11 và Windows 10 bản mới).", "by": "Thiết kế và phát triển bởi", "ai": "với sự hỗ trợ của AI", "lic": "Mã nguồn mở theo giấy phép MIT.", "theme": "Đổi giao diện"}, "en": {"title": "Material Photo – Photo viewer and editor for Windows", "nFeat": "Features", "nShots": "Screenshots", "nDl": "Download", "nGet": "Download", "heroTag": "Free · Open source · Windows 10/11", "h1a": "View and edit your photos", "h1b": "light, fast and beautiful", "heroP": "Material Photo imports pictures from your Pictures folder, opens them instantly and includes a full set of basic editing tools. Material Design 3, with the colors and font of your choice.", "dl": "Download for Windows", "see": "See features", "meta1": "Lightweight, no bundled browser", "meta2": "No admin rights needed", "fTitle": "Everything you need to manage pictures", "fSub": "A compact app that replaces your default photo viewer, with a complete editor.", "fLib": "Automatic library", "fLibD": "Scans Pictures and its sub folders, builds cached thumbnails in the background so huge libraries scroll smoothly.", "fView": "Smooth viewer", "fViewD": "Zoom around the cursor, pan, filmstrip, slideshow, full screen, print and delete to the Recycle Bin.", "fEdit": "Complete editor", "fEditD": "Crop, rotate, flip, straighten, brightness, contrast, filters, drawing and unlimited undo.", "fStick": "Stickers and drawing", "fStickD": "Pen, highlighter, arrows, shapes, arrow stickers and emoji you can move, resize and rotate.", "fTheme": "Material theme colors", "fThemeD": "Light, dark or system, with a Material 3 palette generated from the color you pick.", "fFont": "Choose your font", "fFontD": "The system font by default, or pick Roboto, Inter, Open Sans, Be Vietnam Pro and more.", "fLang": "English and Vietnamese", "fLangD": "Detects your device language on first launch and can be switched at any time.", "fWin": "Window your way", "fWinD": "Remember the last size or always open maximized, with a layout that adapts to small windows.", "sTitle": "Take a look", "sub1": "Collection", "sh1": "Collection", "sh2": "Viewer", "sh3": "Crop and rotate", "sh4": "Stickers", "sh5": "Settings", "sh6": "Dark theme", "dTitle": "Ready to try it?", "dP": "Download the installer, run it and start viewing pictures in seconds.", "dBtn": "Download Material Photo 1.0.0", "dFile": "Windows 10/11 · 64-bit · installs for the current user", "st1": "Download", "st1d": "Press the button and save the installer.", "st2": "Install", "st2d": "Run it, no administrator rights needed.", "st3": "Enjoy", "st3d": "Open pictures with Material Photo or make it your default app.", "req": "Requires the Microsoft Edge WebView2 Runtime (included with Windows 11 and current Windows 10).", "by": "Designed and developed by", "ai": "with the assistance of AI", "lic": "Open source under the MIT license.", "theme": "Toggle theme"}};
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const sys=()=>{for(const l of (navigator.languages||[navigator.language||'en'])){const c=String(l).slice(0,2).toLowerCase();if(c=='vi'||c=='en')return c}return 'en'};
-let L=(()=>{try{return localStorage.getItem('lp-lang')}catch{return null}})()||sys();
-function setLang(l){L=l;try{localStorage.setItem('lp-lang',l)}catch{}document.documentElement.lang=l;document.title=T[l].title;$$('[data-i]').forEach(e=>e.textContent=T[l][e.dataset.i]);$$('[data-i-t]').forEach(e=>e.title=e.ariaLabel=T[l][e.dataset.iT]);$('#lang').textContent=l=='vi'?'VI':'EN';$('#lang').title=l=='vi'?'Switch to English':'Chuyển sang tiếng Việt'}
-$('#lang').onclick=()=>setLang(L=='vi'?'en':'vi');setLang(L);
-/* theme: system -> light -> dark */
-let M=(()=>{try{return localStorage.getItem('lp-theme')}catch{return null}})()||'system';
-function setTheme(m){M=m;try{localStorage.setItem('lp-theme',m)}catch{}const r=document.documentElement;m=='system'?r.removeAttribute('data-t'):r.setAttribute('data-t',m);$('#theme use').setAttribute('href','#i-'+({system:'monitor',light:'sun',dark:'moon'})[m])}
-$('#theme').onclick=()=>setTheme(({system:'light',light:'dark',dark:'system'})[M]);setTheme(M);
-$('#mb').onclick=()=>$('#nav').classList.toggle('open');$$('#nav a').forEach(a=>a.onclick=()=>$('#nav').classList.remove('open'));
-addEventListener('scroll',()=>$('header').classList.toggle('sc',scrollY>8),{passive:true});
-/* reveal on scroll */
-const io='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12}):null;
-$$('.reveal').forEach(e=>io?io.observe(e):e.classList.add('in'));
-/* screenshots */
-function pick(i){$$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.s==i));$$('.shot').forEach(s=>s.classList.toggle('on',s.dataset.s==i))}
-$$('.tab').forEach(t=>t.onclick=()=>pick(t.dataset.s));
-let n=0,auto=setInterval(()=>{pick(n=(n+1)%$$('.tab').length)},4500);$('.stage').addEventListener('pointerenter',()=>clearInterval(auto));$$('.tab').forEach(t=>t.addEventListener('click',()=>clearInterval(auto)));
-$$('.shot').forEach(s=>s.onclick=()=>{$('#lb img').src=s.src;$('#lb').classList.add('on')});$('#lb').onclick=()=>$('#lb').classList.remove('on');addEventListener('keydown',e=>{if(e.key=='Escape')$('#lb').classList.remove('on')});
-/* ripple */
-document.addEventListener('pointerdown',e=>{const b=e.target.closest('.btn');if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height)*2,s=document.createElement('span');s.className='rip';s.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.append(s);s.onanimationend=()=>s.remove()},{passive:true});
+(()=>{
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const root=document.documentElement,store={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const T={
+vi:{"n.features":"Tính năng","n.screens":"Giao diện","n.custom":"Tùy chỉnh","n.keys":"Phím tắt","n.faq":"Hỏi đáp","n.dl":"Tải về","p.theme":"Giao diện","p.system":"Hệ thống","p.light":"Sáng","p.dark":"Tối","p.lang":"Ngôn ngữ","p.color":"Màu chủ đề",
+"h.eyebrow":"Mã nguồn mở · Windows 10/11","h.title":"Ảnh của bạn, <span class=\"grad\">đẹp hơn</span> từng khung hình.","h.lead":"Material Photo là trình xem và chỉnh sửa ảnh nhanh, nhẹ, mang phong cách Material 3 Expressive: thư viện theo ngày, xem EXIF, yêu thích, album và một trình chỉnh sửa đầy đủ.","h.dl":"Tải xuống cho Windows","h.src":"Mã nguồn","h.m1":"Miễn phí, mã nguồn mở","h.m2":"Không quảng cáo, không theo dõi","h.f1":"Xem EXIF & histogram","h.f2":"Chỉnh sửa đầy đủ","h.f3":"Yêu thích & Album",
+"f.eyebrow":"Tính năng","f.title":"Mọi thứ bạn cần cho ảnh","f.lead":"Từ lướt xem hàng chục nghìn ảnh đến chỉnh sửa từng chi tiết, trong một ứng dụng nhẹ và mượt.",
+"c1.t":"Thư viện thông minh","c1.p":"Tự nhập thư mục Pictures, nhóm theo ngày, cuộn ảo hóa mượt với hàng chục nghìn ảnh, tìm kiếm, lọc theo thư mục và định dạng.","c2.t":"Trình xem tập trung","c2.p":"Zoom theo con trỏ, kéo thả, bản đồ thu nhỏ, dải ảnh, trình chiếu có hiệu ứng, toàn màn hình và đầy đủ phím tắt.","c3.t":"11 mức điều chỉnh","c3.p":"Sáng, tương phản, bão hòa, độ ấm, vùng sáng/tối, độ nét, tối viền và nhiều hơn. Có tự động cải thiện.","c4.t":"Vẽ, chữ, nhãn dán","c4.p":"Bút, mũi tên, hình khối, chữ xoay được, emoji, hình mờ và làm mờ vùng nhạy cảm.","c5.t":"Sắp xếp dễ dàng","c5.p":"Yêu thích, album, chọn nhiều ảnh, đổi tên hàng loạt và tìm ảnh trùng.","c6.t":"EXIF & histogram","c6.p":"Xem máy ảnh, ống kính, ISO, khẩu độ, tốc độ, ngày chụp, GPS và biểu đồ màu của từng ảnh.","c7.t":"An toàn và nhanh","c7.p":"Cache thumbnail, ghi tệp an toàn, xoá vào Thùng rác có hoàn tác, giữ dữ liệu EXIF khi lưu, tự cập nhật khi thư mục thay đổi.",
+"s.eyebrow":"Giao diện","s.title":"Thiết kế Material 3 Expressive","s.lead":"Hình khối biến đổi, chuyển động bật nảy và màu sắc theo chủ đề của bạn, ở cả chế độ sáng và tối.","s.t1":"Thư viện","s.t2":"Trình xem","s.t3":"Chỉnh sửa","s.t4":"Cài đặt","s.c1":"Thư viện nhóm theo ngày, lưới ảo hóa và thanh lọc nhanh.","s.c2":"Trình xem với bảng chi tiết EXIF, histogram và dải ảnh.","s.c3":"Trình chỉnh sửa với điều chỉnh, bộ lọc, vẽ, chữ và xuất ảnh.","s.c4":"Cài đặt gọn gàng: chế độ, màu chủ đề, cỡ chữ, ngôn ngữ, phông chữ.",
+"u.eyebrow":"Cá nhân hóa","u.title":"Của riêng bạn","u.lead":"Chọn chế độ sáng, tối hoặc theo hệ thống; 16 màu chủ đề Material hay màu tùy chọn; 3 cỡ chữ; 7 phông chữ gồm Roboto; tiếng Việt và tiếng Anh. Thử ngay: màu của trang này sẽ đổi theo.","u.b1":"Yêu thích","u.b2":"Chỉnh sửa","u.b3":"Xuất ảnh",
+"g.eyebrow":"Bắt đầu","g.title":"Ba bước là xong","g1.t":"Tải bộ cài","g1.p":"Nhấn nút tải xuống để lấy tệp cài đặt cho Windows.","g2.t":"Cài đặt","g2.p":"Chạy tệp .exe và làm theo hướng dẫn, không cần quyền quản trị.","g3.t":"Mở ảnh","g3.p":"Ứng dụng tự nạp thư mục Pictures, hoặc kéo thả ảnh và thư mục vào cửa sổ.",
+"k.eyebrow":"Phím tắt","k.title":"Thao tác bằng bàn phím","q.eyebrow":"Hỏi đáp","q.title":"Câu hỏi thường gặp",
+"d.eyebrow":"Tải về miễn phí","d.title":"Sẵn sàng làm đẹp ảnh của bạn?","d.p":"Tải Material Photo cho Windows và bắt đầu xem, sắp xếp và chỉnh sửa ảnh ngay hôm nay.","d.btn":"Tải Material Photo 1.1.0","ft.by":"Tác giả: minhtrong67 · Xây dựng với sự hỗ trợ của Claude (Anthropic)",
+"m":["Cắt & xoay","Điều chỉnh","Bộ lọc","Vẽ","Chữ","Nhãn dán","Làm mờ","Xuất ảnh","Trình chiếu","Album"],
+"keys":[["Ảnh trước / sau","← →"],["Phóng to / thu nhỏ","+ −"],["Vừa khung / kích thước thật","0 · 1"],["Toàn màn hình","F"],["Chi tiết EXIF","I"],["Yêu thích","H"],["Trình chiếu","S"],["Xoay ảnh","R"],["Chỉnh sửa","E"],["Hoàn tác / làm lại","Ctrl+Z · Ctrl+Y"],["Lưu","Ctrl+S"],["Xóa","Del"]],
+"faq":[["Material Photo có miễn phí không?","Có. Ứng dụng hoàn toàn miễn phí và mã nguồn mở theo giấy phép MIT, không quảng cáo và không theo dõi."],["Ứng dụng chạy trên hệ điều hành nào?","Windows 10 và Windows 11 (64-bit). Ứng dụng dùng WebView2 có sẵn trên Windows."],["Chỉnh sửa có làm hỏng ảnh gốc không?","Mặc định bạn lưu thành bản sao. Khi chọn lưu đè, ứng dụng hỏi xác nhận, ghi tệp an toàn và có thể giữ dữ liệu EXIF của JPEG."],["Xóa nhầm ảnh thì sao?","Ảnh được chuyển vào Thùng rác và có nút Hoàn tác ngay trên thông báo."],["Có hỗ trợ tiếng Việt không?","Có. Giao diện hỗ trợ tiếng Việt và tiếng Anh, đổi ngay trong Cài đặt."]]},
+en:{"n.features":"Features","n.screens":"Screens","n.custom":"Customize","n.keys":"Shortcuts","n.faq":"FAQ","n.dl":"Download","p.theme":"Theme","p.system":"System","p.light":"Light","p.dark":"Dark","p.lang":"Language","p.color":"Theme color",
+"h.eyebrow":"Open source · Windows 10/11","h.title":"Your photos, <span class=\"grad\">beautifully</span> framed.","h.lead":"Material Photo is a fast, light photo viewer and editor with a Material 3 Expressive design: date-grouped gallery, EXIF details, favorites, albums and a full editor.","h.dl":"Download for Windows","h.src":"Source code","h.m1":"Free and open source","h.m2":"No ads, no tracking","h.f1":"EXIF & histogram","h.f2":"Full photo editor","h.f3":"Favorites & Albums",
+"f.eyebrow":"Features","f.title":"Everything your photos need","f.lead":"From browsing tens of thousands of pictures to fine editing, in one light and smooth app.",
+"c1.t":"Smart gallery","c1.p":"Loads your Pictures folder, groups by date, scrolls smoothly through tens of thousands of photos, with search and folder or format filters.","c2.t":"Focused viewer","c2.p":"Cursor-centred zoom, pan, minimap, filmstrip, slideshow with transitions, full screen and keyboard shortcuts.","c3.t":"11 adjustments","c3.p":"Brightness, contrast, saturation, warmth, highlights, shadows, sharpness, vignette and more, plus auto enhance.","c4.t":"Draw, text, stickers","c4.p":"Pen, arrows, shapes, rotatable text, emoji, watermark and blur for sensitive areas.","c5.t":"Easy organizing","c5.p":"Favorites, albums, multi-select, batch rename and duplicate finder.","c6.t":"EXIF & histogram","c6.p":"See camera, lens, ISO, aperture, shutter, date taken, GPS and the color histogram of every picture.","c7.t":"Safe and fast","c7.p":"Thumbnail cache, atomic file writes, Recycle Bin with undo, EXIF kept on save, and live updates when folders change.",
+"s.eyebrow":"Screens","s.title":"Material 3 Expressive design","s.lead":"Morphing shapes, springy motion and colors that follow your theme, in light and dark.","s.t1":"Gallery","s.t2":"Viewer","s.t3":"Editor","s.t4":"Settings","s.c1":"Date-grouped gallery with a virtualized grid and quick filters.","s.c2":"Viewer with EXIF details, histogram and filmstrip.","s.c3":"Editor with adjustments, filters, drawing, text and export.","s.c4":"Tidy settings: theme, color, text size, language and font.",
+"u.eyebrow":"Personalize","u.title":"Make it yours","u.lead":"Light, dark or system theme; 16 Material theme colors or your own; 3 text sizes; 7 fonts including Roboto; English and Vietnamese. Try it: this page recolors live.","u.b1":"Favorite","u.b2":"Edit","u.b3":"Export",
+"g.eyebrow":"Get started","g.title":"Three steps and you are done","g1.t":"Download","g1.p":"Press the download button to get the Windows installer.","g2.t":"Install","g2.p":"Run the .exe and follow the wizard. No admin rights needed.","g3.t":"Open photos","g3.p":"The app loads your Pictures folder, or drop photos and folders onto the window.",
+"k.eyebrow":"Shortcuts","k.title":"Drive it from the keyboard","q.eyebrow":"FAQ","q.title":"Frequently asked questions",
+"d.eyebrow":"Free download","d.title":"Ready to make your photos shine?","d.p":"Get Material Photo for Windows and start viewing, organizing and editing today.","d.btn":"Download Material Photo 1.1.0","ft.by":"By minhtrong67 · Built with the support of Claude (Anthropic)",
+"m":["Crop & rotate","Adjust","Filters","Draw","Text","Stickers","Blur","Export","Slideshow","Albums"],
+"keys":[["Previous / next picture","← →"],["Zoom in / out","+ −"],["Fit / actual size","0 · 1"],["Full screen","F"],["EXIF details","I"],["Favorite","H"],["Slideshow","S"],["Rotate","R"],["Edit","E"],["Undo / redo","Ctrl+Z · Ctrl+Y"],["Save","Ctrl+S"],["Delete","Del"]],
+"faq":[["Is Material Photo free?","Yes. It is completely free and open source under the MIT license, with no ads and no tracking."],["Which systems does it run on?","Windows 10 and Windows 11 (64-bit). It uses the WebView2 runtime that ships with Windows."],["Will editing damage my originals?","By default you save a copy. If you choose to overwrite, the app asks first, writes the file safely and can keep the JPEG EXIF data."],["What if I delete a picture by mistake?","Pictures go to the Recycle Bin and the notification has an Undo button."],["Is Vietnamese supported?","Yes. The interface supports Vietnamese and English; switch in Settings."]]}};
+const SEEDS=[["#3F51B5","Indigo"],["#F44336","Red"],["#E91E63","Pink"],["#9C27B0","Purple"],["#673AB7","Deep purple"],["#2196F3","Blue"],["#03A9F4","Light blue"],["#00BCD4","Cyan"],["#009688","Teal"],["#4CAF50","Green"],["#CDDC39","Lime"],["#FFC107","Amber"],["#FF9800","Orange"],["#FF5722","Deep orange"],["#795548","Brown"],["#607D8B","Blue grey"]];
+let lang=store.get("mpl.lang")||((navigator.language||"").toLowerCase().startsWith("vi")?"vi":"en"),theme=store.get("mpl.theme")||"system",seed=store.get("mpl.seed")||"#3F51B5";
+
+/* ---- colour: hex -> OKLCH hue / chroma drives every token ---- */
+function oklch(hex){const c=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
+const l=Math.cbrt(.4122214708*c[0]+.5363325363*c[1]+.0514459929*c[2]),m=Math.cbrt(.2119034982*c[0]+.6806995451*c[1]+.1073969566*c[2]),s=Math.cbrt(.0883024619*c[0]+.2817188376*c[1]+.6299787005*c[2]);
+const L=.2104542553*l+.793617785*m-.0040720468*s,a=1.9779984951*l-2.428592205*m+.4505937099*s,b=.0259040371*l+.7827717662*m-.808675766*s;
+return{h:(Math.atan2(b,a)*180/Math.PI+360)%360,c:Math.hypot(a,b)}}
+function applySeed(hex){const o=oklch(hex);root.style.setProperty("--h",o.h.toFixed(1));root.style.setProperty("--c",Math.min(1.15,Math.max(.6,o.c/.15)).toFixed(2));seed=hex;store.set("mpl.seed",hex);$$(".swatches button").forEach(b=>b.classList.toggle("on",b.dataset.c.toLowerCase()===hex.toLowerCase()))}
+function applyTheme(t){theme=t;store.set("mpl.theme",t);const dark=t==="dark"||(t==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);root.classList.toggle("dark",dark);root.dataset.theme=t;$$("#segTheme button").forEach(b=>b.classList.toggle("on",b.dataset.v===t))}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>theme==="system"&&applyTheme("system"));
+
+/* ---- language ---- */
+function buildLists(){const d=T[lang];$("#track").innerHTML=[...d.m,...d.m,...d.m,...d.m].map(x=>`<span>${x}</span>`).join("");
+$("#keys").innerHTML=d.keys.map(k=>`<div class="key"><span>${k[0]}</span><span>${k[1].split(" ").map(x=>x==="·"?"·":`<kbd>${x}</kbd>`).join(" ")}</span></div>`).join("");
+$("#faqList").innerHTML=d.faq.map((f,i)=>`<details class="rv" style="--d:${i*.05}s"><summary>${f[0]}<svg class="i"><use href="#i-chevron-down"/></svg></summary><p>${f[1]}</p></details>`).join("");
+$$("#faqList .rv").forEach(el=>io.observe(el));
+$("#tabs").innerHTML=[1,2,3,4].map((n,i)=>`<button role="tab" data-i="${i}" class="${i===cur?"on":""}"><svg class="i"><use href="#i-${["image","scan-search","sliders-horizontal","settings"][i]}"/></svg>${d["s.t"+n]}</button>`).join("");
+$$("#tabs button").forEach(b=>b.onclick=()=>{show(+b.dataset.i);clearInterval(auto)});$("#cap").textContent=d["s.c"+(cur+1)]}
+function applyLang(l){lang=l;store.set("mpl.lang",l);root.lang=l;const d=T[l];
+$$("[data-i18n]").forEach(e=>{const v=d[e.dataset.i18n];if(v!=null)e.textContent=v});$$("[data-i18n-h]").forEach(e=>{e.innerHTML=d[e.dataset.i18nH]});
+$$("#segLang button").forEach(b=>b.classList.toggle("on",b.dataset.v===l));
+document.title=l==="vi"?"Material Photo – Trình xem và chỉnh sửa ảnh Material 3 Expressive cho Windows":"Material Photo – Material 3 Expressive photo viewer and editor for Windows";
+$('meta[name="description"]').content=l==="vi"?"Material Photo là trình xem và chỉnh sửa ảnh miễn phí, mã nguồn mở cho Windows 10/11: thư viện theo ngày, yêu thích và album, xem EXIF, chỉnh sửa đầy đủ, giao diện Material 3 Expressive.":"Material Photo is a free, open source photo viewer and editor for Windows 10/11: date-grouped gallery, favorites and albums, EXIF details, a full editor and a Material 3 Expressive design.";
+buildLists()}
+
+/* ---- reveal / spotlight / tilt ---- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.12,rootMargin:"0px 0px -6% 0px"});
+$$(".rv").forEach(el=>io.observe(el));
+$$(".card").forEach(c=>c.addEventListener("pointermove",e=>{const r=c.getBoundingClientRect();c.style.setProperty("--mx",e.clientX-r.left+"px");c.style.setProperty("--my",e.clientY-r.top+"px")}));
+const win=$("#win"),stage=$("#stage");
+if(matchMedia("(hover:hover) and (min-width:981px)").matches){stage.addEventListener("pointermove",e=>{const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;win.style.transform=`rotateY(${-9+x*10}deg) rotateX(${4-y*8}deg)`});stage.addEventListener("pointerleave",()=>win.style.transform="")}
+
+/* ---- screenshot tabs ---- */
+let cur=0,auto;const shots=()=>$$("#shot img");
+function show(i){cur=i;shots().forEach((im,k)=>im.classList.toggle("on",k===i));$$("#tabs button").forEach((b,k)=>b.classList.toggle("on",k===i));$("#cap").textContent=T[lang]["s.c"+(i+1)]}
+auto=setInterval(()=>{if(!document.hidden)show((cur+1)%4)},6000);
+
+/* ---- popover + mobile menu ---- */
+const pop=$("#pop");$("#popBtn").onclick=e=>{e.stopPropagation();const o=pop.classList.toggle("open");e.currentTarget.setAttribute("aria-expanded",o)};
+document.addEventListener("click",e=>{if(!pop.contains(e.target))pop.classList.remove("open");if(e.target===$("#mobile"))$("#mobile").classList.remove("open")});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){pop.classList.remove("open");$("#mobile").classList.remove("open")}});
+$("#menuBtn").onclick=()=>$("#mobile").classList.add("open");
+$$("#segTheme button").forEach(b=>b.onclick=()=>applyTheme(b.dataset.v));$$("#segLang button").forEach(b=>b.onclick=()=>applyLang(b.dataset.v));
+function swatches(el){el.innerHTML=SEEDS.map(s=>`<button data-c="${s[0]}" style="background:${s[0]}" aria-label="${s[1]}" title="${s[1]}"><svg class="i" style="width:1em;height:1em;opacity:0"><use href="#i-check"/></svg></button>`).join("")+`<label title="Custom"><input type="color" value="${seed}" aria-label="Custom color"></label>`;
+$$("button",el).forEach(b=>b.onclick=()=>applySeed(b.dataset.c));$("input",el).oninput=e=>applySeed(e.target.value)}
+swatches($("#swatches"));swatches($("#swatches2"));
+
+/* ---- smooth scroll for every nav link, scrollspy, progress, back to top ---- */
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+$$("[data-go]").forEach(a=>a.addEventListener("click",e=>{const id=a.getAttribute("href");const t=$(id);if(!t)return;e.preventDefault();$("#mobile").classList.remove("open");pop.classList.remove("open");
+const y=id==="#home"?0:t.getBoundingClientRect().top+scrollY-84;scrollTo({top:y,behavior:reduce?"auto":"smooth"});history.replaceState(null,"",id)}));
+const secs=["features","screens","custom","shortcuts","faq"].map(id=>$("#"+id)),links=$$(".links a");
+const nav=$("#nav"),topBtn=$("#top"),prog=$("#prog");let tick=false;
+function onScroll(){const y=scrollY,h=document.documentElement.scrollHeight-innerHeight;prog.style.transform=`scaleX(${h>0?y/h:0})`;nav.classList.toggle("stuck",y>20);topBtn.classList.toggle("show",y>700);
+let on=null;secs.forEach(s=>{if(s.getBoundingClientRect().top<innerHeight*.4)on=s.id});links.forEach(l=>l.classList.toggle("on",l.getAttribute("href")==="#"+on));tick=false}
+addEventListener("scroll",()=>{if(!tick){tick=true;requestAnimationFrame(onScroll)}},{passive:true});onScroll();
+topBtn.onclick=()=>scrollTo({top:0,behavior:reduce?"auto":"smooth"});
+
+applyTheme(theme);applySeed(seed);applyLang(lang);
+})();
 </script>
 </body>
 </html>

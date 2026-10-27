@@ -1,11 +1,9 @@
 # Downloads
 
-Put the Windows installer built by `npm run build` in this folder:
+Put the Windows installer built by `npm run build` in this folder. The landing page (`index.html`) links to this exact file name:
 
 ```
-Material Photo_1.0.0_x64-setup.exe
+Material Photo_1.1.0_x64-setup.exe
 ```
 
-You can find it at `<workspace>/target/release/bundle/nsis/`.
-The download button of the landing page (`index.html` in the project root) points to this exact file name.
-If the version changes, update the link in `index.html` (search for `downloads/`).
+After `npm run build` it is created in `src-tauri/target/release/bundle/nsis/` (or in your shared workspace `target/release/bundle/nsis/`).
