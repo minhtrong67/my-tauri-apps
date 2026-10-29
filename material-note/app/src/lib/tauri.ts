@@ -48,6 +48,11 @@ export async function pickFiles(filters: Filter[]): Promise<string[]> {
   return Array.isArray(sel) ? sel : [sel];
 }
 
+export async function pickFolder(defaultPath?: string | null): Promise<string | null> {
+  const sel = await openDialog({ directory: true, multiple: false, defaultPath: defaultPath ?? undefined });
+  return typeof sel === "string" ? sel : null;
+}
+
 export const pickSavePath = (defaultPath: string, filters: Filter[]) => saveDialog({ defaultPath, filters });
 
 export { PhysicalSize, listen, getCurrentWebview };

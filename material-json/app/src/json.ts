@@ -230,8 +230,7 @@ export interface ParseResult {
   repairable?: boolean;
 }
 
-let lastText: string | null = null;
-let lastResult: ParseResult | null = null;
+const CACHE = new Map<string, ParseResult>();
 
 export function lineCol(text: string, pos: number) {
   let line = 1, last = -1;
@@ -241,7 +240,8 @@ export function lineCol(text: string, pos: number) {
 
 /** Parse with memoisation of the last text (editor, tree and status bar share it). */
 export function analyze(text: string): ParseResult {
-  if (text === lastText && lastResult) return lastResult;
+  const hit = CACHE.get(text);
+  if (hit) { CACHE.delete(text); CACHE.set(text, hit); return hit; }
   let r: ParseResult;
   if (!text.trim()) r = { ok: false, empty: true };
   else {
@@ -254,8 +254,31 @@ export function analyze(text: string): ParseResult {
       r = { ok: false, empty: false, error: { code: e.code, pos: e.pos, arg: e.arg, line, col }, repairable };
     }
   }
-  lastText = text; lastResult = r;
+  if (text.length < 4_000_000) {
+    CACHE.set(text, r);
+    if (CACHE.size > 6) CACHE.delete(CACHE.keys().next().value as string);
+  }
   return r;
+}
+
+/** Path of the innermost value (or key) that contains the given offset. */
+export function pathAt(root: JNode, pos: number): PathSeg[] {
+  const path: PathSeg[] = [];
+  let n: JNode = root;
+  for (;;) {
+    if (n.type === 'object') {
+      const p = n.props.find((x) => pos >= x.keyStart && pos <= Math.max(x.value.end, x.keyEnd));
+      if (!p) break;
+      path.push(p.key);
+      if (pos < p.value.start) break;
+      n = p.value;
+    } else if (n.type === 'array') {
+      const i = n.items.findIndex((x) => pos >= x.start && pos <= x.end);
+      if (i < 0) break;
+      path.push(i); n = n.items[i];
+    } else break;
+  }
+  return path;
 }
 
 /* ───────────────────────────── conversion ───────────────────────────── */

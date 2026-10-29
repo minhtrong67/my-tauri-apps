@@ -4,7 +4,7 @@
 import { Hct, SchemeVibrant, MaterialDynamicColors, argbFromHex, hexFromArgb } from "@material/material-color-utilities";
 import { readFileSync, writeFileSync } from "node:fs";
 
-const PRESETS = ["#6B4EFF", "#6750A4", "#0B6BCB", "#00897B", "#2E7D32", "#B58900", "#C25E00", "#D32F2F", "#D81B60", "#546E7A"];
+const PRESETS = ["#0061FF", "#6B4EFF", "#6750A4", "#00897B", "#2E7D32", "#B58900", "#C25E00", "#D32F2F", "#D81B60", "#546E7A"];
 const ROLES = [
   "primary", "onPrimary", "primaryContainer", "onPrimaryContainer", "secondary", "onSecondary", "secondaryContainer",
   "onSecondaryContainer", "tertiary", "onTertiary", "tertiaryContainer", "onTertiaryContainer", "error", "onError",

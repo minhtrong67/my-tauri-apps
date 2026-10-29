@@ -8,7 +8,10 @@ import { captureWindow, isTauri } from '../tauri';
 import { esc, toast } from '../ui';
 
 let el: HTMLElement;
-const FONTS: [Settings['font'], string][] = [['system', 'System'], ['roboto', 'Roboto'], ['inter', 'Inter'], ['open-sans', 'Open Sans'], ['noto-sans', 'Noto Sans']];
+const FONTS: [Settings['font'], string, string][] = [
+  ['system', 'System', 'system-ui, sans-serif'], ['google-sans-flex', 'Google Sans Flex', "'Google Sans Flex Variable', sans-serif"], ['roboto-flex', 'Roboto Flex', "'Roboto Flex Variable', sans-serif"],
+  ['roboto', 'Roboto', "'Roboto', sans-serif"], ['arial', 'Arial', 'Arial, Helvetica, sans-serif'], ['inter', 'Inter', "'Inter Variable', sans-serif"], ['be-vietnam-pro', 'Be Vietnam Pro', "'Be Vietnam Pro', sans-serif"],
+];
 const SHORTCUTS: [Parameters<typeof t>[0], string][] = [
   ['sc.k.new', 'Ctrl+N'], ['sc.k.open', 'Ctrl+O'], ['sc.k.save', 'Ctrl+S'], ['sc.k.saveAs', 'Ctrl+Shift+S'], ['sc.k.close', 'Ctrl+W'],
   ['sc.k.next', 'Ctrl+Tab'], ['sc.k.format', 'Alt+Shift+F'], ['sc.k.minify', 'Alt+Shift+M'], ['sc.k.find', 'Ctrl+F'],
@@ -45,7 +48,7 @@ function render() {
           <label class="swatch custom" aria-checked="${custom}" role="radio" title="${esc(t('set.custom'))}" style="--c:${custom ? settings.color : 'transparent'}">${custom ? icon('check') : icon('plus')}<input type="color" id="set-color" value="${custom ? settings.color : '#6750a4'}"></label>
         </div></div>
       <div class="set-row col"><div class="set-text"><strong>${esc(t('set.font'))}</strong></div>
-        <div class="fonts" role="radiogroup">${FONTS.map(([id, name]) => `<button class="font-card" role="radio" data-font="${id}" aria-checked="${settings.font === id}" style="font-family:${id === 'system' ? 'system-ui, sans-serif' : `'${name}'${id === 'roboto' ? '' : ' Variable'}, sans-serif`}"><span class="aa">Aa</span><span class="fn">${esc(id === 'system' ? t('set.fontSystem') : name)}</span></button>`).join('')}</div></div>
+        <div class="fonts" role="radiogroup">${FONTS.map(([id, name, fam]) => `<button class="font-card" role="radio" data-font="${id}" aria-checked="${settings.font === id}" style="font-family:${fam}"><span class="aa">Aa</span><span class="fn">${esc(id === 'system' ? t('set.fontSystem') : name)}</span></button>`).join('')}</div></div>
       ${row(t('set.fontSize'), '', seg('fontSize', settings.fontSize, [['small', t('set.small')], ['medium', t('set.medium')], ['large', t('set.large')]]))}
       ${row(t('set.language'), '', seg('lang', settings.lang, [['auto', t('set.auto')], ['en', 'English'], ['vi', 'Tiếng Việt']]))}
       ${row(t('set.motion'), t('set.motionDesc'), sw('set-motion', settings.motion))}
@@ -80,7 +83,7 @@ function render() {
       <p>${esc(t('set.aboutDesc'))}</p>
       <div class="credits">
         <div>${icon('license')}<span>${esc(t('set.license'))}</span></div>
-        <div>${icon('heart')}<span>${esc(t('set.author'))}: <strong>minhtrong67</strong> · ${esc(t('set.madeWith'))} <strong>Claude</strong></span></div>
+        <div class="author-hl">${icon('heart')}<span>${esc(t('set.author'))}: <strong>minhtrong67</strong> · ${esc(t('set.madeWith'))} <strong>Claude</strong></span></div>
       </div>
     </section>
   </div>`;

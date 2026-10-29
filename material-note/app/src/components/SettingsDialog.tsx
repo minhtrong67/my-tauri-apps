@@ -2,7 +2,7 @@ import { useRef, type ReactNode } from "react";
 import {
   Settings, Palette, PenLine, AppWindow, Sun, Moon, Monitor, Languages, Type, PanelTop, PanelLeft, WrapText,
   PanelBottom, SpellCheck, History, Save, Check, RotateCcw, Pipette, Move, Maximize2, Brush, LayoutPanelTop, CaseSensitive,
-  TriangleAlert, type LucideIcon,
+  TriangleAlert, FolderOpen, FolderCog, type LucideIcon,
 } from "lucide-react";
 import { Dialog } from "./ui/Dialog";
 import { Button } from "./ui/Button";
@@ -11,6 +11,7 @@ import { Segmented, Switch, ScrollArea } from "./ui/Controls";
 import { CreditCard } from "./Dialogs";
 import { useSettings, type Settings as S } from "../store/settings";
 import { useUi, confirmDialog, toast, type SettingsTab } from "../store/ui";
+import { pickFolder } from "../lib/tauri";
 import { PRESETS, isHex } from "../lib/theme";
 import { FONTS } from "../lib/fonts";
 import { useT } from "../lib/i18n";
@@ -42,7 +43,7 @@ function ChoiceCard({ on, icon: Icon, title, desc, onClick }: { on: boolean; ico
       aria-checked={on}
       onClick={onClick}
       className={cn(
-        "ripple relative flex w-full items-center gap-3.5 p-4 text-left transition-[border-radius,background-color,box-shadow] duration-300 ease-spring active:scale-[0.98]",
+        "ripple relative flex w-full items-center gap-3.5 p-4 text-left transition-[border-radius,background-color,box-shadow] duration-200 ease-standard active:scale-[0.98]",
         on ? "rounded-[1.25rem] bg-secondary-container text-on-secondary-container ring-2 ring-primary" : "rounded-3xl bg-surface-container",
       )}
     >
@@ -53,7 +54,7 @@ function ChoiceCard({ on, icon: Icon, title, desc, onClick }: { on: boolean; ico
         <span className="block text-[0.9375rem] font-semibold">{title}</span>
         <span className={cn("mt-0.5 block text-[0.75rem] leading-snug", on ? "opacity-80" : "text-on-surface-variant")}>{desc}</span>
       </span>
-      <span className={cn("grid h-6 w-6 flex-none place-items-center rounded-full transition-all duration-300 ease-spring", on ? "scale-100 bg-primary text-on-primary" : "scale-50 opacity-0")}>
+      <span className={cn("grid h-6 w-6 flex-none place-items-center rounded-full transition-[transform,opacity] duration-200 ease-standard", on ? "scale-100 bg-primary text-on-primary" : "scale-50 opacity-0")}>
         <Check size={15} strokeWidth={3} />
       </span>
     </button>
@@ -84,6 +85,18 @@ export function SettingsDialog() {
     if (r === "reset") {
       st.reset();
       toast.success(t("msg.settingsReset"));
+    }
+  };
+
+  const chooseFolder = async () => {
+    try {
+      const dir = await pickFolder(st.saveDir);
+      if (dir) {
+        set({ saveDir: dir });
+        toast.success(t("msg.saveDirSet"));
+      }
+    } catch (e) {
+      toast.error(String(e));
     }
   };
 
@@ -125,7 +138,7 @@ export function SettingsDialog() {
               aria-selected={on}
               onClick={() => useUi.setState({ settingsTab: n.id })}
               className={cn(
-                "ripple flex h-12 flex-none items-center gap-3 px-4 text-[0.875rem] font-semibold transition-[border-radius,background-color,color] duration-300 ease-spring",
+                "ripple flex h-12 flex-none items-center gap-3 px-4 text-[0.875rem] font-semibold transition-[border-radius,background-color,color] duration-200 ease-standard",
                 on ? "rounded-xl bg-secondary-container text-on-secondary-container" : "rounded-full text-on-surface-variant",
               )}
             >
@@ -167,7 +180,7 @@ export function SettingsDialog() {
                         data-tip={t(p.key)}
                         onClick={() => set({ seed: p.hex })}
                         className={cn(
-                          "grid h-11 w-11 place-items-center text-white shadow-e2 transition-[border-radius,transform,box-shadow] duration-300 ease-spring hover:scale-110 active:scale-90",
+                          "grid h-11 w-11 place-items-center text-white shadow-e2 transition-[border-radius,transform,box-shadow] duration-200 ease-standard hover:scale-110 active:scale-90",
                           on ? "rounded-[0.9rem] ring-[3px] ring-on-surface ring-offset-2 ring-offset-surface-container" : "rounded-full",
                         )}
                         style={{ background: p.hex }}
@@ -182,7 +195,7 @@ export function SettingsDialog() {
                     aria-label={t("settings.custom")}
                     onClick={() => colorInput.current?.click()}
                     className={cn(
-                      "relative grid h-11 w-11 place-items-center overflow-hidden text-white shadow-e2 transition-[border-radius,transform] duration-300 ease-spring hover:scale-110 active:scale-90",
+                      "relative grid h-11 w-11 place-items-center overflow-hidden text-white shadow-e2 transition-[border-radius,transform] duration-200 ease-standard hover:scale-110 active:scale-90",
                       !isPreset ? "rounded-[0.9rem] ring-[3px] ring-on-surface ring-offset-2 ring-offset-surface-container" : "rounded-full",
                     )}
                     style={{ background: isPreset ? "conic-gradient(#f44, #fa0, #ee0, #4c4, #0bf, #64f, #f4a, #f44)" : st.seed }}
@@ -191,7 +204,7 @@ export function SettingsDialog() {
                     <input
                       ref={colorInput}
                       type="color"
-                      value={isHex(st.seed) ? st.seed : "#6b4eff"}
+                      value={isHex(st.seed) ? st.seed : "#0061ff"}
                       onChange={(e) => set({ seed: e.target.value })}
                       className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                       tabIndex={-1}
@@ -261,6 +274,24 @@ export function SettingsDialog() {
               </Row>
               <Row icon={History} title={t("settings.restore")} desc={t("settings.d.restore")}>
                 <Switch checked={st.restore} onChange={(v) => set({ restore: v })} label={t("settings.restore")} />
+              </Row>
+              <Row icon={FolderCog} title={t("settings.saveDir")} desc={t("settings.d.saveDir")} stack>
+                <div className="flex flex-col gap-2.5">
+                  <div
+                    className="flex h-11 min-w-0 items-center gap-2.5 rounded-2xl bg-surface-highest px-4 text-[0.8125rem]"
+                    data-tip={st.saveDir ?? undefined}
+                    data-tip-pos="top"
+                  >
+                    <FolderOpen size={18} className="flex-none text-on-surface-variant" />
+                    <span className={cn("min-w-0 flex-1 truncate", !st.saveDir && "text-on-surface-variant")} dir="rtl" style={{ textAlign: "left" }}>
+                      <bdi>{st.saveDir ?? t("settings.saveDirNone")}</bdi>
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button tone="tonal" icon={FolderOpen} small onClick={chooseFolder}>{t("settings.chooseFolder")}</Button>
+                    <Button tone="neutral" icon={RotateCcw} small disabled={!st.saveDir} onClick={() => set({ saveDir: null })}>{t("settings.clearFolder")}</Button>
+                  </div>
+                </div>
               </Row>
               <Row icon={Save} title={t("settings.autosave")} desc={t("settings.d.autosave")}>
                 <Switch checked={st.autosave} onChange={(v) => set({ autosave: v })} label={t("settings.autosave")} />

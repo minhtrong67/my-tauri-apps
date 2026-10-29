@@ -4,13 +4,13 @@
 
 # Material JSON
 
-**A fast, full-featured JSON editor and toolbox for the desktop — designed with Material Design 3.**
+**A fast, full-featured JSON editor and toolbox for the desktop — designed in Material 3 Expressive.**
 
-Tree view · JSONPath · Diff · Schema validation · Format converters
+Tree view · JSONPath · Diff · Schema validation · Format converters · Command palette
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
 [![Built with Tauri](https://img.shields.io/badge/Built%20with-Tauri%202-FFC131.svg)](https://tauri.app)
-[![Material Design 3](https://img.shields.io/badge/Design-Material%203-6750A4.svg)](https://m3.material.io)
+[![Material 3 Expressive](https://img.shields.io/badge/Design-Material%203%20Expressive-F44336.svg)](https://m3.material.io)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6.svg)](#installation)
 
 </div>
@@ -19,50 +19,52 @@ Tree view · JSONPath · Diff · Schema validation · Format converters
 
 ## Introduction
 
-**Material JSON** is a free and open-source desktop app for working with JSON. Open a file or paste some text and you can format, repair, explore, query, compare, validate and convert it — all offline, in a small and snappy native app (Tauri) with a calm Material Design 3 interface.
+**Material JSON** is a free and open-source desktop app for working with JSON. Open a file or paste some text and you can format, repair, explore, query, compare, validate and convert it — all offline, in a small and snappy native app ([Tauri](https://tauri.app)) with a bold **Material 3 Expressive** interface: spring motion, shape-morphing controls and a vivid, fully themeable colour system.
 
-A landing page lives in [`index.html`](index.html) (open it in a browser) and links to the installer placed in [`download/`](download).
+A landing page lives in [`index.html`](index.html) (open it in a browser). It links to the installer placed in [`download/`](download).
 
 ## Screenshots
 
 | | |
 |---|---|
-| ![Editor](screenshots/image01.png)<br><sub>Editor with live validation and tree view (light)</sub> | ![Dark theme](screenshots/image02.png)<br><sub>Dark theme, custom accent colour, tree search</sub> |
-| ![Compare](screenshots/image03.png)<br><sub>Compare documents with a themed dropdown</sub> | ![Settings](screenshots/image04.png)<br><sub>Settings: colours, fonts, font size, language, window</sub> |
+| ![Editor](screenshots/image01.png)<br><sub>Editor with live validation, JSONPath breadcrumb and custom tooltips (light)</sub> | ![Dark theme](screenshots/image02.png)<br><sub>Dark theme, custom accent colour, tree search</sub> |
+| ![Compare](screenshots/image03.png)<br><sub>Compare documents with a themed dropdown</sub> | ![Settings](screenshots/image04.png)<br><sub>Settings: colours, fonts, font size, language, window behaviour</sub> |
 
-> Screenshots are captured from the web build (`npm run vite:dev`), so the native window frame is not shown.
+> Screenshots are captured from the production build in a browser, so the native window frame is not shown.
 
 ## Features
 
 **Editor**
-- CodeMirror 6 editor: syntax highlighting, line numbers, code folding, bracket matching, find & replace, undo/redo
-- Live error markers with the exact line and column (works the same on every OS / WebView)
-- Multiple tabs, unsaved-changes dots, drag & drop files, recent files, session restore, open from the command line / "Open with"
-- **Format**, **Minify**, **Sort keys** (A→Z / Z→A), **Repair** (comments, trailing commas, single quotes, unquoted keys, `True/None`…), escape / unescape strings
-- Big numbers are preserved exactly (no precision loss when formatting)
+- CodeMirror 6: syntax highlighting, line numbers, folding, bracket matching, find & replace, undo/redo
+- Live error markers with exact line and column; the status bar shows the **JSONPath of the cursor** (click to copy)
+- Multiple tabs, unsaved dots, drag & drop, recent files, session restore, "Open with" support
+- **Format**, **Minify**, **Sort keys**, **Repair** (comments, trailing commas, single quotes, unquoted keys…), escape / unescape
+- Edits touch only the text that really changed, so scroll position, folds and the undo history stay intact
+- Big numbers are preserved exactly — no precision loss when formatting
 
 **Tools**
-- **Tree view** – lazy rendering for large files, search keys & values, copy path / value, inline edit and delete, click to select in the editor, split view with draggable divider
-- **JSONPath** – `$`, `..`, `[*]`, `[0]`, `[-1]`, `[0:3]`, `['a','b']`, filters such as `[?(@.price < 10 && @.name =~ /^A/)]`, query history, jump to match
+- **Tree view** – lazy rendering, search keys & values, copy path / value, inline edit, **add keys / array items**, delete, click to select in the editor
+- **JSONPath** – `$`, `..`, `[*]`, `[0]`, `[-1]`, `[0:3]`, filters such as `[?(@.price < 10)]`, query history, jump to match
 - **Compare** – structural change list and side-by-side line diff, optional "ignore key order"
-- **Schema** – validate against JSON Schema draft-07 / 2019-09 / 2020-12 (Ajv), jump to failing values, generate a schema from your data
-- **Convert** – JSON → YAML, CSV, XML, TypeScript interfaces, JSON Schema; and YAML, CSV, XML → JSON
-- Document **statistics** (size, depth, key and type counts)
+- **Schema** – validate against JSON Schema draft-07 / 2019-09 / 2020-12 (Ajv) or generate a schema from your data
+- **Convert** – JSON → YAML, CSV, XML, TypeScript, JSON Schema; and YAML, CSV, XML → JSON
+- **Command palette** (`Ctrl+K`) for every action, plus document **statistics**
 
 **Personalisation**
 - Light / Dark / System theme with a circular reveal animation
-- Material theme colours (18 swatches + custom colour) generated with `@material/material-color-utilities`
-- 5 bundled fonts (System default, **Roboto**, Inter, Open Sans, Noto Sans — all work offline) and 3 font sizes (small / medium / large)
-- Custom themed dropdowns and toasts (info / success / warning / error) that follow light and dark mode
+- Material theme colours (18 swatches + custom) generated with `@material/material-color-utilities` (vibrant scheme)
+- 7 fonts: **System**, **Google Sans Flex**, **Roboto Flex**, **Roboto**, **Arial**, **Inter**, **Be Vietnam Pro** (all bundled, work offline) and 3 font sizes
 - English and Vietnamese (auto-detected, switchable)
 - Window behaviour: **remember size & position** or **always start maximized**
-- Smooth animations (ripples, view transitions, tab motion, format "shimmer") that can be switched off — `prefers-reduced-motion` is respected
+- Custom tooltips, stacked toasts (info / success / warning / error), themed dropdowns, scroll-to-top button on long pages
+- Smooth animations that can be switched off — `prefers-reduced-motion` is respected
 
 **Keyboard shortcuts**
 
 | Action | Shortcut |
 |---|---|
 | New / Open / Save / Save as / Close tab | `Ctrl+N` / `Ctrl+O` / `Ctrl+S` / `Ctrl+Shift+S` / `Ctrl+W` |
+| Command palette | `Ctrl+K` |
 | Next / previous tab | `Ctrl+Tab` / `Ctrl+Shift+Tab` |
 | Format / Minify | `Alt+Shift+F` / `Alt+Shift+M` |
 | Find & replace | `Ctrl+F` |
@@ -71,7 +73,7 @@ A landing page lives in [`index.html`](index.html) (open it in a browser) and li
 
 ## Installation
 
-1. Download the installer (`Material-JSON-Setup.exe`) from the [`download`](download) folder or the Releases page.
+1. Download `Material JSON_1.1.0_x64-setup.exe` from the [`download`](download) folder or the Releases page.
 2. Run it and follow the wizard (installs per-user, no administrator rights needed).
 3. Launch **Material JSON** from the Start menu.
 
@@ -82,10 +84,11 @@ Requires Windows 10 or 11 with the WebView2 runtime (preinstalled on Windows 11;
 | Layer | Technology |
 |---|---|
 | Shell | [Tauri 2](https://tauri.app) (Rust) with the dialog and single-instance plugins |
-| UI | TypeScript + [Vite](https://vitejs.dev), hand-written Material Design 3 CSS (no UI framework) |
+| UI | TypeScript + [Vite](https://vitejs.dev), hand-written Material 3 Expressive CSS (no UI framework) |
 | Editor | [CodeMirror 6](https://codemirror.net) |
 | Theming | [@material/material-color-utilities](https://github.com/material-foundation/material-color-utilities) |
 | Icons | [Lucide](https://lucide.dev) |
+| Fonts | [Fontsource](https://fontsource.org) packages (bundled for offline use) |
 | Validation | [Ajv](https://ajv.js.org) + ajv-formats |
 | Conversion | [js-yaml](https://github.com/nodeca/js-yaml) and custom CSV / XML / type-inference code |
 
@@ -114,51 +117,50 @@ python scripts/generate-icons.py   # regenerate every icon (needs: pip install p
 npm run build
 ```
 
-The Windows installer is created in the workspace `target/release/bundle/nsis/` folder. Copy it to `download/` and rename it to `Material-JSON-Setup.exe` so the landing page link works.
+The Windows installer is created in the workspace `target/release/bundle/nsis/` folder. Copy `Material JSON_1.1.0_x64-setup.exe` into `download/` (no renaming needed) so the landing page link works.
 
 ## Project structure
 
 ```text
 material-json/
-├── index.html              # landing page (single file, EN/VI, light/dark/system)
-├── download/               # put Material-JSON-Setup.exe here
-├── screenshots/            # image01.png … image04.png used by this README
+├── index.html              # landing page (single file, EN/VI, light/dark/system, colour picker)
+├── download/               # put the installer here
+├── screenshots/            # image01.png … image04.png (README + landing page)
 ├── scripts/
-│   └── generate-icons.py   # builds app / installer / uninstaller icons & NSIS banners
-├── app/                    # frontend (Vite root)
-│   ├── index.html
-│   ├── public/icon.png
+│   └── generate-icons.py   # builds app / installer / uninstaller icons and NSIS banners
+├── app/
+│   ├── index.html          # app shell
+│   ├── public/             # static assets (icon)
 │   └── src/
-│       ├── main.ts         # app shell: tabs, toolbar, status bar, shortcuts
-│       ├── json.ts         # tolerant JSON parser with positions, serializer, utilities
+│       ├── main.ts         # bootstrap, toolbar, tabs, status bar, shortcuts
+│       ├── docs.ts         # open documents, session, dialogs
+│       ├── editor.ts       # CodeMirror wrapper
+│       ├── json.ts         # parser, repair, stats, JSON paths
 │       ├── jsonpath.ts     # JSONPath engine
+│       ├── convert.ts      # YAML / CSV / XML / TypeScript converters
 │       ├── diff.ts         # structural + line diff
-│       ├── convert.ts      # YAML / CSV / XML / TypeScript / JSON Schema converters
-│       ├── editor.ts       # CodeMirror setup
-│       ├── docs.ts         # tabs, files, recent files, session restore
-│       ├── actions.ts      # format / minify / sort / repair / escape
-│       ├── theme.ts        # Material colour scheme generation
-│       ├── i18n.ts         # English + Vietnamese strings
-│       ├── tauri.ts        # native bridge (dialogs, window size, drag & drop)
+│       ├── palette.ts      # command palette
+│       ├── tooltip.ts      # custom tooltips
+│       ├── theme.ts        # Material colour scheme + theme switching
+│       ├── settings.ts     # persisted preferences
+│       ├── i18n.ts         # English / Vietnamese strings
+│       ├── ui.ts, icons.ts # dialogs, menus, toasts, Lucide icons
+│       ├── tauri.ts        # native window / file helpers (time-boxed calls)
 │       ├── views/          # tree, query, compare, convert, schema, settings
-│       └── styles/         # fonts.css, base.css, app.css, views.css
-├── src-tauri/              # Rust backend
-│   ├── src/{main,lib}.rs
-│   ├── capabilities/default.json
-│   ├── icons/              # app, installer and uninstaller icons, NSIS images
-│   ├── tauri.conf.json
-│   └── Cargo.toml
-├── package.json
-├── vite.config.ts
-├── tsconfig.json
-├── LICENSE
-└── README.md
+│       └── styles/         # base, app, views, fonts, expressive
+└── src-tauri/              # Rust shell, icons, installer config
 ```
 
 ## License
 
-Material JSON is **public and open source**, released under the [MIT License](LICENSE) — free to use, modify and distribute.
+Material JSON is public and open source, released under the [MIT License](LICENSE).
 
-## Author
+Source code: <https://github.com/minhtrong67/my-tauri-apps>
 
-Created by **minhtrong67** with the support of AI — **Claude**.
+---
+
+<div align="center">
+
+Made by **[minhtrong67](https://github.com/minhtrong67)** with the support of **Claude** (AI).
+
+</div>

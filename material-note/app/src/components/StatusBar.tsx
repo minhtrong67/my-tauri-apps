@@ -10,7 +10,7 @@ import { cn } from "../lib/utils";
 function Chip({ children, tip, onClick, className, buttonRef }: {
   children: React.ReactNode; tip?: string; onClick?: () => void; className?: string; buttonRef?: React.Ref<HTMLButtonElement>;
 }) {
-  const cls = cn("ripple flex h-7 items-center rounded-full px-3 text-[0.75rem] font-medium tabular-nums transition-[border-radius] duration-300 ease-spring", onClick && "hover:rounded-lg active:scale-95", className);
+  const cls = cn("ripple flex h-7 items-center rounded-full px-3 text-[0.75rem] font-medium tabular-nums transition-[border-radius] duration-200 ease-standard", onClick && "hover:rounded-lg active:scale-95", className);
   return onClick ? (
     <button ref={buttonRef} type="button" data-tip={tip} data-tip-pos="top" className={cls} onClick={onClick}>
       {children}

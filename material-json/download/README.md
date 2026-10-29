@@ -1,12 +1,12 @@
 # Download folder
 
-Place the Windows installer produced by `npm run build` in this folder, then rename it to:
+Drop the installer produced by `npm run build` into this folder **without renaming it**:
 
 ```
-Material-JSON-Setup.exe
+src-tauri/target/release/bundle/nsis/Material JSON_1.1.0_x64-setup.exe   →   download/
 ```
 
-The landing page (`index.html`, in the project root) links to `download/Material-JSON-Setup.exe`.
+(When the project lives inside the shared Tauri workspace the bundle is at `../target/release/bundle/nsis/`.)
 
-The original installer is generated at:
-`../target/release/bundle/nsis/Material JSON_1.0.0_x64-setup.exe` (workspace `target` folder).
+The landing page (`index.html`) links to `download/Material%20JSON_1.1.0_x64-setup.exe`.
+When you bump the version, update that link in `index.html` (search for `x64-setup.exe`).

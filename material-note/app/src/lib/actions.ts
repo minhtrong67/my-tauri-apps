@@ -107,7 +107,10 @@ export async function saveDoc(id: number, o: { as?: boolean; silent?: boolean } 
   const text = getText(id);
   let path = doc.path;
   if (!path || o.as) {
-    const suggested = doc.path ?? docName(doc).replace(/[\\/:*?"<>|]/g, "") + ".txt";
+    const fileName = docName(doc).replace(/[\\/:*?"<>|]/g, "") + ".txt";
+    const dir = useSettings.getState().saveDir;
+    // an already named file keeps its own location; new notes start in the folder chosen in Settings
+    const suggested = doc.path ?? (dir ? dir.replace(/[\\/]+$/, "") + (dir.includes("\\") ? "\\" : "/") + fileName : fileName);
     let sel: string | null = null;
     try {
       sel = await nativeDialog(() => pickSavePath(suggested, filters()));

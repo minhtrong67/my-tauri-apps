@@ -15,7 +15,7 @@ function Toggle({ on, label, icon: Icon, onClick }: { on: boolean; label: string
       data-tip={label}
       onClick={onClick}
       className={cn(
-        "ripple grid h-8 w-8 flex-none place-items-center rounded-lg transition-[background-color,color,border-radius] duration-300 ease-spring active:scale-90",
+        "ripple grid h-8 w-8 flex-none place-items-center rounded-lg transition-[background-color,color,border-radius] duration-200 ease-standard active:scale-90",
         on ? "rounded-full bg-primary text-on-primary" : "text-on-surface-variant",
       )}
     >
@@ -77,7 +77,7 @@ export const FindBar = memo(function FindBar() {
           small
           pressed={f.replaceMode}
           onClick={() => useFind.setState({ replaceMode: !f.replaceMode })}
-          className={cn("transition-transform duration-300 ease-spring", f.replaceMode && "rotate-90")}
+          className={cn("transition-transform duration-200 ease-standard", f.replaceMode && "rotate-90")}
         />
         <div className="flex min-w-0 flex-1 items-center rounded-2xl bg-surface-highest pr-1 focus-within:ring-2 focus-within:ring-primary">
           <input

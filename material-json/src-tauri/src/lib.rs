@@ -53,10 +53,10 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![read_text_file, write_text_file, launch_files])
         .setup(|app| {
             // Safety net: the window starts hidden (the frontend reveals it once the saved size is applied).
-            // If anything goes wrong in the webview, still show it after a short delay.
+            // If anything goes wrong in the webview, still show it after a short delay so the app can never stay invisible.
             if let Some(w) = app.get_webview_window("main") {
                 std::thread::spawn(move || {
-                    std::thread::sleep(Duration::from_millis(3500));
+                    std::thread::sleep(Duration::from_millis(1800));
                     let _ = w.show();
                 });
             }

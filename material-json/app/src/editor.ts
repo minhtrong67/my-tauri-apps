@@ -90,8 +90,16 @@ export const ed = {
       cPlace.reconfigure(placeholder(t('editor.placeholder'))),
     ] });
   },
+  /** Replace the document touching only the part that really changed (keeps scroll, folds, cursor and undo tidy). */
   replaceAll(text: string) {
-    view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: text }, selection: EditorSelection.cursor(0), scrollIntoView: true, userEvent: 'input.replace' });
+    const old = view.state.doc.toString();
+    if (old === text) return;
+    let a = 0;
+    const max = Math.min(old.length, text.length);
+    while (a < max && old.charCodeAt(a) === text.charCodeAt(a)) a++;
+    let b = 0;
+    while (b < max - a && old.charCodeAt(old.length - 1 - b) === text.charCodeAt(text.length - 1 - b)) b++;
+    view.dispatch({ changes: { from: a, to: old.length - b, insert: text.slice(a, text.length - b) }, userEvent: 'input.replace' });
   },
   replaceRange(from: number, to: number, text: string) {
     view.dispatch({ changes: { from, to, insert: text }, selection: EditorSelection.range(from, from + text.length), userEvent: 'input.replace' });

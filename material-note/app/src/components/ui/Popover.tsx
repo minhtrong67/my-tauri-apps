@@ -226,7 +226,7 @@ export function Select<T extends string>({ value, options, onChange, ariaLabel, 
         aria-expanded={open}
         aria-label={ariaLabel}
         className={cn(
-          "ripple flex h-11 w-full items-center gap-2.5 rounded-2xl bg-surface-highest px-4 text-left text-[0.875rem] font-medium text-on-surface transition-[border-radius,background-color] duration-300 ease-spring",
+          "ripple flex h-11 w-full items-center gap-2.5 rounded-2xl bg-surface-highest px-4 text-left text-[0.875rem] font-medium text-on-surface transition-[border-radius,background-color] duration-200 ease-standard",
           open && "rounded-xl",
           className,
         )}
@@ -235,7 +235,7 @@ export function Select<T extends string>({ value, options, onChange, ariaLabel, 
       >
         {Icon && <Icon size={18} className="flex-none text-on-surface-variant" />}
         <span className="min-w-0 flex-1 truncate" style={{ fontFamily: current?.fontFamily }}>{current?.label}</span>
-        <ChevronDown size={18} className={cn("flex-none text-on-surface-variant transition-transform duration-300 ease-spring", open && "rotate-180")} />
+        <ChevronDown size={18} className={cn("flex-none text-on-surface-variant transition-transform duration-200 ease-standard", open && "rotate-180")} />
       </button>
       <Popover anchor={btn.current} open={open} onClose={close} matchWidth maxHeight={maxHeight} role="presentation">
         <div ref={list} role="listbox" aria-label={ariaLabel} className="px-1.5" onKeyDown={onKey}>

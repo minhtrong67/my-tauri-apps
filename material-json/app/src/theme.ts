@@ -1,4 +1,4 @@
-import { Blend, Hct, MaterialDynamicColors as M, SchemeTonalSpot, argbFromHex, hexFromArgb } from '@material/material-color-utilities';
+import { Blend, Hct, MaterialDynamicColors as M, SchemeVibrant, argbFromHex, hexFromArgb } from '@material/material-color-utilities';
 import type { DynamicColor } from '@material/material-color-utilities';
 import { settings } from './settings';
 
@@ -26,7 +26,7 @@ export const isDark = () => settings.theme === 'dark' || (settings.theme === 'sy
 function paint() {
   const dark = isDark();
   const seed = argbFromHex(settings.color);
-  const scheme = new SchemeTonalSpot(Hct.fromInt(seed), dark, 0);
+  const scheme = new SchemeVibrant(Hct.fromInt(seed), dark, 0);
   const root = document.documentElement;
   for (const [name, role] of Object.entries(ROLES)) root.style.setProperty(`--md-${kebab(name)}`, hexFromArgb(role.getArgb(scheme)));
   for (const [name, hex] of Object.entries(SYNTAX)) {

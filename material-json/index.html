@@ -4,33 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Material JSON — Modern JSON editor for Windows</title>
-<meta name="description" content="Material JSON is a free, open-source JSON editor for desktop: tree view, JSONPath queries, diff, schema validation and YAML/CSV/XML converters in a Material Design 3 interface.">
+<meta name="description" content="Material JSON is a free, open-source JSON editor for desktop: tree view, JSONPath queries, diff, schema validation and YAML/CSV/XML converters in a Material 3 Expressive interface.">
 <meta name="keywords" content="JSON editor, JSON viewer, JSON formatter, JSONPath, JSON diff, JSON schema validator, JSON to YAML, JSON to CSV, Tauri, Material Design, desktop app, open source, Windows">
 <meta name="author" content="minhtrong67">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#fffbff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#161412" media="(prefers-color-scheme: dark)">
-<link rel="canonical" href="https://minhtrong67.github.io/material-json/">
+<meta name="theme-color" content="#fff8f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1e100e" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://minhtrong67.github.io/my-tauri-apps/material-json/">
 <link rel="icon" type="image/png" sizes="32x32" href="src-tauri/icons/32x32.png">
+<link rel="icon" type="image/png" sizes="128x128" href="src-tauri/icons/128x128.png">
 <link rel="apple-touch-icon" href="src-tauri/icons/128x128@2x.png">
 <!-- Open Graph / social sharing (replace the URLs with your final domain) -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Material JSON">
 <meta property="og:title" content="Material JSON — Modern JSON editor for Windows">
-<meta property="og:description" content="Format, explore, query, compare, validate and convert JSON in a fast, beautiful Material Design 3 desktop app. Free and open source.">
-<meta property="og:url" content="https://minhtrong67.github.io/material-json/">
-<meta property="og:image" content="https://minhtrong67.github.io/material-json/screenshots/image01.png">
+<meta property="og:description" content="Format, explore, query, compare, validate and convert JSON in a fast, beautiful Material 3 Expressive desktop app. Free and open source.">
+<meta property="og:url" content="https://minhtrong67.github.io/my-tauri-apps/material-json/">
+<meta property="og:image" content="https://minhtrong67.github.io/my-tauri-apps/material-json/screenshots/image01.png">
 <meta property="og:image:alt" content="Material JSON showing a JSON document next to its tree view">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="vi_VN">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Material JSON — Modern JSON editor for Windows">
 <meta name="twitter:description" content="Tree view, JSONPath, diff, schema validation and converters. Free and open source.">
-<meta name="twitter:image" content="https://minhtrong67.github.io/material-json/screenshots/image01.png">
+<meta name="twitter:image" content="https://minhtrong67.github.io/my-tauri-apps/material-json/screenshots/image01.png">
 <meta name="twitter:creator" content="@minhtrong67">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material JSON","operatingSystem":"Windows 10, Windows 11","applicationCategory":"DeveloperApplication","description":"A free, open-source JSON editor with tree view, JSONPath queries, diff, schema validation and format converters.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"minhtrong67"},"image":"https://minhtrong67.github.io/material-json/screenshots/image01.png","downloadUrl":"https://minhtrong67.github.io/material-json/download/Material-JSON-Setup.exe"}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material JSON","operatingSystem":"Windows 10, Windows 11","applicationCategory":"DeveloperApplication","description":"A free, open-source JSON editor with tree view, JSONPath queries, diff, schema validation and format converters.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"minhtrong67"},"image":"https://minhtrong67.github.io/my-tauri-apps/material-json/screenshots/image01.png","downloadUrl":"https://minhtrong67.github.io/my-tauri-apps/material-json/download/Material%20JSON_1.1.0_x64-setup.exe"}
 </script>
 <script>
 // Apply stored/system theme before first paint.
@@ -38,20 +39,14 @@
 </script>
 <style>
 :root{
-  --primary:#8d5000;--on-primary:#fff;--primary-container:#ffdcbd;--on-primary-container:#2c1600;
-  --secondary-container:#ffdcbd;--on-secondary-container:#2a1800;--tertiary:#5c6300;
-  --bg:#fffbff;--surface:#fffbff;--on-surface:#201b16;--on-surface-variant:#52443a;--outline:#85736a;--outline-variant:#d8c3b6;
-  --sc-low:#fff1e6;--sc:#faebe0;--sc-high:#f4e5da;--sc-highest:#eee0d5;--brand:#ff9800;
+  --primary:#c0000a;--on-primary:#ffffff;--primary-container:#ffdad5;--on-primary-container:#930005;--secondary-container:#ffdbcc;--on-secondary-container:#653d29;--tertiary:#845324;--bg:#fff8f7;--surface:#fff8f7;--on-surface:#271816;--on-surface-variant:#58413e;--outline:#8c716d;--outline-variant:#dfbfbb;--sc-low:#fff0ee;--sc:#ffe9e6;--sc-high:#ffe2de;--sc-highest:#f9dcd8;--brand:#F44336;
   --str:#2e7d32;--num:#1565c0;--bool:#8e24aa;--nul:#c62828;
   --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:28px;--ease:cubic-bezier(.2,0,0,1);
   --font:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;
   --mono:ui-monospace,'Cascadia Code','SF Mono',Consolas,Menlo,monospace;
 }
 [data-theme=dark]{
-  --primary:#ffb870;--on-primary:#4a2800;--primary-container:#6a3c00;--on-primary-container:#ffdcbd;
-  --secondary-container:#5a4130;--on-secondary-container:#ffdcbd;--tertiary:#c4cc70;
-  --bg:#161412;--surface:#161412;--on-surface:#ece0da;--on-surface-variant:#d8c3b6;--outline:#a08d82;--outline-variant:#52443a;
-  --sc-low:#201b17;--sc:#251f1b;--sc-high:#302a25;--sc-highest:#3b342f;
+  --primary:#ffb4a9;--on-primary:#690002;--primary-container:#930005;--on-primary-container:#ffdad5;--secondary-container:#653d29;--on-secondary-container:#ffdbcc;--tertiary:#f9b981;--bg:#1e100e;--surface:#1e100e;--on-surface:#f9dcd8;--on-surface-variant:#dfbfbb;--outline:#a78a86;--outline-variant:#58413e;--sc-low:#271816;--sc:#2b1c1a;--sc-high:#372624;--sc-highest:#42302e;
   --str:#81c784;--num:#64b5f6;--bool:#ce93d8;--nul:#ef9a9a;
 }
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:80px}
@@ -169,6 +164,78 @@ footer a{text-decoration:none;color:var(--primary);font-weight:600}footer a:hove
 .sw button[aria-checked=true]::after{content:'';position:absolute;inset:30%;border-bottom:2.5px solid #fff;border-right:2.5px solid #fff;transform:translate(0,-8%) rotate(40deg) scale(.55,1);width:30%;height:48%;margin:auto;inset:0;filter:drop-shadow(0 1px 1px rgb(0 0 0/.5))}
 .cust{display:flex;align-items:center;justify-content:space-between;margin-top:12px;font-size:.85rem;color:var(--on-surface-variant)}
 .cust input{width:44px;height:30px;border:0;padding:0;background:none;cursor:pointer}
+
+/* ───────── Material 3 Expressive layer ───────── */
+:root{--spring:cubic-bezier(.34,1.45,.5,1);--r-xl:32px}
+@supports (transition-timing-function:linear(0,1)){:root{--spring:linear(0,.18 6%,.62 14%,.94 23%,1.07 31%,1.08 38%,1.02 50%,.995 62%,1)}}
+#prog{position:fixed;top:0;left:0;right:0;height:4px;z-index:60;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,var(--primary),var(--tertiary));border-radius:0 4px 4px 0}
+.btn{transition:border-radius .45s var(--spring),transform .45s var(--spring),box-shadow .25s,background .2s}
+.btn:active{border-radius:16px;transform:scale(.96)}
+.btn.filled{box-shadow:0 2px 6px color-mix(in srgb,var(--primary) 35%,transparent)}
+.icon-btn{transition:border-radius .45s var(--spring),background .2s,transform .45s var(--spring)}
+.icon-btn:hover{border-radius:14px}
+.logo img{transition:transform .6s var(--spring),border-radius .6s var(--spring)}.logo:hover img{transform:rotate(-8deg) scale(1.1);border-radius:14px}
+nav.links a{transition:background .2s,color .2s,border-radius .45s var(--spring)}
+nav.links a:hover{border-radius:12px}
+nav.links a.active{background:var(--primary-container);color:var(--on-primary-container);font-weight:700}
+.seg{border:0;border-radius:0;overflow:visible;gap:2px}
+.seg button{border:0!important;border-radius:8px;background:var(--sc-highest);color:var(--on-surface-variant);transition:border-radius .5s var(--spring),background .25s,color .25s,transform .3s var(--spring)}
+.seg button:first-child{border-radius:99px 8px 8px 99px}.seg button:last-child{border-radius:8px 99px 99px 8px}
+.seg button:active{transform:scale(.94)}
+.seg button[aria-pressed=true]{background:var(--primary);color:var(--on-primary);border-radius:99px}
+.hero .blob{position:absolute;z-index:0;pointer-events:none;filter:blur(2px);opacity:.55;background:var(--primary-container);animation:blobm 12s ease-in-out infinite,blobf 18s ease-in-out infinite}
+.hero .b1{width:360px;height:360px;right:-90px;top:30px}
+.hero .b2{width:220px;height:220px;left:-60px;bottom:-40px;background:var(--secondary-container);animation-delay:-5s}
+@keyframes blobm{0%,100%{border-radius:42% 58% 55% 45%/48% 45% 55% 52%}50%{border-radius:58% 42% 40% 60%/55% 58% 42% 45%}}
+@keyframes blobf{50%{transform:translate3d(-24px,18px,0) rotate(14deg)}}
+.hero .wrap{position:relative;z-index:1}
+.float-icon{position:absolute;z-index:2;width:112px;height:112px;right:max(3vw,24px);top:56px;filter:drop-shadow(0 18px 24px color-mix(in srgb,var(--primary) 40%,transparent));animation:bob 4.2s ease-in-out infinite;pointer-events:none}
+.badge{border-radius:99px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--primary) 25%,transparent)}
+.code{border-radius:36px}
+.card{border-radius:32px;transition:transform .5s var(--spring),background .3s,border-color .3s,border-radius .5s var(--spring)}
+.card:hover{border-radius:44px 24px 44px 24px}
+.card .fi{border-radius:42% 58% 55% 45%/48% 45% 55% 52%;width:58px;height:58px;transition:transform .6s var(--spring),border-radius .8s var(--spring)}
+.card:hover .fi{border-radius:58% 42% 45% 55%/52% 55% 45% 48%;transform:rotate(-8deg) scale(1.1)}
+.chip{border-radius:12px;transition:border-radius .45s var(--spring),background .2s,color .2s,border-color .2s}.chip:hover{border-radius:99px}.chip[aria-pressed=true]{border-radius:99px;background:var(--primary);color:var(--on-primary)}
+.frame{border-radius:36px}
+.step{border-radius:32px;transition:transform .5s var(--spring)}.step:hover{transform:translateY(-6px) rotate(-1deg)}
+.step::before{border-radius:42% 58% 55% 45%/48% 45% 55% 52%;width:44px;height:44px}
+.dl{border-radius:48px}.dl img{border-radius:28px}
+.fab-top{width:56px;height:56px;border-radius:20px;transform:scale(0) rotate(-90deg);transition:transform .55s var(--spring),border-radius .45s var(--spring),background .2s}
+.fab-top.show{transform:none}.fab-top:hover{border-radius:28px;background:var(--primary);color:var(--on-primary)}.fab-top:active{transform:scale(.9)}
+/* personalise */
+.pz-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:20px;align-items:stretch}
+.pz-panel{padding:28px;border-radius:36px;background:var(--sc-low);display:grid;gap:14px;align-content:start}
+.pz-panel h3{font-size:1rem;font-weight:600;margin-top:6px}
+.sw.big{grid-template-columns:repeat(6,1fr);gap:12px}
+.sw.big button{border-radius:50%;transition:transform .5s var(--spring),border-radius .5s var(--spring),box-shadow .2s}
+.sw.big button:hover{transform:scale(1.12);border-radius:36%}
+.sw.big button[aria-checked=true]{border-radius:34%;box-shadow:0 0 0 3px var(--sc-low),0 0 0 6px var(--c)}
+.cust.big{margin:0;padding:6px 6px 6px 16px;border-radius:99px;background:var(--sc-high)}
+.pz-panel .seg{justify-self:start}
+.pz-panel .seg button{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px}
+.pz-panel .seg .ic{width:1.05rem;height:1.05rem}
+.mini{display:grid;grid-template-columns:64px 1fr;height:100%;min-height:340px;border-radius:36px;overflow:hidden;background:var(--bg);border:1px solid var(--outline-variant);box-shadow:0 30px 60px -28px color-mix(in srgb,var(--primary) 45%,transparent)}
+.mini-rail{display:flex;flex-direction:column;align-items:center;gap:14px;padding:18px 0;background:var(--sc)}
+.mini-rail i{width:34px;height:22px;border-radius:99px;background:var(--sc-highest)}.mini-rail i.on{background:var(--primary-container);box-shadow:inset 0 0 0 99px var(--primary-container)}
+.mini-main{display:flex;flex-direction:column;min-width:0}
+.mini-tabs{display:flex;gap:6px;padding:14px 14px 0}
+.mini-tabs b{padding:8px 14px;border-radius:14px 14px 0 0;font-size:.78rem;color:var(--on-surface-variant);font-weight:500}.mini-tabs b.on{background:var(--sc-low);color:var(--on-surface);font-weight:700;box-shadow:inset 0 3px 0 var(--primary)}
+.mini-body{flex:1;padding:18px 20px;background:var(--sc-low);font:.84rem/1.85 var(--mono);display:grid;align-content:start}
+.mini-foot{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--sc)}
+.mini-chip{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 12px;border-radius:99px;background:color-mix(in srgb,var(--str) 16%,transparent);color:var(--str);font:700 .74rem var(--font)}
+.mini-btn{margin-left:auto;height:34px;padding:0 18px;border-radius:99px;border:0;background:var(--primary);color:var(--on-primary);font:700 .8rem var(--font);transition:border-radius .45s var(--spring)}.mini-btn:hover{border-radius:12px}
+/* mobile menu */
+.menu-btn{display:none}
+@media(max-width:900px){
+  .menu-btn{display:grid}
+  nav.links{position:absolute;top:calc(100% + 8px);left:12px;right:12px;margin:0;padding:10px;flex-direction:column;gap:2px;border-radius:28px;background:var(--sc-high);box-shadow:0 18px 44px rgb(0 0 0/.25);display:flex;opacity:0;transform:translateY(-12px) scale(.96);pointer-events:none;transition:opacity .2s,transform .5s var(--spring)}
+  nav.links.open{opacity:1;transform:none;pointer-events:auto}
+  nav.links a{padding:14px 18px;font-size:1rem}
+  .pz-grid{grid-template-columns:1fr}.float-icon{display:none}
+  .sw.big{grid-template-columns:repeat(6,1fr)}
+}
+@media(max-width:520px){.sw.big{grid-template-columns:repeat(5,1fr)}.pz-panel{padding:20px;border-radius:28px}.mini{grid-template-columns:48px 1fr;border-radius:28px}}
 </style>
 </head>
 <body>
@@ -189,27 +256,30 @@ footer a{text-decoration:none;color:var(--primary);font-weight:600}footer a:hove
 <symbol id="i-lang" viewBox="0 0 24 24"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></symbol>
 <symbol id="i-win" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4M2 8h20M6 4v4"/></symbol>
 <symbol id="i-tab" viewBox="0 0 24 24"><path d="M3 5a2 2 0 0 1 2-2h5v4h11v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
 </defs></svg>
 
+<div id="prog" aria-hidden="true"></div>
 <header class="bar" id="bar"><div class="wrap">
   <a class="logo" href="#top"><img src="src-tauri/icons/128x128.png" alt="Material JSON logo" width="34" height="34"><span>Material JSON</span></a>
-  <nav class="links" aria-label="Sections"><a href="#features" data-i18n="nav.features">Features</a><a href="#screens" data-i18n="nav.screens">Screenshots</a><a href="#how" data-i18n="nav.how">Get started</a><a href="#download" data-i18n="nav.download">Download</a></nav>
+  <nav class="links" aria-label="Sections"><a href="#features" data-i18n="nav.features">Features</a><a href="#personalize" data-i18n="nav.personalize">Personalize</a><a href="#screens" data-i18n="nav.screens">Screenshots</a><a href="#how" data-i18n="nav.how">Get started</a><a href="#download" data-i18n="nav.download">Download</a></nav>
   <span class="sp"></span>
   <div class="seg" id="langSeg" role="group" aria-label="Language"><button data-l="en" aria-pressed="true">EN</button><button data-l="vi" aria-pressed="false">VI</button></div>
-  <div class="popwrap"><button class="icon-btn" id="colorBtn" aria-label="Theme colour" aria-haspopup="true" aria-expanded="false"><svg class="ic"><use href="#i-pal"/></svg></button><div class="pop" id="colorPop" role="dialog" aria-label="Theme colour"><div class="sw" id="sw"></div><label class="cust"><span data-i18n="col.custom">Custom colour</span><input type="color" id="colorIn" value="#ff9800"></label></div></div>
+  <div class="popwrap"><button class="icon-btn" id="colorBtn" aria-label="Theme colour" aria-haspopup="true" aria-expanded="false"><svg class="ic"><use href="#i-pal"/></svg></button><div class="pop" id="colorPop" role="dialog" aria-label="Theme colour"><div class="sw" id="sw"></div><label class="cust"><span data-i18n="col.custom">Custom colour</span><input type="color" id="colorIn" value="#f44336"></label></div></div>
   <button class="icon-btn" id="themeBtn" aria-label="Theme"><svg class="ic"><use href="#i-auto"/></svg></button>
+  <button class="icon-btn menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg class="ic"><use href="#i-menu"/></svg></button>
 </div></header>
 
 <main id="top">
-<section class="hero"><div class="wrap hero-grid">
+<section class="hero"><span class="blob b1"></span><span class="blob b2"></span><img class="float-icon" src="src-tauri/icons/128x128@2x.png" alt="" width="112" height="112"><div class="wrap hero-grid">
   <div>
     <span class="badge reveal"><svg class="ic" style="width:1rem;height:1rem"><use href="#i-check"/></svg><span data-i18n="hero.badge">Free &amp; open source · MIT</span></span>
     <h1 class="reveal" style="--d:.05s"><span data-i18n="hero.title1">Your JSON,</span> <span class="hl" data-i18n="hero.title2">beautifully handled.</span></h1>
-    <p class="lead reveal" style="--d:.1s" data-i18n="hero.lead">A fast desktop editor with tree view, JSONPath queries, diff, schema validation and format converters — wrapped in a calm Material Design 3 interface.</p>
+    <p class="lead reveal" style="--d:.1s" data-i18n="hero.lead">A fast desktop editor with tree view, JSONPath queries, diff, schema validation and format converters — wrapped in a bold Material 3 Expressive interface.</p>
     <div class="cta reveal" style="--d:.15s">
-      <a class="btn filled lg" href="download/Material-JSON-Setup.exe" download><svg class="ic"><use href="#i-dl"/></svg><span data-i18n="cta.download">Download for Windows</span></a>
-      <a class="btn outlined lg" href="https://github.com/minhtrong67/material-json" target="_blank" rel="noopener"><svg class="ic"><use href="#i-gh"/></svg><span data-i18n="cta.source">View source</span></a>
+      <a class="btn filled lg" href="download/Material%20JSON_1.1.0_x64-setup.exe" download><svg class="ic"><use href="#i-dl"/></svg><span data-i18n="cta.download">Download for Windows</span></a>
+      <a class="btn outlined lg" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="ic"><use href="#i-gh"/></svg><span data-i18n="cta.source">View source</span></a>
     </div>
     <div class="meta reveal" style="--d:.2s"><span><svg class="ic" style="width:1rem;height:1rem"><use href="#i-check"/></svg><span data-i18n="meta.os">Windows 10 / 11</span></span><span><svg class="ic" style="width:1rem;height:1rem"><use href="#i-check"/></svg><span data-i18n="meta.light">Lightweight · Tauri</span></span><span><svg class="ic" style="width:1rem;height:1rem"><use href="#i-check"/></svg><span data-i18n="meta.offline">Works offline</span></span></div>
   </div>
@@ -222,6 +292,31 @@ footer a{text-decoration:none;color:var(--primary);font-weight:600}footer a:hove
 <section id="features"><div class="wrap">
   <div class="sec-head reveal"><h2 data-i18n="f.title">Everything you need to work with JSON</h2><p data-i18n="f.sub">One focused toolbox instead of ten browser tabs.</p></div>
   <div class="grid" id="featGrid"></div>
+</div></section>
+
+<section id="personalize"><div class="wrap">
+  <div class="sec-head reveal"><h2 data-i18n="p.title">Make it yours</h2><p data-i18n="p.sub">Pick any Material colour and watch the whole page — and the app — follow.</p></div>
+  <div class="pz-grid">
+    <div class="pz-panel reveal">
+      <h3 data-i18n="p.color">Theme colour</h3>
+      <div class="sw big" id="sw2" role="radiogroup" aria-label="Theme colour"></div>
+      <label class="cust big"><span data-i18n="col.custom">Custom colour</span><input type="color" id="colorIn2" value="#f44336"></label>
+      <h3 data-i18n="p.mode">Appearance</h3>
+      <div class="seg" id="modeSeg" role="group" aria-label="Appearance">
+        <button data-m="light" aria-pressed="false"><svg class="ic"><use href="#i-sun"/></svg><span data-i18n="p.light">Light</span></button>
+        <button data-m="dark" aria-pressed="false"><svg class="ic"><use href="#i-moon"/></svg><span data-i18n="p.dark">Dark</span></button>
+        <button data-m="system" aria-pressed="false"><svg class="ic"><use href="#i-auto"/></svg><span data-i18n="p.system">System</span></button>
+      </div>
+    </div>
+    <div class="mini reveal" style="--d:.1s" aria-hidden="true">
+      <div class="mini-rail"><i class="on"></i><i></i><i></i><i></i></div>
+      <div class="mini-main">
+        <div class="mini-tabs"><b class="on">config.json</b><b>next.json</b></div>
+        <div class="mini-body"><span><span class="p">{</span></span><span>&nbsp;&nbsp;<span class="k">"theme"</span><span class="p">:</span> <span class="s">"expressive"</span><span class="p">,</span></span><span>&nbsp;&nbsp;<span class="k">"shapes"</span><span class="p">:</span> <span class="n">12</span><span class="p">,</span></span><span>&nbsp;&nbsp;<span class="k">"springs"</span><span class="p">:</span> <span class="b">true</span><span class="p">,</span></span><span>&nbsp;&nbsp;<span class="k">"darkMode"</span><span class="p">:</span> <span class="z">null</span></span><span><span class="p">}</span></span></div>
+        <div class="mini-foot"><span class="mini-chip">✓ Valid JSON</span><button class="mini-btn" tabindex="-1">Format</button></div>
+      </div>
+    </div>
+  </div>
 </div></section>
 
 <section id="screens" class="alt"><div class="wrap shots">
@@ -246,7 +341,7 @@ footer a{text-decoration:none;color:var(--primary);font-weight:600}footer a:hove
     <img src="src-tauri/icons/128x128@2x.png" alt="Material JSON app icon" width="84" height="84">
     <h2 data-i18n="d.title">Get Material JSON</h2>
     <p data-i18n="d.sub">Free forever. Open source under the MIT licence.</p>
-    <a class="btn filled lg" href="download/Material-JSON-Setup.exe" download><svg class="ic"><use href="#i-dl"/></svg><span data-i18n="cta.download">Download for Windows</span></a>
+    <a class="btn filled lg" href="download/Material%20JSON_1.1.0_x64-setup.exe" download><svg class="ic"><use href="#i-dl"/></svg><span data-i18n="cta.download">Download for Windows</span></a>
     <p class="note" data-i18n="d.note">Windows 10 / 11 · 64-bit installer</p>
   </div>
 </div></section>
@@ -254,26 +349,26 @@ footer a{text-decoration:none;color:var(--primary);font-weight:600}footer a:hove
 
 <footer><div class="wrap">
   <span><span data-i18n="ft.made">Made by</span> <strong>minhtrong67</strong> <span data-i18n="ft.with">with support from</span> <strong>Claude</strong></span>
-  <span><a href="https://github.com/minhtrong67/material-json" target="_blank" rel="noopener">GitHub</a> · <span data-i18n="ft.lic">MIT License</span></span>
+  <span><a href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener">GitHub</a> · <span data-i18n="ft.lic">MIT License</span></span>
 </div></footer>
 <button class="fab-top" id="toTop" aria-label="Back to top"><svg class="ic"><use href="#i-up"/></svg></button>
 
 <script>
 (function(){
 var D={en:{
-'col.custom':'Custom colour','nav.features':'Features','nav.screens':'Screenshots','nav.how':'Get started','nav.download':'Download',
+'col.custom':'Custom colour','nav.personalize':'Personalize','p.title':'Make it yours','p.sub':'Pick any Material colour and watch the whole page — and the app — follow.','p.color':'Theme colour','p.mode':'Appearance','p.light':'Light','p.dark':'Dark','p.system':'System','nav.features':'Features','nav.screens':'Screenshots','nav.how':'Get started','nav.download':'Download',
 'hero.badge':'Free & open source · MIT','hero.title1':'Your JSON,','hero.title2':'beautifully handled.',
-'hero.lead':'A fast desktop editor with tree view, JSONPath queries, diff, schema validation and format converters — wrapped in a calm Material Design 3 interface.',
+'hero.lead':'A fast desktop editor with tree view, JSONPath queries, diff, schema validation and format converters — wrapped in a bold Material 3 Expressive interface.',
 'cta.download':'Download for Windows','cta.source':'View source','meta.os':'Windows 10 / 11','meta.light':'Lightweight · Tauri','meta.offline':'Works offline','demo.format':'Format',
 'f.title':'Everything you need to work with JSON','f.sub':'One focused toolbox instead of ten browser tabs.',
 'f1t':'Smart editor','f1d':'Syntax highlighting, folding, live error markers with exact line and column, find & replace and multi-tab editing.',
-'f2t':'Tree explorer','f2d':'Browse huge documents lazily, search keys and values, copy paths and edit values right in the tree.',
+'f2t':'Tree explorer','f2d':'Browse huge documents lazily, search keys and values, copy paths, edit values and add new keys right in the tree.',
 'f3t':'Format, minify & repair','f3d':'Pretty-print, minify, sort keys and fix trailing commas, comments or single quotes in one click.',
 'f4t':'JSONPath queries','f4d':'Filter and extract data with expressions like $..book[?(@.price < 10)] and jump to any match.',
 'f5t':'Compare documents','f5d':'Structural change list plus a side-by-side line diff, with optional key-order ignoring.',
 'f6t':'Schema validation','f6d':'Validate against JSON Schema (draft-07, 2019-09, 2020-12) or generate a schema from your data.',
 'f7t':'Convert anything','f7d':'JSON ⇄ YAML, CSV and XML, plus TypeScript interfaces and JSON Schema generation.',
-'f8t':'Make it yours','f8d':'Light, dark or system theme, all Material colours, three font sizes, English and Vietnamese.',
+'f8t':'Make it yours','f8d':'Light, dark or system theme, all Material colours, seven fonts, three sizes, English and Vietnamese. Press Ctrl+K for the command palette.',
 'f9t':'Remembers you','f9d':'Restores tabs and unsaved work, and reopens at your last window size — or always maximized.',
 's.title':'See it in action','s.sub':'Light, dark and any Material colour you like.',
 'sh1':'Editor','sh2':'Dark & tree','sh3':'Compare','sh4':'Settings',
@@ -281,11 +376,11 @@ var D={en:{
 'h.title':'Up and running in a minute','h.1t':'Download','h.1d':'Grab the installer and run it. No account, no telemetry.','h.2t':'Open or paste','h.2d':'Drop a .json file, paste text or open several tabs at once.','h.3t':'Explore & fix','h.3d':'Format, repair, query, compare and validate — instantly.','h.4t':'Make it yours','h.4d':'Pick a theme colour, font size, language and window behaviour.',
 'd.title':'Get Material JSON','d.sub':'Free forever. Open source under the MIT licence.','d.note':'Windows 10 / 11 · 64-bit installer',
 'ft.made':'Made by','ft.with':'with support from','ft.lic':'MIT License',
-'title':'Material JSON — Modern JSON editor for Windows','desc':'Material JSON is a free, open-source JSON editor for desktop: tree view, JSONPath queries, diff, schema validation and YAML/CSV/XML converters in a Material Design 3 interface.'},
+'title':'Material JSON — Modern JSON editor for Windows','desc':'Material JSON is a free, open-source JSON editor for desktop: tree view, JSONPath queries, diff, schema validation and YAML/CSV/XML converters in a Material 3 Expressive interface.'},
 vi:{
-'col.custom':'Màu tùy chỉnh','nav.features':'Tính năng','nav.screens':'Ảnh chụp','nav.how':'Bắt đầu','nav.download':'Tải về',
+'col.custom':'Màu tùy chỉnh','nav.personalize':'Cá nhân hóa','p.title':'Đậm chất của bạn','p.sub':'Chọn bất kỳ màu Material nào và xem cả trang — lẫn ứng dụng — đổi theo.','p.color':'Màu chủ đề','p.mode':'Giao diện','p.light':'Sáng','p.dark':'Tối','p.system':'Hệ thống','nav.features':'Tính năng','nav.screens':'Ảnh chụp','nav.how':'Bắt đầu','nav.download':'Tải về',
 'hero.badge':'Miễn phí & mã nguồn mở · MIT','hero.title1':'JSON của bạn,','hero.title2':'được chăm chút đẹp đẽ.',
-'hero.lead':'Trình soạn thảo desktop nhanh với dạng cây, truy vấn JSONPath, so sánh, kiểm tra schema và chuyển đổi định dạng — trong giao diện Material Design 3 dễ chịu.',
+'hero.lead':'Trình soạn thảo desktop nhanh với dạng cây, truy vấn JSONPath, so sánh, kiểm tra schema và chuyển đổi định dạng — trong giao diện Material 3 Expressive đầy cảm hứng.',
 'cta.download':'Tải về cho Windows','cta.source':'Xem mã nguồn','meta.os':'Windows 10 / 11','meta.light':'Nhẹ · Tauri','meta.offline':'Dùng ngoại tuyến','demo.format':'Định dạng',
 'f.title':'Mọi thứ bạn cần để làm việc với JSON','f.sub':'Một bộ công cụ gọn gàng thay cho mười tab trình duyệt.',
 'f1t':'Trình soạn thảo thông minh','f1d':'Tô màu cú pháp, thu gọn khối, đánh dấu lỗi theo dòng và cột, tìm & thay thế, nhiều tab.',
@@ -303,7 +398,7 @@ vi:{
 'h.title':'Sẵn sàng chỉ trong một phút','h.1t':'Tải về','h.1d':'Tải bộ cài và chạy. Không cần tài khoản, không theo dõi.','h.2t':'Mở hoặc dán','h.2d':'Thả tệp .json, dán văn bản hoặc mở nhiều tab cùng lúc.','h.3t':'Khám phá & sửa','h.3d':'Định dạng, sửa lỗi, truy vấn, so sánh và kiểm tra — tức thì.','h.4t':'Tùy biến theo ý bạn','h.4d':'Chọn màu chủ đề, cỡ chữ, ngôn ngữ và hành vi cửa sổ.',
 'd.title':'Tải Material JSON','d.sub':'Miễn phí mãi mãi. Mã nguồn mở theo giấy phép MIT.','d.note':'Windows 10 / 11 · bộ cài 64-bit',
 'ft.made':'Tạo bởi','ft.with':'với sự hỗ trợ của','ft.lic':'Giấy phép MIT',
-'title':'Material JSON — Trình soạn thảo JSON hiện đại cho Windows','desc':'Material JSON là trình soạn thảo JSON miễn phí, mã nguồn mở cho desktop: dạng cây, truy vấn JSONPath, so sánh, kiểm tra schema và chuyển đổi YAML/CSV/XML với giao diện Material Design 3.'}};
+'title':'Material JSON — Trình soạn thảo JSON hiện đại cho Windows','desc':'Material JSON là trình soạn thảo JSON miễn phí, mã nguồn mở cho desktop: dạng cây, truy vấn JSONPath, so sánh, kiểm tra schema và chuyển đổi YAML/CSV/XML với giao diện Material 3 Expressive.'}};
 var FEATS=[['i-q','f1'],['i-tree','f2'],['i-wand','f3'],['i-q','f4'],['i-diff','f5'],['i-shield','f6'],['i-conv','f7'],['i-pal','f8'],['i-win','f9']];
 var SHOTS=4, lang='en', theme=localStorage.getItem('mj-theme')||'system', shot=1;
 var $=function(s,r){return(r||document).querySelector(s)};
@@ -321,12 +416,12 @@ function apply(){
   $('#featGrid').innerHTML=FEATS.map(function(f,i){return '<article class="card reveal in" style="--d:'+(i%3*.06)+'s"><div class="fi"><svg class="ic"><use href="#'+f[0]+'"/></svg></div><h3>'+t(f[1]+'t')+'</h3><p>'+t(f[1]+'d')+'</p></article>'}).join('');
   paintShots();revealAll();
 }
-var COLORS=['#F44336','#E91E63','#9C27B0','#673AB7','#3F51B5','#2196F3','#03A9F4','#00BCD4','#009688','#4CAF50','#8BC34A','#CDDC39','#FFEB3B','#FFC107','#FF9800','#FF5722','#795548','#607D8B'];
-var color=localStorage.getItem('mj-color')||'#FF9800';
+var COLORS=['#F44336','#E91E63','#9C27B0','#673AB7','#3F51B5','#2196F3','#03A9F4','#00BCD4','#009688','#4CAF50','#8BC34A','#CDDC39','#FFEB3B','#FFC107','#F44336','#FF5722','#795548','#607D8B'];
+var color=localStorage.getItem('mj-color')||'#F44336';
 function hue(hex){var n=parseInt(hex.slice(1),16),r=(n>>16)/255,g=(n>>8&255)/255,b=(n&255)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,h=0;if(d){h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h=Math.round(h*60);if(h<0)h+=360}return {h:h,s:d?Math.round(d/(1-Math.abs(mx+mn-1))*100):0}}
 function paintColor(dark){
   var st=html.style,names=['primary','on-primary','primary-container','on-primary-container','secondary-container','on-secondary-container','tertiary','bg','surface','on-surface','on-surface-variant','outline','outline-variant','sc-low','sc','sc-high','sc-highest','brand'];
-  if(color.toUpperCase()==='#FF9800'){names.forEach(function(n){st.removeProperty('--'+n)});return}
+  if(color.toUpperCase()==='#F44336'){names.forEach(function(n){st.removeProperty('--'+n)});return}
   var c=hue(color),h=c.h,S=function(a,b,l){return 'hsl('+h+','+a+'%,'+l+'%)'},v={};
   if(dark){v={'primary':S(100,100,72),'on-primary':S(90,90,15),'primary-container':S(80,80,22),'on-primary-container':S(100,100,90),'secondary-container':S(30,30,26),'on-secondary-container':S(100,100,90),'tertiary':S(60,60,70),'bg':S(12,12,8),'surface':S(12,12,8),'on-surface':S(15,15,90),'on-surface-variant':S(15,15,80),'outline':S(10,10,60),'outline-variant':S(12,12,30),'sc-low':S(12,12,11),'sc':S(12,12,13),'sc-high':S(10,10,17),'sc-highest':S(10,10,21),'brand':color}}
   else{v={'primary':S(75,75,32),'on-primary':'#fff','primary-container':S(100,100,90),'on-primary-container':S(90,90,12),'secondary-container':S(60,60,88),'on-secondary-container':S(50,50,14),'tertiary':S(60,60,28),'bg':S(100,100,99),'surface':S(100,100,99),'on-surface':S(20,20,10),'on-surface-variant':S(15,15,28),'outline':S(10,10,48),'outline-variant':S(25,25,82),'sc-low':S(70,70,96),'sc':S(50,50,94),'sc-high':S(40,40,92),'sc-highest':S(35,35,89),'brand':color}}
@@ -334,7 +429,8 @@ function paintColor(dark){
 }
 function paintSwatches(){
   $('#sw').innerHTML=COLORS.map(function(c){return '<button style="--c:'+c+'" role="radio" aria-label="'+c+'" aria-checked="'+(c.toUpperCase()===color.toUpperCase())+'" data-c="'+c+'"></button>'}).join('');
-  $('#colorIn').value=color.toLowerCase();
+  $('#sw2').innerHTML=$('#sw').innerHTML;
+  $('#colorIn').value=color.toLowerCase();$('#colorIn2').value=color.toLowerCase();
 }
 function setColor(c,e){
   color=c;localStorage.setItem('mj-color',c);
@@ -348,6 +444,8 @@ $('#colorBtn').addEventListener('click',function(e){e.stopPropagation();var o=$(
 document.addEventListener('click',function(e){if(!e.target.closest('.popwrap')){$('#colorPop').classList.remove('open');$('#colorBtn').setAttribute('aria-expanded','false')}});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')$('#colorPop').classList.remove('open')});
 $('#sw').addEventListener('click',function(e){var b=e.target.closest('button');if(b)setColor(b.dataset.c,e)});
+$('#sw2').addEventListener('click',function(e){var b=e.target.closest('button');if(b)setColor(b.dataset.c,e)});
+$('#colorIn2').addEventListener('change',function(){setColor(this.value,null)});
 $('#colorIn').addEventListener('change',function(e){setColor(this.value,null)});
 function paintTheme(){
   var dark=theme==='dark'||(theme==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);
@@ -356,6 +454,7 @@ function paintTheme(){
   $('#themeBtn use').setAttribute('href',theme==='system'?'#i-auto':dark?'#i-moon':'#i-sun');
   $('#themeBtn').setAttribute('aria-label','Theme: '+theme);
   $('#themeBtn').title='Theme: '+theme;
+  document.querySelectorAll('#modeSeg button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.m===theme))});
 }
 $('#themeBtn').addEventListener('click',function(e){
   theme={system:'light',light:'dark',dark:'system'}[theme];localStorage.setItem('mj-theme',theme);
@@ -379,10 +478,10 @@ function paintShots(){
 }
 
 /* hero demo: minified JSON expands when "Format" is pressed */
-var RAW=[['{',0],['"name"','k',':','"material-json"','s',',',0],['"version"','k',':','"1.0.0"','s',',',0],['"features"','k',':','[',0],['"tree"','s',',','"jsonpath"','s',',','"diff"','s',']',',',0],['"stable"','k',':','true','b',',',0],['"score"','k',':','9.5','n',',',0],['"legacy"','k',':','null','z',0],['}',0]];
+var RAW=[['{',0],['"name"','k',':','"material-json"','s',',',0],['"version"','k',':','"1.1.0"','s',',',0],['"features"','k',':','[',0],['"tree"','s',',','"jsonpath"','s',',','"diff"','s',']',',',0],['"stable"','k',':','true','b',',',0],['"score"','k',':','9.5','n',',',0],['"legacy"','k',':','null','z',0],['}',0]];
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
-var MIN='<span class="p">{</span><span class="k">"name"</span><span class="p">:</span><span class="s">"material-json"</span><span class="p">,</span><span class="k">"version"</span><span class="p">:</span><span class="s">"1.0.0"</span><span class="p">,</span><span class="k">"features"</span><span class="p">:[</span><span class="s">"tree"</span><span class="p">,</span><span class="s">"jsonpath"</span><span class="p">,</span><span class="s">"diff"</span><span class="p">],</span><span class="k">"stable"</span><span class="p">:</span><span class="b">true</span><span class="p">,</span><span class="k">"score"</span><span class="p">:</span><span class="n">9.5</span><span class="p">,</span><span class="k">"legacy"</span><span class="p">:</span><span class="z">null</span><span class="p">}</span>';
-var PRETTY=['<span class="p">{</span>','  <span class="k">"name"</span><span class="p">:</span> <span class="s">"material-json"</span><span class="p">,</span>','  <span class="k">"version"</span><span class="p">:</span> <span class="s">"1.0.0"</span><span class="p">,</span>','  <span class="k">"features"</span><span class="p">: [</span>','    <span class="s">"tree"</span><span class="p">,</span>','    <span class="s">"jsonpath"</span><span class="p">,</span>','    <span class="s">"diff"</span>','  <span class="p">],</span>','  <span class="k">"stable"</span><span class="p">:</span> <span class="b">true</span><span class="p">,</span>','  <span class="k">"score"</span><span class="p">:</span> <span class="n">9.5</span><span class="p">,</span>','  <span class="k">"legacy"</span><span class="p">:</span> <span class="z">null</span>','<span class="p">}</span>'];
+var MIN='<span class="p">{</span><span class="k">"name"</span><span class="p">:</span><span class="s">"material-json"</span><span class="p">,</span><span class="k">"version"</span><span class="p">:</span><span class="s">"1.1.0"</span><span class="p">,</span><span class="k">"features"</span><span class="p">:[</span><span class="s">"tree"</span><span class="p">,</span><span class="s">"jsonpath"</span><span class="p">,</span><span class="s">"diff"</span><span class="p">],</span><span class="k">"stable"</span><span class="p">:</span><span class="b">true</span><span class="p">,</span><span class="k">"score"</span><span class="p">:</span><span class="n">9.5</span><span class="p">,</span><span class="k">"legacy"</span><span class="p">:</span><span class="z">null</span><span class="p">}</span>';
+var PRETTY=['<span class="p">{</span>','  <span class="k">"name"</span><span class="p">:</span> <span class="s">"material-json"</span><span class="p">,</span>','  <span class="k">"version"</span><span class="p">:</span> <span class="s">"1.1.0"</span><span class="p">,</span>','  <span class="k">"features"</span><span class="p">: [</span>','    <span class="s">"tree"</span><span class="p">,</span>','    <span class="s">"jsonpath"</span><span class="p">,</span>','    <span class="s">"diff"</span>','  <span class="p">],</span>','  <span class="k">"stable"</span><span class="p">:</span> <span class="b">true</span><span class="p">,</span>','  <span class="k">"score"</span><span class="p">:</span> <span class="n">9.5</span><span class="p">,</span>','  <span class="k">"legacy"</span><span class="p">:</span> <span class="z">null</span>','<span class="p">}</span>'];
 var pre=$('#demo'),btn=$('#fmtBtn'),timers=[];
 function later(f,ms){timers.push(setTimeout(f,ms))}
 function cycle(){
@@ -405,6 +504,37 @@ function revealAll(){document.querySelectorAll('.reveal:not(.in)').forEach(funct
 document.addEventListener('pointerdown',function(e){var el=e.target.closest('.btn,.icon-btn,.chip');if(!el)return;var r=el.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,sp=document.createElement('span');sp.className='ripple';sp.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(e.clientX-r.left-s/2)+'px;top:'+(e.clientY-r.top-s/2)+'px';el.style.position=el.style.position||'relative';el.appendChild(sp);setTimeout(function(){sp.remove()},650)});
 addEventListener('scroll',function(){$('#bar').classList.toggle('scrolled',scrollY>8);$('#toTop').classList.toggle('show',scrollY>700)},{passive:true});
 $('#toTop').onclick=function(){scrollTo({top:0,behavior:'smooth'})};
+
+/* personalise: appearance segmented control */
+$('#modeSeg').addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b||b.dataset.m===theme)return;
+  theme=b.dataset.m;localStorage.setItem('mj-theme',theme);
+  var x=e.clientX,y=e.clientY,go=function(){paintTheme()};
+  if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var r=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
+    document.startViewTransition(go).ready.then(function(){html.animate({clipPath:['circle(0 at '+x+'px '+y+'px)','circle('+r+'px at '+x+'px '+y+'px)']},{duration:600,easing:'cubic-bezier(.2,0,0,1)',pseudoElement:'::view-transition-new(root)'})}).catch(function(){})
+  }else go();
+});
+
+/* smooth scrolling for every in-page link, scroll progress bar, scroll-spy and mobile menu */
+var nav=$('nav.links'),menuBtn=$('#menuBtn');
+function closeMenu(){nav.classList.remove('open');menuBtn.setAttribute('aria-expanded','false')}
+menuBtn.addEventListener('click',function(e){e.stopPropagation();var o=nav.classList.toggle('open');this.setAttribute('aria-expanded',String(o))});
+document.addEventListener('click',function(e){if(!e.target.closest('nav.links')&&!e.target.closest('#menuBtn'))closeMenu()});
+document.addEventListener('click',function(e){
+  var a=e.target.closest('a[href^="#"]');if(!a)return;
+  var id=a.getAttribute('href').slice(1),el=id?document.getElementById(id):null;
+  if(id&&!el)return;
+  e.preventDefault();closeMenu();
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(el)el.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});else scrollTo({top:0,behavior:reduce?'auto':'smooth'});
+  if(history.replaceState)history.replaceState(null,'',id?'#'+id:location.pathname+location.search);
+});
+var prog=$('#prog');
+function onScroll(){var m=document.documentElement.scrollHeight-innerHeight;prog.style.transform='scaleX('+(m>0?Math.min(1,scrollY/m):0)+')'}
+addEventListener('scroll',onScroll,{passive:true});onScroll();
+var spy=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){document.querySelectorAll('nav.links a').forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id)})}})},{rootMargin:'-45% 0px -50% 0px'});
+document.querySelectorAll('main > section[id]').forEach(function(sec){spy.observe(sec)});
 
 var sl=localStorage.getItem('mj-lang');
 lang=sl==='vi'||sl==='en'?sl:((navigator.languages&&navigator.languages[0])||navigator.language||'en').toLowerCase().indexOf('vi')===0?'vi':'en';

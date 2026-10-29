@@ -1,6 +1,6 @@
 [package]
 name = "material-json"
-version = "1.0.0"
+version = "1.1.0"
 description = "Material JSON - a full-featured JSON editor and toolbox built with Tauri and Material Design 3"
 authors = ["minhtrong67"]
 license = "MIT"

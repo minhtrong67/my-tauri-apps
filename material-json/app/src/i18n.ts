@@ -49,6 +49,10 @@ const en = {
   'drop.title': 'Drop to open', 'drop.sub': 'Release JSON files anywhere in the window', 'editor.placeholder': 'Paste, type or drop JSON here…',
   'recent.empty': 'No recent files yet', 'recent.clear': 'Clear list', 'tree.editPrompt': 'New value', 'tree.editHint': 'Enter any JSON value, or plain text for a string.',
   'cv.web': 'Browser mode', 'win.title': 'Material JSON',
+  'cmd.title': 'Command palette', 'cmd.placeholder': 'Type a command…', 'cmd.none': 'No matching command', 'cmd.group.file': 'File', 'cmd.group.edit': 'Edit', 'cmd.group.view': 'View', 'cmd.group.app': 'App',
+  'tip.top': 'Scroll to top', 'act.palette': 'Command palette', 'st.path': 'Copy path of the cursor position',
+  'tree.add': 'Add child', 'tree.addKey': 'Key name', 'tree.addValue': 'Value (JSON or plain text)', 'dlg.add': 'Add', 'tree.added': 'Added', 'tree.keyExists': 'That key already exists',
+  'toast.runtime': 'Something went wrong — your work is safe', 'cmd.theme': 'Switch theme', 'cmd.color': 'Theme colour',
 } as const;
 
 export type Key = keyof typeof en;
@@ -101,6 +105,10 @@ const vi: Record<Key, string> = {
   'drop.title': 'Thả để mở', 'drop.sub': 'Thả tệp JSON vào bất kỳ đâu trong cửa sổ', 'editor.placeholder': 'Dán, nhập hoặc thả JSON vào đây…',
   'recent.empty': 'Chưa có tệp gần đây', 'recent.clear': 'Xóa danh sách', 'tree.editPrompt': 'Giá trị mới', 'tree.editHint': 'Nhập giá trị JSON bất kỳ, hoặc văn bản thường cho chuỗi.',
   'cv.web': 'Chế độ trình duyệt', 'win.title': 'Material JSON',
+  'cmd.title': 'Bảng lệnh', 'cmd.placeholder': 'Nhập lệnh…', 'cmd.none': 'Không có lệnh phù hợp', 'cmd.group.file': 'Tệp', 'cmd.group.edit': 'Chỉnh sửa', 'cmd.group.view': 'Hiển thị', 'cmd.group.app': 'Ứng dụng',
+  'tip.top': 'Cuộn lên đầu trang', 'act.palette': 'Bảng lệnh', 'st.path': 'Sao chép đường dẫn tại vị trí con trỏ',
+  'tree.add': 'Thêm phần tử con', 'tree.addKey': 'Tên khóa', 'tree.addValue': 'Giá trị (JSON hoặc văn bản)', 'dlg.add': 'Thêm', 'tree.added': 'Đã thêm', 'tree.keyExists': 'Khóa này đã tồn tại',
+  'toast.runtime': 'Đã xảy ra lỗi — dữ liệu của bạn vẫn an toàn', 'cmd.theme': 'Đổi giao diện', 'cmd.color': 'Màu chủ đề',
 };
 
 const dicts = { en, vi } as Record<Lang, Record<string, string>>;

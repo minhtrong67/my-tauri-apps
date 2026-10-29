@@ -25,16 +25,16 @@ INSTALLER = ICONS / "installer"
 for d in (ICONS, INSTALLER, ROOT / "app" / "public"):
     d.mkdir(parents=True, exist_ok=True)
 
-# --- Material 3 colour roles generated from the seed #6B4EFF ------------------------------
-PRIMARY = (89, 45, 255)               # #592DFF
+# --- Material 3 colour roles generated from the seed #0061FF ------------------------------
+PRIMARY = (0, 82, 220)                # #0052DC
 ON_PRIMARY = (255, 255, 255)
-PRIMARY_CONTAINER = (229, 222, 255)   # #E5DEFF
-PRIMARY_SOFT = (200, 191, 255)        # #C8BFFF
-TERTIARY = (116, 82, 126)             # #74527E
-TERTIARY_CONTAINER = (250, 215, 255)  # #FAD7FF
+PRIMARY_CONTAINER = (219, 225, 255)   # #DBE1FF
+PRIMARY_SOFT = (180, 197, 255)        # #B4C5FF
+TERTIARY = (103, 86, 135)             # #675687
+TERTIARY_CONTAINER = (235, 221, 255)  # #EBDDFF
 ERROR = (186, 26, 26)                 # #BA1A1A
 ERROR_CONTAINER = (255, 218, 214)     # #FFDAD6
-SURFACE = (252, 248, 255)             # #FCF8FF
+SURFACE = (250, 248, 255)             # #FAF8FF
 WHITE = (255, 255, 255)
 
 DESIGN = 1024  # design grid
@@ -173,7 +173,7 @@ def big_cookie(img, cx, cy, radius, fill):
 
 
 def sidebar(size, mark, accent):
-    img = gradient(size, PRIMARY_CONTAINER, (243, 237, 255))
+    img = gradient(size, PRIMARY_CONTAINER, (238, 241, 255))
     big_cookie(img, size[0] * 0.15, size[1] * 0.98, 118, PRIMARY_SOFT + (255,))
     big_cookie(img, size[0] * 1.0, size[1] * 0.74, 70, accent + (255,))
     m = mark.resize((88, 88), Image.LANCZOS)

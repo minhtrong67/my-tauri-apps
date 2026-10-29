@@ -21,7 +21,7 @@ export function Switch({ checked, onChange, label }: { checked: boolean; onChang
     >
       <span
         className={cn(
-          "absolute top-1/2 grid -translate-y-1/2 place-items-center rounded-full transition-all duration-300 ease-spring group-active:h-7 group-active:w-7",
+          "absolute top-1/2 grid -translate-y-1/2 place-items-center rounded-full transition-[left,width,height,background-color] duration-200 ease-standard group-active:h-7 group-active:w-7",
           checked ? "left-[1.4rem] h-6 w-6 bg-on-primary text-primary group-active:left-[1.15rem]" : "left-1 h-4 w-4 bg-outline text-surface-highest group-active:left-0.5",
         )}
       >
@@ -57,7 +57,7 @@ export function Segmented<T extends string>({
             aria-checked={on}
             onClick={() => onChange(o.value)}
             className={cn(
-              "ripple flex h-10 min-w-0 flex-1 items-center justify-center gap-1.5 px-3.5 text-[0.8125rem] font-semibold transition-[border-radius,background-color,color,transform] duration-300 ease-spring active:scale-95",
+              "ripple flex h-10 min-w-0 flex-1 items-center justify-center gap-1.5 px-3.5 text-[0.8125rem] font-semibold transition-[border-radius,background-color,color,transform] duration-200 ease-standard active:scale-95",
               on ? "rounded-full bg-secondary-container text-on-secondary-container" : cn(end, "bg-surface-highest text-on-surface-variant"),
             )}
           >
@@ -159,7 +159,7 @@ export function ScrollArea({ children, className, resetKey }: { children: ReactN
         tabIndex={show ? 0 : -1}
         onClick={() => ref.current?.scrollTo({ top: 0, behavior: "smooth" })}
         className={cn(
-          "ripple absolute bottom-4 right-5 grid h-12 w-12 place-items-center rounded-2xl bg-primary-container text-on-primary-container shadow-e3 transition-all duration-300 ease-spring active:scale-90 active:rounded-full",
+          "ripple absolute bottom-4 right-5 grid h-12 w-12 place-items-center rounded-2xl bg-primary-container text-on-primary-container shadow-e3 transition-[transform,opacity,border-radius] duration-200 ease-standard active:scale-90 active:rounded-full",
           show ? "translate-y-0 scale-100 opacity-100" : "pointer-events-none translate-y-6 scale-75 opacity-0",
         )}
       >

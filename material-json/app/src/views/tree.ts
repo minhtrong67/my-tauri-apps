@@ -5,7 +5,7 @@ import { active } from '../docs';
 import { icon } from '../icons';
 import { t } from '../i18n';
 import { settings, update } from '../settings';
-import { copyText, esc, toast } from '../ui';
+import { copyText, dialog, esc, h, toast } from '../ui';
 
 const CHUNK = 200;
 const expandedByDoc = new Map<string, Set<string>>();
@@ -153,6 +153,7 @@ function row(n: JNode, k: string | number | null, path: PathSeg[], depth: number
       ${container ? `<button class="tn-tog" tabindex="-1" aria-label="toggle">${icon('chevron')}</button>` : '<span class="tn-tog sp"></span>'}
       ${keyHtml}${previewOf(n)}
       <span class="tn-acts">
+        ${container ? `<button class="mini" data-a="add" title="${esc(t('tree.add'))}">${icon('listPlus')}</button>` : ''}
         <button class="mini" data-a="path" title="${esc(t('tree.copyPath'))}">${icon('link')}</button>
         <button class="mini" data-a="value" title="${esc(t('tree.copyValue'))}">${icon('copy')}</button>
         ${container || path.length === 0 ? '' : `<button class="mini" data-a="edit" title="${esc(t('tree.edit'))}">${icon('edit')}</button>`}
@@ -220,6 +221,7 @@ async function onClick(e: Event) {
   const path = li._path!, node = li._node!;
   if (act === 'path') { await copyText(formatPath(path)); return void toast(t('toast.pathCopied'), 'success'); }
   if (act === 'value') { await copyText(valueText(node)); return void toast(t('toast.valueCopied'), 'success'); }
+  if (act === 'add') return void addChild(li);
   if (act === 'edit') return edit(li);
   if (act === 'del') return remove(path);
   if (target.closest('.tn-row') && (node.type === 'object' || node.type === 'array')) toggle(li);
@@ -283,3 +285,30 @@ function remove(path: PathSeg[]) {
   toast(t('toast.deleted'), 'success');
 }
 
+
+async function addChild(li: HTMLElement) {
+  const n = li._node!, path = li._path!;
+  if (!root || (n.type !== 'object' && n.type !== 'array')) return;
+  const isObj = n.type === 'object';
+  const form = h(`<div class="add-form">${isObj ? `<label class="field"><span>${esc(t('tree.addKey'))}</span><input class="input" id="add-key" spellcheck="false" autocomplete="off"></label>` : ''}
+    <label class="field"><span>${esc(t('tree.addValue'))}</span><input class="input" id="add-val" spellcheck="false" autocomplete="off" placeholder="null"></label></div>`);
+  form.addEventListener('keydown', (e) => { if ((e as KeyboardEvent).key === 'Enter') form.closest('.dialog')?.querySelector<HTMLElement>('.btn.filled')?.click(); });
+  const r = await dialog({
+    title: t('tree.add'), icon: 'listPlus', content: form,
+    actions: [{ id: 'cancel', label: t('dlg.cancel'), icon: 'close' }, { id: 'add', label: t('dlg.add'), icon: 'plus', primary: true }],
+  });
+  if (r !== 'add') return;
+  const key = (form.querySelector('#add-key') as HTMLInputElement | null)?.value ?? '';
+  const raw = (form.querySelector('#add-val') as HTMLInputElement).value.trim();
+  let val: JNode;
+  try { val = raw ? parseJson(raw) : fromValue(null); } catch { val = fromValue(raw); }
+  let next: JNode;
+  if (n.type === 'object') {
+    if (n.props.some((p) => p.key === key)) return void toast(t('tree.keyExists'), 'warning');
+    next = { ...n, props: [...n.props, { key, keyStart: 0, keyEnd: 0, value: val }] };
+  } else next = { ...n, items: [...n.items, val] };
+  expanded().add(key_(path));
+  writeBack(replaceAtPath(root, path, next));
+  toast(t('tree.added'), 'success');
+}
+const key_ = key;

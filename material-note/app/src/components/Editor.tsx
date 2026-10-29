@@ -177,7 +177,7 @@ export const Editor = memo(function Editor() {
         tabIndex={scrolled ? 0 : -1}
         onClick={toTop}
         className={cn(
-          "ripple absolute bottom-5 right-6 z-10 grid h-12 w-12 place-items-center rounded-2xl bg-primary-container text-on-primary-container shadow-e3 transition-all duration-300 ease-spring active:scale-90 active:rounded-full",
+          "ripple absolute bottom-5 right-6 z-10 grid h-12 w-12 place-items-center rounded-2xl bg-primary-container text-on-primary-container shadow-e3 transition-[transform,opacity,border-radius] duration-200 ease-standard active:scale-90 active:rounded-full",
           scrolled ? "translate-y-0 scale-100 opacity-100" : "pointer-events-none translate-y-6 scale-75 opacity-0",
         )}
       >

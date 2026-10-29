@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: var(--md-primary);
+  --color-on-primary: var(--md-on-primary);
+  --color-primary-container: var(--md-primary-container);
+  --color-on-primary-container: var(--md-on-primary-container);
+  --color-secondary: var(--md-secondary);
+  --color-on-secondary: var(--md-on-secondary);
+  --color-secondary-container: var(--md-secondary-container);
+  --color-on-secondary-container: var(--md-on-secondary-container);
+  --color-tertiary: var(--md-tertiary);
+  --color-on-tertiary: var(--md-on-tertiary);
+  --color-tertiary-container: var(--md-tertiary-container);
+  --color-on-tertiary-container: var(--md-on-tertiary-container);
+  --color-error: var(--md-error);
+  --color-on-error: var(--md-on-error);
+  --color-error-container: var(--md-error-container);
+  --color-on-error-container: var(--md-on-error-container);
+  --color-background: var(--md-background);
+  --color-on-background: var(--md-on-background);
+  --color-surface: var(--md-surface);
+  --color-on-surface: var(--md-on-surface);
+  --color-surface-variant: var(--md-surface-variant);
+  --color-on-surface-variant: var(--md-on-surface-variant);
+  --color-outline: var(--md-outline);
+  --color-outline-variant: var(--md-outline-variant);
+  --color-inverse-surface: var(--md-inverse-surface);
+  --color-inverse-on-surface: var(--md-inverse-on-surface);
+  --color-inverse-primary: var(--md-inverse-primary);
+  --color-surface-dim: var(--md-surface-dim);
+  --color-surface-bright: var(--md-surface-bright);
+  --color-surface-container-lowest: var(--md-surface-container-lowest);
+  --color-surface-container-low: var(--md-surface-container-low);
+  --color-surface-container: var(--md-surface-container);
+  --color-surface-container-high: var(--md-surface-container-high);
+  --color-surface-container-highest: var(--md-surface-container-highest);
+  --color-surface-tint: var(--md-surface-tint);
+  --color-scrim: var(--md-scrim);
+  --color-shadow: var(--md-shadow);
+  --color-info: var(--x-info);
+  --color-on-info: var(--x-on-info);
+  --color-info-container: var(--x-info-container);
+  --color-on-info-container: var(--x-on-info-container);
+  --color-success: var(--x-success);
+  --color-on-success: var(--x-on-success);
+  --color-success-container: var(--x-success-container);
+  --color-on-success-container: var(--x-on-success-container);
+  --color-warning: var(--x-warning);
+  --color-on-warning: var(--x-on-warning);
+  --color-warning-container: var(--x-warning-container);
+  --color-on-warning-container: var(--x-on-warning-container);
+  --font-sans: var(--font);
+  --radius-xs: 0.25rem; --radius-sm: 0.5rem; --radius-md: 0.75rem; --radius-lg: 1rem; --radius-xl: 1.75rem; --radius-2xl: 3rem;
+  --shadow-e1: 0 1px 2px color-mix(in srgb, var(--md-shadow) 30%, transparent), 0 1px 3px 1px color-mix(in srgb, var(--md-shadow) 15%, transparent);
+  --shadow-e2: 0 1px 2px color-mix(in srgb, var(--md-shadow) 30%, transparent), 0 2px 6px 2px color-mix(in srgb, var(--md-shadow) 15%, transparent);
+  --shadow-e3: 0 4px 8px 3px color-mix(in srgb, var(--md-shadow) 15%, transparent), 0 1px 3px color-mix(in srgb, var(--md-shadow) 30%, transparent);
+  --ease-spring: linear(0, 0.017 2.5%, 0.061 5%, 0.124 7.5%, 0.198 10%, 0.279 12.5%, 0.361 15%, 0.442 17.5%, 0.519 20%, 0.591 22.5%, 0.657 25%, 0.717 27.5%, 0.77 30%, 0.816 32.5%, 0.856 35%, 0.889 37.5%, 0.918 40%, 0.941 42.5%, 0.96 45%, 0.976 47.5%, 0.988 50%, 0.997 52.5%, 1.004 55%, 1.008 57.5%, 1.012 60%, 1.014 62.5%, 1.015 65%, 1.015 67.5%, 1.015 70%, 1.014 72.5%, 1.013 75%, 1.012 77.5%, 1.011 80%, 1.01 82.5%, 1.008 85%, 1.007 87.5%, 1.006 90%, 1.005 92.5%, 1.004 95%, 1.003 97.5%, 1);
+  --ease-bounce: linear(0, 0.036 2.5%, 0.128 5%, 0.255 7.5%, 0.398 10%, 0.545 12.5%, 0.683 15%, 0.806 17.5%, 0.909 20%, 0.991 22.5%, 1.052 25%, 1.093 27.5%, 1.116 30%, 1.126 32.5%, 1.124 35%, 1.114 37.5%, 1.1 40%, 1.082 42.5%, 1.063 45%, 1.045 47.5%, 1.029 50%, 1.015 52.5%, 1.004 55%, 0.996 57.5%, 0.99 60%, 0.986 62.5%, 0.984 65%, 0.984 67.5%, 0.985 70%, 0.987 72.5%, 0.989 75%, 0.991 77.5%, 0.994 80%, 0.996 82.5%, 0.998 85%, 0.999 87.5%, 1 90%, 1.001 92.5%, 1.002 95%, 1.002 97.5%, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+}
+
+:root {
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  color-scheme: light;
+}
+:root[data-mode="dark"] { color-scheme: dark; }
+/* Semantic colors that stay readable on every theme color */
+:root {
+  --x-info: #0B5FA5; --x-on-info: #fff; --x-info-container: #D2E4FF; --x-on-info-container: #001D36;
+  --x-success: #1B6D2F; --x-on-success: #fff; --x-success-container: #B5F2B9; --x-on-success-container: #00210A;
+  --x-warning: #7A5900; --x-on-warning: #fff; --x-warning-container: #FFDF9E; --x-on-warning-container: #261A00;
+}
+:root[data-mode="dark"] {
+  --x-info: #A2C9FF; --x-on-info: #00315B; --x-info-container: #00497D; --x-on-info-container: #D2E4FF;
+  --x-success: #9AD89F; --x-on-success: #00390F; --x-success-container: #0A5223; --x-on-success-container: #B5F2B9;
+  --x-warning: #F1C04A; --x-on-warning: #3F2E00; --x-warning-container: #5C4300; --x-on-warning-container: #FFDF9E;
+}
+html { font-size: 100%; }
+html[data-fs="sm"] { font-size: 87.5%; }
+html[data-fs="lg"] { font-size: 112.5%; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--md-surface); color: var(--md-on-surface);
+  font-family: var(--font); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  -webkit-user-select: none; user-select: none; cursor: default;
+}
+textarea, input, .selectable { -webkit-user-select: text; user-select: text; cursor: text; }
+button, [role="button"], [role="tab"], [role="option"], [role="radio"], [role="switch"] { cursor: pointer; }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--md-primary) 70%, transparent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--md-primary) 28%, transparent); }
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--md-outline) 55%, transparent) transparent; }
+
+/* ---- Interaction primitives ---- */
+.rip { position: relative; overflow: hidden; isolation: isolate; -webkit-tap-highlight-color: transparent; }
+.rip > .ripple {
+  position: absolute; z-index: -1; border-radius: 50%; pointer-events: none; background: currentColor; opacity: .18;
+  transform: scale(0); animation: ripple .65s var(--ease-emphasized) forwards;
+}
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+.state::after { content: ""; position: absolute; inset: 0; z-index: -1; background: currentColor; opacity: 0; transition: opacity .2s; pointer-events: none; border-radius: inherit; }
+.state:hover::after { opacity: .08; }
+.state:focus-visible::after { opacity: .1; }
+.state:active::after { opacity: .12; }
+.state:disabled::after { display: none; }
+
+/* ---- Expressive motion ---- */
+@keyframes pop-in { from { opacity: 0; transform: translateY(12px) scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(24px) scale(.9); } to { opacity: 1; transform: none; } }
+@keyframes dialog-out { to { opacity: 0; transform: translateY(12px) scale(.96); } }
+@keyframes sheet-in { from { transform: translateX(110%); } to { transform: none; } }
+@keyframes sheet-out { to { transform: translateX(110%); } }
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes sheet-down { to { transform: translateY(100%); } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(24px) scale(.88); } to { opacity: 1; transform: none; } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(10px) scale(.92); } }
+@keyframes shrink { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes row-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(3deg); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes morph {
+  0%   { border-radius: 50%; transform: rotate(0); }
+  25%  { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+  50%  { border-radius: 24%; transform: rotate(180deg); }
+  75%  { border-radius: 70% 30% 30% 70% / 60% 40% 60% 40%; }
+  100% { border-radius: 50%; transform: rotate(360deg); }
+}
+@keyframes sheen { from { transform: translateX(-120%) skewX(-18deg); } to { transform: translateX(260%) skewX(-18deg); } }
+.anim-pop { animation: pop-in .55s var(--ease-spring) both; }
+.anim-row { animation: row-in .45s var(--ease-spring) both; }
+.loader { width: 1.1rem; height: 1.1rem; background: var(--md-primary); animation: morph 1.6s var(--ease-emphasized) infinite; }
+.sheen { position: relative; overflow: hidden; }
+.sheen::before { content: ""; position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, color-mix(in srgb, #fff 35%, transparent), transparent); animation: sheen 3.4s var(--ease-emphasized) infinite; pointer-events: none; }
+
+/* Dialog / sheet shells (native <dialog>) */
+dialog.m3 { margin: auto; padding: 0; border: 0; background: transparent; color: inherit; max-width: 100vw; max-height: 100dvh; overflow: visible; }
+dialog.m3::backdrop { background: color-mix(in srgb, var(--md-scrim) 45%, transparent); backdrop-filter: blur(3px); animation: fade-in .25s both; }
+dialog.m3[data-closing]::backdrop { animation: fade-out .22s both; }
+dialog.m3 > .panel { animation: dialog-in .5s var(--ease-spring) both; }
+dialog.m3[data-closing] > .panel { animation: dialog-out .22s var(--ease-emphasized) both; }
+dialog.m3.side > .panel { animation: sheet-in .5s var(--ease-spring) both; }
+dialog.m3.side[data-closing] > .panel { animation: sheet-out .26s var(--ease-emphasized) both; }
+@media (max-width: 640px) {
+  dialog.m3.sheetable > .panel { animation: sheet-up .5s var(--ease-spring) both; }
+  dialog.m3.sheetable[data-closing] > .panel { animation: sheet-down .26s var(--ease-emphasized) both; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+dialog.m3.side { margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; }
+@media (max-width: 640px) { dialog.m3.sheetable { margin: auto 0 0 0; width: 100%; } }
+@keyframes pop-origin { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: none; } }
+.pop { animation: pop-origin .35s var(--ease-spring) both; }
+dialog.m3.top { margin: 10dvh auto auto; }
+@media (max-width: 640px) { dialog.m3.top { margin: 0 auto auto; } }
+
+textarea:focus-visible, input:focus-visible, .panel:focus-visible { outline: none; }

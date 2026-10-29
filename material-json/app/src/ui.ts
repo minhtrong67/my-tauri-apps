@@ -28,32 +28,45 @@ export function initRipple() {
 }
 
 /* ───────────── snackbar ───────────── */
-let toastTimer = 0;
 export type ToastKind = 'info' | 'success' | 'warning' | 'error';
+const MAX_TOASTS = 3;
 export function toast(msg: string, kind: ToastKind = 'info') {
-  let host = document.getElementById('snackbar');
-  if (!host) { host = document.createElement('div'); host.id = 'snackbar'; host.setAttribute('role', 'status'); host.setAttribute('aria-live', 'polite'); document.body.appendChild(host); }
+  let host = document.getElementById('toasts');
+  if (!host) { host = document.createElement('div'); host.id = 'toasts'; host.setAttribute('role', 'status'); host.setAttribute('aria-live', 'polite'); document.body.appendChild(host); }
   const ic: IconName = kind === 'error' ? 'error' : kind === 'success' ? 'ok' : kind === 'warning' ? 'warn' : 'info';
-  host.className = `snackbar ${kind}`;
-  host.innerHTML = `${icon(ic)}<span>${esc(msg)}</span>`;
-  host.classList.remove('show'); void host.offsetWidth; host.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => host!.classList.remove('show'), kind === 'error' ? 4200 : 2400);
+  const ms = kind === 'error' ? 5200 : 2800;
+  // Collapse an identical toast that is already on screen instead of stacking duplicates.
+  for (const old of Array.from(host.children) as HTMLElement[]) if (old.dataset.msg === msg && old.dataset.kind === kind) old.remove();
+  const el = h(`<div class="snackbar ${kind}" data-msg="${esc(msg)}" data-kind="${kind}" style="--life:${ms}ms">${icon(ic)}<span class="sb-msg">${esc(msg)}</span><button class="sb-x" aria-label="×">${icon('close')}</button><i class="sb-bar"></i></div>`);
+  host.appendChild(el);
+  while (host.children.length > MAX_TOASTS) (host.firstElementChild as HTMLElement).remove();
+  let timer = 0;
+  const dismiss = () => {
+    clearTimeout(timer);
+    if (el.classList.contains('out')) return;
+    el.classList.add('out');
+    setTimeout(() => el.remove(), document.documentElement.dataset.motion === 'off' ? 0 : 260);
+  };
+  const arm = (t: number) => { clearTimeout(timer); timer = window.setTimeout(dismiss, t); };
+  arm(ms);
+  el.addEventListener('pointerenter', () => { clearTimeout(timer); el.classList.add('hold'); });
+  el.addEventListener('pointerleave', () => { el.classList.remove('hold'); arm(1400); });
+  el.querySelector('.sb-x')!.addEventListener('click', dismiss);
 }
 
 /* ───────────── dialog ───────────── */
-export interface DialogAction { id: string; label: string; primary?: boolean; danger?: boolean }
+export interface DialogAction { id: string; label: string; primary?: boolean; danger?: boolean; icon?: IconName; tone?: 'tonal' | 'danger' | 'filled' }
 export function dialog(opts: { title: string; body?: string; content?: HTMLElement; icon?: IconName; actions?: DialogAction[]; wide?: boolean }): Promise<string> {
   return new Promise((resolve) => {
     const prev = document.activeElement as HTMLElement | null;
-    const actions = opts.actions ?? [{ id: 'ok', label: t('act.ok'), primary: true }];
+    const actions = opts.actions ?? [{ id: 'ok', label: t('act.ok'), primary: true, icon: 'check' as IconName }];
     const root = h(`
       <div class="scrim" role="presentation">
         <div class="dialog${opts.wide ? ' wide' : ''}" role="dialog" aria-modal="true" aria-label="${esc(opts.title)}">
           ${opts.icon ? `<div class="dialog-ic">${icon(opts.icon)}</div>` : ''}
           <h2>${esc(opts.title)}</h2>
           <div class="dialog-body">${opts.body ? `<p>${esc(opts.body)}</p>` : ''}</div>
-          <div class="dialog-actions">${actions.map((a) => `<button class="btn ${a.primary ? 'filled' : 'text'}${a.danger ? ' danger' : ''}" data-id="${a.id}">${esc(a.label)}</button>`).join('')}</div>
+          <div class="dialog-actions">${actions.map((a) => `<button class="btn ${a.primary ? 'filled' : a.tone === 'danger' ? 'tonal danger' : 'tonal'}${a.primary && a.danger ? ' danger' : ''}" data-id="${a.id}">${a.icon ? icon(a.icon) : ''}<span>${esc(a.label)}</span></button>`).join('')}</div>
         </div>
       </div>`);
     if (opts.content) root.querySelector('.dialog-body')!.appendChild(opts.content);

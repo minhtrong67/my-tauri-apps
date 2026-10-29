@@ -4,7 +4,7 @@ import {
   FoldVertical, UnfoldVertical, CircleCheck, CircleAlert, Info, Undo2, Redo2, ClipboardPaste, Languages, Palette, Type,
   Monitor, Sun, Moon, AppWindow, Trash2, Pencil, Quote, Eraser, Columns2, Code, Check, Keyboard, FileCode, Wrench, Play,
   SquareCode, ChartNoAxesColumn, ArrowUpDown, FilePlus, Upload, Sparkles, Heart, ScrollText, RotateCcw, SaveAll, TextCursorInput, Ellipsis,
-  TriangleAlert, FileText, ListFilter, ChevronsUpDown, ChevronsDownUp, Target, Link, Github, Plug, Layers,
+  TriangleAlert, FileText, ListFilter, ChevronsUpDown, ChevronsDownUp, Target, Link, Github, Plug, Layers, ArrowUp, Power, Command, ListPlus, CornerDownLeft,
 } from 'lucide';
 
 const MAP = {
@@ -17,7 +17,7 @@ const MAP = {
   keyboard: Keyboard, filecode: FileCode, tool: Wrench, play: Play, query: SquareCode, stats: ChartNoAxesColumn, updown: ArrowUpDown,
   filePlus: FilePlus, upload: Upload, sparkles: Sparkles, heart: Heart, license: ScrollText, reset: RotateCcw, saveAll: SaveAll,
   cursor: TextCursorInput, more: Ellipsis, text: FileText, filter: ListFilter, expandAll: ChevronsUpDown, collapseAll: ChevronsDownUp,
-  target: Target, link: Link, github: Github, plug: Plug, layers: Layers,
+  target: Target, link: Link, github: Github, plug: Plug, layers: Layers, up: ArrowUp, power: Power, command: Command, listPlus: ListPlus, enter: CornerDownLeft,
 } as const;
 
 export type IconName = keyof typeof MAP;

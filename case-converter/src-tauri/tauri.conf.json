@@ -1,13 +1,15 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Case Converter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "identifier": "com.minhtrong67.caseconverter",
   "build": {
-    "frontendDist": "../src"
+    "beforeDevCommand": "npm run web:dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run web:build",
+    "frontendDist": "../dist"
   },
   "app": {
-    "withGlobalTauri": true,
     "windows": [
       {
         "label": "main",
@@ -23,8 +25,8 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src ipc: http://ipc.localhost",
-      "devCsp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' ws: wss: ipc: http://ipc.localhost"
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src ipc: http://ipc.localhost",
+      "devCsp": "default-src 'self' http://127.0.0.1:1420; script-src 'self' 'unsafe-inline' http://127.0.0.1:1420; style-src 'self' 'unsafe-inline' http://127.0.0.1:1420; img-src 'self' data: blob: http://127.0.0.1:1420; font-src 'self' data: http://127.0.0.1:1420; connect-src 'self' http://127.0.0.1:1420 ws://127.0.0.1:1420 ipc: http://ipc.localhost"
     }
   },
   "bundle": {
@@ -33,7 +35,7 @@
     "publisher": "minhtrong67",
     "copyright": "Copyright (c) 2026 minhtrong67",
     "shortDescription": "Convert text between letter cases",
-    "longDescription": "Case Converter converts text between many letter cases and offers handy text tools. Material Design 3, English and Vietnamese.",
+    "longDescription": "Case Converter converts text between 21 letter cases and offers handy text tools. Material 3 Expressive design, English and Vietnamese.",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

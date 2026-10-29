@@ -1,23 +1,51 @@
 {
   "name": "case-converter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Case Converter: convert text between many letter cases, with handy text tools",
+  "type": "module",
+  "description": "Case Converter: convert text between many letter cases, with handy text tools. Material 3 Expressive desktop app built with Tauri.",
   "author": "minhtrong67",
   "license": "MIT",
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build",
     "tauri": "tauri",
+    "web:dev": "vite",
+    "web:build": "tsc --noEmit && vite build",
+    "web:preview": "vite preview",
     "icons": "python scripts/generate-icons.py"
-  },
-  "devDependencies": {
-    "@tauri-apps/cli": "^2"
   },
   "keywords": [
     "tauri",
+    "react",
+    "typescript",
+    "tailwindcss",
     "case-converter",
-    "material-design",
+    "material-3-expressive",
     "desktop-app"
-  ]
+  ],
+  "dependencies": {
+    "@fontsource/be-vietnam-pro": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/noto-sans": "^5.3.0",
+    "@fontsource/open-sans": "^5.3.0",
+    "@fontsource/roboto": "^5.3.0",
+    "@material/material-color-utilities": "^0.4.0",
+    "@tauri-apps/api": "^2.12.4",
+    "@tauri-apps/plugin-clipboard-manager": "^2.5.0",
+    "@tauri-apps/plugin-dialog": "^2.8.3",
+    "lucide-react": "^1.61.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@tauri-apps/cli": "^2.12.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  }
 }

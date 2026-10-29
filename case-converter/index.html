@@ -1,530 +1,683 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Case Converter – Convert text between 19 letter cases | Free Windows app</title>
-  <meta name="description" content="Case Converter is a free, open source Windows app that converts text between 19 letter cases (camelCase, snake_case, Title Case, UPPERCASE, URL slug and more) and cleans up lists of lines. Material Design 3, offline, English and Vietnamese.">
-  <meta name="keywords" content="case converter, text case converter, camelCase, snake_case, kebab-case, title case, uppercase, lowercase, slug generator, remove diacritics, Vietnamese, Windows app, Tauri, Material Design 3, open source">
-  <meta name="author" content="minhtrong67">
-  <meta name="robots" content="index, follow, max-image-preview:large">
-  <meta name="theme-color" content="#F9F9FF" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)">
-  <meta name="color-scheme" content="light dark">
-  <!-- Replace https://minhtrong67.github.io/case-converter/ with the real address where this page is hosted. -->
-  <link rel="canonical" href="https://minhtrong67.github.io/case-converter/">
-  <link rel="icon" type="image/svg+xml" href="src/assets/logo.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="src-tauri/icons/32x32.png">
-  <link rel="apple-touch-icon" href="src-tauri/icons/128x128@2x.png">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Case Converter – Change text case in one click | Free desktop app</title>
+<meta name="description" content="Case Converter is a free, open source desktop app that converts text between 21 letter cases and offers 22 text tools. Material 3 Expressive design, English and Vietnamese, works offline.">
+<meta name="keywords" content="case converter, text case, uppercase, lowercase, title case, camelCase, snake_case, kebab-case, slug, remove diacritics, Vietnamese, Tauri, Material 3 Expressive, desktop app, open source">
+<meta name="author" content="minhtrong67">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F9F9FF">
+<link rel="canonical" href="https://minhtrong67.github.io/my-tauri-apps/case-converter/">
+<link rel="icon" type="image/svg+xml" href="src/assets/logo.svg">
+<link rel="apple-touch-icon" href="src-tauri/icons/128x128@2x.png">
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Case Converter">
-  <meta property="og:title" content="Case Converter – Turn any text into the case you need">
-  <meta property="og:description" content="Free, open source Windows app with 19 letter cases and 9 text tools. Material Design 3, light and dark themes, English and Vietnamese.">
-  <meta property="og:url" content="https://minhtrong67.github.io/case-converter/">
-  <meta property="og:image" content="https://minhtrong67.github.io/case-converter/src/assets/og-image.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Case Converter app window next to its orange Aa icon">
-  <meta property="og:locale" content="en_US">
-  <meta property="og:locale:alternate" content="vi_VN">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Case Converter – Turn any text into the case you need">
-  <meta name="twitter:description" content="Free, open source Windows app with 19 letter cases and 9 text tools. Material Design 3, English and Vietnamese.">
-  <meta name="twitter:image" content="https://minhtrong67.github.io/case-converter/src/assets/og-image.png">
-  <meta name="twitter:image:alt" content="Case Converter app window next to its orange Aa icon">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Case Converter">
+<meta property="og:title" content="Case Converter – Change text case in one click">
+<meta property="og:description" content="21 letter cases, 22 text tools, 19 theme colors. Free, open source and offline. Material 3 Expressive desktop app for Windows.">
+<meta property="og:url" content="https://minhtrong67.github.io/my-tauri-apps/case-converter/">
+<meta property="og:image" content="https://minhtrong67.github.io/my-tauri-apps/case-converter/src/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Case Converter app icon next to the text Change text case in one click">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="vi_VN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Case Converter – Change text case in one click">
+<meta name="twitter:description" content="21 letter cases, 22 text tools, 19 theme colors. Free, open source and offline.">
+<meta name="twitter:image" content="https://minhtrong67.github.io/my-tauri-apps/case-converter/src/assets/og-image.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Case Converter","applicationCategory":"UtilitiesApplication","operatingSystem":"Windows 10, Windows 11","softwareVersion":"1.1.0","description":"Desktop app that converts text between 21 letter cases and offers 22 text tools.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT","downloadUrl":"https://minhtrong67.github.io/my-tauri-apps/case-converter/download/Case%20Converter_1.1.0_x64-setup.exe","author":{"@type":"Person","name":"minhtrong67","url":"https://github.com/minhtrong67"},"inLanguage":["en","vi"]}
+</script>
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Case Converter",
-    "applicationCategory": "UtilitiesApplication",
-    "operatingSystem": "Windows 10, Windows 11",
-    "softwareVersion": "1.0.0",
-    "description": "Convert text between 19 letter cases and clean up lists of lines. Offline, open source, Material Design 3.",
-    "inLanguage": ["en", "vi"],
-    "license": "https://opensource.org/licenses/MIT",
-    "isAccessibleForFree": true,
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Person", "name": "minhtrong67" },
-    "image": "https://minhtrong67.github.io/case-converter/src/assets/og-image.png"
-  }
-  </script>
+<script>
+/* Theme data (Material 3 palettes generated from each seed color) + early theme apply to avoid a flash. */
+var THEMES={"default":["#769CDF",["#415F91","#FFFFFF","#D6E3FF","#284777","#565F71","#FFFFFF","#DAE2F9","#3E4759","#705575","#FFFFFF","#FAD8FD","#573E5C","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F9F9FF","#191C20","#44474E","#74777F","#C4C6D0","#FFFFFF","#F3F3FA","#EDEDF4","#E7E8EE","#E2E2E9","#2E3036","#F0F0F7","#000000","#000000"],["#AAC7FF","#0A305F","#284777","#D6E3FF","#BEC6DC","#283141","#3E4759","#DAE2F9","#DDBCE0","#3F2844","#573E5C","#FAD8FD","#FFB4AB","#690005","#93000A","#FFDAD6","#111318","#E2E2E9","#C4C6D0","#8E9099","#44474E","#0C0E13","#191C20","#1D2024","#282A2F","#33353A","#E2E2E9","#2E3036","#000000","#000000"]],"red":["#F44336",["#904A42","#FFFFFF","#FFDAD5","#73342C","#775652","#FFFFFF","#FFDAD5","#5D3F3B","#705C2E","#FFFFFF","#FCDFA6","#574419","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F7","#231918","#534341","#857370","#D8C2BE","#FFFFFF","#FFF0EE","#FCEAE7","#F7E4E1","#F1DEDC","#392E2C","#FFEDEA","#000000","#000000"],["#FFB4A9","#561E18","#73342C","#FFDAD5","#E7BDB7","#442926","#5D3F3B","#FFDAD5","#DFC38C","#3E2E04","#574419","#FCDFA6","#FFB4AB","#690005","#93000A","#FFDAD6","#1A1110","#F1DEDC","#D8C2BE","#A08C89","#534341","#140C0B","#231918","#271D1C","#322826","#3D3231","#F1DEDC","#392E2C","#000000","#000000"]],"pink":["#E91E63",["#8E4957","#FFFFFF","#FFD9DE","#71333F","#75565B","#FFFFFF","#FFD9DE","#5C3F43","#795831","#FFFFFF","#FFDDBA","#5F411C","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F7","#22191A","#524345","#847375","#D6C2C3","#FFFFFF","#FFF0F1","#FBEAEB","#F5E4E5","#F0DEE0","#382E2F","#FEEDEE","#000000","#000000"],["#FFB2BE","#561D2A","#71333F","#FFD9DE","#E5BDC2","#43292D","#5C3F43","#FFD9DE","#EBBF90","#452B08","#5F411C","#FFDDBA","#FFB4AB","#690005","#93000A","#FFDAD6","#191112","#F0DEE0","#D6C2C3","#9F8C8E","#524345","#140C0D","#22191A","#261D1E","#312829","#3C3233","#F0DEE0","#382E2F","#000000","#000000"]],"purple":["#9C27B0",["#7B4E7F","#FFFFFF","#FFD6FE","#613766","#6B586B","#FFFFFF","#F4DBF1","#534153","#82524A","#FFFFFF","#FFDAD4","#673B34","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF7FA","#1F1A1F","#4D444C","#7F747D","#D0C3CC","#FFFFFF","#FCF0F7","#F6EBF2","#F0E5EC","#EBDFE6","#352F34","#F9EEF5","#000000","#000000"],["#EBB5ED","#49204E","#613766","#FFD6FE","#D7BFD5","#3B2B3C","#534153","#F4DBF1","#F6B8AD","#4C251F","#673B34","#FFDAD4","#FFB4AB","#690005","#93000A","#FFDAD6","#171216","#EBDFE6","#D0C3CC","#998D96","#4D444C","#110D11","#1F1A1F","#231E23","#2E282D","#393338","#EBDFE6","#352F34","#000000","#000000"]],"deepPurple":["#673AB7",["#68548E","#FFFFFF","#EBDDFF","#4F3D74","#635B70","#FFFFFF","#E9DEF8","#4B4358","#7E525D","#FFFFFF","#FFD9E1","#643B46","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FEF7FF","#1D1B20","#49454E","#7A757F","#CBC4CF","#FFFFFF","#F8F1FA","#F2ECF4","#EDE6EE","#E7E0E8","#322F35","#F5EFF7","#000000","#000000"],["#D3BCFD","#38265C","#4F3D74","#EBDDFF","#CDC2DB","#342D40","#4B4358","#E9DEF8","#F0B7C5","#4A2530","#643B46","#FFD9E1","#FFB4AB","#690005","#93000A","#FFDAD6","#151218","#E7E0E8","#CBC4CF","#948F99","#49454E","#0F0D13","#1D1B20","#211F24","#2C292F","#36343A","#E7E0E8","#322F35","#000000","#000000"]],"indigo":["#3F51B5",["#515B92","#FFFFFF","#DEE0FF","#394379","#5B5D72","#FFFFFF","#E0E1F9","#434659","#77536D","#FFFFFF","#FFD7F1","#5D3C55","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FBF8FF","#1B1B21","#46464F","#767680","#C7C5D0","#FFFFFF","#F5F2FA","#EFEDF4","#E9E7EF","#E4E1E9","#303036","#F2EFF7","#000000","#000000"],["#BAC3FF","#222C61","#394379","#DEE0FF","#C3C5DD","#2D2F42","#434659","#E0E1F9","#E6BAD7","#44263D","#5D3C55","#FFD7F1","#FFB4AB","#690005","#93000A","#FFDAD6","#121318","#E4E1E9","#C7C5D0","#90909A","#46464F","#0D0E13","#1B1B21","#1F1F25","#29292F","#34343A","#E4E1E9","#303036","#000000","#000000"]],"blue":["#2196F3",["#36618E","#FFFFFF","#D1E4FF","#194975","#535F70","#FFFFFF","#D7E3F7","#3B4858","#6B5778","#FFFFFF","#F2DAFF","#523F5F","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F8F9FF","#191C20","#43474E","#73777F","#C3C7CF","#FFFFFF","#F2F3FA","#ECEEF4","#E6E8EE","#E1E2E8","#2E3135","#EFF0F7","#000000","#000000"],["#A0CAFD","#003258","#194975","#D1E4FF","#BBC7DB","#253140","#3B4858","#D7E3F7","#D6BEE4","#3B2948","#523F5F","#F2DAFF","#FFB4AB","#690005","#93000A","#FFDAD6","#111418","#E1E2E8","#C3C7CF","#8D9199","#43474E","#0B0E13","#191C20","#1D2024","#272A2F","#32353A","#E1E2E8","#2E3135","#000000","#000000"]],"lightBlue":["#03A9F4",["#27638A","#FFFFFF","#CAE6FF","#004B70","#50606E","#FFFFFF","#D3E5F5","#384956","#65587B","#FFFFFF","#EBDDFF","#4D4162","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F7F9FF","#181C20","#41474D","#72787E","#C1C7CE","#FFFFFF","#F1F4F9","#EBEEF3","#E5E8ED","#E0E3E8","#2D3135","#EEF1F6","#000000","#000000"],["#96CDF8","#00344F","#004B70","#CAE6FF","#B7C9D9","#22323F","#384956","#D3E5F5","#CFC0E8","#362B4B","#4D4162","#EBDDFF","#FFB4AB","#690005","#93000A","#FFDAD6","#101417","#E0E3E8","#C1C7CE","#8B9198","#41474D","#0B0F12","#181C20","#1C2024","#262A2E","#313539","#E0E3E8","#2D3135","#000000","#000000"]],"cyan":["#00BCD4",["#006876","#FFFFFF","#A1EFFF","#004E59","#4A6268","#FFFFFF","#CDE7ED","#334A50","#545D7E","#FFFFFF","#DBE1FF","#3C4665","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F5FAFC","#171D1E","#3F484A","#6F797B","#BFC8CA","#FFFFFF","#EFF5F6","#E9EFF0","#E3E9EB","#DEE3E5","#2B3133","#ECF2F3","#000000","#000000"],["#83D3E3","#00363E","#004E59","#A1EFFF","#B1CBD1","#1C3439","#334A50","#CDE7ED","#BCC5EB","#262F4D","#3C4665","#DBE1FF","#FFB4AB","#690005","#93000A","#FFDAD6","#0E1416","#DEE3E5","#BFC8CA","#899295","#3F484A","#090F10","#171D1E","#1B2122","#252B2C","#303637","#DEE3E5","#2B3133","#000000","#000000"]],"teal":["#009688",["#006A60","#FFFFFF","#9EF2E4","#005048","#4A635F","#FFFFFF","#CCE8E2","#334B47","#456179","#FFFFFF","#CCE5FF","#2D4961","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F4FBF8","#161D1C","#3F4947","#6F7977","#BEC9C6","#FFFFFF","#EFF5F2","#E9EFED","#E3EAE7","#DDE4E1","#2B3230","#ECF2EF","#000000","#000000"],["#82D5C8","#003731","#005048","#9EF2E4","#B1CCC6","#1C3531","#334B47","#CCE8E2","#ADCAE6","#153349","#2D4961","#CCE5FF","#FFB4AB","#690005","#93000A","#FFDAD6","#0E1513","#DDE4E1","#BEC9C6","#899390","#3F4947","#090F0E","#161D1C","#1A2120","#252B2A","#303635","#DDE4E1","#2B3230","#000000","#000000"]],"green":["#4CAF50",["#3B6939","#FFFFFF","#BCF0B4","#235024","#52634F","#FFFFFF","#D5E8CF","#3B4B38","#38656A","#FFFFFF","#BCEBF0","#1F4D52","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F7FBF1","#191D17","#424940","#72796F","#C2C9BD","#FFFFFF","#F1F5EC","#ECEFE6","#E6E9E0","#E0E4DB","#2D322C","#EFF2E9","#000000","#000000"],["#A1D39A","#0A390F","#235024","#BCF0B4","#BACCB3","#253423","#3B4B38","#D5E8CF","#A0CFD4","#00363B","#1F4D52","#BCEBF0","#FFB4AB","#690005","#93000A","#FFDAD6","#10140F","#E0E4DB","#C2C9BD","#8C9388","#424940","#0B0F0A","#191D17","#1D211B","#272B25","#323630","#E0E4DB","#2D322C","#000000","#000000"]],"lightGreen":["#8BC34A",["#4B662C","#FFFFFF","#CCEDA4","#344E16","#576249","#FFFFFF","#DBE7C8","#404A33","#386663","#FFFFFF","#BBECE8","#1F4E4B","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F9FAEF","#1A1C16","#44483D","#75796C","#C5C8BA","#FFFFFF","#F3F4E9","#EEEFE4","#E8E9DE","#E2E3D8","#2F312A","#F0F2E6","#000000","#000000"],["#B1D18A","#1F3701","#344E16","#CCEDA4","#BFCBAD","#2A331E","#404A33","#DBE7C8","#A0D0CC","#003735","#1F4E4B","#BBECE8","#FFB4AB","#690005","#93000A","#FFDAD6","#12140E","#E2E3D8","#C5C8BA","#8E9285","#44483D","#0C0F09","#1A1C16","#1E201A","#282B24","#33362E","#E2E3D8","#2F312A","#000000","#000000"]],"lime":["#CDDC39",["#5C631D","#FFFFFF","#E1E994","#444B04","#5E6044","#FFFFFF","#E4E5C1","#46492E","#3C665A","#FFFFFF","#BEECDC","#234E43","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FCFAEC","#1C1C14","#47483B","#787869","#C8C7B7","#FFFFFF","#F6F4E7","#F0EEE1","#EBE8DC","#E5E3D6","#313128","#F3F1E4","#000000","#000000"],["#C5CD7A","#2F3300","#444B04","#E1E994","#C7C9A6","#30321A","#46492E","#E4E5C1","#A2D0C1","#07372D","#234E43","#BEECDC","#FFB4AB","#690005","#93000A","#FFDAD6","#13140C","#E5E3D6","#C8C7B7","#929282","#47483B","#0E0F08","#1C1C14","#202018","#2A2A22","#35352D","#E5E3D6","#313128","#000000","#000000"]],"yellow":["#FFEB3B",["#685F12","#FFFFFF","#F1E48A","#4F4800","#645F41","#FFFFFF","#EBE3BD","#4B472B","#406652","#FFFFFF","#C2ECD3","#294E3B","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF9EB","#1D1C13","#4A473A","#7B7768","#CBC6B5","#FFFFFF","#F9F3E5","#F3EEE0","#EDE8DA","#E7E2D5","#323027","#F6F0E3","#000000","#000000"],["#D4C871","#363100","#4F4800","#F1E48A","#CEC7A3","#343117","#4B472B","#EBE3BD","#A7D0B7","#103726","#294E3B","#C2ECD3","#FFB4AB","#690005","#93000A","#FFDAD6","#15130C","#E7E2D5","#CBC6B5","#959181","#4A473A","#0F0E07","#1D1C13","#212017","#2C2A21","#37352C","#E7E2D5","#323027","#000000","#000000"]],"amber":["#FFC107",["#775A0B","#FFFFFF","#FFDF9E","#5B4300","#6B5D3F","#FFFFFF","#F5E0BB","#52452A","#4A6547","#FFFFFF","#CCEBC4","#334D31","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F2","#1F1B13","#4D4639","#7F7667","#D0C5B4","#FFFFFF","#FCF2E5","#F6ECDF","#F1E7D9","#EBE1D4","#353027","#F9EFE2","#000000","#000000"],["#E9C16C","#3F2E00","#5B4300","#FFDF9E","#D8C4A0","#3A2F15","#52452A","#F5E0BB","#B0CFAA","#1D361C","#334D31","#CCEBC4","#FFB4AB","#690005","#93000A","#FFDAD6","#17130B","#EBE1D4","#D0C5B4","#998F80","#4D4639","#110E07","#1F1B13","#231F17","#2E2921","#39342B","#EBE1D4","#353027","#000000","#000000"]],"orange":["#FF9800",["#855318","#FFFFFF","#FFDCBE","#693C00","#725A42","#FFFFFF","#FFDCBE","#59422C","#58633A","#FFFFFF","#DCE8B4","#414B24","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F5","#211A14","#51453A","#837468","#D5C3B5","#FFFFFF","#FFF1E7","#FAEBE0","#F4E5DB","#EFE0D5","#372F28","#FDEEE3","#000000","#000000"],["#FDB975","#4A2800","#693C00","#FFDCBE","#E1C1A4","#402C18","#59422C","#FFDCBE","#C0CC9A","#2B3410","#414B24","#DCE8B4","#FFB4AB","#690005","#93000A","#FFDAD6","#19120C","#EFE0D5","#D5C3B5","#9D8E81","#51453A","#130D07","#211A14","#261E18","#302822","#3C332C","#EFE0D5","#372F28","#000000","#000000"]],"deepOrange":["#FF5722",["#8F4C38","#FFFFFF","#FFDBD1","#723523","#77574E","#FFFFFF","#FFDBD1","#5D4037","#6C5D2F","#FFFFFF","#F5E1A7","#534619","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F6","#231917","#53433F","#85736E","#D8C2BC","#FFFFFF","#FFF1ED","#FCEAE5","#F7E4E0","#F1DFDA","#392E2B","#FFEDE8","#000000","#000000"],["#FFB5A0","#561F0F","#723523","#FFDBD1","#E7BDB2","#442A22","#5D4037","#FFDBD1","#D8C58D","#3B2F05","#534619","#F5E1A7","#FFB4AB","#690005","#93000A","#FFDAD6","#1A110F","#F1DFDA","#D8C2BC","#A08C87","#53433F","#140C0A","#231917","#271D1B","#322825","#3D322F","#F1DFDA","#392E2B","#000000","#000000"]],"brown":["#795548",["#8F4C33","#FFFFFF","#FFDBCF","#72361E","#77574C","#FFFFFF","#FFDBCF","#5D4035","#695E2F","#FFFFFF","#F2E2A8","#50471A","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#FFF8F6","#231A16","#53433E","#85736D","#D8C2BB","#FFFFFF","#FFF1EC","#FCEAE4","#F7E4DF","#F1DFD9","#392E2B","#FFEDE7","#000000","#000000"],["#FFB59A","#55200A","#72361E","#FFDBCF","#E7BEAF","#442A20","#5D4035","#FFDBCF","#D5C68E","#393005","#50471A","#F2E2A8","#FFB4AB","#690005","#93000A","#FFDAD6","#1A110E","#F1DFD9","#D8C2BB","#A08D86","#53433E","#140C09","#231A16","#271E1A","#322824","#3D322F","#F1DFD9","#392E2B","#000000","#000000"]],"blueGrey":["#607D8B",["#116682","#FFFFFF","#BDE9FF","#004D64","#4D616C","#FFFFFF","#D0E6F2","#354A53","#5D5B7D","#FFFFFF","#E3DFFF","#454364","#BA1A1A","#FFFFFF","#FFDAD6","#93000A","#F6FAFD","#171C1F","#40484C","#70787D","#C0C8CD","#FFFFFF","#F0F4F8","#EAEEF2","#E4E9EC","#DFE3E7","#2C3134","#EDF1F5","#000000","#000000"],["#8BD0EF","#003546","#004D64","#BDE9FF","#B4CAD6","#1F333C","#354A53","#D0E6F2","#C6C2EA","#2E2D4D","#454364","#E3DFFF","#FFB4AB","#690005","#93000A","#FFDAD6","#0F1417","#DFE3E7","#C0C8CD","#8A9297","#40484C","#0A0F11","#171C1F","#1B2023","#262B2D","#303538","#DFE3E7","#2C3134","#000000","#000000"]]};
+var ORDER=['primary','on-primary','primary-container','on-primary-container','secondary','on-secondary','secondary-container','on-secondary-container','tertiary','on-tertiary','tertiary-container','on-tertiary-container','error','on-error','error-container','on-error-container','surface','on-surface','on-surface-variant','outline','outline-variant','surface-container-lowest','surface-container-low','surface-container','surface-container-high','surface-container-highest','inverse-surface','inverse-on-surface','scrim','shadow'];
+var saved={};try{saved=JSON.parse(localStorage.getItem('ccl')||'{}')}catch(e){}
+var state={mode:['system','light','dark'].indexOf(saved.mode)>-1?saved.mode:'system',color:THEMES[saved.color]?saved.color:'default',lang:saved.lang||((navigator.language||'').toLowerCase().indexOf('vi')===0?'vi':'en')};
+function isDark(){return state.mode==='dark'||(state.mode==='system'&&matchMedia('(prefers-color-scheme: dark)').matches)}
+function applyTheme(){var d=isDark(),a=THEMES[state.color][d?2:1],r=document.documentElement;for(var i=0;i<ORDER.length;i++)r.style.setProperty('--md-'+ORDER[i],a[i]);r.dataset.mode=d?'dark':'light';r.style.colorScheme=d?'dark':'light';var m=document.querySelector('meta[name=theme-color]');if(m)m.content=a[16]}
+applyTheme();
+</script>
 
-  <style>
-    :root {
-      --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-      --ease: cubic-bezier(.2, 0, 0, 1); --ease-out: cubic-bezier(.05, .7, .1, 1);
-      --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 28px;
-      --e1: 0 1px 2px rgb(0 0 0 / .3), 0 1px 3px 1px rgb(0 0 0 / .15);
-      --e3: 0 1px 3px rgb(0 0 0 / .3), 0 4px 8px 3px rgb(0 0 0 / .15);
-      /* light blue fallback until the script paints the chosen theme */
-      --md-primary: #415F91; --md-on-primary: #fff; --md-primary-container: #D6E3FF; --md-on-primary-container: #284777;
-      --md-secondary: #565F71; --md-secondary-container: #DAE2F9; --md-on-secondary-container: #3E4759;
-      --md-tertiary: #705575; --md-tertiary-container: #FAD8FD; --md-on-tertiary-container: #573E5C;
-      --md-surface: #F9F9FF; --md-on-surface: #191C20; --md-on-surface-variant: #44474E; --md-outline: #74777F; --md-outline-variant: #C4C6D0;
-      --md-surface-container-lowest: #fff; --md-surface-container-low: #F3F3FA; --md-surface-container: #EDEDF4; --md-surface-container-high: #E7E8EE; --md-surface-container-highest: #E2E2E9;
-      --md-inverse-surface: #2E3036; --md-inverse-on-surface: #F0F0F7;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
-    body { margin: 0; font: 400 16px/1.6 var(--font); color: var(--md-on-surface); background: var(--md-surface); -webkit-font-smoothing: antialiased; transition: background-color .35s var(--ease), color .35s var(--ease); overflow-x: hidden; }
-    img { max-width: 100%; display: block; }
-    a { color: inherit; }
-    h1, h2, h3, p { margin: 0; }
-    .ic { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-    :focus-visible { outline: 3px solid var(--md-secondary); outline-offset: 3px; border-radius: 8px; }
-    .wrap { width: min(1160px, 100% - 48px); margin-inline: auto; }
-    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+<style>
+:root{
+  --spring:linear(0, 0.017 2.5%, 0.061 5%, 0.124 7.5%, 0.198 10%, 0.279 12.5%, 0.361 15%, 0.442 17.5%, 0.519 20%, 0.591 22.5%, 0.657 25%, 0.717 27.5%, 0.77 30%, 0.816 32.5%, 0.856 35%, 0.889 37.5%, 0.918 40%, 0.941 42.5%, 0.96 45%, 0.976 47.5%, 0.988 50%, 0.997 52.5%, 1.004 55%, 1.008 57.5%, 1.012 60%, 1.014 62.5%, 1.015 65%, 1.015 67.5%, 1.015 70%, 1.014 72.5%, 1.013 75%, 1.012 77.5%, 1.011 80%, 1.01 82.5%, 1.008 85%, 1.007 87.5%, 1.006 90%, 1.005 92.5%, 1.004 95%, 1.003 97.5%, 1);
+  --bounce:linear(0, 0.036 2.5%, 0.128 5%, 0.255 7.5%, 0.398 10%, 0.545 12.5%, 0.683 15%, 0.806 17.5%, 0.909 20%, 0.991 22.5%, 1.052 25%, 1.093 27.5%, 1.116 30%, 1.126 32.5%, 1.124 35%, 1.114 37.5%, 1.1 40%, 1.082 42.5%, 1.063 45%, 1.045 47.5%, 1.029 50%, 1.015 52.5%, 1.004 55%, 0.996 57.5%, 0.99 60%, 0.986 62.5%, 0.984 65%, 0.984 67.5%, 0.985 70%, 0.987 72.5%, 0.989 75%, 0.991 77.5%, 0.994 80%, 0.996 82.5%, 0.998 85%, 0.999 87.5%, 1 90%, 1.001 92.5%, 1.002 95%, 1.002 97.5%, 1);
+  --em:cubic-bezier(.2,0,0,1);
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --ok:#1B6D2F;--ok-c:#B5F2B9;--on-ok-c:#00210A;
+}
+:root[data-mode=dark]{--ok:#9AD89F;--ok-c:#0A5223;--on-ok-c:#B5F2B9}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:92px;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--md-surface);color:var(--md-on-surface);line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--md-primary) 70%,transparent);outline-offset:3px}
+::selection{background:color-mix(in srgb,var(--md-primary) 30%,transparent)}
+.ic{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.wrap{width:min(1160px,100% - 32px);margin-inline:auto}
+section{padding:104px 0;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:var(--md-secondary-container);color:var(--md-on-secondary-container);font-size:.8125rem;font-weight:600;letter-spacing:.02em}
+h2{font-size:clamp(2rem,4.4vw,3.25rem);line-height:1.1;font-weight:700;letter-spacing:-.02em;margin:16px 0 14px}
+.lead{font-size:1.125rem;color:var(--md-on-surface-variant);max-width:62ch}
+.center{text-align:center}.center .lead{margin-inline:auto}
 
-    /* ripple + state layer */
-    .rip { position: relative; overflow: hidden; isolation: isolate; -webkit-tap-highlight-color: transparent; }
-    .rip::before { content: ''; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity .15s linear; z-index: -1; pointer-events: none; }
-    .rip:hover::before { opacity: .08; } .rip:active::before { opacity: .12; }
-    .ripple { position: absolute; border-radius: 50%; background: currentColor; opacity: .18; transform: scale(0); pointer-events: none; animation: ripple .6s var(--ease-out) forwards; z-index: -1; }
-    @keyframes ripple { to { transform: scale(1); opacity: 0; } }
+/* ---------- buttons (shape morph on press) ---------- */
+.btn{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 24px;border-radius:99px;font-weight:600;font-size:.9375rem;white-space:nowrap;transition:border-radius .5s var(--spring),transform .5s var(--spring),box-shadow .3s,background-color .3s}
+.btn::after{content:"";position:absolute;inset:0;z-index:-1;background:currentColor;opacity:0;transition:opacity .2s}
+.btn:hover::after{opacity:.09}.btn:active::after{opacity:.14}
+.btn:hover{border-radius:16px}.btn:active{border-radius:12px;transform:scale(.97)}
+.btn.lg{height:60px;padding:0 32px;font-size:1.0625rem}
+.btn.sm{height:40px;padding:0 18px;font-size:.875rem}
+.filled{background:var(--md-primary);color:var(--md-on-primary);box-shadow:0 6px 18px -6px color-mix(in srgb,var(--md-primary) 70%,transparent)}
+.tonal{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+.outlined{border:1px solid var(--md-outline);color:var(--md-primary)}
+.ripple{position:absolute;z-index:-1;border-radius:50%;background:currentColor;opacity:.2;transform:scale(0);animation:rp .65s var(--em) forwards;pointer-events:none}
+@keyframes rp{to{transform:scale(1);opacity:0}}
+.ibtn{position:relative;overflow:hidden;isolation:isolate;width:44px;height:44px;border-radius:99px;display:grid;place-items:center;transition:border-radius .5s var(--spring),background-color .2s}
+.ibtn:hover{background:color-mix(in srgb,var(--md-on-surface) 9%,transparent);border-radius:14px}
+.ibtn[aria-expanded=true]{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-radius:14px}
 
-    /* buttons */
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 28px; border: 0; border-radius: 24px; font: 500 15px/1 var(--font); letter-spacing: .1px; text-decoration: none; cursor: pointer; white-space: nowrap; transition: box-shadow .2s, transform .2s var(--ease); }
-    .btn .ic { width: 20px; height: 20px; }
-    .btn:hover { box-shadow: var(--e1); } .btn:active { transform: scale(.97); }
-    .btn.filled { background: var(--md-primary); color: var(--md-on-primary); }
-    .btn.tonal { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
-    .btn.outlined { background: transparent; color: var(--md-primary); box-shadow: inset 0 0 0 1px var(--md-outline); }
-    .btn.outlined:hover { box-shadow: inset 0 0 0 1px var(--md-outline); }
-    .btn.big { min-height: 56px; padding: 0 32px; border-radius: 28px; font-size: 16px; }
-    .btn small { display: block; font-size: 11.5px; font-weight: 400; opacity: .85; margin-top: 3px; }
-    .btn .lbl { text-align: left; }
-    .icon-btn { width: 44px; height: 44px; border: 0; border-radius: 50%; padding: 0; display: grid; place-items: center; background: transparent; color: var(--md-on-surface-variant); cursor: pointer; transition: transform .2s var(--ease), color .2s; }
-    .icon-btn:hover { color: var(--md-on-surface); } .icon-btn:active { transform: scale(.92); }
-    .icon-btn.txt { width: auto; padding: 0 12px; border-radius: 22px; font: 500 13px/1 var(--font); gap: 6px; display: inline-flex; align-items: center; }
+/* ---------- top bar ---------- */
+.progress{position:fixed;inset:0 0 auto 0;height:3px;z-index:60;background:var(--md-primary);transform:scaleX(0);transform-origin:left}
+.bar{position:fixed;top:12px;left:50%;translate:-50% 0;z-index:50;width:min(1160px,100% - 24px);height:64px;padding:0 10px 0 18px;display:flex;align-items:center;gap:8px;border-radius:32px;background:color-mix(in srgb,var(--md-surface-container-high) 82%,transparent);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 1px 2px color-mix(in srgb,var(--md-shadow) 18%,transparent),0 8px 24px -10px color-mix(in srgb,var(--md-shadow) 30%,transparent);transition:top .5s var(--spring),border-radius .5s var(--spring),height .5s var(--spring)}
+.bar.scrolled{top:8px;height:58px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.0625rem;margin-right:auto}
+.brand img{width:34px;height:34px;transition:transform .8s var(--spring)}
+.brand:hover img{transform:rotate(60deg) scale(1.1)}
+.links{display:flex;gap:2px;margin-right:8px}
+.links a{position:relative;padding:9px 16px;border-radius:99px;font-weight:600;font-size:.9rem;color:var(--md-on-surface-variant);transition:background-color .2s,color .2s,border-radius .5s var(--spring)}
+.links a:hover{background:color-mix(in srgb,var(--md-on-surface) 8%,transparent);border-radius:14px}
+.links a.on{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+.tools{display:flex;align-items:center;gap:2px;position:relative}
+.langbtn{width:auto;padding:0 14px;gap:6px;font-weight:700;font-size:.8125rem;display:flex;align-items:center;justify-content:center}
+.menu-btn{display:none}
+.pop{position:absolute;top:calc(100% + 14px);right:0;min-width:240px;padding:12px;border-radius:24px;background:var(--md-surface-container-high);box-shadow:0 10px 40px -8px color-mix(in srgb,var(--md-shadow) 40%,transparent);opacity:0;visibility:hidden;transform:translateY(-8px) scale(.94);transform-origin:top right;transition:opacity .2s,transform .5s var(--spring),visibility .2s;z-index:5}
+.pop.open{opacity:1;visibility:visible;transform:none}
+.pop h4{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--md-primary);margin:4px 8px 8px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border-radius:14px;font-weight:600;font-size:.9rem;text-align:left;transition:background-color .2s,border-radius .5s var(--spring)}
+.opt:hover{background:color-mix(in srgb,var(--md-on-surface) 8%,transparent)}
+.opt[aria-checked=true]{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-radius:99px}
+.swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:6px 8px 10px;width:272px}
+.sw{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;color:#fff;transition:border-radius .5s var(--spring),transform .5s var(--bounce),box-shadow .3s}
+.sw:hover{border-radius:10px;transform:scale(1.1)}
+.sw[aria-checked=true]{border-radius:10px;transform:scale(1.12);box-shadow:0 0 0 3px var(--md-surface-container-high),0 0 0 5px var(--md-primary)}
+.sw .ic{width:18px;height:18px;stroke-width:3;opacity:0;transform:scale(.4);transition:.3s var(--bounce)}
+.sw[aria-checked=true] .ic{opacity:1;transform:none}
+.cname{padding:0 10px 4px;font-size:.8125rem;color:var(--md-on-surface-variant);font-weight:600}
 
-    /* top app bar */
-    .nav { position: sticky; top: 0; z-index: 30; padding-top: env(safe-area-inset-top); background: color-mix(in srgb, var(--md-surface) 80%, transparent); backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); transition: box-shadow .25s, background-color .35s; }
-    .nav.scrolled { box-shadow: 0 1px 0 var(--md-outline-variant), 0 6px 18px rgb(0 0 0 / .06); }
-    .nav .wrap { display: flex; align-items: center; gap: 4px; height: 68px; }
-    .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; font-size: 20px; font-weight: 500; letter-spacing: -.1px; margin-right: auto; }
-    .brand img { width: 36px; height: 36px; filter: drop-shadow(0 3px 6px rgb(255 87 34 / .35)); transition: transform .4s var(--ease-out); }
-    .brand:hover img { transform: rotate(-8deg) scale(1.08); }
-    .links { display: flex; gap: 2px; margin-right: 8px; }
-    .links a { padding: 8px 14px; border-radius: 20px; text-decoration: none; font-size: 14px; font-weight: 500; color: var(--md-on-surface-variant); transition: background-color .2s, color .2s; }
-    .links a:hover { background: var(--md-surface-container-high); color: var(--md-on-surface); }
-    .nav .btn { min-height: 40px; padding: 0 20px; font-size: 14px; margin-left: 6px; }
+/* ---------- hero ---------- */
+.hero{padding:150px 0 70px;overflow:hidden}
+.blob{position:absolute;pointer-events:none;filter:blur(2px);opacity:.75;animation:morph 14s var(--em) infinite}
+@keyframes morph{0%,100%{border-radius:42% 58% 63% 37%/41% 44% 56% 59%;transform:rotate(0)}33%{border-radius:58% 42% 38% 62%/57% 61% 39% 43%;transform:rotate(60deg)}66%{border-radius:36% 64% 52% 48%/46% 38% 62% 54%;transform:rotate(-30deg)}}
+.b1{width:520px;height:520px;background:var(--md-primary-container);top:-140px;right:-120px}
+.b2{width:340px;height:340px;background:var(--md-tertiary-container);bottom:-60px;left:-110px;animation-duration:18s;animation-delay:-5s}
+.hero .wrap{position:relative;z-index:1}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center;position:relative}
+.hero h1{font-size:clamp(2.3rem,4.7vw,3.9rem);line-height:1.06;font-weight:800;letter-spacing:-.035em;margin:20px 0 22px}
+.hero h1 em{font-style:normal;position:relative;color:var(--md-primary);display:inline-block}
+.hero h1 em::after{content:"";position:absolute;left:-2%;right:-2%;bottom:.04em;height:.2em;border-radius:99px;background:var(--md-tertiary-container);z-index:-1;transform-origin:left;animation:underline 1.2s .5s var(--spring) both}
+@keyframes underline{from{transform:scaleX(0)}}
+.hero p.lead{margin-bottom:32px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.meta{margin-top:18px;font-size:.875rem;color:var(--md-on-surface-variant);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stage{position:relative;aspect-ratio:1;max-width:520px;margin-inline:auto;width:100%}
+.stage .logo{position:absolute;inset:12%;animation:float 7s ease-in-out infinite;filter:drop-shadow(0 28px 36px color-mix(in srgb,var(--md-primary) 38%,transparent))}
+.stage .logo img{width:100%;height:100%;animation:slow 40s linear infinite}
+@keyframes slow{to{transform:rotate(360deg)}}
+@keyframes float{50%{transform:translateY(-14px)}}
+.chip3d{position:absolute;padding:10px 18px;border-radius:18px;font-weight:700;font-size:.95rem;box-shadow:0 12px 28px -10px color-mix(in srgb,var(--md-shadow) 45%,transparent);animation:bob 6s ease-in-out infinite;white-space:nowrap;transition:transform .2s}
+.chip3d:nth-child(2){top:6%;left:0;background:var(--md-secondary-container);color:var(--md-on-secondary-container);animation-delay:-1s}
+.chip3d:nth-child(3){top:20%;right:-2%;background:var(--md-tertiary-container);color:var(--md-on-tertiary-container);animation-delay:-3s;border-radius:99px}
+.chip3d:nth-child(4){bottom:22%;left:-4%;background:var(--md-primary);color:var(--md-on-primary);animation-delay:-2s;border-radius:99px}
+.chip3d:nth-child(5){bottom:6%;right:6%;background:var(--md-surface-container-highest);color:var(--md-on-surface);animation-delay:-4s}
+@keyframes bob{50%{transform:translateY(-12px) rotate(-2deg)}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:70px}
+.stat{padding:22px 24px;border-radius:28px;background:var(--md-surface-container-low);transition:border-radius .6s var(--spring),transform .6s var(--spring),background-color .3s}
+.stat:hover{border-radius:44px 16px 44px 16px;transform:translateY(-4px);background:var(--md-surface-container-high)}
+.stat b{display:block;font-size:2.6rem;line-height:1;font-weight:800;letter-spacing:-.03em;color:var(--md-primary)}
+.stat span{font-size:.9rem;color:var(--md-on-surface-variant);font-weight:600}
 
-    /* hero */
-    .hero { position: relative; padding: 56px 0 72px; overflow: clip; }
-    .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .7; z-index: -1; transition: background-color .5s; }
-    .blob.a { width: 460px; height: 460px; background: var(--md-primary-container); top: -140px; right: -80px; animation: drift 16s ease-in-out infinite alternate; }
-    .blob.b { width: 380px; height: 380px; background: var(--md-tertiary-container); bottom: -120px; left: -100px; animation: drift 20s ease-in-out infinite alternate-reverse; }
-    @keyframes drift { to { transform: translate(40px, 30px) scale(1.12); } }
-    .hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
-    .chip { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 14px 0 10px; border-radius: var(--r-sm); background: var(--md-secondary-container); color: var(--md-on-secondary-container); font-size: 13px; font-weight: 500; }
-    .chip .ic { width: 18px; height: 18px; }
-    h1 { margin-top: 20px; font-size: clamp(34px, 5.2vw, 58px); line-height: 1.08; font-weight: 500; letter-spacing: -1.2px; }
-    .hl { background: linear-gradient(100deg, var(--md-primary), var(--md-tertiary) 60%, var(--md-primary)); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 6s linear infinite; }
-    @keyframes shine { to { background-position: -200% 0; } }
-    .lead { margin-top: 20px; max-width: 540px; font-size: 18px; line-height: 1.6; color: var(--md-on-surface-variant); }
-    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-    .demo { margin-top: 36px; max-width: 540px; padding: 16px 18px; border-radius: var(--r-lg); background: var(--md-surface-container); box-shadow: inset 0 0 0 1px var(--md-outline-variant); }
-    .demo-top { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 500; letter-spacing: .5px; color: var(--md-on-surface-variant); text-transform: uppercase; }
-    .demo-top .ic { width: 16px; height: 16px; }
-    .demo-in { margin-top: 10px; font-size: 15px; color: var(--md-on-surface-variant); }
-    .demo-out { margin-top: 6px; min-height: 34px; font: 500 21px/1.5 ui-monospace, 'Cascadia Code', Consolas, 'SF Mono', Menlo, monospace; color: var(--md-primary); word-break: break-all; }
-    .demo-out::after { content: ''; display: inline-block; width: 2px; height: 1.1em; margin-left: 2px; vertical-align: -3px; background: var(--md-primary); animation: blink 1s steps(1) infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
-    .tag { margin-left: auto; padding: 2px 10px; border-radius: 12px; background: var(--md-primary-container); color: var(--md-on-primary-container); text-transform: none; letter-spacing: .1px; }
+/* ---------- demo ---------- */
+.demo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:44px}
+.card{border-radius:32px;background:var(--md-surface-container-low);padding:22px;display:flex;flex-direction:column;gap:12px}
+.card h3{font-size:.8125rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--md-primary);display:flex;align-items:center;gap:8px}
+textarea,.out{width:100%;min-height:150px;flex:1;border:0;resize:vertical;border-radius:20px;padding:16px 18px;background:var(--md-surface-container-highest);color:var(--md-on-surface);font:inherit;font-size:1rem;line-height:1.55;outline:0;white-space:pre-wrap;word-break:break-word;transition:box-shadow .25s}
+textarea:focus{box-shadow:0 0 0 2px var(--md-primary)}
+.out{overflow:auto}
+.chips{display:flex;flex-wrap:wrap;gap:8px;grid-column:1/-1}
+.chip{position:relative;overflow:hidden;isolation:isolate;height:40px;padding:0 18px;border-radius:99px;border:1px solid var(--md-outline-variant);color:var(--md-on-surface-variant);font-weight:600;font-size:.875rem;display:inline-flex;align-items:center;gap:0;transition:border-radius .5s var(--spring),background-color .3s,color .3s,transform .4s var(--spring)}
+.chip:hover{transform:translateY(-2px)}.chip:active{transform:scale(.95)}
+.chip .ic{width:0;opacity:0;transition:width .4s var(--spring),opacity .3s,margin .4s var(--spring)}
+.chip[aria-pressed=true]{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-color:transparent;border-radius:12px}
+.chip[aria-pressed=true] .ic{width:16px;opacity:1;margin-right:8px}
+.rhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.copied{background:var(--ok)!important;color:#fff!important}
 
-    .shot { position: relative; perspective: 1400px; }
-    .frame { border-radius: 14px; background: var(--md-surface-container-lowest); box-shadow: 0 30px 60px -18px rgb(0 0 0 / .35), 0 0 0 1px var(--md-outline-variant); overflow: hidden; transform: rotateY(-6deg) rotateX(3deg); transition: transform .6s var(--ease-out); animation: bob 7s ease-in-out infinite; }
-    .shot:hover .frame { transform: rotateY(0) rotateX(0); }
-    @keyframes bob { 50% { translate: 0 -10px; } }
-    .frame img { width: 100%; height: auto; transition: opacity .4s; }
-    .frame .dark-img { display: none; }
-    html[data-mode="dark"] .frame .light-img { display: none; }
-    html[data-mode="dark"] .frame .dark-img { display: block; }
-    .float-ic { position: absolute; width: 88px; height: 88px; right: -14px; bottom: -26px; filter: drop-shadow(0 14px 22px rgb(255 87 34 / .45)); animation: bob 5s ease-in-out infinite reverse; }
+/* ---------- features (bento) ---------- */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:48px}
+.feat{position:relative;overflow:hidden;border-radius:32px;padding:28px;background:var(--md-surface-container-low);transition:border-radius .7s var(--spring),transform .7s var(--spring),background-color .3s;grid-column:span 2}
+.feat.w3{grid-column:span 3}.feat.w4{grid-column:span 4}
+.feat::before{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--md-primary) 16%,transparent),transparent 60%);opacity:0;transition:opacity .4s}
+.feat:hover::before{opacity:1}
+.feat:hover{border-radius:52px 20px 52px 20px;transform:translateY(-5px)}
+.feat:nth-child(even):hover{border-radius:20px 52px 20px 52px}
+.fi{width:58px;height:58px;display:grid;place-items:center;border-radius:50%;background:var(--md-primary-container);color:var(--md-on-primary-container);margin-bottom:18px;transition:border-radius .8s var(--spring),transform .8s var(--spring),background-color .3s}
+.fi .ic{width:26px;height:26px}
+.feat:hover .fi{border-radius:18px;transform:rotate(-8deg) scale(1.08)}
+.feat:nth-child(3n+2) .fi{background:var(--md-tertiary-container);color:var(--md-on-tertiary-container)}
+.feat:nth-child(3n) .fi{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+.feat h3{font-size:1.25rem;font-weight:700;margin-bottom:6px;letter-spacing:-.01em;position:relative}
+.feat p{color:var(--md-on-surface-variant);position:relative}
+.kbds{display:flex;gap:6px;margin-top:14px;position:relative;flex-wrap:wrap}
+kbd{font:inherit;font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:8px;background:var(--md-surface-container-highest);border-bottom:2px solid var(--md-outline-variant)}
 
-    /* stats */
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: -8px; }
-    .stat { padding: 22px 20px; border-radius: var(--r-lg); background: var(--md-surface-container); text-align: center; }
-    .stat b { display: block; font-size: 40px; line-height: 1.1; font-weight: 500; letter-spacing: -1px; color: var(--md-primary); }
-    .stat span { font-size: 14px; color: var(--md-on-surface-variant); }
+/* ---------- screenshots ---------- */
+.shots{margin-top:44px}
+.viewport{position:relative;border-radius:36px;background:var(--md-surface-container);padding:14px;overflow:hidden}
+.slides{position:relative;aspect-ratio:16/10;border-radius:24px;overflow:hidden;background:var(--md-surface-container-highest)}
+.slides figure{position:absolute;inset:0;opacity:0;transform:scale(1.06) translateX(3%);transition:opacity .6s,transform .9s var(--spring);pointer-events:none;cursor:zoom-in}
+.slides figure.on{opacity:1;transform:none;pointer-events:auto}
+.slides img{width:100%;height:100%;object-fit:cover;object-position:top}
+.slides figcaption{position:absolute;left:16px;bottom:16px;padding:8px 18px;border-radius:99px;background:color-mix(in srgb,var(--md-inverse-surface) 88%,transparent);color:var(--md-inverse-on-surface);font-weight:600;font-size:.9rem;backdrop-filter:blur(8px)}
+.nav-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:16px}
+.dots{display:flex;gap:8px;align-items:center}
+.dot{height:10px;width:10px;border-radius:99px;background:var(--md-outline-variant);transition:width .5s var(--spring),background-color .3s}
+.dot[aria-current=true]{width:34px;background:var(--md-primary)}
+dialog.lb{border:0;background:transparent;max-width:min(1400px,96vw);width:96vw;padding:0;margin:auto;overflow:visible}
+dialog.lb::backdrop{background:color-mix(in srgb,var(--md-scrim) 78%,transparent);backdrop-filter:blur(6px)}
+dialog.lb img{width:100%;border-radius:20px;box-shadow:0 30px 80px #0008;animation:zoom .6s var(--spring)}
+@keyframes zoom{from{opacity:0;transform:scale(.88)}}
+dialog.lb .x{position:absolute;top:-52px;right:0;background:var(--md-surface-container-high);color:var(--md-on-surface)}
 
-    /* sections */
-    section { padding: 88px 0 0; }
-    .head { max-width: 640px; margin-bottom: 40px; }
-    .eyebrow { font-size: 13px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--md-primary); }
-    h2 { margin-top: 8px; font-size: clamp(28px, 3.6vw, 40px); line-height: 1.15; font-weight: 500; letter-spacing: -.6px; }
-    .head p { margin-top: 14px; font-size: 17px; color: var(--md-on-surface-variant); }
+/* ---------- themes preview ---------- */
+.theme-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;margin-top:44px;align-items:center}
+.pick{padding:26px;border-radius:32px;background:var(--md-surface-container-low)}
+.pick .swatches{width:auto;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));padding:12px 0 6px}
+.seg{display:flex;gap:2px;margin-top:6px}
+.seg button{flex:1;height:44px;border-radius:10px;background:var(--md-surface-container-highest);color:var(--md-on-surface-variant);font-weight:600;font-size:.875rem;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-radius .5s var(--spring),background-color .3s}
+.seg button:first-child{border-radius:99px 10px 10px 99px}.seg button:last-child{border-radius:10px 99px 99px 10px}
+.seg button[aria-checked=true]{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-radius:99px}
+.mini{border-radius:28px;background:var(--md-surface);box-shadow:0 30px 60px -24px color-mix(in srgb,var(--md-shadow) 50%,transparent),0 0 0 1px var(--md-outline-variant);overflow:hidden}
+.mini .tb{height:42px;display:flex;align-items:center;gap:8px;padding:0 16px;background:var(--md-surface-container)}
+.mini .tb i{width:11px;height:11px;border-radius:50%;background:var(--md-outline-variant)}
+.mini .tb b{margin-left:8px;font-size:.8rem}
+.mini .body{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:12px}
+.mini .rail{display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:6px}
+.mini .rail i{width:40px;height:26px;border-radius:99px;background:var(--md-surface-container-high)}
+.mini .rail i:first-child{background:var(--md-secondary-container)}
+.mini .main{display:grid;gap:10px}
+.mini .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini .box{border-radius:18px;background:var(--md-surface-container-low);padding:12px;font-size:.8rem}
+.mini .txt{margin-top:8px;border-radius:12px;background:var(--md-surface-container-highest);padding:10px;min-height:54px;font-size:.8rem}
+.mini .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.mini .row span{padding:6px 12px;border-radius:99px;border:1px solid var(--md-outline-variant);font-size:.72rem;font-weight:600;color:var(--md-on-surface-variant)}
+.mini .row span.s{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-color:transparent;border-radius:9px}
+.mini .pri{padding:7px 16px;border-radius:99px;background:var(--md-primary);color:var(--md-on-primary);font-weight:700;font-size:.72rem}
+.mini .tg{margin-left:auto;width:42px;height:26px;border-radius:99px;background:var(--md-primary);position:relative}
+.mini .tg::after{content:"";position:absolute;right:4px;top:4px;width:18px;height:18px;border-radius:50%;background:var(--md-on-primary)}
 
-    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    .card { padding: 24px 22px 26px; border-radius: var(--r-xl); background: var(--md-surface-container); transition: transform .35s var(--ease-out), background-color .3s, box-shadow .3s; }
-    .card:hover { transform: translateY(-6px); background: var(--md-surface-container-high); box-shadow: var(--e1); }
-    .card .bubble { width: 52px; height: 52px; border-radius: 18px; display: grid; place-items: center; background: var(--md-primary-container); color: var(--md-on-primary-container); transition: transform .4s var(--ease-out), border-radius .4s var(--ease-out); }
-    .card:hover .bubble { transform: rotate(-6deg) scale(1.06); border-radius: 50%; }
-    .card h3 { margin-top: 18px; font-size: 18px; font-weight: 500; line-height: 1.3; }
-    .card p { margin-top: 8px; font-size: 14.5px; line-height: 1.55; color: var(--md-on-surface-variant); }
+/* ---------- download ---------- */
+.dl{border-radius:48px;padding:clamp(28px,5vw,64px);background:linear-gradient(135deg,var(--md-primary-container),var(--md-tertiary-container));color:var(--md-on-primary-container);display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;position:relative;overflow:hidden}
+.dl::before{content:"";position:absolute;width:420px;height:420px;right:-120px;top:-150px;background:color-mix(in srgb,#fff 28%,transparent);animation:morph 16s var(--em) infinite}
+.dl h2{margin-top:0}.dl .lead{color:inherit;opacity:.85}
+.dl .cta{margin-top:26px}
+.dl .filled{box-shadow:0 12px 30px -10px color-mix(in srgb,var(--md-shadow) 60%,transparent)}
+.steps{list-style:none;display:grid;gap:12px;position:relative;counter-reset:s}
+.steps li{counter-increment:s;display:flex;gap:16px;align-items:center;padding:16px 20px;border-radius:24px;background:color-mix(in srgb,var(--md-surface) 62%,transparent);backdrop-filter:blur(8px);font-weight:600;transition:transform .5s var(--spring),border-radius .5s var(--spring)}
+.steps li:hover{transform:translateX(6px);border-radius:40px 24px 40px 24px}
+.steps li::before{content:counter(s);flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--md-primary);color:var(--md-on-primary);font-weight:800}
+.spec{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;position:relative}
+.spec span{padding:6px 14px;border-radius:99px;background:color-mix(in srgb,var(--md-surface) 60%,transparent);font-size:.8125rem;font-weight:700}
 
-    /* theme playground */
-    .play { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: center; padding: 40px; border-radius: 36px; background: linear-gradient(135deg, var(--md-primary-container), var(--md-tertiary-container)); color: var(--md-on-primary-container); }
-    .play h2 { margin-top: 0; }
-    .play p { margin-top: 12px; font-size: 17px; opacity: .88; }
-    .swatches { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 24px; }
-    .sw { position: relative; width: 52px; height: 52px; border: 0; padding: 0; border-radius: 50%; cursor: pointer; display: grid; place-items: center; background: linear-gradient(135deg, var(--a) 0 50%, var(--b) 50% 100%); box-shadow: inset 0 0 0 1px rgb(0 0 0 / .15); transition: transform .25s var(--ease-out), box-shadow .25s; }
-    .sw:hover { transform: scale(1.12); } .sw:active { transform: scale(.94); }
-    .sw .ic { width: 22px; height: 22px; stroke-width: 3; color: #fff; filter: drop-shadow(0 0 2px rgb(0 0 0 / .6)); transform: scale(0); transition: transform .3s var(--ease-out); }
-    .sw[aria-checked="true"] { box-shadow: 0 0 0 3px var(--md-primary-container), 0 0 0 5px var(--md-primary); }
-    .sw[aria-checked="true"] .ic { transform: scale(1); }
-    .modes { display: inline-flex; margin-top: 22px; border: 1px solid var(--md-outline); border-radius: 22px; overflow: hidden; }
-    .modes button { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border: 0; background: transparent; color: inherit; font: 500 14px/1 var(--font); cursor: pointer; transition: background-color .2s; }
-    .modes button + button { border-left: 1px solid var(--md-outline); }
-    .modes button .ic { width: 18px; height: 18px; }
-    .modes button[aria-checked="true"] { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
-    .mini { border-radius: var(--r-xl); background: var(--md-surface); color: var(--md-on-surface); padding: 20px; box-shadow: var(--e3); transition: background-color .35s; }
-    .mini .row { display: flex; gap: 8px; flex-wrap: wrap; }
-    .mini .c { height: 32px; padding: 0 12px; border-radius: 8px; display: inline-flex; align-items: center; font-size: 13px; font-weight: 500; box-shadow: inset 0 0 0 1px var(--md-outline); color: var(--md-on-surface-variant); }
-    .mini .c.on { background: var(--md-secondary-container); color: var(--md-on-secondary-container); box-shadow: none; }
-    .mini .field { margin: 16px 0; padding: 14px 16px; border-radius: var(--r-md); background: var(--md-surface-container-lowest); box-shadow: inset 0 0 0 1px var(--md-outline-variant); font: 500 16px/1.5 ui-monospace, Consolas, Menlo, monospace; color: var(--md-primary); }
-    .mini .bar { display: flex; gap: 10px; }
-    .mini .bar i { flex: 1; height: 10px; border-radius: 5px; background: var(--md-primary); } .mini .bar i:nth-child(2) { background: var(--md-secondary); } .mini .bar i:nth-child(3) { background: var(--md-tertiary); }
+/* ---------- faq ---------- */
+.faq{max-width:820px;margin:44px auto 0;display:grid;gap:10px}
+details{border-radius:24px;background:var(--md-surface-container-low);overflow:hidden;transition:border-radius .5s var(--spring),background-color .3s}
+details[open]{background:var(--md-surface-container);border-radius:32px}
+summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:20px 24px;font-weight:700;font-size:1.0625rem}
+summary::-webkit-details-marker{display:none}
+summary .ic{margin-left:auto;transition:transform .5s var(--spring)}
+details[open] summary .ic{transform:rotate(180deg)}
+details p{padding:0 24px 22px;color:var(--md-on-surface-variant);animation:fd .5s var(--spring)}
+@keyframes fd{from{opacity:0;transform:translateY(-8px)}}
 
-    /* gallery */
-    .gallery { position: relative; }
-    .track { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 8px 24px 28px; margin-inline: calc(50% - 50vw); padding-inline: max(24px, calc(50vw - 580px)); scrollbar-width: thin; scrollbar-color: var(--md-outline-variant) transparent; }
-    .slide { flex: 0 0 min(760px, 84vw); scroll-snap-align: center; margin: 0; }
-    .slide button { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: 16px; overflow: hidden; box-shadow: 0 14px 34px -10px rgb(0 0 0 / .3), 0 0 0 1px var(--md-outline-variant); transition: transform .4s var(--ease-out), box-shadow .4s; }
-    .slide button:hover { transform: translateY(-6px) scale(1.012); box-shadow: 0 24px 44px -12px rgb(0 0 0 / .38), 0 0 0 1px var(--md-outline-variant); }
-    .slide img { width: 100%; height: auto; }
-    .slide figcaption { margin-top: 14px; text-align: center; font-size: 14.5px; font-weight: 500; color: var(--md-on-surface-variant); }
-    .arrows { display: flex; gap: 8px; justify-content: center; margin-top: 4px; }
-    .arrows .icon-btn { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
-    .arrows .icon-btn:first-child .ic { transform: rotate(180deg); }
-    dialog.lightbox { border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 94vh; overflow: visible; }
-    dialog.lightbox::backdrop { background: rgb(0 0 0 / .72); backdrop-filter: blur(4px); }
-    dialog.lightbox[open] { animation: pop .35s var(--ease-out); }
-    dialog.lightbox img { max-width: 96vw; max-height: 88vh; border-radius: 14px; box-shadow: var(--e3); }
-    dialog.lightbox .x { position: absolute; top: -52px; right: 0; background: rgb(255 255 255 / .16); color: #fff; }
-    @keyframes pop { from { opacity: 0; transform: scale(.92); } }
+/* ---------- footer ---------- */
+footer{padding:40px 0 56px}
+.credit{display:flex;align-items:center;gap:16px;padding:20px 26px;border-radius:32px;background:linear-gradient(100deg,var(--md-primary-container),var(--md-tertiary-container),var(--md-secondary-container));color:var(--md-on-primary-container);position:relative;overflow:hidden;flex-wrap:wrap}
+.credit::after{content:"";position:absolute;inset:0;width:35%;background:linear-gradient(90deg,transparent,#ffffff59,transparent);animation:sheen 4s var(--em) infinite;pointer-events:none}
+@keyframes sheen{from{transform:translateX(-120%) skewX(-18deg)}to{transform:translateX(320%) skewX(-18deg)}}
+.credit .av{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--md-primary);color:var(--md-on-primary);flex:none}
+.credit p{font-size:1.0625rem}
+.credit b{font-weight:800}
+.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:26px;color:var(--md-on-surface-variant);font-size:.9rem;align-items:center}
+.foot a{font-weight:700;color:var(--md-primary)}.foot a:hover{text-decoration:underline}
 
-    /* download */
-    .dl { position: relative; overflow: hidden; display: grid; grid-template-columns: auto 1fr; gap: 36px; align-items: center; padding: 48px; border-radius: 40px; background: var(--md-primary); color: var(--md-on-primary); }
-    .dl::before, .dl::after { content: ''; position: absolute; border-radius: 50%; background: var(--md-on-primary); opacity: .08; pointer-events: none; }
-    .dl::before { width: 380px; height: 380px; right: -100px; top: -140px; animation: drift 14s ease-in-out infinite alternate; }
-    .dl::after { width: 260px; height: 260px; right: 180px; bottom: -150px; animation: drift 18s ease-in-out infinite alternate-reverse; }
-    .dl img { width: 128px; height: 128px; filter: drop-shadow(0 16px 26px rgb(0 0 0 / .35)); animation: bob 5s ease-in-out infinite; }
-    .dl h2 { margin: 0; }
-    .dl p { margin-top: 12px; max-width: 560px; font-size: 17px; opacity: .9; }
-    .dl .btn { margin-top: 26px; background: var(--md-on-primary); color: var(--md-primary); }
-    .meta { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 24px; font-size: 14px; }
-    .meta span { opacity: .75; } .meta b { display: block; font-weight: 500; font-size: 15px; opacity: 1; }
-    .note { margin-top: 18px; font-size: 12.5px; line-height: 1.5; opacity: .75; max-width: 560px; }
+/* ---------- misc ---------- */
+.top{position:fixed;right:20px;bottom:20px;z-index:40;width:56px;height:56px;border-radius:18px;background:var(--md-primary-container);color:var(--md-on-primary-container);display:grid;place-items:center;box-shadow:0 10px 26px -8px color-mix(in srgb,var(--md-shadow) 50%,transparent);opacity:0;transform:translateY(24px) scale(.5);pointer-events:none;transition:opacity .3s,transform .6s var(--bounce),border-radius .5s var(--spring)}
+.top.show{opacity:1;transform:none;pointer-events:auto}.top:hover{border-radius:50%}
+.toast{position:fixed;left:50%;bottom:28px;translate:-50% 0;z-index:80;padding:14px 22px;border-radius:20px;background:var(--md-inverse-surface);color:var(--md-inverse-on-surface);font-weight:600;display:flex;gap:10px;align-items:center;box-shadow:0 14px 40px -10px #0007;opacity:0;transform:translateY(24px) scale(.9);pointer-events:none;transition:opacity .25s,transform .55s var(--bounce)}
+.toast.show{opacity:1;transform:none}
+.rv{opacity:0;transform:translateY(34px) scale(.97);transition:opacity .7s var(--em),transform .9s var(--spring);transition-delay:var(--d,0ms)}
+.rv.in{opacity:1;transform:none}
 
-    footer { margin-top: 96px; padding: 36px 0 calc(36px + env(safe-area-inset-bottom)); background: var(--md-surface-container); }
-    footer .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; justify-content: space-between; font-size: 14px; color: var(--md-on-surface-variant); }
-    footer .credit { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-    .pill { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 12px 0 8px; border-radius: 13px; font-weight: 500; font-size: 13px; }
-    .pill .ic { width: 15px; height: 15px; }
-    .pill.me { background: linear-gradient(120deg, var(--md-primary-container), var(--md-tertiary-container)); color: var(--md-on-primary-container); }
-    .pill.ai { background: var(--md-surface-container-highest); color: var(--md-on-surface); } .pill.ai .ic { color: #d97757; }
-    footer a.top { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 500; color: var(--md-primary); }
-
-    /* reveal on scroll */
-    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s var(--ease-out), transform .7s var(--ease-out); transition-delay: calc(var(--d, 0) * 70ms); }
-    .reveal.in { opacity: 1; transform: none; }
-    html:not(.js) .reveal { opacity: 1; transform: none; }
-
-    @media (max-width: 1000px) {
-      .grid { grid-template-columns: repeat(2, 1fr); }
-      .hero .wrap { grid-template-columns: 1fr; gap: 40px; }
-      .shot { max-width: 640px; margin-inline: auto; width: 100%; }
-      .play { grid-template-columns: 1fr; padding: 32px; }
-    }
-    @media (max-width: 760px) {
-      .wrap { width: min(1160px, 100% - 32px); }
-      .links { display: none; }
-      .nav .wrap { height: 60px; }
-      .brand { font-size: 18px; } .brand img { width: 32px; height: 32px; }
-      .hero { padding: 28px 0 56px; }
-      .lead { font-size: 16.5px; }
-      .cta .btn { flex: 1 1 100%; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      section { padding-top: 64px; }
-      .play { padding: 26px 20px; border-radius: 28px; }
-      .dl { grid-template-columns: 1fr; padding: 32px 24px; border-radius: 32px; text-align: center; justify-items: center; }
-      .dl img { width: 96px; height: 96px; } .meta { justify-content: center; text-align: center; }
-      .float-ic { width: 64px; height: 64px; right: -4px; bottom: -18px; }
-      .frame { transform: none; }
-      .track { padding-inline: 16px; }
-      footer .wrap { flex-direction: column; text-align: center; }
-    }
-    @media (max-width: 520px) {
-      .grid { grid-template-columns: 1fr; }
-      .nav .btn span.t { display: none; } .nav .btn { padding: 0 14px; }
-      .icon-btn.txt span { display: none; }
-      .swatches { gap: 10px; } .sw { width: 46px; height: 46px; }
-      .demo-out { font-size: 17px; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-      .reveal { opacity: 1; transform: none; }
-    }
-  </style>
+/* ---------- responsive ---------- */
+@media(max-width:980px){
+  .links{display:none}.menu-btn{display:grid}
+  .links.open{display:flex;flex-direction:column;position:absolute;top:calc(100% + 12px);left:0;right:0;padding:12px;border-radius:28px;background:var(--md-surface-container-high);box-shadow:0 14px 40px -10px color-mix(in srgb,var(--md-shadow) 45%,transparent);animation:fd .5s var(--spring);margin:0}
+  .hero-grid,.theme-grid,.dl,.demo{grid-template-columns:1fr}
+  .stage{max-width:380px;order:-1}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .bento .feat,.bento .feat.w3,.bento .feat.w4{grid-column:span 3}
+}
+@media(max-width:640px){
+  section{padding:72px 0}.hero{padding-top:118px}
+  .bento .feat,.bento .feat.w3,.bento .feat.w4{grid-column:1/-1}
+  .btn.lg{height:56px;padding:0 24px;width:100%}.cta .btn{flex:1 1 100%}
+  .bar{height:58px;padding-left:12px}.brand span{font-size:1rem}
+  .swatches{width:240px;grid-template-columns:repeat(5,1fr)}
+  .viewport{padding:8px;border-radius:26px}.slides{border-radius:18px;aspect-ratio:4/3.4}
+  .mini .body{grid-template-columns:1fr}.mini .rail{display:none}.mini .two{grid-template-columns:1fr}
+  .stat b{font-size:2.1rem}.stat{padding:18px}
+  .top{right:14px;bottom:14px}
+}
+@media(max-width:460px){.brand span{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.rv{opacity:1;transform:none}}
+</style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-case-sensitive" viewBox="0 0 24 24"><path d="m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16"/> <path d="M22 9v7"/> <path d="M3.304 13h6.392"/> <circle cx="18.5" cy="12.5" r="3.5"/></symbol><symbol id="i-zap" viewBox="0 0 24 24"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></symbol><symbol id="i-list" viewBox="0 0 24 24"><path d="M3 5h.01"/> <path d="M3 12h.01"/> <path d="M3 19h.01"/> <path d="M8 5h13"/> <path d="M8 12h13"/> <path d="M8 19h13"/></symbol><symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"/></symbol><symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/> <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/></symbol><symbol id="i-languages" viewBox="0 0 24 24"><path d="m5 8 6 6"/> <path d="m4 14 6-6 2-3"/> <path d="M2 5h12"/> <path d="M7 2h1"/> <path d="m22 22-5-10-5 10"/> <path d="M14 18h6"/></symbol><symbol id="i-app-window" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/> <path d="M10 4v4"/> <path d="M2 8h20"/> <path d="M6 4v4"/></symbol><symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/> <path d="m9 12 2 2 4-4"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M12 15V3"/> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/> <path d="m7 10 5 5 5-5"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/> <path d="M12 2v2"/> <path d="M12 20v2"/> <path d="m4.93 4.93 1.41 1.41"/> <path d="m17.66 17.66 1.41 1.41"/> <path d="M2 12h2"/> <path d="M20 12h2"/> <path d="m6.34 17.66-1.41 1.41"/> <path d="m19.07 4.93-1.41 1.41"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol><symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/> <path d="M20 2v4"/> <path d="M22 4h-4"/> <circle cx="4" cy="20" r="2"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/> <circle cx="12" cy="7" r="4"/></symbol><symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"/> <path d="m19 8 3 8a5 5 0 0 1-6 0zV7"/> <path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"/> <path d="m5 8 3 8a5 5 0 0 1-6 0zV7"/> <path d="M7 21h10"/></symbol><symbol id="i-monitor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/> <line x1="8" x2="16" y1="21" y2="21"/> <line x1="12" x2="12" y1="17" y2="21"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-keyboard" viewBox="0 0 24 24"><path d="M10 8h.01"/> <path d="M12 12h.01"/> <path d="M14 8h.01"/> <path d="M16 12h.01"/> <path d="M18 8h.01"/> <path d="M6 8h.01"/> <path d="M7 16h10"/> <path d="M8 12h.01"/> <rect width="20" height="16" x="2" y="4" rx="2"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/> <path d="m6 6 12 12"/></symbol><symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/> <path d="m12 5 7 7-7 7"/></symbol><symbol id="i-heart" viewBox="0 0 24 24"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></symbol><symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/> <path d="M12 16v-4"/> <path d="M12 8h.01"/></symbol></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol><symbol id="i-monitor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></symbol><symbol id="i-languages" viewBox="0 0 24 24"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></symbol><symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></symbol><symbol id="i-code-xml" viewBox="0 0 24 24"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></symbol><symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol><symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></symbol><symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></symbol><symbol id="i-zap" viewBox="0 0 24 24"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></symbol><symbol id="i-type" viewBox="0 0 24 24"><path d="M12 4v16"/><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"/><path d="M9 20h6"/></symbol><symbol id="i-keyboard" viewBox="0 0 24 24"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></symbol><symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></symbol><symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z"/></symbol><symbol id="i-list-checks" viewBox="0 0 24 24"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></symbol><symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></symbol><symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="m19 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"/><path d="m5 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M7 21h10"/></symbol><symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol><symbol id="i-star" viewBox="0 0 24 24"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></symbol><symbol id="i-settings" viewBox="0 0 24 24"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></symbol><symbol id="i-heart" viewBox="0 0 24 24"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></symbol><symbol id="i-case-sensitive" viewBox="0 0 24 24"><path d="m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16"/><path d="M22 9v7"/><path d="M3.304 13h6.392"/><circle cx="18.5" cy="12.5" r="3.5"/></symbol><symbol id="i-command" viewBox="0 0 24 24"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></symbol><symbol id="i-layers" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></symbol><symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol><symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol><symbol id="i-maximize-2" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/></symbol><symbol id="i-wand-sparkles" viewBox="0 0 24 24"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></symbol><symbol id="i-folder-open" viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></symbol></defs></svg>
+<div class="progress" id="progress" aria-hidden="true"></div>
 
-<header class="nav" id="nav">
-  <div class="wrap">
-    <a class="brand" href="#top" aria-label="Case Converter"><img src="src/assets/logo.svg" alt="" width="36" height="36"><span>Case Converter</span></a>
-    <nav class="links" aria-label="Main">
-      <a href="#features" data-i="navFeatures">Features</a>
-      <a href="#themes" data-i="navThemes">Themes</a>
-      <a href="#screenshots" data-i="navShots">Screenshots</a>
-    </nav>
-    <button class="icon-btn txt rip" id="langBtn" type="button" aria-label="Language"><svg class="ic" style="width:20px;height:20px"><use href="#i-languages"/></svg><span id="langLbl">EN</span></button>
-    <button class="icon-btn rip" id="modeBtn" type="button" aria-label="Toggle light and dark theme"><svg class="ic"><use href="#i-moon" id="modeUse"/></svg></button>
-    <a class="btn filled rip" href="#download"><svg class="ic"><use href="#i-download"/></svg><span class="t" data-i="navDownload">Download</span></a>
+<header class="bar" id="bar">
+  <a class="brand" href="#home" aria-label="Case Converter"><img src="src/assets/logo.svg" alt="" width="34" height="34"><span>Case Converter</span></a>
+  <nav class="links" id="links" aria-label="Main">
+    <a href="#features" data-i18n="nav_features">Features</a>
+    <a href="#demo" data-i18n="nav_demo">Try it</a>
+    <a href="#screenshots" data-i18n="nav_shots">Screenshots</a>
+    <a href="#themes" data-i18n="nav_themes">Themes</a>
+    <a href="#download" data-i18n="nav_download">Download</a>
+    <a href="#faq" data-i18n="nav_faq">FAQ</a>
+  </nav>
+  <div class="tools">
+    <button class="ibtn langbtn" id="langBtn" aria-label="Language" data-i18n-aria="lbl_lang"><svg class="ic"><use href="#i-languages"/></svg><span id="langLabel">EN</span></button>
+    <button class="ibtn" id="modeBtn" aria-haspopup="true" aria-expanded="false" aria-label="Appearance" data-i18n-aria="lbl_mode"><svg class="ic" id="modeIcon"><use href="#i-monitor"/></svg></button>
+    <button class="ibtn" id="colorBtn" aria-haspopup="true" aria-expanded="false" aria-label="Theme color" data-i18n-aria="lbl_color"><svg class="ic"><use href="#i-palette"/></svg></button>
+    <button class="ibtn menu-btn" id="menuBtn" aria-expanded="false" aria-label="Menu"><svg class="ic"><use href="#i-menu"/></svg></button>
+    <div class="pop" id="modePop" role="menu">
+      <h4 data-i18n="lbl_mode">Appearance</h4>
+      <button class="opt" role="menuitemradio" data-mode="system"><svg class="ic"><use href="#i-monitor"/></svg><span data-i18n="mode_system">System</span></button>
+      <button class="opt" role="menuitemradio" data-mode="light"><svg class="ic"><use href="#i-sun"/></svg><span data-i18n="mode_light">Light</span></button>
+      <button class="opt" role="menuitemradio" data-mode="dark"><svg class="ic"><use href="#i-moon"/></svg><span data-i18n="mode_dark">Dark</span></button>
+    </div>
+    <div class="pop" id="colorPop">
+      <h4 data-i18n="lbl_color">Theme color</h4>
+      <div class="swatches" role="radiogroup" data-swatches></div>
+      <p class="cname" data-cname></p>
+    </div>
   </div>
 </header>
 
-<main id="top">
-  <section class="hero" style="padding-top:56px">
-    <span class="blob a"></span><span class="blob b"></span>
-    <div class="wrap">
-      <div class="reveal">
-        <span class="chip"><svg class="ic"><use href="#i-sparkles"/></svg><span data-i="heroChip">Free · Open source · Windows 10 / 11</span></span>
-        <h1 data-i="heroTitle">Turn any text into <span class="hl">the case you need</span></h1>
-        <p class="lead" data-i="heroLead">Case Converter changes text between 19 letter cases, tidies lists of lines and works completely offline. Fast, clean and built with Material Design 3.</p>
-        <div class="cta">
-          <a class="btn filled big rip" href="download/Case%20Converter_1.0.0_x64-setup.exe" download>
-            <svg class="ic"><use href="#i-download"/></svg>
-            <span class="lbl"><span data-i="heroCta">Download for Windows</span><small data-i="heroCtaSub">Version 1.0.0 · 64-bit</small></span>
-          </a>
-          <a class="btn tonal big rip" href="#features"><span data-i="heroMore">See features</span><svg class="ic"><use href="#i-arrow-right"/></svg></a>
+<main id="home">
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow rv"><svg class="ic"><use href="#i-sparkles"/></svg><span data-i18n="hero_badge">Free · Open source · v1.1.0</span></span>
+        <h1 class="rv" style="--d:80ms"><span data-i18n="hero_t1">Change text case</span> <em data-i18n="hero_t2">in one click</em></h1>
+        <p class="lead rv" style="--d:160ms" data-i18n="hero_p">Convert text between 21 letter cases, tidy up lines and encode data with 22 handy tools. A fast, private desktop app with a Material 3 Expressive design.</p>
+        <div class="cta rv" style="--d:240ms">
+          <a class="btn lg filled" href="download/Case%20Converter_1.1.0_x64-setup.exe" download><svg class="ic"><use href="#i-download"/></svg><span data-i18n="btn_download">Download for Windows</span></a>
+          <a class="btn lg tonal" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="ic"><use href="#i-code-xml"/></svg><span data-i18n="btn_github">View source</span></a>
         </div>
-        <div class="demo" aria-hidden="true">
-          <div class="demo-top"><svg class="ic"><use href="#i-case-sensitive"/></svg><span data-i="demoLabel">Live preview</span><span class="tag" id="demoTag">camelCase</span></div>
-          <div class="demo-in" id="demoIn">hello world from case converter</div>
-          <div class="demo-out" id="demoOut"></div>
-        </div>
+        <p class="meta rv" style="--d:320ms"><svg class="ic"><use href="#i-shield-check"/></svg><span data-i18n="hero_meta">Windows 10 / 11 · 64-bit · No account, works offline</span></p>
       </div>
-      <div class="shot reveal" style="--d:2">
-        <div class="frame">
-          <img class="light-img" src="screenshots/image01.png" width="1100" height="760" alt="Case Converter converting text to camelCase in the light theme" fetchpriority="high">
-          <img class="dark-img" src="screenshots/image04.png" width="1100" height="760" alt="Case Converter text tools in the dark theme">
-        </div>
-        <img class="float-ic" src="src/assets/logo.svg" alt="" width="88" height="88">
+      <div class="stage rv" style="--d:200ms" id="stage">
+        <div class="logo"><img src="src/assets/logo.svg" alt="Case Converter app icon" width="440" height="440"></div>
+        <span class="chip3d">camelCase</span><span class="chip3d">UPPERCASE</span><span class="chip3d">snake_case</span><span class="chip3d">kebab-case</span>
       </div>
     </div>
-  </section>
-
-  <div class="wrap">
-    <div class="stats reveal">
-      <div class="stat"><b data-count="19">19</b><span data-i="stat1">letter cases</span></div>
-      <div class="stat"><b data-count="9">9</b><span data-i="stat2">text tools</span></div>
-      <div class="stat"><b data-count="2">2</b><span data-i="stat3">languages</span></div>
-      <div class="stat"><b data-count="0">0</b><span data-i="stat4">bytes sent online</span></div>
+    <div class="stats">
+      <div class="stat rv"><b data-count="21">21</b><span data-i18n="stat1">letter cases</span></div>
+      <div class="stat rv" style="--d:80ms"><b data-count="22">22</b><span data-i18n="stat2">text tools</span></div>
+      <div class="stat rv" style="--d:160ms"><b data-count="19">19</b><span data-i18n="stat3">theme colors</span></div>
+      <div class="stat rv" style="--d:240ms"><b>EN · VI</b><span data-i18n="stat4">two languages</span></div>
     </div>
   </div>
+</section>
 
-  <section id="features">
-    <div class="wrap">
-      <div class="head reveal"><span class="eyebrow" data-i="featEyebrow">Features</span><h2 data-i="featTitle">Everything you need to fix your text</h2><p data-i="featLead">A small, quick app that does one job really well.</p></div>
-      <div class="grid">
-        <article class="card reveal" style="--d:0"><div class="bubble"><svg class="ic"><use href="#i-case-sensitive"/></svg></div><h3 data-i="f1t">19 letter cases</h3><p data-i="f1d">UPPERCASE, Title Case, camelCase, snake_case, kebab-case, URL slug and more, with Vietnamese-aware diacritics.</p></article>
-        <article class="card reveal" style="--d:1"><div class="bubble"><svg class="ic"><use href="#i-zap"/></svg></div><h3 data-i="f2t">Live as you type</h3><p data-i="f2d">The result updates instantly. Copy it with one click or Ctrl + Shift + C.</p></article>
-        <article class="card reveal" style="--d:2"><div class="bubble"><svg class="ic"><use href="#i-list"/></svg></div><h3 data-i="f3t">All cases at a glance</h3><p data-i="f3d">See every conversion at once and click any row to copy it.</p></article>
-        <article class="card reveal" style="--d:3"><div class="bubble"><svg class="ic"><use href="#i-wrench"/></svg></div><h3 data-i="f4t">9 text tools</h3><p data-i="f4d">Remove duplicate lines, sort A to Z, trim, join, number lines and more.</p></article>
-        <article class="card reveal" style="--d:0"><div class="bubble"><svg class="ic"><use href="#i-palette"/></svg></div><h3 data-i="f5t">Material 3 themes</h3><p data-i="f5d">Light, dark or system, with 18 Material colors, your own custom color and a choice of fonts.</p></article>
-        <article class="card reveal" style="--d:1"><div class="bubble"><svg class="ic"><use href="#i-languages"/></svg></div><h3 data-i="f6t">English and Vietnamese</h3><p data-i="f6d">Detects your device language automatically. Switch any time in Settings.</p></article>
-        <article class="card reveal" style="--d:2"><div class="bubble"><svg class="ic"><use href="#i-app-window"/></svg></div><h3 data-i="f7t">Remembers your window</h3><p data-i="f7d">Reopen at the size you left it, or always start maximized. You choose.</p></article>
-        <article class="card reveal" style="--d:3"><div class="bubble"><svg class="ic"><use href="#i-shield-check"/></svg></div><h3 data-i="f8t">Private and offline</h3><p data-i="f8d">Your text never leaves your computer. No account, no tracking.</p></article>
-      </div>
+<!-- ============ FEATURES ============ -->
+<section id="features">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow rv"><svg class="ic"><use href="#i-zap"/></svg><span data-i18n="nav_features">Features</span></span>
+      <h2 class="rv" data-i18n="feat_title">Everything you need for text</h2>
+      <p class="lead rv" data-i18n="feat_p">Small, quick and thoughtful. Case Converter keeps the everyday jobs one click away.</p>
     </div>
-  </section>
-
-  <section id="themes">
-    <div class="wrap">
-      <div class="play reveal">
-        <div>
-          <span class="eyebrow" style="color:inherit;opacity:.8" data-i="themeEyebrow">Themes</span>
-          <h2 data-i="themeTitle">Make it yours</h2>
-          <p data-i="themeLead">Pick a theme color and this whole page recolors, just like the app does with Material Color Utilities.</p>
-          <div class="swatches" id="swatches" role="radiogroup" aria-label="Theme color"></div>
-          <div class="modes" id="modes" role="radiogroup" aria-label="Theme mode">
-            <button type="button" class="rip" role="radio" data-m="system"><svg class="ic"><use href="#i-monitor"/></svg><span data-i="mSystem">System</span></button>
-            <button type="button" class="rip" role="radio" data-m="light"><svg class="ic"><use href="#i-sun"/></svg><span data-i="mLight">Light</span></button>
-            <button type="button" class="rip" role="radio" data-m="dark"><svg class="ic"><use href="#i-moon"/></svg><span data-i="mDark">Dark</span></button>
-          </div>
-        </div>
-        <div class="mini" aria-hidden="true">
-          <div class="row"><span class="c">UPPERCASE</span><span class="c">Title Case</span><span class="c on">camelCase</span><span class="c">snake_case</span></div>
-          <div class="field">caseConverterApp</div>
-          <div class="bar"><i></i><i></i><i></i></div>
-        </div>
-      </div>
+    <div class="bento" id="bento">
+      <article class="feat w3 rv"><div class="fi"><svg class="ic"><use href="#i-case-sensitive"/></svg></div><h3 data-i18n="f1_t">21 letter cases</h3><p data-i18n="f1_p">UPPERCASE, Title Case, camelCase, snake_case, kebab-case, URL slug and more, all in one place.</p></article>
+      <article class="feat w3 rv" style="--d:80ms"><div class="fi"><svg class="ic"><use href="#i-wrench"/></svg></div><h3 data-i18n="f2_t">22 text tools</h3><p data-i18n="f2_p">Sort and dedupe lines, find and replace with regex, Base64, URL and JSON, word frequency and more.</p></article>
+      <article class="feat rv"><div class="fi"><svg class="ic"><use href="#i-command"/></svg></div><h3 data-i18n="f3_t">Command palette</h3><p data-i18n="f3_p">Jump to any style, tool or action without touching the mouse.</p><div class="kbds"><kbd>Ctrl</kbd><kbd>K</kbd></div></article>
+      <article class="feat rv" style="--d:80ms"><div class="fi"><svg class="ic"><use href="#i-languages"/></svg></div><h3 data-i18n="f4_t">Made for Vietnamese</h3><p data-i18n="f4_p">Accents are handled properly: remove diacritics, build clean slugs and sort with Vietnamese rules.</p></article>
+      <article class="feat rv" style="--d:160ms"><div class="fi"><svg class="ic"><use href="#i-palette"/></svg></div><h3 data-i18n="f5_t">Material 3 Expressive</h3><p data-i18n="f5_p">Spring motion, shape morphing, 19 theme colors plus any custom color. Light, dark or system.</p></article>
+      <article class="feat w3 rv"><div class="fi"><svg class="ic"><use href="#i-history"/></svg></div><h3 data-i18n="f6_t">History and favorites</h3><p data-i18n="f6_p">Pin the styles you use most and bring back earlier results in a click.</p></article>
+      <article class="feat w3 rv" style="--d:80ms"><div class="fi"><svg class="ic"><use href="#i-wifi-off"/></svg></div><h3 data-i18n="f7_t">Private and offline</h3><p data-i18n="f7_p">Everything runs on your computer. Your text never leaves the app.</p></article>
+      <article class="feat w4 rv"><div class="fi"><svg class="ic"><use href="#i-settings"/></svg></div><h3 data-i18n="f8_t">Make it yours</h3><p data-i18n="f8_p">Five bundled fonts, three text sizes, English or Vietnamese, and the window behavior you prefer: remember the size or always open maximized.</p></article>
+      <article class="feat rv" style="--d:80ms"><div class="fi"><svg class="ic"><use href="#i-keyboard"/></svg></div><h3 data-i18n="f9_t">Keyboard first</h3><p data-i18n="f9_p">Shortcuts for copy, open, save and switching sections.</p><div class="kbds"><kbd>Alt</kbd><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></div></article>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section id="screenshots">
-    <div class="wrap"><div class="head reveal"><span class="eyebrow" data-i="shotsEyebrow">Screenshots</span><h2 data-i="shotsTitle">Take a look</h2><p data-i="shotsLead">A clean Material Design 3 interface that adapts to any window size.</p></div></div>
-    <div class="gallery reveal">
-      <div class="track" id="track" tabindex="0" aria-label="Screenshots">
-        <figure class="slide"><button type="button" data-src="screenshots/image01.png"><img src="screenshots/image01.png" width="1100" height="760" loading="lazy" alt="Converting text to camelCase"></button><figcaption data-i="c1">Convert in real time</figcaption></figure>
-        <figure class="slide"><button type="button" data-src="screenshots/image02.png"><img src="screenshots/image02.png" width="1100" height="760" loading="lazy" alt="Dark theme with the Vietnamese interface"></button><figcaption data-i="c2">Dark theme and Vietnamese</figcaption></figure>
-        <figure class="slide"><button type="button" data-src="screenshots/image03.png"><img src="screenshots/image03.png" width="1100" height="760" loading="lazy" alt="All conversions listed at once"></button><figcaption data-i="c3">All cases at a glance</figcaption></figure>
-        <figure class="slide"><button type="button" data-src="screenshots/image04.png"><img src="screenshots/image04.png" width="1100" height="760" loading="lazy" alt="Text tools such as sort and remove duplicates"></button><figcaption data-i="c4">Handy text tools</figcaption></figure>
-        <figure class="slide"><button type="button" data-src="screenshots/image05.png"><img src="screenshots/image05.png" width="1100" height="1130" loading="lazy" alt="Settings with theme, color, font, language and window options"></button><figcaption data-i="c5">Settings: theme, color, font, window</figcaption></figure>
-        <figure class="slide"><button type="button" data-src="screenshots/image06.png"><img src="screenshots/image06.png" width="1100" height="900" loading="lazy" alt="About dialog with author credits and keyboard shortcuts"></button><figcaption data-i="c6">About and keyboard shortcuts</figcaption></figure>
-      </div>
-      <div class="arrows"><button class="icon-btn rip" type="button" id="prev" aria-label="Previous"><svg class="ic"><use href="#i-arrow-right"/></svg></button><button class="icon-btn rip" type="button" id="next" aria-label="Next"><svg class="ic"><use href="#i-arrow-right"/></svg></button></div>
+<!-- ============ DEMO ============ -->
+<section id="demo" style="background:var(--md-surface-container-lowest)">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow rv"><svg class="ic"><use href="#i-wand-sparkles"/></svg><span data-i18n="nav_demo">Try it</span></span>
+      <h2 class="rv" data-i18n="demo_title">Try it right here</h2>
+      <p class="lead rv" data-i18n="demo_p">Type anything and pick a style. The desktop app has 21 styles and 22 tools.</p>
     </div>
-  </section>
+    <div class="demo rv">
+      <div class="card"><h3><svg class="ic"><use href="#i-type"/></svg><span data-i18n="demo_src">Your text</span></h3><textarea id="src" spellcheck="false" aria-label="Your text">Hello World from Case Converter. Chào mừng bạn đến với Việt Nam!</textarea></div>
+      <div class="card"><div class="rhead"><h3><svg class="ic"><use href="#i-check"/></svg><span data-i18n="demo_res">Result</span></h3><button class="btn sm filled" id="copyBtn"><svg class="ic"><use href="#i-copy"/></svg><span data-i18n="demo_copy">Copy</span></button></div><div class="out selectable" id="res" aria-live="polite"></div></div>
+      <div class="chips" id="chips" role="group" aria-label="Style"></div>
+    </div>
+  </div>
+</section>
 
-  <section id="download">
-    <div class="wrap">
-      <div class="dl reveal">
-        <img src="src/assets/logo.svg" alt="Case Converter icon" width="128" height="128">
-        <div>
-          <h2 data-i="dlTitle">Download Case Converter</h2>
-          <p data-i="dlLead">Free for everyone. It installs for your user account only, so no administrator rights are needed.</p>
-          <div class="meta">
-            <div><span data-i="dlVer">Version</span><b>1.0.0</b></div>
-            <div><span data-i="dlOs">Requires</span><b data-i="dlOsV">Windows 10 or 11 (64-bit)</b></div>
-            <div><span data-i="dlLic">License</span><b data-i="dlLicV">MIT, open source</b></div>
-          </div>
-          <a class="btn big rip" href="download/Case%20Converter_1.0.0_x64-setup.exe" download><svg class="ic"><use href="#i-download"/></svg><span data-i="heroCta">Download for Windows</span></a>
-          <p class="note" data-i="dlNote">Windows may show a SmartScreen notice because the installer is not code-signed. Choose More info, then Run anyway.</p>
+<!-- ============ SCREENSHOTS ============ -->
+<section id="screenshots">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow rv"><svg class="ic"><use href="#i-layers"/></svg><span data-i18n="nav_shots">Screenshots</span></span>
+      <h2 class="rv" data-i18n="shots_title">See it in action</h2>
+      <p class="lead rv" data-i18n="shots_p">Light and dark, English and Vietnamese, any theme color. Click an image to enlarge it.</p>
+    </div>
+    <div class="shots rv">
+      <div class="viewport">
+        <div class="slides" id="slides">
+          <figure class="on"><img src="screenshots/image01.png" alt="Case Converter main screen in light mode" loading="lazy"><figcaption data-i18n="cap1">Convert with 21 styles</figcaption></figure>
+          <figure><img src="screenshots/image02.png" alt="All letter cases at a glance in dark mode" loading="lazy"><figcaption data-i18n="cap2">Every style at a glance</figcaption></figure>
+          <figure><img src="screenshots/image03.png" alt="Settings dialog with theme colors and fonts" loading="lazy"><figcaption data-i18n="cap3">Settings made simple</figcaption></figure>
+          <figure><img src="screenshots/image04.png" alt="Text tools with a custom dropdown" loading="lazy"><figcaption data-i18n="cap4">22 handy text tools</figcaption></figure>
         </div>
       </div>
+      <div class="nav-row">
+        <button class="ibtn tonal" id="prev" aria-label="Previous" style="background:var(--md-secondary-container);color:var(--md-on-secondary-container)"><svg class="ic"><use href="#i-chevron-left"/></svg></button>
+        <div class="dots" id="dots"></div>
+        <button class="ibtn" id="next" aria-label="Next" style="background:var(--md-secondary-container);color:var(--md-on-secondary-container)"><svg class="ic"><use href="#i-chevron-right"/></svg></button>
+      </div>
     </div>
-  </section>
+  </div>
+</section>
+<dialog class="lb" id="lb"><button class="ibtn x" id="lbx" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button><img id="lbimg" alt=""></dialog>
+
+<!-- ============ THEMES ============ -->
+<section id="themes" style="background:var(--md-surface-container-lowest)">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow rv"><svg class="ic"><use href="#i-palette"/></svg><span data-i18n="nav_themes">Themes</span></span>
+      <h2 class="rv" data-i18n="theme_title">Your color, your app</h2>
+      <p class="lead rv" data-i18n="theme_p">Pick a color and this whole page changes. Material 3 builds a complete, readable palette for light and dark. The app also accepts any custom color.</p>
+    </div>
+    <div class="theme-grid">
+      <div class="pick rv">
+        <h4 class="cname" style="padding:0;color:var(--md-primary);text-transform:uppercase;letter-spacing:.08em" data-i18n="lbl_color">Theme color</h4>
+        <div class="swatches" role="radiogroup" data-swatches></div>
+        <p class="cname" data-cname style="padding:0 0 14px"></p>
+        <h4 class="cname" style="padding:0;color:var(--md-primary);text-transform:uppercase;letter-spacing:.08em" data-i18n="lbl_mode">Appearance</h4>
+        <div class="seg" role="radiogroup" id="seg">
+          <button role="radio" data-mode="system"><svg class="ic"><use href="#i-monitor"/></svg><span data-i18n="mode_system">System</span></button>
+          <button role="radio" data-mode="light"><svg class="ic"><use href="#i-sun"/></svg><span data-i18n="mode_light">Light</span></button>
+          <button role="radio" data-mode="dark"><svg class="ic"><use href="#i-moon"/></svg><span data-i18n="mode_dark">Dark</span></button>
+        </div>
+      </div>
+      <div class="mini rv" style="--d:100ms" aria-hidden="true">
+        <div class="tb"><i></i><i></i><i></i><b>Case Converter</b></div>
+        <div class="body"><div class="rail"><i></i><i></i><i></i></div>
+          <div class="main"><div class="two"><div class="box"><b>Source</b><div class="txt">hello world</div></div><div class="box"><div class="row"><b>Result</b><span class="pri" style="margin-left:auto">Copy</span></div><div class="txt">HELLO WORLD</div></div></div>
+            <div class="box"><div class="row"><span class="s">UPPERCASE</span><span>lowercase</span><span>camelCase</span><span>snake_case</span></div><div class="row" style="margin-top:12px"><b style="font-size:.8rem">Smart</b><i class="tg"></i></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DOWNLOAD ============ -->
+<section id="download">
+  <div class="wrap">
+    <div class="dl rv">
+      <div style="position:relative">
+        <span class="eyebrow" style="background:color-mix(in srgb,var(--md-surface) 65%,transparent);color:inherit"><svg class="ic"><use href="#i-download"/></svg><span data-i18n="dl_ver">Version 1.1.0</span></span>
+        <h2 data-i18n="dl_title" style="margin-top:16px">Download Case Converter</h2>
+        <p class="lead" data-i18n="dl_p">Free for Windows. Install in a few seconds and start converting.</p>
+        <div class="cta"><a class="btn lg filled" href="download/Case%20Converter_1.1.0_x64-setup.exe" download><svg class="ic"><use href="#i-download"/></svg><span data-i18n="btn_download">Download for Windows</span></a></div>
+        <div class="spec"><span>Windows 10 / 11</span><span>64-bit</span><span>MIT License</span></div>
+      </div>
+      <ol class="steps"><li data-i18n="s1">Download the installer</li><li data-i18n="s2">Run the setup and follow the steps</li><li data-i18n="s3">Open Case Converter and start converting</li></ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq" style="padding-top:40px">
+  <div class="wrap">
+    <div class="center"><span class="eyebrow rv"><svg class="ic"><use href="#i-star"/></svg><span>FAQ</span></span><h2 class="rv" data-i18n="faq_title">Questions, answered</h2></div>
+    <div class="faq rv">
+      <details open><summary><span data-i18n="q1">Is Case Converter free?</span><svg class="ic"><use href="#i-chevron-down"/></svg></summary><p data-i18n="a1">Yes. It is free and open source under the MIT License, and the code is on GitHub.</p></details>
+      <details><summary><span data-i18n="q2">Does it send my text anywhere?</span><svg class="ic"><use href="#i-chevron-down"/></svg></summary><p data-i18n="a2">No. The app works fully offline and your text stays on your computer.</p></details>
+      <details><summary><span data-i18n="q3">Which systems are supported?</span><svg class="ic"><use href="#i-chevron-down"/></svg></summary><p data-i18n="a3">Windows 10 and 11 (64-bit) today. It is built with Tauri, so you can also build it for other platforms from the source.</p></details>
+      <details><summary><span data-i18n="q4">Does it work with Vietnamese text?</span><svg class="ic"><use href="#i-chevron-down"/></svg></summary><p data-i18n="a4">Yes. Letters with accents are kept intact, and you can remove diacritics, create URL slugs and sort lines with Vietnamese rules.</p></details>
+      <details><summary><span data-i18n="q5">How do I build it myself?</span><svg class="ic"><use href="#i-chevron-down"/></svg></summary><p data-i18n="a5">Clone the repository, then run npm install, npm run dev to try it and npm run build to create the installer.</p></details>
+    </div>
+  </div>
+</section>
 </main>
 
 <footer>
   <div class="wrap">
-    <div class="credit"><span data-i="footMade">Made by</span><span class="pill me"><svg class="ic"><use href="#i-user"/></svg>minhtrong67</span><span data-i="footWith">with</span><span class="pill ai"><svg class="ic"><use href="#i-sparkles"/></svg>Claude</span></div>
-    <span data-i="footLic">Open source under the MIT License</span>
-    <a class="top" href="#top"><svg class="ic" style="width:18px;height:18px;transform:rotate(-90deg)"><use href="#i-arrow-right"/></svg><span data-i="footTop">Back to top</span></a>
+    <div class="credit rv">
+      <span class="av"><svg class="ic" style="width:26px;height:26px"><use href="#i-sparkles"/></svg></span>
+      <p><span data-i18n="foot_made">Made by</span> <b>minhtrong67</b> <span data-i18n="foot_with">with</span> <b data-i18n="foot_ai">Claude, the AI by Anthropic</b></p>
+    </div>
+    <div class="foot">
+      <span>© 2026 minhtrong67 · <span data-i18n="foot_license">Open source · MIT License</span></span>
+      <a href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener">github.com/minhtrong67/my-tauri-apps</a>
+    </div>
   </div>
 </footer>
 
-<dialog class="lightbox" id="lb" aria-label="Screenshot"><button class="icon-btn x rip" type="button" id="lbX" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button><img id="lbImg" alt=""></dialog>
+<button class="top" id="top" aria-label="Back to top" data-i18n-aria="lbl_top"><svg class="ic" style="width:26px;height:26px"><use href="#i-arrow-up"/></svg></button>
+<div class="toast" id="toast" role="status"><svg class="ic"><use href="#i-check"/></svg><span id="toastTxt"></span></div>
 
 <script>
-(() => {
-  document.documentElement.classList.add('js');
-  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
-  const store = { get(k, d) { try { return localStorage.getItem(k) ?? d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+(function(){
+'use strict';
+var D={en:{
+nav_features:'Features',nav_demo:'Try it',nav_shots:'Screenshots',nav_themes:'Themes',nav_download:'Download',nav_faq:'FAQ',
+lbl_lang:'Language',lbl_mode:'Appearance',lbl_color:'Theme color',lbl_top:'Back to top',mode_system:'System',mode_light:'Light',mode_dark:'Dark',
+hero_badge:'Free · Open source · v1.1.0',hero_t1:'Change text case',hero_t2:'in one click',
+hero_p:'Convert text between 21 letter cases, tidy up lines and encode data with 22 handy tools. A fast, private desktop app with a Material 3 Expressive design.',
+btn_download:'Download for Windows',btn_github:'View source',hero_meta:'Windows 10 / 11 · 64-bit · No account, works offline',
+stat1:'letter cases',stat2:'text tools',stat3:'theme colors',stat4:'two languages',
+feat_title:'Everything you need for text',feat_p:'Small, quick and thoughtful. Case Converter keeps the everyday jobs one click away.',
+f1_t:'21 letter cases',f1_p:'UPPERCASE, Title Case, camelCase, snake_case, kebab-case, URL slug and more, all in one place.',
+f2_t:'22 text tools',f2_p:'Sort and dedupe lines, find and replace with regex, Base64, URL and JSON, word frequency and more.',
+f3_t:'Command palette',f3_p:'Jump to any style, tool or action without touching the mouse.',
+f4_t:'Made for Vietnamese',f4_p:'Accents are handled properly: remove diacritics, build clean slugs and sort with Vietnamese rules.',
+f5_t:'Material 3 Expressive',f5_p:'Spring motion, shape morphing, 19 theme colors plus any custom color. Light, dark or system.',
+f6_t:'History and favorites',f6_p:'Pin the styles you use most and bring back earlier results in a click.',
+f7_t:'Private and offline',f7_p:'Everything runs on your computer. Your text never leaves the app.',
+f8_t:'Make it yours',f8_p:'Five bundled fonts, three text sizes, English or Vietnamese, and the window behavior you prefer: remember the size or always open maximized.',
+f9_t:'Keyboard first',f9_p:'Shortcuts for copy, open, save and switching sections.',
+demo_title:'Try it right here',demo_p:'Type anything and pick a style. The desktop app has 21 styles and 22 tools.',demo_src:'Your text',demo_res:'Result',demo_copy:'Copy',demo_copied:'Copied',toast_copied:'Copied to clipboard',
+shots_title:'See it in action',shots_p:'Light and dark, English and Vietnamese, any theme color. Click an image to enlarge it.',
+cap1:'Convert with 21 styles',cap2:'Every style at a glance',cap3:'Settings made simple',cap4:'22 handy text tools',
+theme_title:'Your color, your app',theme_p:'Pick a color and this whole page changes. Material 3 builds a complete, readable palette for light and dark. The app also accepts any custom color.',
+dl_ver:'Version 1.1.0',dl_title:'Download Case Converter',dl_p:'Free for Windows. Install in a few seconds and start converting.',
+s1:'Download the installer',s2:'Run the setup and follow the steps',s3:'Open Case Converter and start converting',
+faq_title:'Questions, answered',q1:'Is Case Converter free?',a1:'Yes. It is free and open source under the MIT License, and the code is on GitHub.',
+q2:'Does it send my text anywhere?',a2:'No. The app works fully offline and your text stays on your computer.',
+q3:'Which systems are supported?',a3:'Windows 10 and 11 (64-bit) today. It is built with Tauri, so you can also build it for other platforms from the source.',
+q4:'Does it work with Vietnamese text?',a4:'Yes. Letters with accents are kept intact, and you can remove diacritics, create URL slugs and sort lines with Vietnamese rules.',
+q5:'How do I build it myself?',a5:'Clone the repository, then run npm install, npm run dev to try it and npm run build to create the installer.',
+foot_made:'Made by',foot_with:'with',foot_ai:'Claude, the AI by Anthropic',foot_license:'Open source · MIT License'},
+vi:{
+nav_features:'Tính năng',nav_demo:'Dùng thử',nav_shots:'Ảnh chụp',nav_themes:'Giao diện',nav_download:'Tải về',nav_faq:'Hỏi đáp',
+lbl_lang:'Ngôn ngữ',lbl_mode:'Chế độ hiển thị',lbl_color:'Màu chủ đề',lbl_top:'Lên đầu trang',mode_system:'Hệ thống',mode_light:'Sáng',mode_dark:'Tối',
+hero_badge:'Miễn phí · Mã nguồn mở · v1.1.0',hero_t1:'Đổi kiểu chữ',hero_t2:'chỉ một cú nhấp',
+hero_p:'Chuyển văn bản giữa 21 kiểu chữ, dọn dẹp các dòng và mã hóa dữ liệu với 22 công cụ tiện lợi. Ứng dụng máy tính nhanh, riêng tư, thiết kế Material 3 Expressive.',
+btn_download:'Tải cho Windows',btn_github:'Xem mã nguồn',hero_meta:'Windows 10 / 11 · 64-bit · Không cần tài khoản, dùng offline',
+stat1:'kiểu chữ',stat2:'công cụ văn bản',stat3:'màu chủ đề',stat4:'hai ngôn ngữ',
+feat_title:'Mọi thứ bạn cần cho văn bản',feat_p:'Nhỏ gọn, nhanh và chu đáo. Case Converter đưa những việc hằng ngày về cách bạn một cú nhấp.',
+f1_t:'21 kiểu chữ',f1_p:'UPPERCASE, Title Case, camelCase, snake_case, kebab-case, slug cho URL và nhiều hơn nữa, gom lại một nơi.',
+f2_t:'22 công cụ văn bản',f2_p:'Sắp xếp và xóa dòng trùng, tìm và thay thế bằng regex, Base64, URL và JSON, đếm tần suất từ và hơn thế.',
+f3_t:'Bảng lệnh',f3_p:'Nhảy đến bất kỳ kiểu chữ, công cụ hay thao tác nào mà không cần chạm chuột.',
+f4_t:'Dành cho tiếng Việt',f4_p:'Xử lý dấu chuẩn xác: bỏ dấu, tạo slug sạch và sắp xếp theo quy tắc tiếng Việt.',
+f5_t:'Material 3 Expressive',f5_p:'Chuyển động lò xo, biến hình, 19 màu chủ đề và cả màu tùy chỉnh. Sáng, tối hoặc theo hệ thống.',
+f6_t:'Lịch sử và yêu thích',f6_p:'Ghim các kiểu bạn hay dùng và gọi lại kết quả cũ chỉ với một cú nhấp.',
+f7_t:'Riêng tư và offline',f7_p:'Mọi thứ chạy ngay trên máy của bạn. Văn bản không bao giờ rời khỏi ứng dụng.',
+f8_t:'Tùy chỉnh theo ý bạn',f8_p:'Năm phông chữ tích hợp sẵn, ba cỡ chữ, tiếng Anh hoặc tiếng Việt và cách mở cửa sổ tùy ý: nhớ kích thước hoặc luôn phóng to.',
+f9_t:'Ưu tiên bàn phím',f9_p:'Phím tắt để sao chép, mở, lưu và chuyển mục.',
+demo_title:'Dùng thử ngay tại đây',demo_p:'Gõ bất kỳ nội dung nào rồi chọn kiểu chữ. Ứng dụng đầy đủ có 21 kiểu và 22 công cụ.',demo_src:'Văn bản của bạn',demo_res:'Kết quả',demo_copy:'Sao chép',demo_copied:'Đã chép',toast_copied:'Đã sao chép vào clipboard',
+shots_title:'Xem ứng dụng hoạt động',shots_p:'Sáng và tối, tiếng Anh và tiếng Việt, mọi màu chủ đề. Nhấp vào ảnh để phóng to.',
+cap1:'Chuyển đổi với 21 kiểu',cap2:'Mọi kiểu trong một màn hình',cap3:'Cài đặt gọn gàng',cap4:'22 công cụ văn bản tiện lợi',
+theme_title:'Màu của bạn, ứng dụng của bạn',theme_p:'Chọn một màu và cả trang này đổi theo. Material 3 tạo bảng màu đầy đủ, dễ đọc cho cả sáng và tối. Ứng dụng còn nhận cả màu tùy chỉnh.',
+dl_ver:'Phiên bản 1.1.0',dl_title:'Tải Case Converter',dl_p:'Miễn phí cho Windows. Cài đặt trong vài giây và dùng ngay.',
+s1:'Tải bộ cài đặt về',s2:'Chạy tệp setup và làm theo hướng dẫn',s3:'Mở Case Converter và bắt đầu chuyển đổi',
+faq_title:'Giải đáp thắc mắc',q1:'Case Converter có miễn phí không?',a1:'Có. Ứng dụng miễn phí và mã nguồn mở theo giấy phép MIT, mã nguồn nằm trên GitHub.',
+q2:'Ứng dụng có gửi văn bản của tôi đi đâu không?',a2:'Không. Ứng dụng hoạt động hoàn toàn offline và văn bản luôn nằm trên máy của bạn.',
+q3:'Hỗ trợ những hệ điều hành nào?',a3:'Hiện có cho Windows 10 và 11 (64-bit). Ứng dụng xây dựng bằng Tauri nên bạn cũng có thể tự build cho nền tảng khác từ mã nguồn.',
+q4:'Có dùng được với tiếng Việt không?',a4:'Có. Chữ có dấu được giữ nguyên, và bạn có thể bỏ dấu, tạo slug URL và sắp xếp dòng theo quy tắc tiếng Việt.',
+q5:'Làm sao để tự build?',a5:'Tải mã nguồn về, rồi chạy npm install, npm run dev để chạy thử và npm run build để tạo bộ cài đặt.',
+foot_made:'Tác giả',foot_with:'cùng',foot_ai:'Claude, trợ lý AI của Anthropic',foot_license:'Mã nguồn mở · Giấy phép MIT'}};
+var CNAME={default:['Default','Mặc định'],red:['Red','Đỏ'],pink:['Pink','Hồng'],purple:['Purple','Tím'],deepPurple:['Deep purple','Tím đậm'],indigo:['Indigo','Chàm'],blue:['Blue','Xanh dương'],lightBlue:['Light blue','Xanh da trời'],cyan:['Cyan','Xanh lơ'],teal:['Teal','Xanh ngọc'],green:['Green','Xanh lá'],lightGreen:['Light green','Xanh lá nhạt'],lime:['Lime','Vàng chanh'],yellow:['Yellow','Vàng'],amber:['Amber','Hổ phách'],orange:['Orange','Cam'],deepOrange:['Deep orange','Cam đậm'],brown:['Brown','Nâu'],blueGrey:['Blue grey','Xám xanh']};
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+function save(){try{localStorage.setItem('ccl',JSON.stringify(state))}catch(e){}}
+function t(k){return (D[state.lang]&&D[state.lang][k])||D.en[k]||k}
 
-  /* ---------- Material color schemes (generated with Material Color Utilities) ---------- */
-  const DATA = {"roles":["primary","onPrimary","primaryContainer","onPrimaryContainer","secondary","secondaryContainer","onSecondaryContainer","tertiary","tertiaryContainer","onTertiaryContainer","surface","onSurface","onSurfaceVariant","outline","outlineVariant","surfaceContainerLowest","surfaceContainerLow","surfaceContainer","surfaceContainerHigh","surfaceContainerHighest","inverseSurface","inverseOnSurface"],"seeds":{"blue":{"seed":"#769CDF","l":["#415F91","#FFFFFF","#D6E3FF","#284777","#565F71","#DAE2F9","#3E4759","#705575","#FAD8FD","#573E5C","#F9F9FF","#191C20","#44474E","#74777F","#C4C6D0","#FFFFFF","#F3F3FA","#EDEDF4","#E7E8EE","#E2E2E9","#2E3036","#F0F0F7"],"d":["#AAC7FF","#0A305F","#284777","#D6E3FF","#BEC6DC","#3E4759","#DAE2F9","#DDBCE0","#573E5C","#FAD8FD","#111318","#E2E2E9","#C4C6D0","#8E9099","#44474E","#0C0E13","#191C20","#1D2024","#282A2F","#33353A","#E2E2E9","#2E3036"]},"orange":{"seed":"#FF5722","l":["#8f4c38","#ffffff","#ffdbd1","#723523","#77574e","#ffdbd1","#5d4037","#6c5d2f","#f5e1a7","#534619","#fff8f6","#231917","#53433f","#85736e","#d8c2bc","#ffffff","#fff1ed","#fceae5","#f7e4e0","#f1dfda","#392e2b","#ffede8"],"d":["#ffb5a0","#561f0f","#723523","#ffdbd1","#e7bdb2","#5d4037","#ffdbd1","#d8c58d","#534619","#f5e1a7","#1a110f","#f1dfda","#d8c2bc","#a08c87","#53433f","#140c0a","#231917","#271d1b","#322825","#3d322f","#f1dfda","#392e2b"]},"green":{"seed":"#4CAF50","l":["#3b6939","#ffffff","#bcf0b4","#235024","#52634f","#d5e8cf","#3b4b38","#38656a","#bcebf0","#1f4d52","#f7fbf1","#191d17","#424940","#72796f","#c2c9bd","#ffffff","#f1f5ec","#ecefe6","#e6e9e0","#e0e4db","#2d322c","#eff2e9"],"d":["#a1d39a","#0a390f","#235024","#bcf0b4","#baccb3","#3b4b38","#d5e8cf","#a0cfd4","#1f4d52","#bcebf0","#10140f","#e0e4db","#c2c9bd","#8c9388","#424940","#0b0f0a","#191d17","#1d211b","#272b25","#323630","#e0e4db","#2d322c"]},"purple":{"seed":"#9C27B0","l":["#7b4e7f","#ffffff","#ffd6fe","#613766","#6b586b","#f4dbf1","#534153","#82524a","#ffdad4","#673b34","#fff7fa","#1f1a1f","#4d444c","#7f747d","#d0c3cc","#ffffff","#fcf0f7","#f6ebf2","#f0e5ec","#ebdfe6","#352f34","#f9eef5"],"d":["#ebb5ed","#49204e","#613766","#ffd6fe","#d7bfd5","#534153","#f4dbf1","#f6b8ad","#673b34","#ffdad4","#171216","#ebdfe6","#d0c3cc","#998d96","#4d444c","#110d11","#1f1a1f","#231e23","#2e282d","#393338","#ebdfe6","#352f34"]},"teal":{"seed":"#009688","l":["#006a60","#ffffff","#9ef2e4","#005048","#4a635f","#cce8e2","#334b47","#456179","#cce5ff","#2d4961","#f4fbf8","#161d1c","#3f4947","#6f7977","#bec9c6","#ffffff","#eff5f2","#e9efed","#e3eae7","#dde4e1","#2b3230","#ecf2ef"],"d":["#82d5c8","#003731","#005048","#9ef2e4","#b1ccc6","#334b47","#cce8e2","#adcae6","#2d4961","#cce5ff","#0e1513","#dde4e1","#bec9c6","#899390","#3f4947","#090f0e","#161d1c","#1a2120","#252b2a","#303635","#dde4e1","#2b3230"]},"pink":{"seed":"#E91E63","l":["#8e4957","#ffffff","#ffd9de","#71333f","#75565b","#ffd9de","#5c3f43","#795831","#ffddba","#5f411c","#fff8f7","#22191a","#524345","#847375","#d6c2c3","#ffffff","#fff0f1","#fbeaeb","#f5e4e5","#f0dee0","#382e2f","#feedee"],"d":["#ffb2be","#561d2a","#71333f","#ffd9de","#e5bdc2","#5c3f43","#ffd9de","#ebbf90","#5f411c","#ffddba","#191112","#f0dee0","#d6c2c3","#9f8c8e","#524345","#140c0d","#22191a","#261d1e","#312829","#3c3233","#f0dee0","#382e2f"]}}};
-  const kebab = (s) => s.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase());
-  const NAMES = { blue: 'Default', orange: 'Deep orange', green: 'Green', purple: 'Purple', teal: 'Teal', pink: 'Pink' };
-  const st = { seed: store.get('lp-seed', 'blue'), mode: store.get('lp-mode', 'system') };
-  if (!DATA.seeds[st.seed]) st.seed = 'blue';
-  if (!['system', 'light', 'dark'].includes(st.mode)) st.mode = 'system';
-  const mq = matchMedia('(prefers-color-scheme: dark)');
-  const dark = () => st.mode === 'dark' || (st.mode === 'system' && mq.matches);
-  function paint() {
-    const d = dark(), root = document.documentElement, vals = DATA.seeds[st.seed][d ? 'd' : 'l'];
-    DATA.roles.forEach((r, i) => root.style.setProperty('--md-' + kebab(r), vals[i]));
-    root.style.colorScheme = d ? 'dark' : 'light';
-    root.dataset.mode = d ? 'dark' : 'light';
-    $('#modeUse').setAttribute('href', d ? '#i-sun' : '#i-moon');
-    $$('.sw').forEach((b) => { const s = DATA.seeds[b.dataset.s][d ? 'd' : 'l']; b.style.setProperty('--a', s[0]); b.style.setProperty('--b', s[2]); b.setAttribute('aria-checked', String(b.dataset.s === st.seed)); });
-    $$('#modes button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.m === st.mode)));
-  }
-  Object.keys(DATA.seeds).forEach((k) => {
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'sw'; b.dataset.s = k; b.setAttribute('role', 'radio'); b.title = NAMES[k]; b.setAttribute('aria-label', NAMES[k]);
-    b.innerHTML = '<svg class="ic"><use href="#i-check"/></svg>';
-    b.onclick = () => { st.seed = k; store.set('lp-seed', k); paint(); };
-    $('#swatches').append(b);
+/* ---- language ---- */
+function applyLang(){
+  document.documentElement.lang=state.lang;
+  $$('[data-i18n]').forEach(function(e){e.textContent=t(e.getAttribute('data-i18n'))});
+  $$('[data-i18n-aria]').forEach(function(e){e.setAttribute('aria-label',t(e.getAttribute('data-i18n-aria')))});
+  $('#langLabel').textContent=state.lang.toUpperCase();
+  $$('[data-cname]').forEach(function(e){e.textContent=CNAME[state.color][state.lang==='vi'?1:0]});
+  $$('[data-swatches] .sw').forEach(function(b){var n=CNAME[b.dataset.c][state.lang==='vi'?1:0];b.setAttribute('aria-label',n);b.title=n});
+  document.title=state.lang==='vi'?'Case Converter – Đổi kiểu chữ chỉ một cú nhấp | Ứng dụng máy tính miễn phí':'Case Converter – Change text case in one click | Free desktop app';
+  renderDemo();
+}
+$('#langBtn').addEventListener('click',function(){state.lang=state.lang==='en'?'vi':'en';save();applyLang()});
+
+/* ---- mode + color ---- */
+var MODE_ICON={system:'monitor',light:'sun',dark:'moon'};
+function syncControls(){
+  $('#modeIcon').firstElementChild.setAttribute('href','#i-'+MODE_ICON[state.mode]);
+  $$('[data-mode]').forEach(function(b){b.setAttribute('aria-checked',b.dataset.mode===state.mode)});
+  $$('.sw').forEach(function(b){b.setAttribute('aria-checked',b.dataset.c===state.color)});
+  $$('[data-cname]').forEach(function(e){e.textContent=CNAME[state.color][state.lang==='vi'?1:0]});
+}
+function setMode(m){state.mode=m;save();applyTheme();syncControls()}
+function setColor(c){state.color=c;save();applyTheme();syncControls()}
+$$('[data-swatches]').forEach(function(box){
+  Object.keys(THEMES).forEach(function(id){
+    var b=document.createElement('button');b.className='sw';b.dataset.c=id;b.setAttribute('role','radio');
+    b.style.background=THEMES[id][0];b.innerHTML='<svg class="ic"><use href="#i-check"/></svg>';
+    b.addEventListener('click',function(){setColor(id)});box.appendChild(b);
   });
-  $$('#modes button').forEach((b) => (b.onclick = () => { st.mode = b.dataset.m; store.set('lp-mode', st.mode); paint(); }));
-  $('#modeBtn').onclick = () => { st.mode = dark() ? 'light' : 'dark'; store.set('lp-mode', st.mode); paint(); };
-  mq.addEventListener('change', () => st.mode === 'system' && paint());
+});
+$$('[data-mode]').forEach(function(b){b.addEventListener('click',function(){setMode(b.dataset.mode)})});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){if(state.mode==='system')applyTheme()});
 
-  /* ---------- language (English default text lives in the HTML; Vietnamese below) ---------- */
-  const EN = {}; $$('[data-i]').forEach((e) => (EN[e.dataset.i] = e.innerHTML));
-  const VI = {
-    navFeatures: 'Tính năng', navThemes: 'Giao diện', navShots: 'Ảnh chụp', navDownload: 'Tải về',
-    heroChip: 'Miễn phí · Mã nguồn mở · Windows 10 / 11',
-    heroTitle: 'Biến mọi văn bản thành <span class="hl">kiểu chữ bạn cần</span>',
-    heroLead: 'Case Converter chuyển văn bản giữa 19 kiểu chữ, dọn dẹp danh sách dòng và hoạt động hoàn toàn ngoại tuyến. Nhanh, gọn và theo phong cách Material Design 3.',
-    heroCta: 'Tải về cho Windows', heroCtaSub: 'Phiên bản 1.0.0 · 64-bit', heroMore: 'Xem tính năng', demoLabel: 'Xem trước trực tiếp',
-    stat1: 'kiểu chữ', stat2: 'công cụ văn bản', stat3: 'ngôn ngữ', stat4: 'byte gửi lên mạng',
-    featEyebrow: 'Tính năng', featTitle: 'Mọi thứ bạn cần để chỉnh văn bản', featLead: 'Một ứng dụng nhỏ, nhanh và làm tốt một việc.',
-    f1t: '19 kiểu chữ', f1d: 'UPPERCASE, Title Case, camelCase, snake_case, kebab-case, slug URL và nhiều hơn nữa, xử lý dấu tiếng Việt chuẩn xác.',
-    f2t: 'Kết quả tức thì', f2d: 'Kết quả cập nhật ngay khi bạn gõ. Sao chép bằng một cú nhấp hoặc Ctrl + Shift + C.',
-    f3t: 'Xem tất cả kiểu cùng lúc', f3d: 'Xem mọi kiểu chuyển đổi trong một danh sách và nhấp vào dòng bất kỳ để sao chép.',
-    f4t: '9 công cụ văn bản', f4d: 'Xóa dòng trùng, sắp xếp A đến Z, cắt khoảng trắng, nối dòng, đánh số dòng và hơn thế nữa.',
-    f5t: 'Giao diện Material 3', f5d: 'Sáng, tối hoặc theo hệ thống, với 18 màu Material, màu tùy chỉnh và nhiều phông chữ để chọn.',
-    f6t: 'Tiếng Anh và tiếng Việt', f6d: 'Tự nhận diện ngôn ngữ của thiết bị. Đổi bất cứ lúc nào trong Cài đặt.',
-    f7t: 'Nhớ cửa sổ của bạn', f7d: 'Mở lại đúng kích thước lần trước, hoặc luôn phóng to tối đa. Bạn chọn.',
-    f8t: 'Riêng tư và ngoại tuyến', f8d: 'Văn bản của bạn không bao giờ rời khỏi máy. Không tài khoản, không theo dõi.',
-    themeEyebrow: 'Giao diện', themeTitle: 'Biến nó thành của bạn', themeLead: 'Chọn một màu chủ đề và cả trang này đổi màu theo, giống cách ứng dụng dùng Material Color Utilities.',
-    mSystem: 'Hệ thống', mLight: 'Sáng', mDark: 'Tối',
-    shotsEyebrow: 'Ảnh chụp', shotsTitle: 'Xem thử giao diện', shotsLead: 'Giao diện Material Design 3 gọn gàng, tự thích ứng với mọi kích thước cửa sổ.',
-    c1: 'Chuyển đổi theo thời gian thực', c2: 'Giao diện tối và tiếng Việt', c3: 'Tất cả kiểu trong một danh sách', c4: 'Công cụ văn bản tiện lợi', c5: 'Cài đặt: giao diện, màu, phông, cửa sổ', c6: 'Thông tin và phím tắt',
-    dlTitle: 'Tải Case Converter', dlLead: 'Miễn phí cho mọi người. Chỉ cài cho tài khoản của bạn nên không cần quyền quản trị.',
-    dlVer: 'Phiên bản', dlOs: 'Yêu cầu', dlOsV: 'Windows 10 hoặc 11 (64-bit)', dlLic: 'Giấy phép', dlLicV: 'MIT, mã nguồn mở',
-    dlNote: 'Windows có thể hiện thông báo SmartScreen vì bộ cài chưa được ký số. Hãy chọn Thông tin thêm, rồi Vẫn chạy.',
-    footMade: 'Tác giả', footWith: 'cùng', footLic: 'Mã nguồn mở theo giấy phép MIT', footTop: 'Lên đầu trang',
-  };
-  const ARIA = { en: { mode: 'Toggle light and dark theme', lang: 'Language', prev: 'Previous', next: 'Next', close: 'Close' }, vi: { mode: 'Đổi giao diện sáng và tối', lang: 'Ngôn ngữ', prev: 'Trước', next: 'Sau', close: 'Đóng' } };
-  const META = { en: { t: document.title, d: $('meta[name=description]').content }, vi: { t: 'Case Converter – Chuyển đổi văn bản giữa 19 kiểu chữ | Ứng dụng Windows miễn phí', d: 'Case Converter là ứng dụng Windows miễn phí, mã nguồn mở, chuyển văn bản giữa 19 kiểu chữ (camelCase, snake_case, Title Case, UPPERCASE, slug URL...) và dọn dẹp danh sách dòng. Material Design 3, ngoại tuyến, tiếng Anh và tiếng Việt.' } };
-  const deviceLang = ((navigator.languages && navigator.languages[0]) || navigator.language || 'en').toLowerCase().startsWith('vi') ? 'vi' : 'en';
-  let lang = store.get('lp-lang', '') || deviceLang;
-  if (lang !== 'vi' && lang !== 'en') lang = deviceLang;
-  function setLang(l) {
-    lang = l; document.documentElement.lang = l;
-    $$('[data-i]').forEach((e) => { const k = e.dataset.i; e.innerHTML = l === 'vi' && VI[k] ? VI[k] : EN[k]; });
-    $('#langLbl').textContent = l === 'vi' ? 'VI' : 'EN';
-    document.title = META[l].t; $('meta[name=description]').content = META[l].d;
-    const a = ARIA[l]; $('#modeBtn').ariaLabel = a.mode; $('#langBtn').ariaLabel = a.lang; $('#prev').ariaLabel = a.prev; $('#next').ariaLabel = a.next; $('#lbX').ariaLabel = a.close;
-  }
-  $('#langBtn').onclick = () => { const n = lang === 'vi' ? 'en' : 'vi'; store.set('lp-lang', n); setLang(n); };
+/* ---- popovers ---- */
+var pops=[['#modeBtn','#modePop'],['#colorBtn','#colorPop']];
+function closePops(except){pops.forEach(function(p){if(p[1]!==except){$(p[1]).classList.remove('open');$(p[0]).setAttribute('aria-expanded','false')}})}
+pops.forEach(function(p){$(p[0]).addEventListener('click',function(e){e.stopPropagation();var el=$(p[1]),open=!el.classList.contains('open');closePops(p[1]);el.classList.toggle('open',open);this.setAttribute('aria-expanded',open)})});
+document.addEventListener('click',function(e){if(!e.target.closest('.pop'))closePops()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closePops();closeMenu();var lb=$('#lb');if(lb.open)lb.close()}});
 
-  /* ---------- live typing demo ---------- */
-  const W = ['hello', 'world', 'from', 'case', 'converter'];
-  const cap = (w) => w[0].toUpperCase() + w.slice(1);
-  const STY = [
-    ['camelCase', W.map((w, i) => (i ? cap(w) : w)).join('')], ['snake_case', W.join('_')], ['PascalCase', W.map(cap).join('')],
-    ['kebab-case', W.join('-')], ['CONSTANT_CASE', W.join('_').toUpperCase()], ['Title Case', W.map(cap).join(' ')], ['dot.case', W.join('.')],
-  ];
-  const out = $('#demoOut'), tag = $('#demoTag'), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let si = 0;
-  function type() {
-    const [name, text] = STY[si]; tag.textContent = name; let n = 0;
-    if (reduce) { out.textContent = text; setTimeout(() => { si = (si + 1) % STY.length; type(); }, 2600); return; }
-    const tick = () => { out.textContent = text.slice(0, ++n); if (n < text.length) setTimeout(tick, 38); else setTimeout(() => { si = (si + 1) % STY.length; type(); }, 1700); };
-    tick();
-  }
+/* ---- mobile menu + smooth anchors ---- */
+function closeMenu(){$('#links').classList.remove('open');$('#menuBtn').setAttribute('aria-expanded','false')}
+$('#menuBtn').addEventListener('click',function(e){e.stopPropagation();var o=$('#links').classList.toggle('open');this.setAttribute('aria-expanded',o);closePops()});
+document.addEventListener('click',function(e){if(!e.target.closest('#links')&&!e.target.closest('#menuBtn'))closeMenu()});
+$$('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){var id=a.getAttribute('href');var el=id==='#home'?document.body:$(id);if(!el)return;e.preventDefault();closeMenu();(id==='#home'?window.scrollTo({top:0,behavior:'smooth'}):el.scrollIntoView({behavior:'smooth',block:'start'}));history.replaceState(null,'',id)})});
+$('#top').addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
 
-  /* ---------- ripple, nav shadow, reveal, counters, gallery, lightbox ---------- */
-  document.addEventListener('pointerdown', (e) => {
-    const el = e.target.closest('.rip'); if (!el) return;
-    const r = el.getBoundingClientRect(), size = Math.hypot(Math.max(e.clientX - r.left, r.right - e.clientX), Math.max(e.clientY - r.top, r.bottom - e.clientY)) * 2;
-    const s = document.createElement('span'); s.className = 'ripple';
-    s.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - r.left - size / 2}px;top:${e.clientY - r.top - size / 2}px`;
-    el.append(s); s.addEventListener('animationend', () => s.remove(), { once: true });
-  });
-  const nav = $('#nav'); const onScroll = () => nav.classList.toggle('scrolled', scrollY > 8); addEventListener('scroll', onScroll, { passive: true }); onScroll();
-  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12, rootMargin: '0px 0px -40px' });
-  $$('.reveal').forEach((el) => io.observe(el));
-  const track = $('#track'), step = () => Math.min(track.clientWidth * .8, 780);
-  $('#prev').onclick = () => track.scrollBy({ left: -step(), behavior: 'smooth' });
-  $('#next').onclick = () => track.scrollBy({ left: step(), behavior: 'smooth' });
-  const lb = $('#lb'), lbImg = $('#lbImg');
-  $$('.slide button').forEach((b) => (b.onclick = () => { lbImg.src = b.dataset.src; lbImg.alt = $('img', b).alt; lb.showModal(); }));
-  lb.addEventListener('click', (e) => { if (e.target === lb || e.target === lbImg) lb.close(); });
-  $('#lbX').onclick = () => lb.close();
+/* ---- scroll effects ---- */
+var secs=['features','demo','screenshots','themes','download','faq'].map(function(id){return document.getElementById(id)});
+var ticking=false;
+function onScroll(){
+  var y=window.scrollY,h=document.documentElement.scrollHeight-innerHeight;
+  $('#progress').style.transform='scaleX('+(h>0?y/h:0)+')';
+  $('#bar').classList.toggle('scrolled',y>30);
+  $('#top').classList.toggle('show',y>700);
+  var cur=null;secs.forEach(function(s){if(s.getBoundingClientRect().top<innerHeight*.4)cur=s.id});
+  $$('#links a').forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+cur)});
+  ticking=false;
+}
+addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(onScroll)}},{passive:true});onScroll();
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+$$('.rv').forEach(function(e){io.observe(e)});
+/* count-up on stats */
+var cio=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;cio.unobserve(e.target);var n=+e.target.dataset.count,t0=performance.now();(function f(now){var p=Math.min(1,(now-t0)/1100),v=Math.round(n*(1-Math.pow(1-p,3)));e.target.textContent=v;if(p<1)requestAnimationFrame(f)})(t0)})},{threshold:.6});
+$$('[data-count]').forEach(function(e){cio.observe(e)});
+/* ripple + cursor glow + hero parallax */
+document.addEventListener('pointerdown',function(e){var el=e.target.closest&&e.target.closest('.btn,.ibtn,.chip,.opt,.seg button');if(!el||e.button)return;var r=el.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,s=Math.hypot(Math.max(x,r.width-x),Math.max(y,r.height-y))*2,sp=document.createElement('span');sp.className='ripple';sp.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(x-s/2)+'px;top:'+(y-s/2)+'px';el.appendChild(sp);sp.addEventListener('animationend',function(){sp.remove()})},{passive:true});
+$$('.feat').forEach(function(f){f.addEventListener('pointermove',function(e){var r=f.getBoundingClientRect();f.style.setProperty('--mx',(e.clientX-r.left)+'px');f.style.setProperty('--my',(e.clientY-r.top)+'px')})});
+var stage=$('#stage');
+if(matchMedia('(hover:hover)').matches){document.addEventListener('pointermove',function(e){var x=(e.clientX/innerWidth-.5),y=(e.clientY/innerHeight-.5);$$('.chip3d').forEach(function(c,i){c.style.translate=(x*(i%2?-24:24))+'px '+(y*(i<2?-18:18))+'px'});$$('.blob').forEach(function(b,i){b.style.translate=(x*(i?40:-40))+'px '+(y*(i?30:-30))+'px'})},{passive:true})}
 
-  paint(); setLang(lang); type();
+/* ---- live demo (same rules as the app) ---- */
+var W=/\p{Lu}+(?=\p{Lu}\p{Ll})|\p{Lu}?\p{Ll}+|\p{Lu}+|\p{N}+|\p{Lo}+/gu;
+function words(s){return s.normalize('NFC').replace(/(\p{L})['’](?=\p{L})/gu,'$1').match(W)||[]}
+function deb(s){return s.normalize('NFD').replace(/\p{M}/gu,'').replace(/đ/g,'d').replace(/Đ/g,'D').normalize('NFC')}
+function cap(w){return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()}
+function pl(f){return function(s){return s.split(/\r?\n/).map(f).join('\n')}}
+function ident(j){return pl(function(l){return j(words(l))})}
+var SMALL='a an and as at but by for if in nor of on or per so the to up via vs yet'.split(' ');
+function title(l){var ms=[].slice.call(l.matchAll(/[\p{L}\p{N}][\p{L}\p{N}\p{M}'’]*/gu)),o='',last=0;ms.forEach(function(m,i){var w=m[0].toLowerCase(),keep=i>0&&i<ms.length-1&&SMALL.indexOf(w)>-1;o+=l.slice(last,m.index)+(keep?w:w.charAt(0).toUpperCase()+w.slice(1));last=m.index+m[0].length});return o+l.slice(last)}
+var STY=[
+['UPPERCASE',function(s){return s.toUpperCase()}],['lowercase',function(s){return s.toLowerCase()}],
+['Title Case',pl(title)],
+['Sentence case',function(s){return s.toLowerCase().replace(/(^\s*[("'“‘[]*|[.!?…]+["'”’)\]]*\s+|\n\s*[("'“‘[]*)(\p{L})/gu,function(_,a,b){return a+b.toUpperCase()})}],
+['camelCase',ident(function(w){return w.map(function(x,i){return i?cap(x):x.toLowerCase()}).join('')})],
+['PascalCase',ident(function(w){return w.map(cap).join('')})],
+['snake_case',ident(function(w){return w.map(function(x){return x.toLowerCase()}).join('_')})],
+['CONSTANT_CASE',ident(function(w){return w.map(function(x){return x.toUpperCase()}).join('_')})],
+['kebab-case',ident(function(w){return w.map(function(x){return x.toLowerCase()}).join('-')})],
+['URL slug',pl(function(l){return words(deb(l)).map(function(x){return x.toLowerCase()}).join('-')})],
+['aLtErNaTiNg',function(s){var n=0;return [].slice.call(s).map(function(c){return c.toLowerCase()===c.toUpperCase()?c:(n++%2?c.toLowerCase():c.toUpperCase())}).join('')}],
+['Remove diacritics',deb]];
+var cur=0,chips=$('#chips');
+STY.forEach(function(s,i){var b=document.createElement('button');b.className='chip';b.setAttribute('aria-pressed',i===cur);b.innerHTML='<svg class="ic"><use href="#i-check"/></svg>'+s[0];b.addEventListener('click',function(){cur=i;$$('.chip',chips).forEach(function(c,j){c.setAttribute('aria-pressed',j===i)});renderDemo()});chips.appendChild(b)});
+function renderDemo(){$('#res').textContent=STY[cur][1]($('#src').value)}
+$('#src').addEventListener('input',renderDemo);
+var tt;function toast(m){var el=$('#toast');$('#toastTxt').textContent=m;el.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){el.classList.remove('show')},2200)}
+$('#copyBtn').addEventListener('click',function(){
+  var txt=$('#res').textContent,btn=this,done=function(){btn.classList.add('copied');btn.lastElementChild.textContent=t('demo_copied');toast(t('toast_copied'));setTimeout(function(){btn.classList.remove('copied');btn.lastElementChild.textContent=t('demo_copy')},1700)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,done)}else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove();done()}
+});
+
+/* ---- screenshots slider ---- */
+var figs=$$('#slides figure'),idx=0,timer,dots=$('#dots');
+figs.forEach(function(_,i){var d=document.createElement('button');d.className='dot';d.setAttribute('aria-label','Image '+(i+1));d.addEventListener('click',function(){go(i,true)});dots.appendChild(d)});
+function go(i,user){idx=(i+figs.length)%figs.length;figs.forEach(function(f,j){f.classList.toggle('on',j===idx)});$$('.dot',dots).forEach(function(d,j){d.setAttribute('aria-current',j===idx)});if(user)restart()}
+function restart(){clearInterval(timer);timer=setInterval(function(){go(idx+1)},5500)}
+$('#prev').addEventListener('click',function(){go(idx-1,true)});$('#next').addEventListener('click',function(){go(idx+1,true)});
+$('#slides').addEventListener('mouseenter',function(){clearInterval(timer)});$('#slides').addEventListener('mouseleave',restart);
+var tx=null;$('#slides').addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});$('#slides').addEventListener('touchend',function(e){if(tx===null)return;var dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>40)go(idx+(dx<0?1:-1),true);tx=null});
+figs.forEach(function(f){f.addEventListener('click',function(){var im=$('img',f);$('#lbimg').src=im.src;$('#lbimg').alt=im.alt;$('#lb').showModal()})});
+$('#lb').addEventListener('click',function(e){if(e.target===this||e.target.closest('#lbx'))this.close()});
+go(0);restart();
+
+syncControls();applyLang();
 })();
 </script>
 </body>

@@ -92,7 +92,7 @@ export function Dialog({
   return createPortal(
     <div
       className={cn("fixed inset-0 z-[100] grid place-items-center p-3 sm:p-6", closing ? "anim-fade-out" : "anim-fade-in")}
-      style={{ background: "color-mix(in srgb, var(--md-scrim) 52%, transparent)", backdropFilter: "blur(3px)" }}
+      style={{ background: "color-mix(in srgb, var(--md-scrim) 48%, transparent)" }}
       onPointerDown={(e) => {
         if (e.target === e.currentTarget && dismissable) onClose();
       }}

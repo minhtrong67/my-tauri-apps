@@ -2,16 +2,19 @@ import './styles/fonts.css';
 import './styles/base.css';
 import './styles/app.css';
 import './styles/views.css';
+import './styles/expressive.css';
 import { bus } from './bus';
 import { applyI18n, onLang, setLang, t, type Key } from './i18n';
 import { settings, update } from './settings';
 import { applyTheme, isDark, onThemeApplied } from './theme';
 import { hydrateIcons, icon, type IconName } from './icons';
-import { $, dialog, esc, h, initRipple, menu, toast } from './ui';
+import { $, copyText, dialog, esc, h, initRipple, menu, toast } from './ui';
 import { createEditor, ed, errText } from './editor';
 import * as docs from './docs';
 import * as act from './actions';
-import { analyze, byteLength, formatBytes, statsOf } from './json';
+import { analyze, byteLength, formatBytes, formatPath, pathAt, statsOf } from './json';
+import { initTooltips } from './tooltip';
+import { openPalette, type Command } from './palette';
 import { currentView, setView, VIEWS, type ViewName } from './nav';
 import { initWindow, isTauri, launchFiles, onCloseRequested, onFilesDropped, onOpenFiles, pickFiles, setWindowTitle } from './tauri';
 import { mountTree } from './views/tree';
@@ -30,6 +33,16 @@ onThemeApplied(() => { if (ed.view) ed.syncConfig(); });
 hydrateIcons();
 applyI18n(document);
 initRipple();
+initTooltips();
+
+// Never let a stray error freeze the UI: report it as a toast and keep going.
+let lastErr = 0;
+const onFault = (e: unknown) => {
+  console.error(e);
+  if (Date.now() - lastErr > 4000) { lastErr = Date.now(); toast(t('toast.runtime'), 'error'); }
+};
+window.addEventListener('error', (e) => onFault(e.error ?? e.message));
+window.addEventListener('unhandledrejection', (e) => onFault(e.reason));
 
 /* ───────────────────────────── editor ───────────────────────────── */
 createEditor($('#editor-host'), { change: docs.onEditorChange, selection: () => paintCursor() });
@@ -49,7 +62,7 @@ const NAV: { id: ViewName; icon: IconName; key: Key }[] = [
 const rail = $('#rail');
 function paintRail() {
   const item = (n: { id: ViewName; icon: IconName; key: Key }) =>
-    `<button class="nav-item" data-view="${n.id}" aria-current="${currentView() === n.id}" title="${esc(t(n.key))}"><span class="pill">${icon(n.icon)}</span><span class="nav-label">${esc(t(n.key))}</span></button>`;
+    `<button class="nav-item" data-view="${n.id}" aria-current="${currentView() === n.id}"><span class="pill">${icon(n.icon)}</span><span class="nav-label">${esc(t(n.key))}</span></button>`;
   rail.innerHTML = `<div class="rail-main">${NAV.map(item).join('')}</div><div class="rail-end">${item({ id: 'settings', icon: 'settings', key: 'nav.settings' })}</div>`;
 }
 rail.addEventListener('click', (e) => { const b = (e.target as HTMLElement).closest<HTMLElement>('[data-view]'); if (b) setView(b.dataset.view as ViewName); });
@@ -213,12 +226,17 @@ function paintStatus() {
   const chip = r.empty ? `<span class="st-chip empty">${icon('info')}${esc(t('st.empty'))}</span>`
     : r.ok ? `<span class="st-chip ok${pop}">${icon('ok')}${esc(t('st.valid'))}</span>`
     : `<button class="st-chip bad${pop}" id="st-err" title="${esc(errText(r.error!))}">${icon('error')}<span class="st-msg">${esc(errText(r.error!))}</span><em>${r.error!.line}:${r.error!.col}</em></button>${r.repairable ? `<button class="st-fix" id="st-fix">${icon('tool')}${esc(t('st.fix'))}</button>` : ''}`;
-  status.innerHTML = `${chip}<span class="grow"></span><span class="st-item" id="st-pos"></span><span class="st-item st-hide" id="st-lines">${esc(t('st.lines', { n: ed.state.doc.lines }))}</span><span class="st-item st-hide">${formatBytes(byteLength(text))}</span>${isTauri ? '' : `<span class="st-item st-hide st-web">${esc(t('st.web'))}</span>`}`;
+  status.innerHTML = `${chip}<button class="st-path" id="st-path" title="${esc(t('st.path'))}" hidden></button><span class="grow"></span><span class="st-item" id="st-pos"></span><span class="st-item st-hide" id="st-lines">${esc(t('st.lines', { n: ed.state.doc.lines }))}</span><span class="st-item st-hide">${formatBytes(byteLength(text))}</span>${isTauri ? '' : `<span class="st-item st-hide st-web">${esc(t('st.web'))}</span>`}`;
   paintCursor();
 }
 function paintCursor() {
   const pos = document.getElementById('st-pos');
   if (!pos) return;
+  const crumb = document.getElementById('st-path');
+  if (crumb) {
+    const r = ed.state.doc.length < 1_000_000 ? analyze(ed.text()) : null;
+    if (r?.ok && r.node) { crumb.textContent = formatPath(pathAt(r.node, ed.state.selection.main.head)); crumb.hidden = false; } else crumb.hidden = true;
+  }
   const s = ed.state.selection.main;
   const line = ed.state.doc.lineAt(s.head);
   pos.textContent = `${t('st.ln', { n: line.number })}, ${t('st.col', { n: s.head - line.from + 1 })}${s.empty ? '' : ` · ${t('st.sel', { n: s.to - s.from })}`}`;
@@ -226,6 +244,7 @@ function paintCursor() {
 status.addEventListener('click', (e) => {
   const tg = e.target as HTMLElement;
   if (tg.closest('#st-fix')) act.repair();
+  else if (tg.closest('#st-path')) { void copyText((tg.closest('#st-path') as HTMLElement).textContent ?? '').then(() => toast(t('toast.pathCopied'), 'success')); }
   else if (tg.closest('#st-err')) { const r = analyze(ed.text()); if (r.error) { setView('editor'); ed.selectRange(r.error.pos, Math.min(r.error.pos + 1, ed.state.doc.length), true); } }
 });
 bus.on('content', paintStatus); bus.on('active', paintStatus);
@@ -237,8 +256,43 @@ function showStats() {
   const items: [Key, string][] = [['stat.size', formatBytes(byteLength(text))], ['stat.lines', String(ed.state.doc.lines)]];
   if (s) items.push(['stat.depth', String(s.depth)], ['stat.values', String(s.values)], ['stat.keys', String(s.keys)], ['stat.objects', String(s.objects)], ['stat.arrays', String(s.arrays)], ['stat.strings', String(s.strings)], ['stat.numbers', String(s.numbers)], ['stat.booleans', String(s.booleans)], ['stat.nulls', String(s.nulls)]);
   const el = h(`<div class="stats-grid">${items.map(([k, v]) => `<div><span>${esc(t(k))}</span><strong>${esc(v)}</strong></div>`).join('')}</div>`);
-  void dialog({ title: t('dlg.stats'), content: el, icon: 'stats', actions: [{ id: 'ok', label: t('act.ok'), primary: true }] });
+  void dialog({ title: t('dlg.stats'), content: el, icon: 'stats', actions: [{ id: 'ok', label: t('act.ok'), icon: 'check', primary: true }] });
 }
+
+/* ───────────────────────────── command palette ───────────────────────────── */
+function showPalette() {
+  const G = (k: Key) => t(k);
+  const cmds: Command[] = [
+    { id: 'new', label: t('act.new'), icon: 'filePlus', hint: 'Ctrl+N', group: G('cmd.group.file'), run: () => { docs.create(''); setView('editor'); ed.focus(); } },
+    { id: 'open', label: t('act.open'), icon: 'open', hint: 'Ctrl+O', group: G('cmd.group.file'), run: () => { void openFiles(); } },
+    { id: 'save', label: t('act.save'), icon: 'save', hint: 'Ctrl+S', group: G('cmd.group.file'), run: () => { void docs.save(); } },
+    { id: 'saveas', label: t('act.saveAs'), icon: 'saveAll', hint: 'Ctrl+Shift+S', group: G('cmd.group.file'), run: () => { void docs.save(docs.active(), true); } },
+    { id: 'close', label: t('act.close'), icon: 'close', hint: 'Ctrl+W', group: G('cmd.group.file'), run: () => { void docs.close(docs.active().id); } },
+    ...TOOLS.filter((x) => x.id !== 'sort').map((x): Command => ({ id: x.id, label: t(x.key), icon: x.icon, hint: x.hint, group: G('cmd.group.edit'), run: () => x.run(document.body) })),
+    { id: 'sortA', label: t('act.sortAsc'), icon: 'sortAsc', group: G('cmd.group.edit'), run: () => act.sortKeys('asc') },
+    { id: 'sortD', label: t('act.sortDesc'), icon: 'sortDesc', group: G('cmd.group.edit'), run: () => act.sortKeys('desc') },
+    ...NAV.map((n, i): Command => ({ id: 'v-' + n.id, label: t(n.key), icon: n.icon, hint: `Ctrl+${i + 1}`, group: G('cmd.group.view'), run: () => setView(n.id) })),
+    ...(['code', 'split', 'tree'] as const).map((m): Command => ({ id: 'm-' + m, label: t(`view.${m}` as Key), icon: m === 'code' ? 'code' : m === 'split' ? 'split' : 'tree', group: G('cmd.group.view'), run: () => { setView('editor'); update({ viewMode: m }); applyMode(); paintToolbar(); } })),
+    ...(['light', 'dark', 'system'] as const).map((m): Command => ({ id: 't-' + m, label: `${t('cmd.theme')}: ${t(`set.${m}` as Key)}`, icon: m === 'light' ? 'sun' : m === 'dark' ? 'moon' : 'monitor', group: G('cmd.group.app'), run: () => { update({ theme: m }); applyTheme(); } })),
+    { id: 'settings', label: t('nav.settings'), icon: 'settings', hint: 'Ctrl+,', group: G('cmd.group.app'), run: () => setView('settings') },
+  ];
+  openPalette(cmds);
+}
+$('#btn-palette').addEventListener('click', showPalette);
+
+/* ───────────────────────────── scroll to top (long pages) ───────────────────────────── */
+const fab = h(`<button class="fab-top" id="fab-top" aria-label="${esc(t('tip.top'))}" title="${esc(t('tip.top'))}">${icon('up')}</button>`);
+$('#views').appendChild(fab);
+let fabTarget: HTMLElement | null = null;
+const paintFab = () => {
+  const v = document.querySelector<HTMLElement>('.view.active');
+  fabTarget = v && v.id !== 'view-editor' ? v : null;
+  fab.classList.toggle('show', !!fabTarget && fabTarget.scrollTop > 280);
+};
+$('#views').addEventListener('scroll', (e) => { if ((e.target as HTMLElement).classList?.contains('view')) paintFab(); }, true);
+bus.on('view', () => requestAnimationFrame(paintFab));
+fab.addEventListener('click', () => fabTarget?.scrollTo({ top: 0, behavior: settings.motion ? 'smooth' : 'auto' }));
+bus.on('lang', () => { fab.title = t('tip.top'); fab.setAttribute('aria-label', t('tip.top')); });
 
 /* ───────────────────────────── shortcuts ───────────────────────────── */
 window.addEventListener('keydown', (e) => {
@@ -251,6 +305,7 @@ window.addEventListener('keydown', (e) => {
     else if (k === 'w') { e.preventDefault(); void docs.close(docs.active().id); }
     else if (k === 'tab') { e.preventDefault(); docs.next(e.shiftKey ? -1 : 1); }
     else if (k === ',') { e.preventDefault(); setView('settings'); }
+    else if (k === 'k') { e.preventDefault(); showPalette(); }
     else if (/^[1-5]$/.test(k)) { e.preventDefault(); setView(VIEWS[+k - 1]); }
   } else if (e.altKey && e.shiftKey && k === 'f') { e.preventDefault(); act.format(); }
   else if (e.altKey && e.shiftKey && k === 'm') { e.preventDefault(); act.minify(); }
@@ -274,23 +329,30 @@ bus.on('lang', () => { paintToolbar(); paintRail(); paintTabs(); paintStatus(); 
 /* ───────────────────────────── start ───────────────────────────── */
 paintToolbar();
 applyMode();
-(async () => {
-  const restored = await docs.restoreSession();
-  const files = await launchFiles();
-  if (files.length) await docs.openPaths(files);
-  else if (!restored) docs.create('');
-  paintTabs(); paintStatus();
-  await initWindow();
+const reveal = () => {
   const splash = document.getElementById('splash');
   splash?.classList.add('done');
   setTimeout(() => splash?.remove(), 600);
-  ed.focus();
+};
+// Hard guarantee: whatever happens below, the splash never blocks the UI for more than a few seconds.
+setTimeout(reveal, 4500);
+(async () => {
+  try {
+    const restored = await docs.restoreSession();
+    const files = await launchFiles();
+    if (files.length) await docs.openPaths(files);
+    else if (!restored) docs.create('');
+  } catch (e) { console.error('startup', e); if (!docs.docs.length) docs.create(''); }
+  try { paintTabs(); paintStatus(); } catch (e) { console.error(e); }
+  reveal(); // show the app first, then take care of the native window
+  try { await initWindow(); } catch (e) { console.error('window', e); }
+  try { ed.focus(); } catch { /* ignore */ }
 })();
 
 onCloseRequested(async () => {
   const n = docs.unsavedCount();
   if (!n) return true;
-  const r = await dialog({ title: t('dlg.quitTitle'), body: t('dlg.quitBody', { n }), icon: 'error', actions: [{ id: 'cancel', label: t('dlg.cancel') }, { id: 'quit', label: t('dlg.quit'), primary: true, danger: true }] });
+  const r = await dialog({ title: t('dlg.quitTitle'), body: t('dlg.quitBody', { n }), icon: 'error', actions: [{ id: 'cancel', label: t('dlg.cancel'), icon: 'close' }, { id: 'quit', label: t('dlg.quit'), icon: 'power', primary: true, danger: true }] });
   return r === 'quit';
 });
 window.addEventListener('beforeunload', (e) => { if (!isTauri && docs.unsavedCount()) { e.preventDefault(); e.returnValue = ''; } });

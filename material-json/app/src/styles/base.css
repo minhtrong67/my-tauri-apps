@@ -50,7 +50,10 @@ html[data-motion='off'] *, html[data-motion='off'] *::before, html[data-motion='
 
 /* splash */
 #splash { position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; justify-items: center; gap: 1.5rem; background: var(--md-background); transition: opacity .35s var(--ease), visibility .35s; }
-#splash.done { opacity: 0; visibility: hidden; }
+#splash.done { opacity: 0; visibility: hidden; pointer-events: none; }
+/* Pure-CSS failsafe: even if scripting dies completely, the splash can never keep blocking the window. */
+#splash { animation: splashFailsafe .01s linear 5s forwards; }
+@keyframes splashFailsafe { to { opacity: 0; visibility: hidden; pointer-events: none; } }
 .splash-logo img { width: 84px; height: 84px; border-radius: 22px; animation: logoIn .7s var(--ease-emph) both; box-shadow: 0 12px 32px color-mix(in srgb, var(--md-primary) 35%, transparent); }
 .splash-bar { width: 120px; height: 4px; border-radius: 4px; background: var(--md-surface-container-highest); overflow: hidden; }
 .splash-bar i { display: block; height: 100%; width: 40%; border-radius: 4px; background: var(--md-primary); animation: bar 1s var(--ease) infinite; }

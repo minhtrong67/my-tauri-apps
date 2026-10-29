@@ -112,7 +112,7 @@ export async function close(id: string): Promise<boolean> {
     switchTo(d.id);
     const r = await dialog({
       title: t('dlg.unsavedTitle'), body: t('dlg.unsavedBody', { name: displayName(d) }), icon: 'save',
-      actions: [{ id: 'cancel', label: t('dlg.cancel') }, { id: 'no', label: t('dlg.dontSave') }, { id: 'yes', label: t('dlg.save'), primary: true }],
+      actions: [{ id: 'cancel', label: t('dlg.cancel'), icon: 'close' }, { id: 'no', label: t('dlg.dontSave'), icon: 'trash', tone: 'danger' }, { id: 'yes', label: t('dlg.save'), icon: 'save', primary: true }],
     });
     if (r === 'cancel') return false;
     if (r === 'yes' && !(await save(d))) return false;

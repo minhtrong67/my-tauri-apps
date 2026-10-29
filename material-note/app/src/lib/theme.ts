@@ -15,12 +15,12 @@ export interface Preset {
   key: string;
 }
 
-export const DEFAULT_SEED = "#6B4EFF";
+export const DEFAULT_SEED = "#0061FF";
 
 export const PRESETS: Preset[] = [
+  { hex: "#0061FF", key: "color.blue" },
   { hex: "#6B4EFF", key: "color.violet" },
   { hex: "#6750A4", key: "color.purple" },
-  { hex: "#0B6BCB", key: "color.blue" },
   { hex: "#00897B", key: "color.teal" },
   { hex: "#2E7D32", key: "color.green" },
   { hex: "#B58900", key: "color.amber" },

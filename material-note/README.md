@@ -7,7 +7,7 @@
 **A fast, expressive notepad in Material 3 Expressive style.**
 Tabs · Find & replace · Command palette · Themes · English & Vietnamese
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-6b4eff.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-0052dc.svg)](LICENSE)
 ![Tauri 2](https://img.shields.io/badge/Tauri-2-24c8db)
 ![React](https://img.shields.io/badge/React-18-61dafb)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)
@@ -38,7 +38,7 @@ It is part of the open-source collection [my-tauri-apps](https://github.com/minh
 - **Command palette** – `Ctrl+Shift+P` runs any action by name.
 - **Encodings & safe saving** – UTF-8 (with/without BOM), UTF-16, Windows-125x, Shift-JIS, GBK and more; line-ending toggle (LF/CRLF); atomic saves; warning when a file changes on disk.
 - **Editing helpers** – go to line, duplicate/delete line, upper/lower case, insert time/date, zoom with `Ctrl+Wheel`, word wrap, focus mode, full screen, print.
-- **Auto save** for files that already have a name, and automatic session recovery.
+- **Auto save** for files that already have a name, automatic session recovery, and a configurable **default save folder**.
 - **Settings** – light / dark / system, 10 Material theme colours plus a custom colour picker, five fonts (System UI, Roboto, Inter, Lora, JetBrains Mono), Small / Medium / Large text, English and Vietnamese, and the window start behaviour (remember size or always maximised).
 - **Polished UX** – custom tooltips, custom dropdowns, 4-variant toasts (info, success, warning, error), icon + label + colour on every dialog action, back-to-top buttons, drag & drop files, single instance.
 - **Open files from Explorer** – `.txt`, `.md`, `.log`, `.json`, `.csv` and more.

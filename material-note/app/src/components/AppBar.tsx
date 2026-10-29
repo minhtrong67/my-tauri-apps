@@ -103,7 +103,7 @@ const MenuBar = memo(function MenuBar() {
             onClick={() => setOpen(open === k ? null : k)}
             onPointerEnter={() => open && setOpen(k)}
             className={cn(
-              "ripple h-9 rounded-full px-3.5 text-[0.8125rem] font-semibold text-on-surface transition-[border-radius,background-color] duration-300 ease-spring",
+              "ripple h-9 rounded-full px-3.5 text-[0.8125rem] font-semibold text-on-surface transition-[border-radius,background-color] duration-200 ease-standard",
               open === k && "rounded-xl bg-secondary-container text-on-secondary-container",
             )}
           >

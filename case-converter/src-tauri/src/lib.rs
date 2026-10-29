@@ -99,14 +99,26 @@ fn decode_text(bytes: Vec<u8>) -> String {
     String::from_utf8_lossy(body).into_owned()
 }
 
-/// Reads a text file chosen by the user (max 10 MB).
+/// True when the data looks like a binary file (NUL bytes in the first 8 KB, and not UTF-16 text).
+fn looks_binary(bytes: &[u8]) -> bool {
+    if bytes.starts_with(&[0xFF, 0xFE]) || bytes.starts_with(&[0xFE, 0xFF]) {
+        return false;
+    }
+    bytes.iter().take(8192).any(|&b| b == 0)
+}
+
+/// Reads a text file chosen by the user (max 10 MB). Errors: "too_large", "binary" or the OS message.
 #[tauri::command]
 fn read_text(path: String) -> Result<String, String> {
     let meta = fs::metadata(&path).map_err(|e| e.to_string())?;
     if meta.len() > MAX_FILE_BYTES {
         return Err("too_large".into());
     }
-    fs::read(&path).map(decode_text).map_err(|e| e.to_string())
+    let bytes = fs::read(&path).map_err(|e| e.to_string())?;
+    if looks_binary(&bytes) {
+        return Err("binary".into());
+    }
+    Ok(decode_text(bytes))
 }
 
 /// Shows a native save dialog and writes the text as UTF-8. Returns false if cancelled.
@@ -151,6 +163,7 @@ fn app_ready(window: WebviewWindow) {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .invoke_handler(tauri::generate_handler![read_text, save_text, get_window_mode, set_window_mode, app_ready])
         .setup(|app| {
             let handle = app.handle().clone();

@@ -33,7 +33,7 @@ Dự án thuộc bộ sưu tập mã nguồn mở [my-tauri-apps](https://github
 - **Bảng lệnh** – `Ctrl+Shift+P` chạy mọi thao tác theo tên.
 - **Bảng mã & lưu an toàn** – UTF-8 (có/không BOM), UTF-16, Windows-125x, Shift-JIS, GBK…; đổi kiểu xuống dòng LF/CRLF; lưu nguyên tử; cảnh báo khi tệp bị đổi trên ổ đĩa.
 - **Tiện ích soạn thảo** – đi tới dòng, nhân đôi/xoá dòng, chữ hoa/thường, chèn giờ/ngày, thu phóng bằng `Ctrl+Cuộn`, tự xuống dòng, chế độ tập trung, toàn màn hình, in.
-- **Tự động lưu** cho tệp đã có tên và tự khôi phục phiên làm việc.
+- **Tự động lưu** cho tệp đã có tên, tự khôi phục phiên làm việc và **thư mục lưu mặc định** tuỳ chỉnh.
 - **Cài đặt** – sáng / tối / hệ thống, 10 màu chủ đề Material và bộ chọn màu tuỳ ý, năm phông chữ (System UI, Roboto, Inter, Lora, JetBrains Mono), cỡ chữ Nhỏ / Vừa / Lớn, tiếng Anh và tiếng Việt, cách cửa sổ mở (ghi nhớ kích thước hoặc luôn phóng to tối đa).
 - **Trải nghiệm trau chuốt** – tooltip và dropdown tự thiết kế, toast 4 loại (thông tin, thành công, cảnh báo, lỗi), nút hành động luôn có icon + nhãn + màu, nút lên đầu trang, kéo thả tệp, chỉ chạy một cửa sổ.
 

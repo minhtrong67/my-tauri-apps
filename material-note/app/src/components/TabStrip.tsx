@@ -14,9 +14,19 @@ const Tab = memo(function Tab({ doc, active, vertical, dragOver, onDragStart, on
   const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const name = docName(doc);
+  // keep the active tab visible by scrolling only the strip itself (scrollIntoView could scroll the whole window)
   useEffect(() => {
-    if (active) ref.current?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
-  }, [active]);
+    const el = ref.current;
+    const strip = el?.parentElement;
+    if (!active || !el || !strip) return;
+    const e = el.getBoundingClientRect();
+    const r = strip.getBoundingClientRect();
+    if (vertical) {
+      if (e.top < r.top) strip.scrollBy({ top: e.top - r.top - 8, behavior: "smooth" });
+      else if (e.bottom > r.bottom) strip.scrollBy({ top: e.bottom - r.bottom + 8, behavior: "smooth" });
+    } else if (e.left < r.left) strip.scrollBy({ left: e.left - r.left - 8, behavior: "smooth" });
+    else if (e.right > r.right) strip.scrollBy({ left: e.right - r.right + 8, behavior: "smooth" });
+  }, [active, vertical]);
   return (
     <div
       ref={ref}
@@ -55,7 +65,7 @@ const Tab = memo(function Tab({ doc, active, vertical, dragOver, onDragStart, on
         if (e.key === "Enter" || e.key === " ") activateDoc(doc.id);
       }}
       className={cn(
-        "anim-tab-in ripple group flex flex-none items-center gap-2 overflow-hidden text-[0.8125rem] font-medium transition-[border-radius,background-color,color,box-shadow] duration-300 ease-spring",
+        "anim-tab-in ripple group flex flex-none items-center gap-2 overflow-hidden text-[0.8125rem] font-medium transition-[border-radius,background-color,color,box-shadow] duration-200 ease-standard",
         vertical ? "h-10 w-full rounded-2xl pl-3 pr-1.5" : "h-9 max-w-[15rem] rounded-full pl-3.5 pr-1.5",
         active ? "rounded-xl bg-secondary-container text-on-secondary-container" : "text-on-surface-variant hover:text-on-surface",
         dragOver && "ring-2 ring-primary",
@@ -77,7 +87,7 @@ const Tab = memo(function Tab({ doc, active, vertical, dragOver, onDragStart, on
             void closeDoc(doc.id);
           }}
           className={cn(
-            "grid h-6 w-6 place-items-center rounded-full transition-all duration-200 hover:bg-on-surface/12 active:scale-90",
+            "grid h-6 w-6 place-items-center rounded-full transition-[opacity,background-color,transform] duration-150 hover:bg-on-surface/12 active:scale-90",
             doc.dirty || !active ? "opacity-0 group-hover:opacity-100 focus-visible:opacity-100" : "opacity-100",
           )}
         >
@@ -130,7 +140,7 @@ export const TabStrip = memo(function TabStrip() {
 
   if (vertical) {
     return (
-      <aside role="tablist" aria-orientation="vertical" className="flex w-56 max-[720px]:w-40 flex-none flex-col gap-1 overflow-y-auto px-2 pb-2 pt-1">
+      <aside role="tablist" aria-orientation="vertical" className="strip-y flex w-56 flex-none flex-col gap-1 px-2 pb-2 pt-1 max-[720px]:w-40">
         <button
           type="button"
           onClick={newTab}
@@ -147,7 +157,7 @@ export const TabStrip = memo(function TabStrip() {
   }
   return (
     <div className="flex flex-none items-center gap-1 px-3 pb-2 pt-0.5">
-      <div ref={strip} role="tablist" className="flex min-w-0 items-center gap-1 overflow-x-auto [scrollbar-width:none]">
+      <div ref={strip} role="tablist" className="strip-x flex min-w-0 items-center gap-1 py-0.5">
         {tabs}
       </div>
       <IconButton icon={Plus} label={t("tab.new")} kbd="Ctrl+N" onClick={newTab} small tonal />

@@ -43,7 +43,7 @@ export const EmptyState = memo(function EmptyState() {
                   type="button"
                   data-tip={p}
                   onClick={() => void openPaths([p])}
-                  className="ripple flex h-9 max-w-[12rem] items-center gap-2 rounded-full bg-surface-high px-3.5 text-[0.8125rem] font-medium transition-[border-radius,transform] duration-300 ease-spring hover:rounded-xl active:scale-95"
+                  className="ripple flex h-9 max-w-[12rem] items-center gap-2 rounded-full bg-surface-high px-3.5 text-[0.8125rem] font-medium transition-[border-radius,transform] duration-200 ease-standard hover:rounded-xl active:scale-95"
                 >
                   <FileText size={15} className="flex-none text-primary" />
                   <span className="truncate">{baseName(p)}</span>

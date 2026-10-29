@@ -9,6 +9,14 @@ import { debounce } from './bus';
 
 export const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 
+/** Resolve with the promise's value, or `fallback` if it rejects or takes longer than `ms` (a stalled native call must never freeze the UI). */
+export function guard<T>(p: Promise<T> | T, ms = 1500, fallback?: T): Promise<T | undefined> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(fallback), ms);
+    Promise.resolve(p).then((v) => { clearTimeout(timer); resolve(v); }, () => { clearTimeout(timer); resolve(fallback); });
+  });
+}
+
 export interface LoadedFile { path: string | null; name: string; text: string }
 
 const FILTERS = [
@@ -69,13 +77,13 @@ export async function launchFiles(): Promise<string[]> {
 }
 
 export function onOpenFiles(cb: (paths: string[]) => void) {
-  if (isTauri) listen<string[]>('open-files', (e) => cb(e.payload ?? []));
+  if (isTauri) void guard(listen<string[]>('open-files', (e) => cb(e.payload ?? [])), 3000);
 }
 
 /** Files dropped on the window (native in Tauri, HTML5 in the browser). */
 export function onFilesDropped(cb: (files: LoadedFile[]) => void, hover: (on: boolean) => void) {
   if (isTauri) {
-    getCurrentWebview().onDragDropEvent(async (e) => {
+    void guard(getCurrentWebview().onDragDropEvent(async (e) => {
       const p = e.payload;
       if (p.type === 'over' || p.type === 'enter') hover(true);
       else if (p.type === 'leave') hover(false);
@@ -85,7 +93,7 @@ export function onFilesDropped(cb: (files: LoadedFile[]) => void, hover: (on: bo
         for (const path of p.paths) { try { files.push(await readPath(path)); } catch { /* skip unreadable */ } }
         if (files.length) cb(files);
       }
-    });
+    }), 3000);
     return;
   }
   let depth = 0;
@@ -102,7 +110,7 @@ export function onFilesDropped(cb: (files: LoadedFile[]) => void, hover: (on: bo
 /* ───────────────────────────── window ───────────────────────────── */
 
 export async function setWindowTitle(title: string) {
-  if (isTauri) { try { await getCurrentWindow().setTitle(title); } catch { /* ignore */ } }
+  if (isTauri) void guard(getCurrentWindow().setTitle(title), 1500);
   document.title = title;
 }
 
@@ -113,21 +121,22 @@ async function onScreen(x: number, y: number): Promise<boolean> {
   } catch { return true; }
 }
 
-/** Apply the window start-up behaviour chosen in Settings, then reveal the window. */
+/** Apply the window start-up behaviour chosen in Settings, then reveal the window. Every native call is time-boxed. */
 export async function initWindow() {
   if (!isTauri) return;
   const win = getCurrentWindow();
   try {
-    if (settings.windowMode === 'maximized') await win.maximize();
+    if (settings.windowMode === 'maximized') await guard(win.maximize());
     else if (settings.window) {
       const s = settings.window;
-      await win.setSize(new LogicalSize(Math.max(480, s.w), Math.max(520, s.h)));
-      if (s.x !== undefined && s.y !== undefined && await onScreen(s.x, s.y)) await win.setPosition(new PhysicalPosition(s.x, s.y));
-      else await win.center();
-      if (s.maximized) await win.maximize();
+      await guard(win.setSize(new LogicalSize(Math.max(480, s.w), Math.max(520, s.h))));
+      if (s.x !== undefined && s.y !== undefined && (await guard(onScreen(s.x, s.y), 1000, true))) await guard(win.setPosition(new PhysicalPosition(s.x, s.y)));
+      else await guard(win.center());
+      if (s.maximized) await guard(win.maximize());
     }
   } catch (e) { console.warn('window init', e); }
-  try { await win.show(); await win.setFocus(); } catch { /* ignore */ }
+  await guard(win.show());
+  await guard(win.setFocus());
 
   const save = debounce(async () => {
     if (settings.windowMode !== 'remember') return;
@@ -139,8 +148,8 @@ export async function initWindow() {
       update({ window: { w: Math.round(size.width / f), h: Math.round(size.height / f), x: pos.x, y: pos.y, maximized: false } });
     } catch { /* ignore */ }
   }, 450);
-  win.onResized(save);
-  win.onMoved(save);
+  void guard(win.onResized(save), 3000);
+  void guard(win.onMoved(save), 3000);
 }
 
 /** Persist the current window geometry immediately (used when the user switches to "remember"). */
@@ -157,9 +166,11 @@ export async function captureWindow() {
 export function onCloseRequested(handler: () => Promise<boolean>) {
   if (isTauri) {
     const win = getCurrentWindow();
-    win.onCloseRequested(async (e) => {
+    void guard(win.onCloseRequested(async (e) => {
       e.preventDefault();
-      if (await handler()) await win.destroy();
-    });
+      let ok = true;
+      try { ok = await handler(); } catch (err) { console.error(err); }
+      if (ok) await win.destroy();
+    }), 3000);
   }
 }
