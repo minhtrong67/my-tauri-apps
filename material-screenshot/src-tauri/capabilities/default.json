@@ -5,6 +5,7 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
+    "core:webview:default",
     "core:window:allow-set-theme",
     "core:window:allow-start-dragging",
     "core:window:allow-minimize",
@@ -12,6 +13,11 @@
     "core:window:allow-close",
     "core:window:allow-is-maximized",
     "core:window:allow-is-decorated",
-    "dialog:default"
+    "dialog:default",
+    "opener:default",
+    { "identifier": "opener:allow-open-path", "allow": [{ "path": "**" }] },
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister",
+    "global-shortcut:allow-is-registered"
   ]
 }

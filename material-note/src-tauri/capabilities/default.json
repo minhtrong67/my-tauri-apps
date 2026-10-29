@@ -12,12 +12,17 @@
     "core:window:allow-set-theme",
     "core:window:allow-set-fullscreen",
     "core:window:allow-is-fullscreen",
+    "core:window:allow-is-maximized",
+    "core:window:allow-is-minimized",
+    "core:window:allow-inner-size",
+    "core:window:allow-set-focus",
+    "core:window:allow-unminimize",
     "core:window:allow-close",
     "core:window:allow-destroy",
-    "dialog:default",
     "core:window:allow-set-size",
     "core:window:allow-maximize",
     "core:window:allow-unmaximize",
-    "core:window:allow-center"
+    "core:window:allow-center",
+    "dialog:default"
   ]
 }

@@ -1,19 +1,13 @@
 <div align="center">
 
-<img src="src/assets/logo.svg" alt="Material Note logo" width="120" height="120">
+<img src="src-tauri/icons/icon.png" width="120" alt="Material Note">
 
 # Material Note
 
-**Ứng dụng ghi chú nhanh, nhiều thẻ, thiết kế Material Design 3 — xây dựng bằng Tauri.**
+**Ứng dụng ghi chú nhanh, biểu cảm theo phong cách Material 3 Expressive.**
+Nhiều thẻ · Tìm & thay thế · Bảng lệnh · Giao diện tuỳ chỉnh · Tiếng Anh & Tiếng Việt
 
-[English](README.md) · [Tiếng Việt](README.vi.md)
-
-![Tauri](https://img.shields.io/badge/Tauri-2.x-24C8DB?logo=tauri&logoColor=white)
-![Rust](https://img.shields.io/badge/Rust-1.77%2B-DEA584?logo=rust&logoColor=white)
-![Design](https://img.shields.io/badge/Design-Material%203-6750A4)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Author](https://img.shields.io/badge/Tác giả-minhtrong67-6750A4)
-![AI](https://img.shields.io/badge/AI-Claude-D97757)
+[English](README.md) · [Tải về](download/) · [Landing page](index.html)
 
 </div>
 
@@ -21,84 +15,48 @@
 
 ## Giới thiệu
 
-Material Note là ứng dụng ghi chú desktop gọn nhẹ, lấy cảm hứng từ Notepad của Windows nhưng được thiết kế lại theo phong cách **Material Design 3** của Google. Ứng dụng khởi động nhanh, tốn ít bộ nhớ (Tauri + WebView của hệ thống) và không làm phiền bạn khi viết.
+Material Note là ứng dụng ghi chú gọn nhẹ cho máy tính, xây dựng bằng **Tauri**, **React** và **TypeScript**. Mở lên là chạy, không vướng tay và mang giao diện Material 3 Expressive hiện đại: nút bấm đổi hình khi nhấn, hiệu ứng lò xo, chuyển giao diện sáng/tối bằng vòng loang tròn và bảng màu tạo từ bất kỳ màu nào bạn thích.
 
-## Ảnh chụp màn hình
+Dự án thuộc bộ sưu tập mã nguồn mở [my-tauri-apps](https://github.com/minhtrong67/my-tauri-apps).
 
-<p align="center">
-  <img src="screenshots/image01.png" alt="Material Note - light theme" width="49%">
-  <img src="screenshots/image02.png" alt="Material Note - dark theme" width="49%">
-</p>
-<p align="center">
-  <img src="screenshots/image03.png" alt="Material Note - find and replace" width="49%">
-  <img src="screenshots/image04.png" alt="Material Note - settings" width="49%">
-</p>
+## Ảnh màn hình
+
+| | |
+|---|---|
+| ![Soạn thảo](screenshots/image01.png) | ![Tìm và thay thế](screenshots/image02.png) |
+| ![Cài đặt](screenshots/image03.png) | ![Bảng lệnh](screenshots/image04.png) |
 
 ## Tính năng
 
-| Nhóm | Nội dung |
-| --- | --- |
-| **Tài liệu** | Nhiều thẻ (ngang hoặc dọc), Mới / Mở (chọn nhiều tệp) / Lưu / Lưu thành, hỏi lưu theo từng thẻ và khi thoát, kéo thả tệp, **mở lại tệp khi khởi động (giữ nội dung chưa lưu, vị trí con trỏ và vị trí cuộn)**, **danh sách tệp gần đây**, mở từ dòng lệnh hoặc “Mở bằng”, In |
-| **Soạn thảo** | Hoàn tác / làm lại, cắt / sao chép / dán, đi tới dòng, chèn giờ & ngày (`F5`), đổi CRLF ⇄ LF, kiểm tra chính tả tuỳ chọn |
-| **Tìm & thay thế** | Tìm tiếp / trước, thay thế, thay tất cả, phân biệt hoa thường, cả từ (hỗ trợ Unicode), biểu thức chính quy, **tô sáng mọi kết quả**, bộ đếm “3 / 12” trực tiếp |
-| **Xem** | Thu phóng (`Ctrl` + lăn chuột / `+` / `-` / `0`), tự xuống dòng, thanh trạng thái (dòng, cột, số ký tự, thu phóng, mã hoá, kiểu xuống dòng), **hơn 40 phông chữ** (không chân, có chân, đơn cách, viết tay – chỉ hiện những phông đã cài trên máy – hoặc tự nhập tên phông bất kỳ) và cỡ chữ tuỳ chỉnh, toàn màn hình (`F11`) |
-| **Cửa sổ** | **Tuỳ chọn cửa sổ** trong Cài đặt: *ghi nhớ kích thước cửa sổ* (mở lại đúng kích thước bạn đã chỉnh lần trước) hoặc *luôn mở ở chế độ phóng to tối đa* |
-| **Giao diện** | Sáng / tối / theo hệ thống, **màu chủ đề tuỳ chỉnh** (màu có sẵn + bộ chọn màu), phông system-ui, chuyển động kiểu Material (ripple, chuyển cảnh hộp thoại và menu; tôn trọng cài đặt giảm chuyển động) |
-| **Ngôn ngữ** | Tiếng Anh và Tiếng Việt, đổi ngay khi đang chạy; tự nhận diện ở lần mở đầu tiên |
-| **Đóng gói** | Icon ứng dụng, icon cài đặt và **icon gỡ cài đặt** cùng hình cho bộ cài NSIS / MSI, đều theo phong cách Material 3 |
-
-### Phím tắt
-
-| Thao tác | Phím tắt | Thao tác | Phím tắt |
-| --- | --- | --- | --- |
-| Thẻ mới | `Ctrl+N` | Tìm kiếm | `Ctrl+F` |
-| Mở | `Ctrl+O` | Thay thế | `Ctrl+H` |
-| Lưu | `Ctrl+S` | Tìm tiếp / trước | `F3` / `Shift+F3` |
-| Lưu thành | `Ctrl+Shift+S` | Đi tới dòng | `Ctrl+G` |
-| Đóng thẻ | `Ctrl+W` | Giờ / ngày | `F5` |
-| Thẻ kế / trước | `Ctrl+Tab` / `Ctrl+Shift+Tab` | Cài đặt | `Ctrl+,` |
-| In | `Ctrl+P` | Toàn màn hình | `F11` |
-
-## Tải về
-
-Tải bộ cài Windows mới nhất (`Material Note_x.y.z_x64-setup.exe`) tại trang **[Releases](https://github.com/minhtrong67/material-note/releases/latest)**, hoặc từ trang landing page của dự án (`index.html`), nơi nút tải trỏ tới `download/Material-Note-Setup.exe`.
-
-> **Landing page.** `index.html` ở thư mục gốc là trang giới thiệu một file theo phong cách Material Design 3 (English / Tiếng Việt, sáng / tối, đầy đủ thẻ meta SEO và chia sẻ mạng xã hội). Hãy bỏ bộ cài vào thư mục [`download/`](download/) với tên `Material-Note-Setup.exe` rồi đăng trang lên (ví dụ GitHub Pages).
+- **Thẻ nhớ phiên làm việc** – kéo thả sắp xếp, nhấn chuột giữa để đóng, thẻ ngang hoặc dọc; tự khôi phục tệp đang mở, vị trí con trỏ, vị trí cuộn và cả nội dung chưa lưu.
+- **Tìm & thay thế** – tô sáng trực tiếp, phân biệt hoa thường, cả từ, biểu thức chính quy, bộ đếm kết quả, thay tất cả.
+- **Bảng lệnh** – `Ctrl+Shift+P` chạy mọi thao tác theo tên.
+- **Bảng mã & lưu an toàn** – UTF-8 (có/không BOM), UTF-16, Windows-125x, Shift-JIS, GBK…; đổi kiểu xuống dòng LF/CRLF; lưu nguyên tử; cảnh báo khi tệp bị đổi trên ổ đĩa.
+- **Tiện ích soạn thảo** – đi tới dòng, nhân đôi/xoá dòng, chữ hoa/thường, chèn giờ/ngày, thu phóng bằng `Ctrl+Cuộn`, tự xuống dòng, chế độ tập trung, toàn màn hình, in.
+- **Tự động lưu** cho tệp đã có tên và tự khôi phục phiên làm việc.
+- **Cài đặt** – sáng / tối / hệ thống, 10 màu chủ đề Material và bộ chọn màu tuỳ ý, năm phông chữ (System UI, Roboto, Inter, Lora, JetBrains Mono), cỡ chữ Nhỏ / Vừa / Lớn, tiếng Anh và tiếng Việt, cách cửa sổ mở (ghi nhớ kích thước hoặc luôn phóng to tối đa).
+- **Trải nghiệm trau chuốt** – tooltip và dropdown tự thiết kế, toast 4 loại (thông tin, thành công, cảnh báo, lỗi), nút hành động luôn có icon + nhãn + màu, nút lên đầu trang, kéo thả tệp, chỉ chạy một cửa sổ.
 
 ## Cài đặt
 
-1. Tải và chạy bộ cài — cài cho người dùng hiện tại, không cần quyền quản trị.
-2. Mở **Material Note** từ menu Start.
-3. Để gỡ cài đặt, dùng *Settings → Apps* (hoặc chạy trình gỡ cài đặt trong thư mục cài).
+1. Tải bộ cài mới nhất trong thư mục [`download`](download/) (`Material-Note-Setup.exe`).
+2. Chạy bộ cài (cài cho người dùng hiện tại, không cần quyền quản trị).
+3. Mở **Material Note** từ Start, hoặc nhấn chuột phải vào tệp văn bản và chọn *Open with*.
 
-## Công nghệ sử dụng
+> Yêu cầu Windows 10 / 11 (64-bit).
 
-| Lớp | Công nghệ |
-| --- | --- |
-| Khung ứng dụng | [Tauri 2](https://tauri.app) |
-| Backend | Rust — [`tauri-plugin-dialog`](https://crates.io/crates/tauri-plugin-dialog) |
-| Giao diện | HTML / CSS / JavaScript thuần (không cần bundler) |
-| Thiết kế | Material Design 3 (bảng màu OKLCH sinh từ một màu gốc) |
-| Công cụ | npm (Tauri CLI), Python + Pillow (tạo icon) |
+## Công nghệ
+
+Tauri 2 (Rust) · React 18 · TypeScript · Vite · Tailwind CSS 4 · Zustand · Lucide · `@material/material-color-utilities` · phông Roboto, Inter, Lora, JetBrains Mono (kèm sẵn, dùng offline).
 
 ## Phát triển
 
-Yêu cầu:
-
-- [Rust](https://rustup.rs) 1.77+
-- [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) (Windows: Microsoft C++ Build Tools và WebView2)
-- [Node.js](https://nodejs.org) (npm)
-
 ```bash
-cd material-note
-
-npm install        # một lần: cài Tauri CLI
-npm run dev        # chạy chế độ phát triển
+npm install     # cài thư viện
+npm run dev     # chạy ứng dụng desktop (hot reload)
 ```
 
-Dự án được thiết kế để nằm trong Cargo workspace (`members = ["*/src-tauri"]`) và dùng chung thư mục `target/`. Nếu muốn dùng riêng lẻ, thêm bảng `[workspace]` rỗng vào `src-tauri/Cargo.toml`.
-
-Để tạo lại toàn bộ icon (ứng dụng, cài đặt, gỡ cài đặt, hình NSIS / MSI): `pip install pillow` rồi `python tools/generate_icons.py`.
+Thêm: `npm run web:dev` (chỉ giao diện trên trình duyệt), `npm run icons` (tạo lại toàn bộ icon), `npm run palettes` (tạo lại bảng màu trong `index.html`).
 
 ## Build
 
@@ -106,47 +64,14 @@ Dự án được thiết kế để nằm trong Cargo workspace (`members = ["*
 npm run build
 ```
 
-Bộ cài nằm trong `<workspace>/target/release/bundle/` (`nsis/` cho file `.exe`, `msi/` cho file `.msi`).
-
-> **Icon.** Icon ứng dụng, icon cài đặt và **icon gỡ cài đặt riêng** (`uninstallerIcon`, Tauri 2.9+) đều theo phong cách Material 3 — file `.ico` có đủ kích thước chuẩn 16 – 256 px, cùng PNG 32 / 128 / 256 / 512 px.
+Bộ cài nằm ở `target/release/bundle/`. Đổi tên file `.exe` thành `Material-Note-Setup.exe` rồi chép vào [`download/`](download/) để nút tải trên landing page hoạt động.
 
 ## Cấu trúc dự án
 
-```
-material-note/
-├── index.html                # Landing page (một file, Material Design 3)
-├── download/                 # Bỏ Material-Note-Setup.exe vào đây (landing page trỏ tới)
-├── screenshots/              # image01.png, image02.png, ... dùng cho README
-├── src/                      # Giao diện (HTML / CSS / JS thuần, không cần bundler)
-│   ├── index.html
-│   ├── styles.css            # Material Design 3 tokens and components
-│   ├── theme.js              # Màu gốc → bảng màu M3, sáng/tối/hệ thống
-│   ├── boot.js               # Áp dụng theme đã lưu trước lần vẽ đầu tiên
-│   ├── i18n.js               # Chuỗi tiếng Anh + tiếng Việt
-│   ├── app.js                # Thẻ, tệp, tìm/thay thế, menu, cài đặt
-│   └── assets/logo.svg
-├── src-tauri/                # Backend Rust
-│   ├── src/main.rs           # Lệnh đọc/ghi tệp
-│   ├── tauri.conf.json       # Cửa sổ, đóng gói, trình cài đặt
-│   ├── capabilities/         # Quyền của Tauri
-│   └── icons/                # Icon ứng dụng + installer/ (icon cài đặt & gỡ cài đặt, hình ảnh)
-├── tools/generate_icons.py   # Tạo lại toàn bộ icon bằng code
-├── package.json
-├── LICENSE
-└── README.md
-```
-
-### Giới hạn
-
-- Tệp được đọc/ghi dạng UTF-8 (BOM bị bỏ; byte không hợp lệ được thay thế).
-- Lịch sử hoàn tác tính riêng từng thẻ và mất khi đóng thẻ hoặc khởi động lại ứng dụng.
-- Nội dung chưa lưu được giữ trong phiên tối đa khoảng 3 triệu ký tự; vượt mức này ứng dụng sẽ hỏi lưu khi thoát như bình thường.
-- Màu sắc dùng `oklch()` và `color-mix()`, cần WebView2 / WebKit đủ mới.
-
-## Ghi công
-
-Tác giả: **minhtrong67** với sự hỗ trợ của trợ lý AI **Claude** ([Anthropic](https://www.anthropic.com)).
+Xem sơ đồ trong [README.md](README.md#project-structure).
 
 ## Giấy phép
 
-Phát hành theo [MIT License](LICENSE).
+Mã nguồn mở theo [giấy phép MIT](LICENSE).
+
+Tạo bởi **minhtrong67** với sự hỗ trợ của **Claude** · <https://github.com/minhtrong67/my-tauri-apps>

@@ -1,9 +1,14 @@
-Đặt file cài đặt (setup) vào thư mục này với đúng tên:
+Dat file cai dat vao thu muc nay:
 
-    Material-Screenshot_1.1.0_x64-setup.exe
+    Material-Screenshot_2.0.0_x64-setup.exe
 
-File do `npm run build` tạo ra tại:
-    <workspace>\target\release\bundle\nsis\Material Screenshot_1.1.0_x64-setup.exe
-(đổi dấu cách thành dấu gạch ngang khi copy vào đây để link trên landing page hoạt động).
+Sau khi chay `npm run build`, bo cai nam o <workspace>/target/release/bundle/nsis/
+(ten file co dau cach: "Material Screenshot_2.0.0_x64-setup.exe"). Hay doi ten thanh
+Material-Screenshot_2.0.0_x64-setup.exe roi chep vao day de nut Tai ve trong index.html hoat dong.
 
-Place the installer in this folder using the exact name above.
+Place the installer in this folder:
+
+    Material-Screenshot_2.0.0_x64-setup.exe
+
+After `npm run build` the installer is created in <workspace>/target/release/bundle/nsis/
+(the file name contains a space). Rename it and copy it here so the Download buttons in index.html work.

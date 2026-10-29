@@ -1,28 +1,31 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Material Note",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "identifier": "com.minhtrong67.material-note",
   "build": {
-    "frontendDist": "../src"
+    "beforeDevCommand": "npm run web:dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run web:build",
+    "frontendDist": "../dist"
   },
   "app": {
-    "withGlobalTauri": true,
+    "withGlobalTauri": false,
     "windows": [
       {
         "label": "main",
         "title": "Material Note",
-        "width": 1040,
-        "height": 700,
-        "minWidth": 520,
+        "width": 1120,
+        "height": 740,
+        "minWidth": 480,
         "minHeight": 360,
         "center": true,
-        "visible": false
+        "visible": false,
+        "backgroundColor": "#fef7ff"
       }
     ],
     "security": {
-      "dangerousDisableAssetCspModification": ["style-src"],
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost"
     }
   },
   "bundle": {
@@ -31,8 +34,8 @@
     "publisher": "minhtrong67",
     "copyright": "Copyright (c) 2026 minhtrong67",
     "category": "Productivity",
-    "shortDescription": "Fast, beautiful notepad with Material Design 3.",
-    "longDescription": "Material Note is a lightweight tabbed notepad with find & replace, themes, custom colors and English/Vietnamese support. Created by minhtrong67 with the support of Claude.",
+    "shortDescription": "Fast, expressive notepad in Material 3 Expressive style.",
+    "longDescription": "Material Note is a fast, tabbed notepad with find & replace, command palette, encodings, themes, custom colors and English/Vietnamese support. Created by minhtrong67 with the support of Claude.",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -42,7 +45,18 @@
     ],
     "fileAssociations": [
       {
-        "ext": ["txt", "log", "md"],
+        "ext": [
+          "txt",
+          "log",
+          "md",
+          "json",
+          "csv",
+          "ini",
+          "yml",
+          "yaml",
+          "toml",
+          "xml"
+        ],
         "name": "Text document",
         "description": "Plain text document",
         "role": "Editor"

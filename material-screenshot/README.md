@@ -1,98 +1,118 @@
 <div align="center">
 
-<img src="assets/icon.svg" width="112" alt="Material Screenshot">
+<img src="assets/icon.svg" alt="Material Screenshot" width="128" height="128">
 
 # Material Screenshot
 
 **Biến ảnh chụp màn hình thành hình ảnh đẹp mắt chỉ trong vài giây.**
 
-Ứng dụng desktop nhẹ, ngoại tuyến, thiết kế theo Material Design 3.
+Ứng dụng desktop miễn phí, mã nguồn mở cho Windows, xây dựng bằng Tauri 2 và thiết kế theo Material 3 Expressive.
 
-![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)
-![Platform](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Open Source](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-red)
+[![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)](https://tauri.app)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
 
-[English](README.en.md) · **Tiếng Việt**
+[English](README.en.md) · [Landing page](index.html) · [GitHub](https://github.com/minhtrong67/my-tauri-apps)
 
 </div>
 
+---
+
 ## Giới thiệu
 
-**Material Screenshot** giúp bạn làm đẹp ảnh chụp màn hình cho tài liệu, bài viết blog, mạng xã hội và bài thuyết trình: thêm nền gradient, khung cửa sổ, đổ bóng, chú thích rồi xuất ảnh hoặc sao chép thẳng vào clipboard. Ứng dụng chạy hoàn toàn ngoại tuyến, nhẹ nhờ Tauri 2 và có giao diện **Material Design 3**.
+**Material Screenshot** giúp bạn chụp màn hình (hoặc mở, dán, kéo thả một ảnh có sẵn) rồi làm đẹp nó: thêm nền gradient, khung thiết bị, đổ bóng, chú thích và watermark, sau đó lưu hoặc sao chép ảnh hoàn chỉnh cho tài liệu, bài viết blog hay mạng xã hội.
 
-Dự án công khai và mã nguồn mở (MIT).
-
-> Tác giả: **minhtrong67** · Phát triển với sự hỗ trợ của AI **Claude** (Anthropic).
+Mọi thao tác xử lý đều diễn ra ngay trên máy của bạn, ứng dụng không tải ảnh lên bất kỳ máy chủ nào.
 
 ## Screenshot
 
-| | |
-|---|---|
-| ![Màn hình chào](screenshots/image01.png) | ![Trình chỉnh sửa sáng](screenshots/image02.png) |
-| ![Trình chỉnh sửa tối](screenshots/image03.png) | ![Cài đặt](screenshots/image04.png) |
-| ![Màu chủ đề](screenshots/image05.png) | ![Giới thiệu](screenshots/image06.png) |
+<table>
+  <tr>
+    <td><img src="screenshots/image01.png" alt="Trình chỉnh sửa với kiểu Aurora"></td>
+    <td><img src="screenshots/image02.png" alt="Chú thích trực tiếp trên ảnh"></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/image03.png" alt="Giao diện tối và xuất nhiều kích thước"></td>
+    <td><img src="screenshots/image04.png" alt="Hộp thoại cài đặt"></td>
+  </tr>
+</table>
 
 ## Tính năng
 
-**Thêm ảnh**
-- Dán bằng `Ctrl` + `V` (chụp bằng `Win` + `Shift` + `S`), kéo thả tệp hoặc mở bằng hộp thoại (PNG, JPEG, WebP, GIF, BMP); có sẵn ảnh mẫu.
+**Lấy ảnh**
+- Chụp màn hình bằng phím tắt toàn cục `Ctrl + Alt + S` (toàn màn hình hoặc chọn vùng rồi cắt), có hẹn giờ 3 hoặc 5 giây
+- Mở ảnh, dán từ clipboard (`Ctrl + V`), kéo thả một hoặc nhiều tệp, mở bằng "Open with", danh sách tệp gần đây
 
 **Làm đẹp**
-- Nền: gradient (2–3 màu, 14 mẫu, chỉnh góc), màu đặc, ảnh nền làm mờ hoặc trong suốt.
-- Bố cục: khoảng đệm, bo góc, tỉ lệ khung (1:1, 4:3, 3:2, 16:9, 9:16, 4:5, 2:1, tuỳ chỉnh), viền, đổ bóng.
-- Khung cửa sổ: Windows 11, macOS, trình duyệt, kính mờ; sáng hoặc tối; tiêu đề tuỳ chỉnh.
-- 7 kiểu dựng sẵn: Clean, Ocean, Sunset, Night, Aurora, Glass, Flat.
+- 10 kiểu dựng sẵn có ảnh xem trước thật, lưu kiểu riêng của bạn, nhập và xuất kiểu dưới dạng văn bản
+- Nền gradient, lưới màu (mesh), màu đặc, ảnh nền, trong suốt; họa tiết chấm, lưới, hạt; tự lấy màu nền từ ảnh
+- Khung Windows, macOS, trình duyệt, kính, điện thoại, máy tính bảng, laptop; xoay và vát nhẹ cho nổi bật
+- Bo góc, khoảng đệm, đổ bóng, viền, tỉ lệ khung (1:1, 4:3, 16:9, 9:16, tùy chỉnh…), chú thích chữ và watermark (chữ hoặc logo)
 
-**Chỉnh sửa**
-- Cắt ảnh, hoàn tác / làm lại tối đa 60 bước.
-- Chú thích: khung, mũi tên, chữ, tô sáng, làm mờ pixel (che thông tin nhạy cảm); chú thích chữ trên hoặc dưới ảnh.
+**Chú thích**
+- Mũi tên, đường thẳng, hình chữ nhật, elip, chữ, số thứ tự, tô sáng, làm mờ ô vuông (che thông tin nhạy cảm) và tiêu điểm
+- Chọn, kéo, đổi kích thước, xóa; hoàn tác và làm lại; thu phóng, kéo ảnh; giữ nút mắt (hoặc phím `X`) để xem ảnh gốc
 
 **Xuất ảnh**
-- PNG, JPEG, WebP, tỉ lệ 1x–3x, chỉnh chất lượng; sao chép vào clipboard hoặc lưu thẳng vào thư mục mặc định (**Downloads** của Windows, đổi được trong Cài đặt; có thể bật "hỏi vị trí mỗi lần lưu"). Tự giảm tỉ lệ khi ảnh vượt 8192 px.
+- PNG, JPEG, WebP, tỉ lệ 1x / 2x / 3x, lưu thẳng vào thư mục mặc định (Downloads) hoặc hỏi vị trí lưu
+- Tùy chỉnh đường dẫn lưu trong Cài đặt: duyệt chọn thư mục, gõ hoặc dán đường dẫn (tự tạo nếu chưa có), mở nhanh thư mục đã chọn
+- Xuất cùng lúc nhiều kích thước mạng xã hội (Open Graph, X, LinkedIn, Instagram, Story, Product Hunt, YouTube) và xuất hàng loạt nhiều ảnh
 
-**Trải nghiệm**
-- Giao diện sáng / tối / theo hệ thống, 19 màu chủ đề Material và màu tuỳ chỉnh, 3 mức tương phản.
-- Tiếng Việt và English, **tự nhận ngôn ngữ của thiết bị**.
-- Tuỳ chọn cửa sổ khi mở ứng dụng: **ghi nhớ kích thước** hoặc **luôn mở phóng to tối đa**.
-- Animation mượt (ripple, chuyển màu, hộp thoại), responsive, tôn trọng `prefers-reduced-motion`; phông chữ mặc định **Roboto** (đóng gói sẵn, chạy ngoại tuyến).
+**Cá nhân hóa (Cài đặt)**
+- Giao diện sáng / tối / theo hệ thống, 18 màu chủ đề Material (kèm màu tùy chỉnh), kiểu màu cân bằng hoặc rực rỡ, độ tương phản
+- Cỡ chữ nhỏ / vừa / lớn, 5 phông chữ (Roboto, System UI, Inter, Nunito, Be Vietnam Pro), tiếng Việt và tiếng Anh
+- Cửa sổ khi mở ứng dụng: ghi nhớ kích thước lần trước hoặc luôn phóng to tối đa
+- Tooltip, dropdown, toast (info / success / warning / error), dialog và nút cuộn lên đầu đều được thiết kế riêng, hỗ trợ cả giao diện sáng và tối
 
-| Phím tắt | Chức năng |
-|---|---|
-| `Ctrl` + `V` | Dán ảnh |
-| `Ctrl` + `O` | Mở ảnh |
-| `Ctrl` + `S` | Lưu ảnh |
-| `Ctrl` + `Shift` + `C` | Sao chép kết quả |
-| `Ctrl` + `Z` / `Ctrl` + `Y` | Hoàn tác / làm lại |
-| `Ctrl` + `,` | Mở cài đặt |
-| `Enter` / `Esc` | Áp dụng / hủy cắt |
+### Phím tắt
+
+| Phím | Chức năng | Phím | Chức năng |
+| --- | --- | --- | --- |
+| `Ctrl + O` | Mở ảnh | `Ctrl + Z` / `Ctrl + Y` | Hoàn tác / Làm lại |
+| `Ctrl + V` | Dán ảnh | `C` | Cắt ảnh |
+| `Ctrl + Alt + S` | Chụp màn hình | `V R O A L T N H B S` | Công cụ chú thích |
+| `Ctrl + C` | Sao chép ảnh | `Delete` | Xóa chú thích đã chọn |
+| `Ctrl + S` | Lưu ảnh | `Ctrl + lăn chuột` | Thu phóng |
+| `Ctrl + /` | Xem tất cả phím tắt | `0` / `1` | Vừa khung / 100% |
+
+## Download
+
+Tải bản cài đặt Windows (`Material-Screenshot_2.0.0_x64-setup.exe`) trong thư mục [`download`](download) hoặc ở trang [Releases](https://github.com/minhtrong67/my-tauri-apps/releases).
 
 ## Cài đặt
 
-**Người dùng:** tải file `Material-Screenshot_1.1.0_x64-setup.exe` trong thư mục [`download/`](download) (hoặc từ landing page [`index.html`](index.html)), chạy và làm theo hướng dẫn. Cài cho riêng người dùng hiện tại, không cần quyền quản trị.
-
-**Lập trình viên:** cần Windows 10/11 cùng:
-- [Node.js](https://nodejs.org) 18 trở lên
-- [Rust](https://rustup.rs) (toolchain stable)
-- Microsoft C++ Build Tools (workload "Desktop development with C++")
-- Microsoft Edge WebView2 Runtime (có sẵn trên Windows 11)
+1. Tải tệp `.exe` ở trên và chạy.
+2. Bộ cài NSIS cài cho người dùng hiện tại, không cần quyền quản trị.
+3. Yêu cầu Windows 10 / 11 (64-bit) và Microsoft Edge WebView2 (thường có sẵn trên Windows 11, bộ cài sẽ tự tải nếu thiếu).
 
 ## Tech stack
 
-- [Tauri 2](https://tauri.app): lõi Rust nhỏ gọn, dùng WebView2 của Windows
-- HTML, CSS, JavaScript thuần với Canvas 2D, không framework
-- [Material Color Utilities](https://github.com/material-foundation/material-color-utilities) (bản gói sẵn trong `src/js/mcu.js`) để sinh bảng màu Material 3
-- [Roboto](https://fonts.google.com/specimen/Roboto) (phông chữ mặc định của Material Design, giấy phép Apache 2.0, đóng gói trong `src/fonts/`)
-- `tauri-plugin-dialog`, `serde_json`, `base64`
+| Lớp | Công nghệ |
+| --- | --- |
+| Khung ứng dụng | [Tauri 2](https://tauri.app) (Rust) |
+| Giao diện | React 19, TypeScript, Vite 6, Tailwind CSS 4 |
+| Thiết kế | Material 3 Expressive, `@material/material-color-utilities` |
+| Biểu tượng | [Lucide](https://lucide.dev) |
+| Vẽ ảnh | Canvas 2D |
+| Chụp màn hình | [`xcap`](https://crates.io/crates/xcap) (Rust) |
+| Bộ cài | NSIS |
 
 ## Development
 
-Đặt dự án trong thư mục workspace Cargo dùng chung (ví dụ `D:\tauri-apps\`) để các dự án Tauri chia sẻ một bộ nhớ đệm build `target`.
+Yêu cầu: [Node.js](https://nodejs.org) 18+, [Rust](https://rustup.rs) (stable), Microsoft C++ Build Tools và WebView2 (xem [Tauri prerequisites](https://tauri.app/start/prerequisites/)).
 
 ```bash
-npm install
-npm run dev
+npm install      # cài thư viện
+npm run dev      # chạy ứng dụng ở chế độ phát triển (Tauri + Vite, có hot reload)
 ```
+
+Dự án nằm trong Cargo workspace `my-tauri-apps` (xem `Cargo.toml` ở thư mục gốc), nên mọi ứng dụng dùng chung một thư mục build `./target`.
+
+Chỉ muốn xem giao diện trên trình duyệt (không có chụp màn hình và lưu tệp trực tiếp)? Chạy `npm run web`.
+
+Các lệnh khác: `npm run typecheck` (kiểm tra TypeScript), `npm run icons` (tạo lại toàn bộ bộ icon, cần `pip install cairosvg pillow`).
 
 ## Build
 
@@ -100,47 +120,42 @@ npm run dev
 npm run build
 ```
 
-Bộ cài đặt nằm ở `<workspace>\target\release\bundle\nsis\`. Đổi tên thành `Material-Screenshot_1.1.0_x64-setup.exe` và đặt vào thư mục `download/` để nút tải trên landing page hoạt động.
-
-**Landing page:** khi đưa lên hosting, thay `https://your-domain.com/` trong `index.html`, `robots.txt` và `sitemap.xml` bằng tên miền thật để thẻ canonical, Open Graph và dữ liệu có cấu trúc đúng.
-
-Tạo lại toàn bộ icon (app, setup, uninstall, ảnh NSIS) từ `assets/icon.svg`:
-
-```bash
-pip install cairosvg pillow
-python scripts/generate-icons.py
-```
-
-Sau khi thay icon, chạy `cargo clean -p material-screenshot` rồi build lại.
+Bộ cài được tạo trong `target/release/bundle/nsis/` của workspace. Đổi tên thành `Material-Screenshot_2.0.0_x64-setup.exe` rồi chép vào thư mục `download` để nút tải trên landing page hoạt động.
 
 ## Cấu trúc project
 
 ```
 material-screenshot/
-├─ index.html              Landing page Material Design 3 (một file, có SEO + Open Graph)
-├─ robots.txt, sitemap.xml  SEO (thay your-domain.com bằng tên miền thật)
-├─ download/               Đặt file setup .exe tại đây
-├─ screenshots/            image01.png … image06.png
-├─ assets/                 icon.svg, og-image.png, favicon, manifest, fonts/
-├─ scripts/generate-icons.py
-├─ src/                    Giao diện ứng dụng
-│  ├─ index.html
-│  ├─ css/app.css          Material Design 3
-│  ├─ fonts/               Roboto (woff2)
-│  └─ js/                  app.js, theme.js, i18n.js, mcu.js
-├─ src-tauri/
-│  ├─ src/lib.rs           Lõi Rust: đọc/lưu ảnh, nhớ kích thước cửa sổ
-│  ├─ tauri.conf.json
-│  ├─ capabilities/
-│  ├─ icons/               icon app, setup, uninstall
-│  └─ installer/           ảnh header, sidebar cho trình cài NSIS
-├─ package.json
-├─ LICENSE
-└─ README.md
+├── index.html               # Landing page (một tệp, Material 3 Expressive)
+├── app/                     # Giao diện ứng dụng (Vite root)
+│   ├── index.html
+│   ├── public/icon.svg
+│   └── src/
+│       ├── main.tsx · App.tsx · index.css
+│       ├── components/      # Stage, Panel, Toolbar, Dialogs, Settings, ui/ (Button, Select, Tooltip, Toast…)
+│       ├── lib/             # editor, render (canvas), theme, settings, i18n (dict), tauri…
+│       └── hooks/
+├── src-tauri/               # Backend Rust
+│   ├── src/lib.rs           # Lệnh: lưu/đọc ảnh, chụp màn hình, trạng thái cửa sổ
+│   ├── tauri.conf.json · capabilities/
+│   ├── icons/               # icon ứng dụng, setup (installer.ico), gỡ cài đặt (uninstaller.ico)
+│   └── installer/           # ảnh header, sidebar cho NSIS
+├── assets/                  # Icon web, ảnh chia sẻ (og-image), phông chữ cho landing page
+├── screenshots/             # image01 … image04
+├── download/                # Đặt tệp setup .exe vào đây
+├── scripts/generate-icons.py
+├── package.json · vite.config.ts · tsconfig.json
+└── LICENSE
 ```
 
 ## License
 
-Phát hành theo giấy phép [MIT](LICENSE). Bạn được tự do sử dụng, sao chép, chỉnh sửa và phân phối.
+Phát hành theo giấy phép [MIT](LICENSE). Dự án mở công khai tại [github.com/minhtrong67/my-tauri-apps](https://github.com/minhtrong67/my-tauri-apps).
 
-Thiết kế và phát triển bởi **minhtrong67** với sự hỗ trợ của **Claude** (Anthropic).
+---
+
+<div align="center">
+
+**Tác giả: [minhtrong67](https://github.com/minhtrong67)** · Được xây dựng với sự hỗ trợ của AI **Claude** (Anthropic)
+
+</div>

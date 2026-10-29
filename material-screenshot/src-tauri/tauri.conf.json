@@ -1,13 +1,17 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Material Screenshot",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "identifier": "com.minhtrong67.materialscreenshot",
-  "build": { "frontendDist": "../src" },
+  "build": {
+    "beforeDevCommand": "npm run web",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run web:build",
+    "frontendDist": "../dist"
+  },
   "app": {
-    "withGlobalTauri": true,
     "windows": [
-      { "label": "main", "title": "Material Screenshot", "width": 1320, "height": 840, "minWidth": 640, "minHeight": 480, "center": true, "decorations": false, "shadow": true, "visible": false }
+      { "label": "main", "title": "Material Screenshot", "width": 1360, "height": 860, "minWidth": 640, "minHeight": 480, "center": true, "decorations": false, "shadow": true, "visible": false }
     ],
     "security": {
       "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src ipc: http://ipc.localhost"
@@ -20,8 +24,11 @@
     "copyright": "Copyright (c) 2026 minhtrong67",
     "category": "GraphicsAndDesign",
     "shortDescription": "Make screenshots look great",
-    "longDescription": "Turn plain screenshots into polished images with gradients, window frames, shadows and annotations.",
+    "longDescription": "Capture or open a screenshot and turn it into a polished image with gradients, device frames, shadows and annotations.",
     "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "fileAssociations": [
+      { "ext": ["png", "jpg", "jpeg", "webp", "bmp", "gif"], "name": "Image", "description": "Image", "role": "Viewer" }
+    ],
     "windows": {
       "nsis": {
         "installMode": "currentUser",

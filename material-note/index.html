@@ -1,652 +1,644 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-scheme="light">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Material Note — a fast, beautiful notepad for Windows</title>
-  <meta name="description" content="Material Note is a free, open-source notepad built with Tauri and Material Design 3: tabs, find & replace, light/dark themes with custom colors, English & Tiếng Việt. Download for Windows.">
-  <meta name="keywords" content="Material Note, notepad, text editor, Material Design 3, Tauri, open source, Windows, Vietnamese, minhtrong67">
-  <meta name="author" content="minhtrong67">
-  <meta name="robots" content="index, follow">
-  <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#fef7ff" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#141218" media="(prefers-color-scheme: dark)">
-  <!-- Change SITE to the address where this page is hosted (used by canonical / social previews) -->
-  <link rel="canonical" href="https://minhtrong67.github.io/material-note/">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Material Note — a fast, expressive notepad for Windows</title>
+<meta name="description" content="Material Note is a fast, tabbed notepad with Material 3 Expressive design: find & replace with regex, command palette, light/dark themes, custom colors, English & Vietnamese. Free and open source.">
+<meta name="keywords" content="Material Note, notepad, text editor, Tauri, Material 3 Expressive, Material You, Windows notepad, open source, minhtrong67">
+<meta name="author" content="minhtrong67">
+<meta name="robots" content="index, follow">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#fcf8ff" id="theme-color">
+<link rel="canonical" href="https://github.com/minhtrong67/my-tauri-apps">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
 
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Material Note">
-  <meta property="og:title" content="Material Note — a fast, beautiful notepad">
-  <meta property="og:description" content="Free & open-source notepad with Material Design 3, tabs, find & replace, custom theme colors and English / Tiếng Việt.">
-  <meta property="og:url" content="https://minhtrong67.github.io/material-note/">
-  <meta property="og:image" content="https://minhtrong67.github.io/material-note/src/assets/icon-1024.png">
-  <meta property="og:image:alt" content="Material Note app icon">
-  <meta property="og:locale" content="en_US">
-  <meta property="og:locale:alternate" content="vi_VN">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Material Note — a fast, beautiful notepad">
-  <meta name="twitter:description" content="Free & open-source notepad with Material Design 3, tabs, find & replace and custom theme colors.">
-  <meta name="twitter:image" content="https://minhtrong67.github.io/material-note/src/assets/icon-1024.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Material Note">
+<meta property="og:title" content="Material Note — a fast, expressive notepad">
+<meta property="og:description" content="Tabbed notepad with Material 3 Expressive design, themes, find & replace, command palette. Free and open source.">
+<meta property="og:url" content="https://github.com/minhtrong67/my-tauri-apps">
+<meta property="og:image" content="https://raw.githubusercontent.com/minhtrong67/my-tauri-apps/main/material-note/screenshots/image01.png">
+<meta property="og:image:alt" content="Material Note main window">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="vi_VN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Material Note — a fast, expressive notepad">
+<meta name="twitter:description" content="Tabbed notepad with Material 3 Expressive design, themes, find & replace, command palette.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/minhtrong67/my-tauri-apps/main/material-note/screenshots/image01.png">
 
-  <link rel="icon" type="image/svg+xml" href="src/assets/logo.svg">
-  <link rel="apple-touch-icon" href="src/assets/icon-1024.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material Note","applicationCategory":"UtilitiesApplication","operatingSystem":"Windows 10, Windows 11","softwareVersion":"2.0.0","description":"A fast, tabbed notepad with Material 3 Expressive design.","author":{"@type":"Person","name":"minhtrong67"},"license":"https://opensource.org/licenses/MIT","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Material Note",
-    "applicationCategory": "ProductivityApplication",
-    "operatingSystem": "Windows 10, Windows 11",
-    "softwareVersion": "1.1.0",
-    "description": "A fast, tabbed notepad with Material Design 3, built with Tauri.",
-    "author": { "@type": "Person", "name": "minhtrong67" },
-    "license": "https://opensource.org/licenses/MIT",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
-  }
-  </script>
+<script>
+/* apply the saved appearance before the first paint (no flash) */
+(function(){try{var s=JSON.parse(localStorage.getItem("mn-landing")||"{}");var m=s.mode||"system";
+var d=m==="dark"||(m==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);
+document.documentElement.dataset.scheme=d?"dark":"light";document.documentElement.style.background=d?"#14121c":"#fcf8ff";}catch(e){}})();
+</script>
+<style>
+:root{
+  --ease:cubic-bezier(.2,0,0,1);--spring:cubic-bezier(.34,1.56,.64,1);
+  --md-primary:#592dff;--md-on-primary:#fff;--md-primary-container:#e5deff;--md-on-primary-container:#4100db;
+  --md-secondary:#625b71;--md-on-secondary:#fff;--md-secondary-container:#eddcff;--md-on-secondary-container:#2b2339;
+  --md-tertiary:#74527e;--md-on-tertiary:#fff;--md-tertiary-container:#fad7ff;--md-on-tertiary-container:#5b3a65;
+  --md-error:#ba1a1a;--md-on-error:#fff;--md-error-container:#ffdad6;--md-on-error-container:#410002;
+  --md-surface:#fcf8ff;--md-on-surface:#1c1b20;--md-surface-variant:#e6e0ec;--md-on-surface-variant:#48454f;
+  --md-surface-container-lowest:#fff;--md-surface-container-low:#f7f1ff;--md-surface-container:#f1ebf9;
+  --md-surface-container-high:#ebe5f3;--md-surface-container-highest:#e5dfee;
+  --md-outline:#79757f;--md-outline-variant:#cac4d0;--md-inverse-surface:#313036;--md-inverse-on-surface:#f4eff7;--md-scrim:#000;
+  --r-xl:28px;--nav-h:68px;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 12px);-webkit-text-size-adjust:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--md-surface);color:var(--md-on-surface);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body.no-anim *{transition:none!important}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+:focus-visible{outline:3px solid var(--md-primary);outline-offset:3px;border-radius:12px}
+svg.i{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.wrap{width:min(1180px,calc(100% - 40px));margin-inline:auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
-  <style>
-    /* ============ Material 3 tokens (seed hue/chroma are set by JS; defaults = #6750A4) ============ */
-    :root {
-      --h: 295; --c: 0.13;
-      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      --ease: cubic-bezier(.2, 0, 0, 1);
-      --ease-emph: cubic-bezier(.05, .7, .1, 1);
-      --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 28px; --r-full: 999px;
-      --primary: oklch(.46 var(--c) var(--h));
-      --on-primary: #fff;
-      --primary-container: oklch(.91 calc(var(--c) * .45) var(--h));
-      --on-primary-container: oklch(.28 var(--c) var(--h));
-      --secondary-container: oklch(.92 calc(var(--c) * .2) var(--h));
-      --on-secondary-container: oklch(.3 calc(var(--c) * .25) var(--h));
-      --tertiary-container: oklch(.92 .05 calc(var(--h) + 60));
-      --on-tertiary-container: oklch(.32 .07 calc(var(--h) + 60));
-      --surface: oklch(.985 .006 var(--h));
-      --surface-low: oklch(.968 .008 var(--h));
-      --surface-container: oklch(.952 .011 var(--h));
-      --surface-high: oklch(.932 .013 var(--h));
-      --on-surface: oklch(.22 .015 var(--h));
-      --on-surface-variant: oklch(.45 .02 var(--h));
-      --outline: oklch(.6 .02 var(--h));
-      --outline-variant: oklch(.84 .015 var(--h));
-      --shadow-1: 0 1px 2px rgb(0 0 0 / .18), 0 1px 3px 1px rgb(0 0 0 / .1);
-      --shadow-2: 0 1px 2px rgb(0 0 0 / .18), 0 2px 6px 2px rgb(0 0 0 / .1);
-      --shadow-3: 0 4px 8px 3px rgb(0 0 0 / .1), 0 1px 3px rgb(0 0 0 / .18);
-      --hover: color-mix(in oklab, var(--on-surface) 8%, transparent);
-      color-scheme: light;
-    }
-    :root[data-scheme="dark"] {
-      --primary: oklch(.8 calc(var(--c) * .8) var(--h));
-      --on-primary: oklch(.28 var(--c) var(--h));
-      --primary-container: oklch(.36 var(--c) var(--h));
-      --on-primary-container: oklch(.92 calc(var(--c) * .4) var(--h));
-      --secondary-container: oklch(.34 calc(var(--c) * .25) var(--h));
-      --on-secondary-container: oklch(.92 calc(var(--c) * .15) var(--h));
-      --tertiary-container: oklch(.36 .06 calc(var(--h) + 60));
-      --on-tertiary-container: oklch(.92 .04 calc(var(--h) + 60));
-      --surface: oklch(.17 .01 var(--h));
-      --surface-low: oklch(.2 .012 var(--h));
-      --surface-container: oklch(.225 .014 var(--h));
-      --surface-high: oklch(.26 .016 var(--h));
-      --on-surface: oklch(.92 .01 var(--h));
-      --on-surface-variant: oklch(.78 .02 var(--h));
-      --outline: oklch(.6 .02 var(--h));
-      --outline-variant: oklch(.38 .02 var(--h));
-      --hover: color-mix(in oklab, var(--on-surface) 10%, transparent);
-      color-scheme: dark;
-    }
+/* state layer + ripple */
+.ripple{position:relative;overflow:hidden;isolation:isolate}
+.ripple::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .2s;z-index:-1;border-radius:inherit}
+.ripple:hover::after{opacity:.08}.ripple:active::after{opacity:.12}
+.wave{position:absolute;border-radius:50%;background:currentColor;opacity:.22;transform:scale(0);animation:wave .65s var(--ease) forwards;pointer-events:none;z-index:-1}
+@keyframes wave{to{transform:scale(1);opacity:0}}
 
-    /* ============ Base ============ */
-    *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
-    body {
-      margin: 0; font: 400 16px/1.6 var(--font); color: var(--on-surface); background: var(--surface);
-      -webkit-font-smoothing: antialiased; overflow-x: hidden;
-      transition: background-color .35s var(--ease), color .35s var(--ease);
-    }
-    h1, h2, h3, p { margin: 0; }
-    a { color: inherit; }
-    img { max-width: 100%; display: block; }
-    .i { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .wrap { width: min(1120px, 100% - 40px); margin-inline: auto; }
-    .muted { color: var(--on-surface-variant); }
-    :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 6px; }
+/* buttons: pill that morphs to a squircle on press */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;height:3.25rem;padding:0 1.75rem;border-radius:999px;font-weight:700;font-size:1rem;white-space:nowrap;transition:border-radius .3s var(--spring),transform .3s var(--spring),box-shadow .2s,background-color .2s}
+.btn:hover{border-radius:18px}.btn:active{border-radius:14px;transform:scale(.96)}
+.btn-fill{background:var(--md-primary);color:var(--md-on-primary);box-shadow:0 2px 8px color-mix(in srgb,var(--md-primary) 40%,transparent)}
+.btn-fill:hover{box-shadow:0 6px 22px color-mix(in srgb,var(--md-primary) 50%,transparent)}
+.btn-tonal{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+.btn-outline{box-shadow:inset 0 0 0 1.5px var(--md-outline);color:var(--md-primary)}
+.btn-sm{height:2.5rem;padding:0 1.2rem;font-size:.875rem}
+.icon-btn{display:inline-grid;place-items:center;width:2.75rem;height:2.75rem;border-radius:999px;color:var(--md-on-surface-variant);transition:border-radius .3s var(--spring),transform .3s var(--spring),background-color .2s}
+.icon-btn:active{border-radius:12px;transform:scale(.9)}
+.icon-btn[aria-pressed=true],.icon-btn.on{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-radius:14px}
 
-    /* ============ Buttons / ripple ============ */
-    .btn {
-      position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-      height: 40px; padding: 0 24px; border: 0; border-radius: var(--r-full); font: 500 14px/20px var(--font); letter-spacing: .1px;
-      text-decoration: none; cursor: pointer; color: var(--primary); background: transparent;
-      transition: box-shadow .25s var(--ease), transform .25s var(--ease), background-color .25s var(--ease);
-    }
-    .btn::after { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity .2s; }
-    .btn:hover::after { opacity: .08; }
-    .btn:active { transform: scale(.97); }
-    .btn.filled { background: var(--primary); color: var(--on-primary); }
-    .btn.filled:hover { box-shadow: var(--shadow-1); }
-    .btn.tonal { background: var(--secondary-container); color: var(--on-secondary-container); }
-    .btn.outlined { box-shadow: inset 0 0 0 1px var(--outline); }
-    .btn.lg { height: 56px; padding: 0 32px; font-size: 16px; }
-    .btn .i { width: 20px; height: 20px; }
-    .btn.lg .i { width: 24px; height: 24px; }
-    .icon-btn {
-      position: relative; overflow: hidden; width: 40px; height: 40px; display: inline-grid; place-items: center; border: 0; border-radius: 50%;
-      background: transparent; color: var(--on-surface-variant); cursor: pointer; transition: background-color .2s, transform .2s var(--ease);
-    }
-    .icon-btn:hover { background: var(--hover); color: var(--on-surface); }
-    .icon-btn:active { transform: scale(.92); }
-    .ripple { position: absolute; border-radius: 50%; background: currentColor; opacity: .22; transform: scale(0); pointer-events: none; animation: ripple .6s var(--ease) forwards; }
-    @keyframes ripple { to { transform: scale(1); opacity: 0; } }
+/* tooltip */
+[data-tip]{position:relative}
+[data-tip]::before{content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:50%;transform:translate(-50%,-4px) scale(.95);background:var(--md-inverse-surface);color:var(--md-inverse-on-surface);padding:.35rem .7rem;border-radius:10px;font-size:.75rem;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s .3s,transform .2s var(--spring) .3s;z-index:90}
+[data-tip]:hover::before,[data-tip]:focus-visible::before{opacity:1;transform:translate(-50%,0) scale(1)}
+[data-tip-pos=top]::before{top:auto;bottom:calc(100% + 10px)}
+@media(hover:none){[data-tip]::before{display:none}}
 
-    /* ============ Top app bar ============ */
-    .appbar {
-      position: sticky; top: 0; z-index: 50; padding-top: env(safe-area-inset-top);
-      background: color-mix(in oklab, var(--surface) 82%, transparent); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2);
-      transition: box-shadow .3s, background-color .3s;
-    }
-    .appbar.scrolled { box-shadow: var(--shadow-2); background: color-mix(in oklab, var(--surface-container) 88%, transparent); }
-    .appbar .row { height: 64px; display: flex; align-items: center; gap: 8px; }
-    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font: 500 20px/28px var(--font); margin-right: auto; }
-    .brand img { width: 32px; height: 32px; }
-    .nav { display: flex; gap: 4px; margin-right: 8px; }
-    .nav a { padding: 8px 16px; border-radius: var(--r-full); text-decoration: none; font-weight: 500; font-size: 14px; color: var(--on-surface-variant); transition: background-color .2s, color .2s; }
-    .nav a:hover { background: var(--hover); color: var(--on-surface); }
-    .lang-btn { width: auto; padding: 0 12px; border-radius: var(--r-full); font: 500 13px var(--font); gap: 6px; display: inline-flex; align-items: center; }
-    .lang-btn .i { width: 18px; height: 18px; }
+/* nav */
+.nav{position:fixed;inset:0 0 auto 0;z-index:80;height:var(--nav-h);display:flex;align-items:center;transition:background-color .3s,box-shadow .3s,backdrop-filter .3s}
+.nav.scrolled{background:color-mix(in srgb,var(--md-surface) 82%,transparent);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 1px 0 var(--md-outline-variant)}
+.nav .wrap{display:flex;align-items:center;gap:.75rem}
+.brand{display:flex;align-items:center;gap:.65rem;font-weight:800;font-size:1.1rem;letter-spacing:-.01em;margin-right:auto}
+.brand img{width:36px;height:36px;transition:transform .6s var(--spring)}.brand:hover img{transform:rotate(36deg) scale(1.1)}
+.links{display:flex;gap:.25rem}
+.links a{padding:.5rem 1rem;border-radius:999px;font-weight:600;font-size:.9rem;color:var(--md-on-surface-variant);transition:background-color .2s,color .2s,border-radius .3s var(--spring)}
+.links a:hover{background:var(--md-surface-container-high)}
+.links a.active{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-radius:14px}
+.seg{display:inline-flex;gap:2px;padding:0}
+.seg button{height:2.5rem;padding:0 .9rem;font-weight:700;font-size:.8rem;background:var(--md-surface-container-high);color:var(--md-on-surface-variant);border-radius:8px;transition:border-radius .3s var(--spring),background-color .2s,transform .2s}
+.seg button:first-child{border-radius:999px 8px 8px 999px}.seg button:last-child{border-radius:8px 999px 999px 8px}
+.seg button[aria-checked=true]{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-radius:999px}
+.seg button:active{transform:scale(.94)}
+.menu-btn{display:none}
+.pop{position:absolute;top:calc(100% + 10px);right:20px;width:min(21rem,calc(100vw - 32px));background:var(--md-surface-container-high);border-radius:var(--r-xl);padding:1.1rem;box-shadow:0 8px 32px rgb(0 0 0/.22);transform-origin:top right;opacity:0;visibility:hidden;transform:scale(.9) translateY(-8px);transition:opacity .2s,transform .3s var(--spring),visibility .2s}
+.pop.open{opacity:1;visibility:visible;transform:none}
+.pop h4{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--md-on-surface-variant);margin:.2rem 0 .6rem}
+.pop h4:not(:first-child){margin-top:1.1rem}
+.modes{display:flex;gap:2px}.modes .seg-b{flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;height:2.6rem;font-weight:700;font-size:.82rem;background:var(--md-surface-container-highest);border-radius:8px;transition:border-radius .3s var(--spring),background-color .2s}
+.modes .seg-b:first-child{border-radius:999px 8px 8px 999px}.modes .seg-b:last-child{border-radius:8px 999px 999px 8px}
+.modes .seg-b[aria-checked=true]{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-radius:999px}
+.swatches{display:flex;flex-wrap:wrap;gap:.6rem}
+.sw{width:2.6rem;height:2.6rem;border-radius:999px;display:grid;place-items:center;color:#fff;transition:border-radius .3s var(--spring),transform .25s var(--spring),box-shadow .2s}
+.sw:hover{transform:scale(1.12)}.sw:active{transform:scale(.9)}
+.sw svg{opacity:0;transform:scale(.4);transition:.3s var(--spring)}
+.sw[aria-checked=true]{border-radius:14px;box-shadow:0 0 0 3px var(--md-surface-container-high),0 0 0 5px var(--md-on-surface)}
+.sw[aria-checked=true] svg{opacity:1;transform:none}
 
-    /* ============ Hero ============ */
-    .hero { position: relative; padding: 72px 0 96px; overflow: hidden; }
-    .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; z-index: -1; animation: drift 18s ease-in-out infinite alternate; }
-    .blob.a { width: 420px; height: 420px; top: -120px; right: -80px; background: var(--primary-container); }
-    .blob.b { width: 340px; height: 340px; bottom: -120px; left: -100px; background: var(--tertiary-container); animation-delay: -6s; }
-    @keyframes drift { to { transform: translate(40px, 30px) scale(1.12); } }
-    .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; }
-    .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 10px; border-radius: var(--r-full); background: var(--secondary-container); color: var(--on-secondary-container); font: 500 13px/20px var(--font); }
-    .badge .i { width: 18px; height: 18px; }
-    h1 { margin: 20px 0 16px; font: 400 clamp(40px, 6vw, 64px)/1.08 var(--font); letter-spacing: -.5px; }
-    h1 em { font-style: normal; color: var(--primary); }
-    .lead { max-width: 520px; font-size: 18px; line-height: 28px; color: var(--on-surface-variant); }
-    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-    .meta-row { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 20px; font-size: 13px; color: var(--on-surface-variant); }
-    .meta-row span { display: inline-flex; align-items: center; gap: 6px; }
-    .meta-row .i { width: 16px; height: 16px; color: var(--primary); }
+/* hero */
+.hero{position:relative;padding:calc(var(--nav-h) + 3.5rem) 0 5rem;overflow:hidden}
+.blob{position:absolute;filter:blur(60px);opacity:.55;pointer-events:none;animation:morph 16s ease-in-out infinite,drift 22s ease-in-out infinite}
+.b1{width:420px;height:420px;background:var(--md-primary-container);top:-80px;left:-120px}
+.b2{width:360px;height:360px;background:var(--md-tertiary-container);top:120px;right:-100px;animation-delay:-6s}
+.b3{width:300px;height:300px;background:var(--md-secondary-container);bottom:-120px;left:36%;animation-delay:-11s}
+@keyframes morph{0%,100%{border-radius:42% 58% 60% 40%/45% 40% 60% 55%}50%{border-radius:60% 40% 38% 62%/58% 60% 40% 42%}}
+@keyframes drift{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(36px,-28px,0)}}
+.hero-grid{position:relative;display:grid;grid-template-columns:1.05fr 1fr;gap:3rem;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem .4rem .5rem;border-radius:999px;background:var(--md-tertiary-container);color:var(--md-on-tertiary-container);font-weight:700;font-size:.82rem}
+.chip i{display:grid;place-items:center;width:1.7rem;height:1.7rem;border-radius:999px;background:var(--md-tertiary);color:var(--md-on-tertiary)}
+h1{font-size:clamp(2.5rem,6vw,4.6rem);line-height:1.04;letter-spacing:-.035em;font-weight:900;margin:1.2rem 0 1.2rem}
+h1 .w{display:inline-block;opacity:0;transform:translateY(.6em) rotate(3deg);animation:word .8s var(--spring) forwards}
+h1 em{font-style:normal;background:linear-gradient(100deg,var(--md-primary),var(--md-tertiary) 70%,var(--md-primary));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+@keyframes word{to{opacity:1;transform:none}}@keyframes shine{to{background-position:200% center}}
+.lead{font-size:clamp(1.05rem,1.6vw,1.25rem);color:var(--md-on-surface-variant);max-width:36rem}
+.cta{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:2rem}
+.meta{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;margin-top:1.4rem;font-size:.85rem;color:var(--md-on-surface-variant);font-weight:600}
+.meta span{display:inline-flex;align-items:center;gap:.4rem}
+.shot{position:relative;perspective:1400px}
+.frame{position:relative;border-radius:var(--r-xl);background:var(--md-surface-container-lowest);padding:.6rem;box-shadow:0 24px 70px color-mix(in srgb,var(--md-primary) 28%,transparent),0 4px 14px rgb(0 0 0/.12);transform:rotateY(-7deg) rotateX(3deg);transition:transform .25s ease-out;will-change:transform}
+.frame img{border-radius:20px;width:100%;aspect-ratio:1280/800;object-fit:cover;background:var(--md-surface-container)}
+.cookie{position:absolute;width:92px;right:-24px;top:-38px;animation:float 7s ease-in-out infinite;filter:drop-shadow(0 8px 14px color-mix(in srgb,var(--md-primary) 40%,transparent))}
+.cookie2{position:absolute;width:56px;left:-22px;bottom:-18px;animation:float 9s ease-in-out -3s infinite;opacity:.9}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-16px) rotate(10deg)}}
 
-    /* ---- App window mockup ---- */
-    .mock { border-radius: var(--r-lg); background: var(--surface-container); box-shadow: var(--shadow-3), 0 30px 60px -20px color-mix(in oklab, var(--primary) 35%, transparent); overflow: hidden; animation: float 6s ease-in-out infinite; transform-origin: center; }
-    @keyframes float { 50% { transform: translateY(-10px) rotate(-.4deg); } }
-    .mock-bar { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px; }
-    .mock-bar img { width: 18px; height: 18px; }
-    .mock-bar b { font-weight: 500; font-size: 13px; padding: 4px 10px; border-radius: var(--r-full); }
-    .mock-bar b:first-of-type { background: var(--hover); }
-    .mock-bar .sp { flex: 1; }
-    .mock-bar .i { width: 16px; height: 16px; color: var(--on-surface-variant); }
-    .mock-tabs { display: flex; gap: 4px; padding: 0 12px; }
-    .mock-tab { display: flex; align-items: center; gap: 8px; padding: 8px 14px; font-size: 13px; border-radius: 12px 12px 0 0; color: var(--on-surface-variant); }
-    .mock-tab.on { background: var(--surface); color: var(--on-surface); font-weight: 500; }
-    .mock-tab i { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); }
-    .mock-editor { position: relative; background: var(--surface); padding: 18px 20px 22px; min-height: 250px; font-size: 14.5px; line-height: 24px; }
-    .mock-editor p { white-space: nowrap; overflow: hidden; }
-    .mock-editor mark { background: color-mix(in oklab, var(--primary) 28%, transparent); color: inherit; border-radius: 4px; padding: 0 2px; }
-    .mock-editor mark.cur { background: var(--primary); color: var(--on-primary); }
-    .caret { display: inline-block; width: 2px; height: 1.1em; margin-left: 1px; vertical-align: -3px; background: var(--primary); animation: blink 1.05s steps(1) infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
-    .find-pop { position: absolute; top: 12px; right: 14px; display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 14px; border-radius: var(--r-lg); background: var(--surface-high); box-shadow: var(--shadow-2); font-size: 12.5px; animation: pop-in .6s var(--ease-emph) .9s both; }
-    .find-pop .i { width: 15px; height: 15px; color: var(--on-surface-variant); }
-    @keyframes pop-in { from { opacity: 0; transform: translateY(-8px) scale(.94); } }
-    .mock-status { display: flex; gap: 14px; padding: 8px 16px; font-size: 11.5px; color: var(--on-surface-variant); }
-    .mock-status .sp { flex: 1; }
+/* marquee */
+.marquee{overflow:hidden;padding:1rem 0;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.track{display:flex;gap:.8rem;width:max-content;animation:scroll 38s linear infinite}
+.marquee:hover .track{animation-play-state:paused}
+.track span{display:inline-flex;align-items:center;gap:.6rem;padding:.55rem 1.1rem;border-radius:999px;background:var(--md-surface-container);font-weight:600;font-size:.9rem;white-space:nowrap}
+kbd{font:inherit;font-size:.74rem;font-weight:800;padding:.15rem .5rem;border-radius:8px;background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+@keyframes scroll{to{transform:translateX(-50%)}}
 
-    /* ============ Sections ============ */
-    section { padding: 88px 0; }
-    .eyebrow { font: 500 14px/20px var(--font); letter-spacing: .5px; text-transform: uppercase; color: var(--primary); }
-    h2 { margin: 8px 0 12px; font: 400 clamp(30px, 4.2vw, 44px)/1.15 var(--font); }
-    .section-head { max-width: 640px; margin-bottom: 48px; }
-    .section-head p { color: var(--on-surface-variant); font-size: 17px; }
-    .band { background: var(--surface-low); }
+/* sections */
+section{padding:5.5rem 0;position:relative}
+.eyebrow{display:inline-block;font-weight:800;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--md-primary);margin-bottom:.8rem}
+h2{font-size:clamp(1.9rem,4vw,3rem);line-height:1.1;letter-spacing:-.03em;font-weight:900;max-width:22ch}
+.sub{margin-top:1rem;color:var(--md-on-surface-variant);font-size:1.1rem;max-width:42rem}
+.head{margin-bottom:3rem}
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
-    .card {
-      position: relative; padding: 24px; border-radius: var(--r-xl); background: var(--surface-container);
-      transition: transform .35s var(--ease), box-shadow .35s var(--ease), background-color .35s;
-    }
-    .card:hover { transform: translateY(-6px); box-shadow: var(--shadow-2); background: var(--surface-high); }
-    .card .ico { width: 48px; height: 48px; display: grid; place-items: center; margin-bottom: 16px; border-radius: 16px; background: var(--primary-container); color: var(--on-primary-container); transition: transform .35s var(--ease-emph), border-radius .35s; }
-    .card:hover .ico { transform: rotate(-6deg) scale(1.08); border-radius: 50%; }
-    .card:nth-child(3n+2) .ico { background: var(--secondary-container); color: var(--on-secondary-container); }
-    .card:nth-child(3n) .ico { background: var(--tertiary-container); color: var(--on-tertiary-container); }
-    .card h3 { font: 500 18px/26px var(--font); margin-bottom: 6px; }
-    .card p { color: var(--on-surface-variant); font-size: 15px; line-height: 24px; }
+/* features */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}
+.card{position:relative;padding:1.8rem;background:var(--md-surface-container-low);border-radius:var(--r-xl);overflow:hidden;transition:transform .4s var(--spring),border-radius .5s var(--spring),background-color .3s}
+.card:nth-child(4n+1){border-radius:var(--r-xl) 56px var(--r-xl) var(--r-xl)}.card:nth-child(4n+3){border-radius:56px var(--r-xl) var(--r-xl) var(--r-xl)}
+.card:hover{transform:translateY(-8px);border-radius:var(--r-xl);background:var(--md-surface-container)}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--md-primary) 16%,transparent),transparent 70%);opacity:0;transition:opacity .3s}
+.card:hover::before{opacity:1}
+.ico{display:grid;place-items:center;width:3.4rem;height:3.4rem;border-radius:18px;background:var(--md-primary-container);color:var(--md-on-primary-container);margin-bottom:1.1rem;transition:transform .5s var(--spring),border-radius .5s var(--spring)}
+.card:hover .ico{transform:rotate(-8deg) scale(1.1);border-radius:50%}
+.ico svg{width:1.6rem;height:1.6rem}
+.card h3{font-size:1.15rem;font-weight:800;letter-spacing:-.01em;margin-bottom:.4rem}
+.card p{color:var(--md-on-surface-variant);font-size:.96rem}
 
-    /* theme playground */
-    .play { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
-    .swatches { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
-    .swatch { position: relative; width: 44px; height: 44px; border: 0; border-radius: 50%; cursor: pointer; color: #fff; display: grid; place-items: center; transition: transform .25s var(--ease-emph), box-shadow .25s; }
-    .swatch:hover { transform: scale(1.12); }
-    .swatch .i { width: 22px; height: 22px; opacity: 0; transform: scale(.4); transition: .25s var(--ease-emph); }
-    .swatch[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px currentColor; }
-    .swatch[aria-pressed="true"] .i { opacity: 1; transform: none; }
-    .chips { display: flex; flex-wrap: wrap; gap: 10px; }
-    .tone { padding: 28px; border-radius: var(--r-xl); background: var(--surface-container); display: grid; gap: 12px; }
-    .tone .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-    .tone .sw { flex: 1; min-width: 110px; height: 72px; padding: 10px 12px; border-radius: var(--r-md); font-size: 12px; font-weight: 500; display: flex; align-items: flex-end; transition: background-color .4s var(--ease), color .4s; }
+/* gallery */
+.gallery{background:var(--md-surface-container-low);border-radius:48px;padding:2.5rem}
+.tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.6rem}
+.tab{height:2.8rem;padding:0 1.3rem;border-radius:999px;font-weight:700;font-size:.92rem;background:var(--md-surface-container-high);color:var(--md-on-surface-variant);transition:border-radius .3s var(--spring),background-color .2s,transform .2s}
+.tab:hover{border-radius:16px}.tab[aria-selected=true]{background:var(--md-primary);color:var(--md-on-primary);border-radius:16px}
+.stage{position:relative;border-radius:var(--r-xl);overflow:hidden;background:var(--md-surface-container-lowest);box-shadow:0 16px 50px rgb(0 0 0/.16)}
+.stage img{width:100%;aspect-ratio:1280/800;object-fit:cover;animation:swap .6s var(--spring)}
+@keyframes swap{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+.cap{margin-top:1.1rem;color:var(--md-on-surface-variant);font-weight:600;min-height:1.6rem}
 
-    /* screenshots */
-    .shots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-    .shot { margin: 0; border-radius: var(--r-xl); overflow: hidden; background: var(--surface-container); box-shadow: var(--shadow-1); transition: transform .4s var(--ease), box-shadow .4s; }
-    .shot:hover { transform: translateY(-6px) scale(1.01); box-shadow: var(--shadow-3); }
-    .shot img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: var(--surface-high); }
-    .shot figcaption { padding: 12px 18px; font-size: 14px; color: var(--on-surface-variant); }
-    .shot.empty img { display: none; }
-    .shot.empty::before { content: attr(data-ph); display: grid; place-items: center; aspect-ratio: 16 / 10; font-size: 13px; color: var(--on-surface-variant); background: repeating-linear-gradient(45deg, var(--surface-high), var(--surface-high) 12px, var(--surface-container) 12px, var(--surface-container) 24px); }
+/* themes demo */
+.demo{display:grid;grid-template-columns:1fr 1.15fr;gap:2.5rem;align-items:center}
+.mini{background:var(--md-surface);border-radius:var(--r-xl);box-shadow:0 20px 60px color-mix(in srgb,var(--md-primary) 25%,transparent),0 0 0 1px var(--md-outline-variant);overflow:hidden;transition:background-color .4s}
+.mini .bar{display:flex;align-items:center;gap:.6rem;padding:.8rem 1rem}
+.mini .bar img{width:26px}.mini .bar b{font-size:.85rem}.mini .bar .sp{flex:1}
+.mini .dot{width:26px;height:26px;border-radius:50%;background:var(--md-surface-container-high)}.mini .dot.p{background:var(--md-secondary-container)}
+.mini .tabsr{display:flex;gap:.4rem;padding:0 1rem .7rem}.mini .t{padding:.3rem .8rem;border-radius:999px;font-size:.72rem;font-weight:700}
+.mini .t.a{background:var(--md-secondary-container);color:var(--md-on-secondary-container);border-radius:10px}
+.mini .t:not(.a){color:var(--md-on-surface-variant)}
+.mini .body{margin:0 .7rem .7rem;border-radius:22px;background:var(--md-surface-container-lowest);padding:1.2rem;min-height:210px;position:relative}
+.ln{height:9px;border-radius:9px;background:var(--md-surface-container-highest);margin:.7rem 0}
+.ln.h{background:var(--md-primary-container);width:46%;height:12px}
+.mini mark{background:color-mix(in srgb,var(--md-tertiary) 34%,transparent);border-radius:6px;display:inline-block;height:9px;width:28%;vertical-align:middle;margin:0 .3rem}
+.mini .fab{position:absolute;right:1rem;bottom:1rem;padding:.55rem 1rem;border-radius:16px;background:var(--md-primary);color:var(--md-on-primary);font-weight:800;font-size:.78rem;display:flex;gap:.4rem;align-items:center}
+.demo-ctl{display:flex;flex-direction:column;gap:1.4rem}
+.demo-ctl h3{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--md-on-surface-variant);margin-bottom:.7rem}
 
-    /* download */
-    .download { position: relative; overflow: hidden; padding: 56px 40px; border-radius: 36px; text-align: center; background: var(--primary-container); color: var(--on-primary-container); }
-    .download::before, .download::after { content: ""; position: absolute; border-radius: 50%; background: var(--primary); opacity: .09; }
-    .download::before { width: 360px; height: 360px; top: -160px; left: -100px; }
-    .download::after { width: 260px; height: 260px; bottom: -120px; right: -60px; }
-    .download > * { position: relative; }
-    .download img { width: 88px; height: 88px; margin: 0 auto 16px; animation: float 5s ease-in-out infinite; }
-    .download h2 { margin-top: 0; }
-    .download p { max-width: 520px; margin: 0 auto; opacity: .85; }
-    .download .cta { justify-content: center; }
-    .download .btn.outlined { color: var(--on-primary-container); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--on-primary-container) 45%, transparent); }
-    .req { margin-top: 20px; font-size: 13px; opacity: .8; }
+/* download */
+.dl{position:relative;overflow:hidden;border-radius:56px;padding:clamp(2rem,6vw,4.5rem);background:var(--md-primary-container);color:var(--md-on-primary-container);text-align:center}
+.dl .ring{position:absolute;border-radius:50%;border:2px solid color-mix(in srgb,var(--md-primary) 25%,transparent);animation:pulse 5s ease-out infinite}
+@keyframes pulse{from{transform:scale(.4);opacity:.9}to{transform:scale(1.6);opacity:0}}
+.dl h2{margin-inline:auto;max-width:18ch}.dl .sub{margin-inline:auto;color:inherit;opacity:.8}
+.dl .cta{justify-content:center;position:relative}
+.dl .btn-fill{height:3.75rem;padding:0 2.4rem;font-size:1.1rem}
+.small{font-size:.85rem;opacity:.8;margin-top:1.1rem;position:relative}
 
-    /* faq */
-    details { border-radius: var(--r-lg); background: var(--surface-container); margin-bottom: 8px; transition: background-color .3s; }
-    details[open] { background: var(--surface-high); }
-    summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 22px; cursor: pointer; font-weight: 500; border-radius: var(--r-lg); }
-    summary::-webkit-details-marker { display: none; }
-    summary .i { transition: transform .3s var(--ease); color: var(--on-surface-variant); }
-    details[open] summary .i { transform: rotate(180deg); }
-    details p { padding: 0 22px 20px; color: var(--on-surface-variant); animation: fade-down .35s var(--ease); }
-    @keyframes fade-down { from { opacity: 0; transform: translateY(-6px); } }
+/* footer */
+footer{padding:3rem 0 4rem}
+.credit{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;padding:1.2rem 1.6rem;border-radius:var(--r-xl);background:var(--md-tertiary-container);color:var(--md-on-tertiary-container);position:relative;overflow:hidden}
+.credit .heart{display:grid;place-items:center;width:3rem;height:3rem;border-radius:16px;background:var(--md-tertiary);color:var(--md-on-tertiary);animation:beat 2.4s ease-in-out infinite}
+@keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.18)}24%{transform:scale(1)}}
+.credit p{flex:1;min-width:14rem;font-size:1rem}
+.credit b{background:color-mix(in srgb,currentColor 14%,transparent);padding:.1rem .5rem;border-radius:8px}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;margin-top:1.6rem;color:var(--md-on-surface-variant);font-size:.9rem}
+.foot a{font-weight:700;text-decoration:underline;text-underline-offset:3px}
 
-    footer { padding: 40px 0 calc(48px + env(safe-area-inset-bottom)); border-top: 1px solid var(--outline-variant); }
-    .foot { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; justify-content: space-between; font-size: 14px; }
-    .credit-chip { display: inline-block; padding: 2px 12px; border-radius: var(--r-full); font-weight: 500; background: var(--primary-container); color: var(--on-primary-container); }
-    .credit-chip.ai { background: var(--secondary-container); color: var(--on-secondary-container); }
-    .foot a { text-underline-offset: 3px; }
+/* scroll to top + reveal */
+#top{position:fixed;right:22px;bottom:22px;z-index:70;width:3.4rem;height:3.4rem;border-radius:18px;background:var(--md-primary-container);color:var(--md-on-primary-container);display:grid;place-items:center;box-shadow:0 6px 20px rgb(0 0 0/.25);opacity:0;transform:translateY(24px) scale(.7);pointer-events:none;transition:opacity .25s,transform .4s var(--spring),border-radius .3s var(--spring)}
+#top.show{opacity:1;transform:none;pointer-events:auto}#top:hover{border-radius:50%}#top:active{transform:scale(.88)}
+.rv{opacity:0;transform:translateY(34px) scale(.98);transition:opacity .7s var(--ease),transform .8s var(--spring);transition-delay:var(--d,0s)}
+.rv.in{opacity:1;transform:none}
 
-    /* ============ Scroll reveal ============ */
-    .js .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s var(--ease), transform .7s var(--ease-emph); transition-delay: var(--d, 0ms); }
-    .js .reveal.in { opacity: 1; transform: none; }
-
-    /* ============ Responsive ============ */
-    @media (max-width: 960px) {
-      .hero { padding: 40px 0 72px; }
-      .hero-grid, .play { grid-template-columns: 1fr; gap: 40px; }
-      .lead { max-width: none; }
-    }
-    @media (max-width: 720px) {
-      .nav { display: none; }
-      section { padding: 64px 0; }
-      .shots { grid-template-columns: 1fr; }
-      .download { padding: 40px 22px; border-radius: 28px; }
-      .brand span { font-size: 18px; }
-      .btn.lg { width: 100%; }
-      .hero .cta .btn { flex: 1 1 100%; }
-      .hide-sm { display: none; }
-    }
-    @media (max-width: 400px) { .appbar .btn.filled .txt { display: none; } .appbar .btn.filled { padding: 0 14px; } }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-      .js .reveal { opacity: 1; transform: none; }
-    }
-  </style>
+@media(max-width:980px){
+  .hero-grid,.demo{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}
+  .frame{transform:none!important}.shot{max-width:640px;margin-inline:auto}
+}
+@media(max-width:820px){
+  .menu-btn{display:inline-grid}
+  .links{position:absolute;top:calc(100% + 8px);left:16px;right:16px;flex-direction:column;background:var(--md-surface-container-high);padding:.6rem;border-radius:var(--r-xl);box-shadow:0 8px 32px rgb(0 0 0/.22);transform-origin:top;transform:scale(.94) translateY(-8px);opacity:0;visibility:hidden;transition:.3s var(--spring)}
+  .links.open{transform:none;opacity:1;visibility:visible}.links a{padding:.9rem 1.2rem}
+  .nav-dl{display:none}
+}
+@media(max-width:620px){
+  .grid{grid-template-columns:1fr}section{padding:4rem 0}.gallery{padding:1.1rem;border-radius:32px}.dl{border-radius:36px}
+  .cta .btn{flex:1 1 100%}.cookie{width:64px;right:-8px;top:-28px}
+  .seg button{padding:0 .65rem}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.rv,h1 .w{opacity:1;transform:none}}
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+</style>
 </head>
 <body>
-  <!-- Lucide icons (https://lucide.dev), inlined as a sprite -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <symbol id="l-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></symbol>
-    <symbol id="l-github" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
-    <symbol id="l-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
-    <symbol id="l-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
-    <symbol id="l-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
-    <symbol id="l-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
-    <symbol id="l-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
-    <symbol id="l-palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></symbol>
-    <symbol id="l-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol>
-    <symbol id="l-maximize" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
-    <symbol id="l-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
-    <symbol id="l-layout" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M10 5v5"/></symbol>
-    <symbol id="l-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
-    <symbol id="l-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
-    <symbol id="l-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
-    <symbol id="l-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
-    <symbol id="l-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
-  </svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+<symbol id="i-command" viewBox="0 0 24 24"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></symbol>
+<symbol id="i-palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".6" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".6" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".6" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".6" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></symbol>
+<symbol id="i-lang" viewBox="0 0 24 24"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
+<symbol id="i-type" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></symbol>
+<symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+<symbol id="i-github" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+<symbol id="i-monitor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+<symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></symbol>
+<symbol id="i-win" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></symbol>
+<symbol id="i-open" viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></symbol>
+</defs></svg>
 
-  <header class="appbar" id="appbar">
-    <div class="wrap row">
-      <a class="brand" href="#top" aria-label="Material Note"><img src="src/assets/logo.svg" alt="" width="32" height="32"><span>Material Note</span></a>
-      <nav class="nav" aria-label="Primary">
-        <a href="#features" data-i18n="nav.features">Features</a>
-        <a href="#themes" data-i18n="nav.themes">Themes</a>
-        <a href="#screenshots" data-i18n="nav.shots">Screenshots</a>
-        <a href="#faq" data-i18n="nav.faq">FAQ</a>
-      </nav>
-      <button class="icon-btn lang-btn" id="btn-lang" type="button" aria-label="Language"><svg class="i"><use href="#l-globe"/></svg><span id="lang-label">EN</span></button>
-      <button class="icon-btn" id="btn-theme" type="button" aria-label="Toggle theme"><svg class="i"><use id="theme-use" href="#l-moon"/></svg></button>
-      <a class="btn filled" href="download/Material-Note-Setup.exe" download><svg class="i"><use href="#l-download"/></svg><span class="txt" data-i18n="cta.download">Download</span></a>
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="#top-anchor" data-scroll="top"><img src="logo.svg" alt="" width="36" height="36"><span>Material Note</span></a>
+    <nav class="links" id="links" aria-label="Main">
+      <a href="#features" data-i="nav.features"></a>
+      <a href="#screenshots" data-i="nav.screens"></a>
+      <a href="#customize" data-i="nav.customize"></a>
+      <a href="#download" data-i="nav.download"></a>
+    </nav>
+    <div class="seg ripple-none" role="radiogroup" aria-label="Language" id="lang">
+      <button role="radio" data-lang="en" aria-checked="true">EN</button><button role="radio" data-lang="vi" aria-checked="false">VI</button>
     </div>
-  </header>
+    <button class="icon-btn ripple" id="quick" data-i-label="a.theme" data-i-tip="a.theme"><svg class="i" id="quick-i"><use href="#i-moon"/></svg></button>
+    <button class="icon-btn ripple" id="customize-btn" aria-expanded="false" aria-controls="pop" data-i-label="nav.customize" data-i-tip="nav.customize"><svg class="i"><use href="#i-palette"/></svg></button>
+    <a class="btn btn-fill btn-sm ripple nav-dl" href="#download" data-i="nav.download"></a>
+    <button class="icon-btn ripple menu-btn" id="menu-btn" aria-expanded="false" aria-controls="links" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
+  </div>
+  <div class="pop" id="pop" role="dialog" aria-label="Customize">
+    <h4 data-i="pop.mode"></h4>
+    <div class="modes" role="radiogroup" id="modes">
+      <button class="seg-b ripple" role="radio" data-mode="light"><svg class="i"><use href="#i-sun"/></svg><span data-i="mode.light"></span></button>
+      <button class="seg-b ripple" role="radio" data-mode="dark"><svg class="i"><use href="#i-moon"/></svg><span data-i="mode.dark"></span></button>
+      <button class="seg-b ripple" role="radio" data-mode="system"><svg class="i"><use href="#i-monitor"/></svg><span data-i="mode.system"></span></button>
+    </div>
+    <h4 data-i="pop.color"></h4>
+    <div class="swatches" role="radiogroup" data-swatches></div>
+  </div>
+</header>
+<span id="top-anchor"></span>
 
-  <main id="top">
-    <!-- ================= Hero ================= -->
-    <div class="hero">
-      <span class="blob a"></span><span class="blob b"></span>
-      <div class="wrap hero-grid">
-        <div>
-          <span class="badge reveal"><svg class="i"><use href="#l-zap"/></svg><span data-i18n="hero.badge">Free & open source · v1.1.0</span></span>
-          <h1 class="reveal" style="--d:80ms"><span data-i18n="hero.title1">Notes, made</span> <em data-i18n="hero.title2">beautiful.</em></h1>
-          <p class="lead reveal" style="--d:160ms" data-i18n="hero.lead">A lightweight tabbed notepad designed with Material Design 3. Starts instantly, remembers where you left off and gets out of your way while you write.</p>
-          <div class="cta reveal" style="--d:240ms">
-            <a class="btn filled lg" href="download/Material-Note-Setup.exe" download><svg class="i"><use href="#l-download"/></svg><span data-i18n="cta.downloadWin">Download for Windows</span></a>
-            <a class="btn tonal lg" href="https://github.com/minhtrong67/material-note" target="_blank" rel="noopener"><svg class="i"><use href="#l-github"/></svg><span>GitHub</span></a>
-          </div>
-          <div class="meta-row reveal" style="--d:320ms">
-            <span><svg class="i"><use href="#l-check"/></svg><span data-i18n="hero.m1">Windows 10 / 11</span></span>
-            <span><svg class="i"><use href="#l-check"/></svg><span data-i18n="hero.m2">No admin rights needed</span></span>
-            <span><svg class="i"><use href="#l-check"/></svg><span data-i18n="hero.m3">MIT licensed</span></span>
-          </div>
-        </div>
-
-        <div class="reveal" style="--d:200ms" aria-hidden="true">
-          <div class="mock">
-            <div class="mock-bar">
-              <img src="src/assets/logo.svg" alt="">
-              <b>File</b><b style="opacity:.7">Edit</b><b style="opacity:.7">View</b>
-              <span class="sp"></span>
-              <svg class="i"><use href="#l-search"/></svg><svg class="i"><use href="#l-sun"/></svg><svg class="i"><use href="#l-settings"/></svg>
-            </div>
-            <div class="mock-tabs"><div class="mock-tab on">ideas.md <i></i></div><div class="mock-tab">todo.txt</div><div class="mock-tab">notes.log</div></div>
-            <div class="mock-editor">
-              <div class="find-pop"><svg class="i"><use href="#l-search"/></svg><span>note</span><span class="muted">2 / 3</span><svg class="i"><use href="#l-up"/></svg><svg class="i"><use href="#l-down"/></svg></div>
-              <p style="margin-top:30px"># Weekend plan</p>
-              <p>&nbsp;</p>
-              <p>- Finish the <mark class="cur">note</mark>-taking app</p>
-              <p>- Pick a theme color that feels right</p>
-              <p>- Write the <mark>note</mark>s for Monday</p>
-              <p>- Ship version 1.1<span class="caret"></span></p>
-            </div>
-            <div class="mock-status"><span>Ln 6, Col 18</span><span class="sp"></span><span>128 characters</span><span>100%</span><span>UTF-8</span></div>
-          </div>
-        </div>
+<main>
+<section class="hero">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="chip rv"><i><svg class="i"><use href="#i-sparkle"/></svg></i><span data-i="hero.badge"></span></span>
+      <h1 id="title" aria-label="Material Note"></h1>
+      <p class="lead rv" style="--d:.15s" data-i="hero.lead"></p>
+      <div class="cta rv" style="--d:.25s">
+        <a class="btn btn-fill ripple" data-dl href="#download"><svg class="i"><use href="#i-download"/></svg><span data-i="hero.dl"></span></a>
+        <a class="btn btn-tonal ripple" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="i"><use href="#i-github"/></svg><span data-i="hero.gh"></span></a>
+      </div>
+      <div class="meta rv" style="--d:.35s">
+        <span><svg class="i"><use href="#i-win"/></svg><span data-i="hero.m1"></span></span>
+        <span><svg class="i"><use href="#i-shield"/></svg><span data-i="hero.m2"></span></span>
+        <span><svg class="i"><use href="#i-heart"/></svg><span data-i="hero.m3"></span></span>
       </div>
     </div>
-
-    <!-- ================= Features ================= -->
-    <section id="features">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <div class="eyebrow" data-i18n="feat.eyebrow">Features</div>
-          <h2 data-i18n="feat.title">Everything a notepad needs. Nothing it doesn't.</h2>
-          <p data-i18n="feat.lead">Small, quick and thoughtfully designed — with the power features you actually reach for.</p>
-        </div>
-        <div class="grid">
-          <article class="card reveal"><div class="ico"><svg class="i"><use href="#l-layout"/></svg></div><h3 data-i18n="f1.t">Tabs, your way</h3><p data-i18n="f1.d">Work on many files at once with horizontal or vertical tabs, drag &amp; drop to open and an unsaved-changes prompt per tab.</p></article>
-          <article class="card reveal" style="--d:70ms"><div class="ico"><svg class="i"><use href="#l-history"/></svg></div><h3 data-i18n="f2.t">Picks up where you left off</h3><p data-i18n="f2.d">Reopens your files on startup with unsaved text, cursor and scroll position intact, plus a recent files list.</p></article>
-          <article class="card reveal" style="--d:140ms"><div class="ico"><svg class="i"><use href="#l-search"/></svg></div><h3 data-i18n="f3.t">Find &amp; replace</h3><p data-i18n="f3.d">Match case, whole word and regular expressions, with every match highlighted and a live counter.</p></article>
-          <article class="card reveal"><div class="ico"><svg class="i"><use href="#l-palette"/></svg></div><h3 data-i18n="f4.t">Your color, your mode</h3><p data-i18n="f4.d">Light, dark or follow the system, with preset Material colors or any custom color you choose.</p></article>
-          <article class="card reveal" style="--d:70ms"><div class="ico"><svg class="i"><use href="#l-maximize"/></svg></div><h3 data-i18n="f5.t">Window options</h3><p data-i18n="f5.d">Remember the window size you like, or always start maximized. You decide in Settings.</p></article>
-          <article class="card reveal" style="--d:140ms"><div class="ico"><svg class="i"><use href="#l-globe"/></svg></div><h3 data-i18n="f6.t">English &amp; Tiếng Việt</h3><p data-i18n="f6.d">Detects your system language automatically and switches at runtime whenever you like.</p></article>
-          <article class="card reveal"><div class="ico"><svg class="i"><use href="#l-zap"/></svg></div><h3 data-i18n="f7.t">Light and fast</h3><p data-i18n="f7.d">Built with Tauri and Rust, so it opens in a blink and sips memory — even with large files.</p></article>
-          <article class="card reveal" style="--d:70ms"><div class="ico"><svg class="i"><use href="#l-settings"/></svg></div><h3 data-i18n="f8.t">Smooth Material motion</h3><p data-i18n="f8.d">Ripples, menu and dialog transitions that respect your reduced-motion setting.</p></article>
-          <article class="card reveal" style="--d:140ms"><div class="ico"><svg class="i"><use href="#l-shield"/></svg></div><h3 data-i18n="f9.t">Private by design</h3><p data-i18n="f9.d">Your notes stay on your computer. No account, no tracking, no network access.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= Themes ================= -->
-    <section id="themes" class="band">
-      <div class="wrap play">
-        <div class="reveal">
-          <div class="eyebrow" data-i18n="theme.eyebrow">Material You, on desktop</div>
-          <h2 data-i18n="theme.title">Make it yours in one click.</h2>
-          <p class="muted" data-i18n="theme.lead">Pick a seed color and the whole palette — surfaces, buttons, highlights — is generated for you. Try it right here, this page uses the same engine.</p>
-          <div class="swatches" id="swatches" role="group" aria-label="Theme color"></div>
-        </div>
-        <div class="tone reveal" style="--d:120ms" aria-hidden="true">
-          <div class="row">
-            <div class="sw" style="background:var(--primary);color:var(--on-primary)">Primary</div>
-            <div class="sw" style="background:var(--primary-container);color:var(--on-primary-container)">Container</div>
-          </div>
-          <div class="row">
-            <div class="sw" style="background:var(--secondary-container);color:var(--on-secondary-container)">Secondary</div>
-            <div class="sw" style="background:var(--tertiary-container);color:var(--on-tertiary-container)">Tertiary</div>
-          </div>
-          <div class="row chips"><span class="btn filled">Filled</span><span class="btn tonal">Tonal</span><span class="btn outlined">Outlined</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= Screenshots ================= -->
-    <section id="screenshots">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <div class="eyebrow" data-i18n="shot.eyebrow">Screenshots</div>
-          <h2 data-i18n="shot.title">A closer look</h2>
-        </div>
-        <div class="shots">
-          <figure class="shot reveal" data-ph="screenshots/image01.png"><img src="screenshots/image01.png" alt="Material Note in light theme" loading="lazy"><figcaption data-i18n="shot.1">Light theme</figcaption></figure>
-          <figure class="shot reveal" style="--d:80ms" data-ph="screenshots/image02.png"><img src="screenshots/image02.png" alt="Material Note in dark theme" loading="lazy"><figcaption data-i18n="shot.2">Dark theme</figcaption></figure>
-          <figure class="shot reveal" data-ph="screenshots/image03.png"><img src="screenshots/image03.png" alt="Find and replace with highlighted matches" loading="lazy"><figcaption data-i18n="shot.3">Find &amp; replace</figcaption></figure>
-          <figure class="shot reveal" style="--d:80ms" data-ph="screenshots/image04.png"><img src="screenshots/image04.png" alt="Settings dialog" loading="lazy"><figcaption data-i18n="shot.4">Settings</figcaption></figure>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= Download ================= -->
-    <section id="download" class="band">
-      <div class="wrap">
-        <div class="download reveal">
-          <img src="src/assets/logo.svg" alt="" width="88" height="88">
-          <h2 data-i18n="dl.title">Ready to write?</h2>
-          <p data-i18n="dl.lead">Download Material Note for Windows — it's free, open source and installs in seconds.</p>
-          <div class="cta">
-            <a class="btn filled lg" href="download/Material-Note-Setup.exe" download><svg class="i"><use href="#l-download"/></svg><span data-i18n="cta.downloadWin">Download for Windows</span></a>
-            <a class="btn outlined lg" href="https://github.com/minhtrong67/material-note/releases/latest" target="_blank" rel="noopener"><span data-i18n="dl.releases">All releases</span></a>
-          </div>
-          <p class="req" data-i18n="dl.req">Version 1.1.0 · Windows 10 / 11 (64-bit) · installs for the current user</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= FAQ ================= -->
-    <section id="faq">
-      <div class="wrap" style="max-width:820px">
-        <div class="section-head reveal"><div class="eyebrow">FAQ</div><h2 data-i18n="faq.title">Good to know</h2></div>
-        <div class="reveal">
-          <details><summary><span data-i18n="q1">Is Material Note really free?</span><svg class="i"><use href="#l-chevron"/></svg></summary><p data-i18n="a1">Yes. It is open source under the MIT license — use it, change it and share it.</p></details>
-          <details><summary><span data-i18n="q2">Which systems are supported?</span><svg class="i"><use href="#l-chevron"/></svg></summary><p data-i18n="a2">The installer targets 64-bit Windows 10 and 11 (WebView2 is required and is already included in Windows 11). Since it is built with Tauri, you can also build it yourself for macOS and Linux.</p></details>
-          <details><summary><span data-i18n="q3">Where are my notes stored?</span><svg class="i"><use href="#l-chevron"/></svg></summary><p data-i18n="a3">Notes are plain text files on your own disk, wherever you save them. Settings and your last session stay on your computer; nothing is sent anywhere.</p></details>
-          <details><summary><span data-i18n="q4">What happens to unsaved text when I close the app?</span><svg class="i"><use href="#l-chevron"/></svg></summary><p data-i18n="a4">With “Reopen files on startup” on (default), unsaved text is kept and restored the next time you open the app. Turn it off in Settings to get the usual “Save changes?” prompt instead.</p></details>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="wrap foot">
-      <div><strong>Material Note</strong> <span class="muted">· MIT License · © 2026</span></div>
-      <div>
-        <span class="muted" data-i18n="foot.by">Created by</span> <span class="credit-chip">minhtrong67</span>
-        <span class="muted" data-i18n="foot.with">with the support of</span> <span class="credit-chip ai">Claude</span>
-      </div>
+    <div class="shot rv" style="--d:.2s" id="shot">
+      <img class="cookie" src="logo.svg" alt="" width="92" height="92">
+      <img class="cookie2" src="logo.svg" alt="" width="56" height="56">
+      <div class="frame" id="frame"><img src="screenshots/image01.png" alt="Material Note main window" width="1280" height="800" fetchpriority="high"></div>
     </div>
-  </footer>
+  </div>
+</section>
 
-  <script>
-  (() => {
-    'use strict';
-    document.documentElement.classList.add('js');
-    const $ = (s, r = document) => r.querySelector(s);
-    const root = document.documentElement;
+<div class="marquee" aria-hidden="true"><div class="track" id="track"></div></div>
 
-    /* ---------- i18n (auto-detects the browser / system language) ---------- */
-    const D = {
-      en: {
-        'nav.features': 'Features', 'nav.themes': 'Themes', 'nav.shots': 'Screenshots', 'nav.faq': 'FAQ',
-        'cta.download': 'Download', 'cta.downloadWin': 'Download for Windows',
-        'hero.badge': 'Free & open source · v1.1.0', 'hero.title1': 'Notes, made', 'hero.title2': 'beautiful.',
-        'hero.lead': 'A lightweight tabbed notepad designed with Material Design 3. Starts instantly, remembers where you left off and gets out of your way while you write.',
-        'hero.m1': 'Windows 10 / 11', 'hero.m2': 'No admin rights needed', 'hero.m3': 'MIT licensed',
-        'feat.eyebrow': 'Features', 'feat.title': "Everything a notepad needs. Nothing it doesn't.", 'feat.lead': 'Small, quick and thoughtfully designed — with the power features you actually reach for.',
-        'f1.t': 'Tabs, your way', 'f1.d': 'Work on many files at once with horizontal or vertical tabs, drag & drop to open and an unsaved-changes prompt per tab.',
-        'f2.t': 'Picks up where you left off', 'f2.d': 'Reopens your files on startup with unsaved text, cursor and scroll position intact, plus a recent files list.',
-        'f3.t': 'Find & replace', 'f3.d': 'Match case, whole word and regular expressions, with every match highlighted and a live counter.',
-        'f4.t': 'Your color, your mode', 'f4.d': 'Light, dark or follow the system, with preset Material colors or any custom color you choose.',
-        'f5.t': 'Window options', 'f5.d': 'Remember the window size you like, or always start maximized. You decide in Settings.',
-        'f6.t': 'English & Tiếng Việt', 'f6.d': 'Detects your system language automatically and switches at runtime whenever you like.',
-        'f7.t': 'Light and fast', 'f7.d': 'Built with Tauri and Rust, so it opens in a blink and sips memory — even with large files.',
-        'f8.t': 'Smooth Material motion', 'f8.d': 'Ripples, menu and dialog transitions that respect your reduced-motion setting.',
-        'f9.t': 'Private by design', 'f9.d': 'Your notes stay on your computer. No account, no tracking, no network access.',
-        'theme.eyebrow': 'Material You, on desktop', 'theme.title': 'Make it yours in one click.',
-        'theme.lead': 'Pick a seed color and the whole palette — surfaces, buttons, highlights — is generated for you. Try it right here, this page uses the same engine.',
-        'shot.eyebrow': 'Screenshots', 'shot.title': 'A closer look', 'shot.1': 'Light theme', 'shot.2': 'Dark theme', 'shot.3': 'Find & replace', 'shot.4': 'Settings',
-        'dl.title': 'Ready to write?', 'dl.lead': "Download Material Note for Windows — it's free, open source and installs in seconds.",
-        'dl.releases': 'All releases', 'dl.req': 'Version 1.1.0 · Windows 10 / 11 (64-bit) · installs for the current user',
-        'faq.title': 'Good to know',
-        'q1': 'Is Material Note really free?', 'a1': 'Yes. It is open source under the MIT license — use it, change it and share it.',
-        'q2': 'Which systems are supported?', 'a2': 'The installer targets 64-bit Windows 10 and 11 (WebView2 is required and is already included in Windows 11). Since it is built with Tauri, you can also build it yourself for macOS and Linux.',
-        'q3': 'Where are my notes stored?', 'a3': 'Notes are plain text files on your own disk, wherever you save them. Settings and your last session stay on your computer; nothing is sent anywhere.',
-        'q4': 'What happens to unsaved text when I close the app?', 'a4': 'With “Reopen files on startup” on (default), unsaved text is kept and restored the next time you open the app. Turn it off in Settings to get the usual “Save changes?” prompt instead.',
-        'foot.by': 'Created by', 'foot.with': 'with the support of'
-      },
-      vi: {
-        'nav.features': 'Tính năng', 'nav.themes': 'Giao diện', 'nav.shots': 'Ảnh chụp', 'nav.faq': 'Hỏi đáp',
-        'cta.download': 'Tải về', 'cta.downloadWin': 'Tải cho Windows',
-        'hero.badge': 'Miễn phí & mã nguồn mở · v1.1.0', 'hero.title1': 'Ghi chú thật', 'hero.title2': 'đẹp & nhanh.',
-        'hero.lead': 'Ứng dụng ghi chú nhiều thẻ, gọn nhẹ, thiết kế theo Material Design 3. Mở lên là dùng ngay, nhớ bạn đang làm dở gì và không làm phiền khi bạn viết.',
-        'hero.m1': 'Windows 10 / 11', 'hero.m2': 'Không cần quyền quản trị', 'hero.m3': 'Giấy phép MIT',
-        'feat.eyebrow': 'Tính năng', 'feat.title': 'Có đủ mọi thứ cần cho một trình ghi chú. Không thừa.', 'feat.lead': 'Nhỏ, nhanh, được thiết kế tỉ mỉ — cùng những tính năng nâng cao bạn thực sự cần.',
-        'f1.t': 'Nhiều thẻ, tuỳ bạn', 'f1.d': 'Làm việc với nhiều tệp cùng lúc bằng thẻ ngang hoặc dọc, kéo thả để mở và nhắc lưu riêng cho từng thẻ.',
-        'f2.t': 'Nhớ bạn đang làm dở', 'f2.d': 'Tự mở lại các tệp khi khởi động, giữ nguyên nội dung chưa lưu, vị trí con trỏ và vị trí cuộn, kèm danh sách tệp gần đây.',
-        'f3.t': 'Tìm kiếm & thay thế', 'f3.d': 'Phân biệt hoa thường, khớp cả từ, biểu thức chính quy; tô sáng mọi kết quả và đếm trực tiếp.',
-        'f4.t': 'Màu của bạn, chế độ của bạn', 'f4.d': 'Sáng, tối hoặc theo hệ thống, với các màu Material dựng sẵn hoặc màu tuỳ chọn bất kỳ.',
-        'f5.t': 'Tuỳ chọn cửa sổ', 'f5.d': 'Ghi nhớ kích thước cửa sổ bạn thích, hoặc luôn mở ở chế độ phóng to tối đa. Chọn trong Cài đặt.',
-        'f6.t': 'English & Tiếng Việt', 'f6.d': 'Tự nhận diện ngôn ngữ hệ thống và đổi ngôn ngữ ngay lúc đang dùng.',
-        'f7.t': 'Nhẹ và nhanh', 'f7.d': 'Xây dựng bằng Tauri và Rust nên mở trong nháy mắt, tốn rất ít bộ nhớ — kể cả với tệp lớn.',
-        'f8.t': 'Chuyển động Material mượt mà', 'f8.d': 'Hiệu ứng gợn sóng, chuyển cảnh menu và hộp thoại, tôn trọng thiết lập giảm chuyển động.',
-        'f9.t': 'Riêng tư tuyệt đối', 'f9.d': 'Ghi chú nằm trên máy của bạn. Không tài khoản, không theo dõi, không truy cập mạng.',
-        'theme.eyebrow': 'Material You trên máy tính', 'theme.title': 'Biến nó thành của bạn chỉ với một cú nhấp.',
-        'theme.lead': 'Chọn một màu gốc, toàn bộ bảng màu — nền, nút, điểm nhấn — được tạo tự động. Thử ngay tại đây, trang này dùng cùng một bộ máy tạo màu.',
-        'shot.eyebrow': 'Ảnh chụp', 'shot.title': 'Nhìn kỹ hơn', 'shot.1': 'Giao diện sáng', 'shot.2': 'Giao diện tối', 'shot.3': 'Tìm kiếm & thay thế', 'shot.4': 'Cài đặt',
-        'dl.title': 'Sẵn sàng để viết?', 'dl.lead': 'Tải Material Note cho Windows — miễn phí, mã nguồn mở và cài đặt trong vài giây.',
-        'dl.releases': 'Tất cả phiên bản', 'dl.req': 'Phiên bản 1.1.0 · Windows 10 / 11 (64-bit) · cài cho người dùng hiện tại',
-        'faq.title': 'Cần biết',
-        'q1': 'Material Note có thực sự miễn phí?', 'a1': 'Có. Ứng dụng là mã nguồn mở theo giấy phép MIT — bạn được dùng, chỉnh sửa và chia sẻ.',
-        'q2': 'Hỗ trợ những hệ điều hành nào?', 'a2': 'Bộ cài dành cho Windows 10 và 11 64-bit (cần WebView2, đã có sẵn trong Windows 11). Vì xây dựng bằng Tauri nên bạn cũng có thể tự build cho macOS và Linux.',
-        'q3': 'Ghi chú của tôi được lưu ở đâu?', 'a3': 'Ghi chú là các tệp văn bản thuần nằm trên ổ đĩa của bạn, tại nơi bạn lưu. Cài đặt và phiên làm việc gần nhất ở trên máy bạn; không có gì được gửi đi đâu cả.',
-        'q4': 'Nội dung chưa lưu sẽ ra sao khi tôi đóng ứng dụng?', 'a4': 'Khi bật “Mở lại tệp khi khởi động” (mặc định), nội dung chưa lưu được giữ lại và khôi phục ở lần mở sau. Tắt tuỳ chọn này trong Cài đặt để dùng lại hộp thoại “Lưu thay đổi?” như thường.',
-        'foot.by': 'Tạo bởi', 'foot.with': 'với sự hỗ trợ của'
-      }
-    };
-    const TITLES = {
-      en: 'Material Note — a fast, beautiful notepad for Windows',
-      vi: 'Material Note — ứng dụng ghi chú nhanh và đẹp cho Windows'
-    };
-    let lang = 'en';
-    try { lang = localStorage.getItem('mn.lang') || ''; } catch (e) {}
-    if (!D[lang]) lang = (navigator.language || 'en').toLowerCase().startsWith('vi') ? 'vi' : 'en';
+<section id="features">
+  <div class="wrap">
+    <div class="head rv"><span class="eyebrow" data-i="f.eyebrow"></span><h2 data-i="f.title"></h2><p class="sub" data-i="f.sub"></p></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
 
-    function applyLang() {
-      root.lang = lang;
-      document.title = TITLES[lang];
-      document.querySelectorAll('[data-i18n]').forEach((el) => {
-        const v = D[lang][el.dataset.i18n];
-        if (v !== undefined) el.textContent = v;
+<section id="screenshots">
+  <div class="wrap">
+    <div class="head rv"><span class="eyebrow" data-i="s.eyebrow"></span><h2 data-i="s.title"></h2></div>
+    <div class="gallery rv">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="stage"><img id="stage-img" src="screenshots/image01.png" alt="" width="1280" height="800" loading="lazy"></div>
+      <p class="cap" id="cap" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<section id="customize">
+  <div class="wrap demo">
+    <div class="mini rv" aria-hidden="true">
+      <div class="bar"><img src="logo.svg" alt=""><b>Material Note</b><span class="sp"></span><span class="dot"></span><span class="dot p"></span></div>
+      <div class="tabsr"><span class="t a">notes.txt</span><span class="t">todo.md</span><span class="t">ideas</span></div>
+      <div class="body"><div class="ln h"></div><div class="ln" style="width:88%"></div><div class="ln" style="width:72%"></div><div class="ln" style="width:80%"><mark></mark></div><div class="ln" style="width:56%"></div><div class="ln" style="width:66%"></div>
+        <div class="fab"><svg class="i"><use href="#i-search"/></svg>Find</div></div>
+    </div>
+    <div class="demo-ctl">
+      <div class="rv"><span class="eyebrow" data-i="c.eyebrow"></span><h2 data-i="c.title"></h2><p class="sub" data-i="c.sub"></p></div>
+      <div class="rv" style="--d:.1s"><h3 data-i="pop.mode"></h3>
+        <div class="modes" role="radiogroup" data-modes>
+          <button class="seg-b ripple" role="radio" data-mode="light"><svg class="i"><use href="#i-sun"/></svg><span data-i="mode.light"></span></button>
+          <button class="seg-b ripple" role="radio" data-mode="dark"><svg class="i"><use href="#i-moon"/></svg><span data-i="mode.dark"></span></button>
+          <button class="seg-b ripple" role="radio" data-mode="system"><svg class="i"><use href="#i-monitor"/></svg><span data-i="mode.system"></span></button>
+        </div></div>
+      <div class="rv" style="--d:.2s"><h3 data-i="pop.color"></h3><div class="swatches" role="radiogroup" data-swatches></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <div class="dl rv">
+      <span class="ring" style="width:520px;height:520px;left:-160px;top:-200px"></span>
+      <span class="ring" style="width:420px;height:420px;right:-120px;bottom:-180px;animation-delay:-2.4s"></span>
+      <img src="logo.svg" alt="" width="84" height="84" style="margin:0 auto 1.2rem;position:relative;animation:float 6s ease-in-out infinite">
+      <h2 data-i="d.title" style="position:relative"></h2>
+      <p class="sub" data-i="d.sub" style="position:relative"></p>
+      <div class="cta">
+        <a class="btn btn-fill ripple" data-dl href="#download"><svg class="i"><use href="#i-download"/></svg><span data-i="hero.dl"></span></a>
+        <a class="btn btn-outline ripple" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener" style="color:inherit;box-shadow:inset 0 0 0 1.5px currentColor"><svg class="i"><use href="#i-github"/></svg><span data-i="d.src"></span></a>
+      </div>
+      <p class="small" data-i="d.note"></p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="credit">
+      <span class="heart"><svg class="i" style="fill:currentColor"><use href="#i-heart"/></svg></span>
+      <p data-i-html="credit"></p>
+      <a class="btn btn-fill btn-sm ripple" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="i"><use href="#i-github"/></svg>GitHub</a>
+    </div>
+    <div class="foot"><span>© 2026 minhtrong67 · <span data-i="foot.mit"></span></span><span><a href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener" data-i="foot.repo"></a></span></div>
+  </div>
+</footer>
+
+<button id="top" aria-label="Back to top" data-i-label="a.top" data-i-tip="a.top" data-tip-pos="top"><svg class="i"><use href="#i-up"/></svg></button>
+<script>
+(function () {
+  "use strict";
+  /* ---------- config ---------- */
+  var VERSION = "2.0.0";
+  // Fixed file name, so the page never needs editing for a new release: rename the installer
+  // built by `npm run build` to Material-Note-Setup.exe and put it in ./download/
+  var DOWNLOAD_FILE = "download/Material-Note-Setup.exe";
+  var PALETTES = /*PALETTES:START*/{"#6B4EFF":{"light":{"primary":"#592dff","on-primary":"#ffffff","primary-container":"#e5deff","on-primary-container":"#4100db","secondary":"#67587a","on-secondary":"#ffffff","secondary-container":"#eddcff","on-secondary-container":"#4f4061","tertiary":"#74527e","on-tertiary":"#ffffff","tertiary-container":"#fad7ff","on-tertiary-container":"#5b3a65","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","surface":"#fcf8ff","on-surface":"#1c1a25","surface-variant":"#e5e0f2","on-surface-variant":"#474553","surface-container-lowest":"#ffffff","surface-container-low":"#f7f1ff","surface-container":"#f1ebfa","surface-container-high":"#ebe6f5","surface-container-highest":"#e5e0ef","outline":"#787585","outline-variant":"#c9c4d6","inverse-surface":"#312f3a","inverse-on-surface":"#f4eefd","inverse-primary":"#c8bfff","scrim":"#000000"},"dark":{"primary":"#c8bfff","on-primary":"#2c009e","primary-container":"#4100db","on-primary-container":"#e5deff","secondary":"#d2bfe7","on-secondary":"#382a4a","secondary-container":"#4f4061","on-secondary-container":"#eddcff","tertiary":"#e2b8ec","on-tertiary":"#43244d","tertiary-container":"#5b3a65","on-tertiary-container":"#fad7ff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","surface":"#14121c","on-surface":"#e5e0ef","surface-variant":"#474553","on-surface-variant":"#c9c4d6","surface-container-lowest":"#0e0d17","surface-container-low":"#1c1a25","surface-container":"#201e29","surface-container-high":"#2a2933","surface-container-highest":"#35333f","outline":"#928e9f","outline-variant":"#474553","inverse-surface":"#e5e0ef","inverse-on-surface":"#312f3a","inverse-primary":"#592dff","scrim":"#000000"}},"#6750A4":{"light":{"primary":"#6f19ff","on-primary":"#ffffff","primary-container":"#e9ddff","on-primary-container":"#5400cc","secondary":"#6b5778","on-secondary":"#ffffff","secondary-container":"#f3daff","on-secondary-container":"#523f5f","tertiary":"#79507a","on-tertiary":"#ffffff","tertiary-container":"#ffd6fc","on-tertiary-container":"#5f3961","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","surface":"#fdf7ff","on-surface":"#1d1a24","surface-variant":"#e7dff2","on-surface-variant":"#494453","surface-container-lowest":"#ffffff","surface-container-low":"#f8f1ff","surface-container":"#f2ebfa","surface-container-high":"#ede5f4","surface-container-highest":"#e7e0ef","outline":"#7a7484","outline-variant":"#cbc3d5","inverse-surface":"#322f3a","inverse-on-surface":"#f5eefd","inverse-primary":"#cfbcff","scrim":"#000000"},"dark":{"primary":"#cfbcff","on-primary":"#3a0092","primary-container":"#5400cc","on-primary-container":"#e9ddff","secondary":"#d7bee4","on-secondary":"#3b2948","secondary-container":"#523f5f","on-secondary-container":"#f3daff","tertiary":"#e8b7e7","on-tertiary":"#462349","tertiary-container":"#5f3961","on-tertiary-container":"#ffd6fc","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","surface":"#15121c","on-surface":"#e7e0ef","surface-variant":"#494453","on-surface-variant":"#cbc3d5","surface-container-lowest":"#0f0d16","surface-container-low":"#1d1a24","surface-container":"#211e28","surface-container-high":"#2c2833","surface-container-highest":"#37333e","outline":"#948e9f","outline-variant":"#494453","inverse-surface":"#e7e0ef","inverse-on-surface":"#322f3a","inverse-primary":"#6f19ff","scrim":"#000000"}},"#0B6BCB":{"light":{"primary":"#005eb5","on-primary":"#ffffff","primary-container":"#d6e3ff","on-primary-container":"#00468a","secondary":"#565d7e","on-secondary":"#ffffff","secondary-container":"#dde1ff","on-secondary-container":"#3f4565","tertiary":"#5e588a","on-tertiary":"#ffffff","tertiary-container":"#e5deff","on-tertiary-container":"#464171","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","surface":"#f9f9ff","on-surface":"#171c24","surface-variant":"#dde2f2","on-surface-variant":"#414753","surface-container-lowest":"#ffffff","surface-container-low":"#f0f3ff","surface-container":"#eaeefa","surface-container-high":"#e4e8f4","surface-container-highest":"#dee2ef","outline":"#717785","outline-variant":"#c1c6d6","inverse-surface":"#2c303a","inverse-on-surface":"#edf0fd","inverse-primary":"#a8c8ff","scrim":"#000000"},"dark":{"primary":"#a8c8ff","on-primary":"#003062","primary-container":"#00468a","on-primary-container":"#d6e3ff","secondary":"#bfc4eb","on-secondary":"#282f4d","secondary-container":"#3f4565","on-secondary-container":"#dde1ff","tertiary":"#c8c0f9","on-tertiary":"#302a58","tertiary-container":"#464171","on-tertiary-container":"#e5deff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","surface":"#0f131c","on-surface":"#dee2ef","surface-variant":"#414753","on-surface-variant":"#c1c6d6","surface-container-lowest":"#090e17","surface-container-low":"#171c24","surface-container":"#1b2029","surface-container-high":"#252a33","surface-container-highest":"#30353e","outline":"#8b919f","outline-variant":"#414753","inverse-surface":"#dee2ef","inverse-on-surface":"#2c303a","inverse-primary":"#005eb5","scrim":"#000000"}},"#00897B":{"light":{"primary":"#006b5f","on-primary":"#ffffff","primary-container":"#00fee5","on-primary-container":"#005048","secondary":"#386569","on-secondary":"#ffffff","secondary-container":"#bcebee","on-secondary-container":"#1e4d51","tertiary":"#216678","on-tertiary":"#ffffff","tertiary-container":"#b1ecff","on-tertiary-container":"#004e5e","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","surface":"#eefdf8","on-surface":"#111e1c","surface-variant":"#d4e7e2","on-surface-variant":"#394a47","surface-container-lowest":"#ffffff","surface-container-low":"#e8f7f2","surface-container":"#e2f1ed","surface-container-high":"#ddebe7","surface-container-highest":"#d7e6e1","outline":"#697b77","outline-variant":"#b8cac6","inverse-surface":"#263330","inverse-on-surface":"#e5f4f0","inverse-primary":"#00dec9","scrim":"#000000"},"dark":{"primary":"#00dec9","on-primary":"#003731","primary-container":"#005048","on-primary-container":"#00fee5","secondary":"#a0cfd2","on-secondary":"#00373a","secondary-container":"#1e4d51","on-secondary-container":"#bcebee","tertiary":"#91d0e4","on-tertiary":"#003641","tertiary-container":"#004e5e","on-tertiary-container":"#b1ecff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","surface":"#091613","on-surface":"#d7e6e1","surface-variant":"#394a47","on-surface-variant":"#b8cac6","surface-container-lowest":"#05100e","surface-container-low":"#111e1c","surface-container":"#152220","surface-container-high":"#202c2a","surface-container-highest":"#2a3735","outline":"#829490","outline-variant":"#394a47","inverse-surface":"#d7e6e1","inverse-on-surface":"#263330","inverse-primary":"#006b5f","scrim":"#000000"}},"#2E7D32":{"light":{"primary":"#006e1b","on-primary":"#ffffff","primary-container":"#71ff75","on-primary-container":"#005312","secondary":"#426650","on-secondary":"#ffffff","secondary-container":"#c4ecd0","on-secondary-container":"#2a4e39","tertiary":"#256958","on-tertiary":"#ffffff","tertiary-container":"#acf0da","on-tertiary-container":"#005141","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","surface":"#f3fcec","on-surface":"#161e14","surface-variant":"#dae6d3","on-surface-variant":"#3f4a3c","surface-container-lowest":"#ffffff","surface-container-low":"#edf6e7","surface-container":"#e8f1e1","surface-container-high":"#e2ebdb","surface-container-highest":"#dce5d6","outline":"#6f7a6b","outline-variant":"#becab8","inverse-surface":"#2a3328","inverse-on-surface":"#eaf4e4","inverse-primary":"#00e543","scrim":"#000000"},"dark":{"primary":"#00e543","on-primary":"#003909","primary-container":"#005312","on-primary-container":"#71ff75","secondary":"#a8d0b5","on-secondary":"#133724","secondary-container":"#2a4e39","on-secondary-container":"#c4ecd0","tertiary":"#91d4be","on-tertiary":"#00382c","tertiary-container":"#005141","on-tertiary-container":"#acf0da","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","surface":"#0e150c","on-surface":"#dce5d6","surface-variant":"#3f4a3c","on-surface-variant":"#becab8","surface-container-lowest":"#081008","surface-container-low":"#161e14","surface-container":"#1a2218","surface-container-high":"#242c22","surface-container-highest":"#2f372c","outline":"#889484","outline-variant":"#3f4a3c","inverse-surface":"#dce5d6","inverse-on-surface":"#2a3328","inverse-primary":"#006e1b","scrim":"#000000"}},"#B58900":{"light":{"primary":"#785a00","on-primary":"#ffffff","primary-container":"#ffdf9b","on-primary-container":"#5b4300","secondary":"#6a5e2f","on-secondary":"#ffffff","secondary-container":"#f3e2a7","on-secondary-container":"#51461a","tertiary":"#656020","on-tertiary":"#ffffff","tertiary-container":"#ede596","on-tertiary-container":"#4c4808","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","surface":"#fff8f2","on-surface":"#211b0d","surface-variant":"#f0e1c5","on-surface-variant":"#504631","surface-container-lowest":"#ffffff","surface-container-low":"#fff2dd","surface-container":"#faecd5","surface-container-high":"#f4e7d0","surface-container-highest":"#efe1ca","outline":"#82765f","outline-variant":"#d4c5aa","inverse-surface":"#372f20","inverse-on-surface":"#fdefd8","inverse-primary":"#f9bd00","scrim":"#000000"},"dark":{"primary":"#f9bd00","on-primary":"#3f2e00","primary-container":"#5b4300","on-primary-container":"#ffdf9b","secondary":"#d6c68d","on-secondary":"#393005","secondary-container":"#51461a","on-secondary-container":"#f3e2a7","tertiary":"#d0c97d","on-tertiary":"#353100","tertiary-container":"#4c4808","on-tertiary-container":"#ede596","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","surface":"#191306","on-surface":"#efe1ca","surface-variant":"#504631","on-surface-variant":"#d4c5aa","surface-container-lowest":"#130d03","surface-container-low":"#211b0d","surface-container":"#251f11","surface-container-high":"#30291a","surface-container-highest":"#3c3424","outline":"#9c8f77","outline-variant":"#504631","inverse-surface":"#efe1ca","inverse-on-surface":"#372f20","inverse-primary":"#785a00","scrim":"#000000"}},"#C25E00":{"light":{"primary":"#974800","on-primary":"#ffffff","primary-container":"#ffdbc7","on-primary-container":"#733500","secondary":"#7a5732","on-secondary":"#ffffff","secondary-container":"#ffdcbc","on-secondary-container":"#5f401d","tertiary":"#78591a","on-tertiary":"#ffffff","tertiary-container":"#ffdea8","on-tertiary-container":"#5e4202","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","surface":"#fff8f5","on-surface":"#261910","surface-variant":"#fbdccb","on-surface-variant":"#574236","surface-container-lowest":"#ffffff","surface-container-low":"#fff1ea","surface-container":"#ffeadf","surface-container-high":"#fde3d5","surface-container-highest":"#f8ddcf","outline":"#8a7264","outline-variant":"#dec1b0","inverse-surface":"#3d2d24","inverse-on-surface":"#ffede4","inverse-primary":"#ffb689","scrim":"#000000"},"dark":{"primary":"#ffb689","on-primary":"#512400","primary-container":"#733500","on-primary-container":"#ffdbc7","secondary":"#ecbe90","on-secondary":"#462a08","secondary-container":"#5f401d","on-secondary-container":"#ffdcbc","tertiary":"#eac077","on-tertiary":"#422d00","tertiary-container":"#5e4202","on-tertiary-container":"#ffdea8","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","surface":"#1d1109","on-surface":"#f8ddcf","surface-variant":"#574236","on-surface-variant":"#dec1b0","surface-container-lowest":"#170b05","surface-container-low":"#261910","surface-container":"#2a1d14","surface-container-high":"#36271e","surface-container-highest":"#413128","outline":"#a58b7d","outline-variant":"#574236","inverse-surface":"#f8ddcf","inverse-on-surface":"#3d2d24","inverse-primary":"#974800","scrim":"#000000"}},"#D32F2F":{"light":{"primary":"#c00018","on-primary":"#ffffff","primary-container":"#ffdad6","on-primary-container":"#930010","secondary":"#815340","on-secondary":"#ffffff","secondary-container":"#ffdbcd","on-secondary-container":"#663c2a","tertiary":"#855326","on-tertiary":"#ffffff","tertiary-container":"#ffdcc2","on-tertiary-container":"#693c11","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","surface":"#fff8f7","on-surface":"#271816","surface-variant":"#fddbd7","on-surface-variant":"#58413f","surface-container-lowest":"#ffffff","surface-container-low":"#fff0ef","surface-container":"#ffe9e7","surface-container-high":"#ffe2df","surface-container-highest":"#f9dcd9","outline":"#8c716e","outline-variant":"#dfbfbc","inverse-surface":"#3d2c2a","inverse-on-surface":"#ffedeb","inverse-primary":"#ffb3ac","scrim":"#000000"},"dark":{"primary":"#ffb3ac","on-primary":"#680008","primary-container":"#930010","on-primary-container":"#ffdad6","secondary":"#f5b9a1","on-secondary":"#4b2716","secondary-container":"#663c2a","on-secondary-container":"#ffdbcd","tertiary":"#fbb983","on-tertiary":"#4d2600","tertiary-container":"#693c11","on-tertiary-container":"#ffdcc2","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","surface":"#1e100e","on-surface":"#f9dcd9","surface-variant":"#58413f","on-surface-variant":"#dfbfbc","surface-container-lowest":"#180b09","surface-container-low":"#271816","surface-container":"#2b1c1a","surface-container-high":"#362624","surface-container-highest":"#42302f","outline":"#a78a87","outline-variant":"#58413f","inverse-surface":"#f9dcd9","inverse-on-surface":"#3d2c2a","inverse-primary":"#c00018","scrim":"#000000"}},"#D81B60":{"light":{"primary":"#bc004f","on-primary":"#ffffff","primary-container":"#ffd9de","on-primary-container":"#90003b","secondary":"#82524c","on-secondary":"#ffffff","secondary-container":"#ffdad6","on-secondary-container":"#673b36","tertiary":"#8a4f35","on-tertiary":"#ffffff","tertiary-container":"#ffdbcd","on-tertiary-container":"#6d3820","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","surface":"#fff8f7","on-surface":"#26181a","surface-variant":"#fadbdf","on-surface-variant":"#574145","surface-container-lowest":"#ffffff","surface-container-low":"#fff0f1","surface-container":"#ffe9eb","surface-container-high":"#fde2e5","surface-container-highest":"#f7dcdf","outline":"#8a7174","outline-variant":"#ddbfc3","inverse-surface":"#3c2c2f","inverse-on-surface":"#ffecee","inverse-primary":"#ffb2bf","scrim":"#000000"},"dark":{"primary":"#ffb2bf","on-primary":"#660028","primary-container":"#90003b","on-primary-container":"#ffd9de","secondary":"#f5b7b0","on-secondary":"#4c2521","secondary-container":"#673b36","on-secondary-container":"#ffdad6","tertiary":"#ffb596","on-tertiary":"#52230c","tertiary-container":"#6d3820","on-tertiary-container":"#ffdbcd","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","surface":"#1d1012","on-surface":"#f7dcdf","surface-variant":"#574145","on-surface-variant":"#ddbfc3","surface-container-lowest":"#170b0d","surface-container-low":"#26181a","surface-container":"#2a1c1e","surface-container-high":"#362628","surface-container-highest":"#413033","outline":"#a58a8e","outline-variant":"#574145","inverse-surface":"#f7dcdf","inverse-on-surface":"#3c2c2f","inverse-primary":"#bc004f","scrim":"#000000"}},"#546E7A":{"light":{"primary":"#006782","on-primary":"#ffffff","primary-container":"#bbe9ff","on-primary-container":"#004d63","secondary":"#456179","on-secondary":"#ffffff","secondary-container":"#cce5ff","on-secondary-container":"#2d4960","tertiary":"#455f89","on-tertiary":"#ffffff","tertiary-container":"#d6e3ff","on-tertiary-container":"#2c4770","error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6","on-error-container":"#93000a","surface":"#f3faff","on-surface":"#121d22","surface-variant":"#d6e5ed","on-surface-variant":"#3b494f","surface-container-lowest":"#ffffff","surface-container-low":"#eaf5fc","surface-container":"#e4f0f6","surface-container-high":"#dfeaf0","surface-container-highest":"#d9e4eb","outline":"#6b7980","outline-variant":"#bac9d1","inverse-surface":"#273237","inverse-on-surface":"#e7f2f9","inverse-primary":"#60d4ff","scrim":"#000000"},"dark":{"primary":"#60d4ff","on-primary":"#003545","primary-container":"#004d63","on-primary-container":"#bbe9ff","secondary":"#adcae5","on-secondary":"#143349","secondary-container":"#2d4960","on-secondary-container":"#cce5ff","tertiary":"#adc7f8","on-tertiary":"#133058","tertiary-container":"#2c4770","on-tertiary-container":"#d6e3ff","error":"#ffb4ab","on-error":"#690005","error-container":"#93000a","on-error-container":"#ffdad6","surface":"#0a1519","on-surface":"#d9e4eb","surface-variant":"#3b494f","on-surface-variant":"#bac9d1","surface-container-lowest":"#051014","surface-container-low":"#121d22","surface-container":"#172126","surface-container-high":"#212b30","surface-container-highest":"#2c363b","outline":"#84939a","outline-variant":"#3b494f","inverse-surface":"#d9e4eb","inverse-on-surface":"#273237","inverse-primary":"#006782","scrim":"#000000"}}}/*PALETTES:END*/;
+  var SEEDS = Object.keys(PALETTES);
+  var NAMES = { en: ["Violet","Purple","Blue","Teal","Green","Amber","Orange","Red","Pink","Slate"], vi: ["Tím chàm","Tím","Xanh dương","Xanh ngọc","Xanh lá","Hổ phách","Cam","Đỏ","Hồng","Xám xanh"] };
+
+  /* ---------- text ---------- */
+  var T = {
+    en: {
+      "nav.features":"Features","nav.screens":"Screenshots","nav.customize":"Customize","nav.download":"Download",
+      "a.theme":"Switch theme","a.top":"Back to top",
+      "hero.badge":"Material 3 Expressive · v" + VERSION,"hero.t1":"Notes that","hero.t2":"feel alive.",
+      "hero.lead":"Material Note is a fast, tabbed notepad with a playful Material 3 Expressive design. Find & replace, command palette, themes you can recolor in one click — free and open source.",
+      "hero.dl":"Download for Windows","hero.gh":"View on GitHub","hero.m1":"Windows 10 / 11 · 64-bit","hero.m2":"No tracking, works offline","hero.m3":"MIT licensed",
+      "f.eyebrow":"Features","f.title":"Everything a notepad should be. And a little more.","f.sub":"Small, quick and calm — with the power tools you actually reach for.",
+      "f1t":"Tabs that remember","f1d":"Open as many files as you like, drag tabs to reorder, and pick up exactly where you left off — even unsaved text and cursor position.",
+      "f2t":"Find & replace","f2d":"Live highlights, match case, whole word and regular expressions, with a match counter that updates as you type.",
+      "f3t":"Command palette","f3d":"Press Ctrl+Shift+P and type. Every action in the app is one keystroke away.",
+      "f4t":"Your colors","f4d":"Ten Material palettes plus any custom color. Light, dark or follow Windows — with a circular reveal when you switch.",
+      "f5t":"English & Vietnamese","f5d":"The whole interface speaks both languages and switches instantly, no restart needed.",
+      "f6t":"Safe with your files","f6d":"UTF-8, UTF-16 and legacy encodings, atomic saves, and a warning if a file changes on disk while you edit.",
+      "f7t":"Fonts & text size","f7d":"Five carefully chosen fonts including Roboto, and Small / Medium / Large text for the whole app.",
+      "f8t":"Autosave & recovery","f8d":"Turn on autosave, or just close the window — your session and unsaved drafts come back on the next launch.",
+      "f9t":"Light and quick","f9d":"Built with Tauri and Rust: a tiny installer, instant start and very low memory use.",
+      "s.eyebrow":"Screenshots","s.title":"See it in action",
+      "cap1":"The editor — calm, spacious, and tabbed.","cap2":"Find & replace with live highlights, in dark mode.","cap3":"Settings: modes, colors, fonts, language and window.","cap4":"The command palette puts every action under your fingers.",
+      "g1":"Editor","g2":"Find & replace","g3":"Settings","g4":"Command palette",
+      "c.eyebrow":"Make it yours","c.title":"Pick a color. The whole app follows.","c.sub":"Material Note builds a full Material 3 palette from a single color. Try it right here — this page uses the very same colors as the app.",
+      "pop.mode":"Mode","pop.color":"Theme color","mode.light":"Light","mode.dark":"Dark","mode.system":"System",
+      "d.title":"Ready to write?","d.sub":"Download the installer, run it, and you are done. It takes a few seconds.","d.src":"Source code","d.note":"Windows 10/11 · 64-bit · Free · MIT license",
+      "credit":"Created by <b>minhtrong67</b> with the support of <b>Claude</b> — open source and made with care.",
+      "foot.mit":"Released under the MIT license","foot.repo":"my-tauri-apps on GitHub"
+    },
+    vi: {
+      "nav.features":"Tính năng","nav.screens":"Hình ảnh","nav.customize":"Tuỳ chỉnh","nav.download":"Tải về",
+      "a.theme":"Đổi giao diện","a.top":"Lên đầu trang",
+      "hero.badge":"Material 3 Expressive · v" + VERSION,"hero.t1":"Ghi chú thật","hero.t2":"sống động.",
+      "hero.lead":"Material Note là ứng dụng ghi chú nhanh, nhiều thẻ, với thiết kế Material 3 Expressive vui mắt. Tìm & thay thế, bảng lệnh, đổi màu chủ đề chỉ một chạm — miễn phí và mã nguồn mở.",
+      "hero.dl":"Tải cho Windows","hero.gh":"Xem trên GitHub","hero.m1":"Windows 10 / 11 · 64-bit","hero.m2":"Không theo dõi, chạy offline","hero.m3":"Giấy phép MIT",
+      "f.eyebrow":"Tính năng","f.title":"Mọi thứ một app ghi chú cần có. Và hơn thế nữa.","f.sub":"Nhỏ gọn, nhanh và dễ chịu — cùng những công cụ mạnh bạn thực sự dùng đến.",
+      "f1t":"Thẻ nhớ phiên làm việc","f1d":"Mở bao nhiêu tệp tuỳ ý, kéo thả để sắp xếp thẻ và tiếp tục đúng chỗ đang dở — kể cả nội dung chưa lưu và vị trí con trỏ.",
+      "f2t":"Tìm & thay thế","f2d":"Tô sáng trực tiếp, phân biệt hoa thường, cả từ và biểu thức chính quy, có bộ đếm kết quả cập nhật khi bạn gõ.",
+      "f3t":"Bảng lệnh","f3d":"Nhấn Ctrl+Shift+P rồi gõ. Mọi thao tác trong app đều nằm trong tầm tay.",
+      "f4t":"Màu sắc của bạn","f4d":"Mười bảng màu Material cùng màu tuỳ chọn. Sáng, tối hoặc theo Windows — kèm hiệu ứng loang tròn khi chuyển.",
+      "f5t":"Tiếng Anh & Tiếng Việt","f5d":"Toàn bộ giao diện có cả hai ngôn ngữ và đổi ngay lập tức, không cần khởi động lại.",
+      "f6t":"An toàn cho tệp của bạn","f6d":"Hỗ trợ UTF-8, UTF-16 và các bảng mã cũ, lưu nguyên tử và cảnh báo khi tệp bị thay đổi trên ổ đĩa lúc bạn đang sửa.",
+      "f7t":"Phông chữ & cỡ chữ","f7d":"Năm phông chữ được chọn lọc (có Roboto) và cỡ chữ Nhỏ / Vừa / Lớn cho toàn bộ ứng dụng.",
+      "f8t":"Tự động lưu & khôi phục","f8d":"Bật tự động lưu, hoặc cứ đóng cửa sổ — phiên làm việc và bản nháp chưa lưu sẽ quay lại ở lần mở sau.",
+      "f9t":"Nhẹ và nhanh","f9d":"Xây dựng bằng Tauri và Rust: bộ cài rất nhỏ, mở tức thì và tốn rất ít bộ nhớ.",
+      "s.eyebrow":"Hình ảnh","s.title":"Xem ứng dụng hoạt động",
+      "cap1":"Trình soạn thảo — thoáng, êm và nhiều thẻ.","cap2":"Tìm & thay thế với tô sáng trực tiếp, ở chế độ tối.","cap3":"Cài đặt: chế độ, màu sắc, phông chữ, ngôn ngữ và cửa sổ.","cap4":"Bảng lệnh đưa mọi thao tác vào tầm tay bạn.",
+      "g1":"Soạn thảo","g2":"Tìm & thay thế","g3":"Cài đặt","g4":"Bảng lệnh",
+      "c.eyebrow":"Của riêng bạn","c.title":"Chọn một màu. Cả ứng dụng đổi theo.","c.sub":"Material Note tạo cả bảng màu Material 3 từ một màu duy nhất. Thử ngay tại đây — trang này dùng đúng bảng màu của ứng dụng.",
+      "pop.mode":"Chế độ","pop.color":"Màu chủ đề","mode.light":"Sáng","mode.dark":"Tối","mode.system":"Hệ thống",
+      "d.title":"Sẵn sàng viết chưa?","d.sub":"Tải bộ cài về, chạy lên là xong. Chỉ mất vài giây.","d.src":"Mã nguồn","d.note":"Windows 10/11 · 64-bit · Miễn phí · Giấy phép MIT",
+      "credit":"Tạo bởi <b>minhtrong67</b> với sự hỗ trợ của <b>Claude</b> — mã nguồn mở, làm với sự chăm chút.",
+      "foot.mit":"Phát hành theo giấy phép MIT","foot.repo":"my-tauri-apps trên GitHub"
+    }
+  };
+  var META = {
+    en: { title: "Material Note — a fast, expressive notepad for Windows", desc: "Material Note is a fast, tabbed notepad with Material 3 Expressive design: find & replace with regex, command palette, light/dark themes, custom colors, English & Vietnamese. Free and open source." },
+    vi: { title: "Material Note — ứng dụng ghi chú nhanh và biểu cảm cho Windows", desc: "Material Note là ứng dụng ghi chú nhiều thẻ với thiết kế Material 3 Expressive: tìm & thay thế regex, bảng lệnh, giao diện sáng/tối, màu tuỳ chỉnh, tiếng Anh & tiếng Việt. Miễn phí, mã nguồn mở." }
+  };
+  var FEATURES = [["layers",1],["search",2],["command",3],["palette",4],["lang",5],["shield",6],["type",7],["history",8],["zap",9]];
+  var SHORTCUTS = [["Ctrl+N","New tab"],["Ctrl+O","Open"],["Ctrl+S","Save"],["Ctrl+F","Find"],["Ctrl+H","Replace"],["Ctrl+G","Go to line"],["Ctrl+Shift+P","Command palette"],["Ctrl+Tab","Next tab"],["Ctrl+Shift+Enter","Focus mode"],["F11","Full screen"],["Ctrl+,","Settings"],["Ctrl+Wheel","Zoom"]];
+
+  /* ---------- state ---------- */
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var root = document.documentElement;
+  var state = { mode: "system", lang: /^vi/i.test(navigator.language || "") ? "vi" : "en", seed: SEEDS[0] };
+  try { var saved = JSON.parse(localStorage.getItem("mn-landing") || "{}"); ["mode", "lang", "seed"].forEach(function (k) { if (saved[k]) state[k] = saved[k]; }); } catch (e) {}
+  if (!PALETTES[state.seed]) state.seed = SEEDS[0];
+  var tab = 0;
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var save = function () { try { localStorage.setItem("mn-landing", JSON.stringify(state)); } catch (e) {} };
+  var isDark = function () { return state.mode === "dark" || (state.mode === "system" && matchMedia("(prefers-color-scheme: dark)").matches); };
+  var tr = function (k) { return T[state.lang][k] || T.en[k] || k; };
+
+  /* ---------- theme ---------- */
+  function applyTheme() {
+    var dark = isDark();
+    var map = PALETTES[state.seed][dark ? "dark" : "light"];
+    for (var k in map) root.style.setProperty("--md-" + k, map[k]);
+    root.dataset.scheme = dark ? "dark" : "light";
+    root.style.background = "";
+    $("#theme-color").setAttribute("content", map["surface"]);
+    $("#quick-i use").setAttribute("href", dark ? "#i-sun" : "#i-moon");
+    $$("[data-mode]").forEach(function (b) { b.setAttribute("aria-checked", String(b.dataset.mode === state.mode)); });
+    $$("[data-swatches]").forEach(function (box) { $$(".sw", box).forEach(function (b) { b.setAttribute("aria-checked", String(b.dataset.seed === state.seed)); }); });
+  }
+  function setTheme(patch, origin) {
+    var run = function () { for (var k in patch) state[k] = patch[k]; save(); applyTheme(); };
+    var flip = "mode" in patch && patch.mode !== state.mode;
+    if (flip && origin && document.startViewTransition && !reduce) {
+      var x = origin.x, y = origin.y, end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      document.startViewTransition(run).ready.then(function () {
+        root.animate({ clipPath: ["circle(0 at " + x + "px " + y + "px)", "circle(" + end + "px at " + x + "px " + y + "px)"] },
+          { duration: 650, easing: "cubic-bezier(.2,0,0,1)", pseudoElement: "::view-transition-new(root)" });
+      }).catch(function () {});
+    } else run();
+  }
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () { if (state.mode === "system") applyTheme(); });
+
+  /* ---------- language ---------- */
+  function renderTitle() {
+    var h = $("#title"); h.textContent = "";
+    var n = 0;
+    function words(text, em) {
+      text.split(" ").forEach(function (w) {
+        var s = document.createElement("span"); s.className = "w"; s.style.animationDelay = (0.08 * n++ + 0.1) + "s";
+        var inner = em ? document.createElement("em") : s;
+        if (em) { inner.textContent = w; s.appendChild(inner); } else s.textContent = w;
+        h.appendChild(s); h.appendChild(document.createTextNode(" "));
       });
-      $('#lang-label').textContent = lang.toUpperCase();
-      $('#btn-lang').setAttribute('aria-label', lang === 'vi' ? 'Ngôn ngữ' : 'Language');
     }
-    $('#btn-lang').addEventListener('click', () => {
-      lang = lang === 'en' ? 'vi' : 'en';
-      try { localStorage.setItem('mn.lang', lang); } catch (e) {}
-      applyLang();
-    });
+    words(tr("hero.t1"), false); words(tr("hero.t2"), true);
+  }
+  function applyLang(first) {
+    var L = state.lang;
+    root.lang = L;
+    document.title = META[L].title;
+    $('meta[name="description"]').setAttribute("content", META[L].desc);
+    $$("[data-i]").forEach(function (el) { el.textContent = tr(el.dataset.i); });
+    $$("[data-i-html]").forEach(function (el) { el.innerHTML = tr(el.dataset.iHtml); });
+    $$("[data-i-label]").forEach(function (el) { el.setAttribute("aria-label", tr(el.dataset.iLabel)); });
+    $$("[data-i-tip]").forEach(function (el) { el.setAttribute("data-tip", tr(el.dataset.iTip)); });
+    $$("#lang button").forEach(function (b) { b.setAttribute("aria-checked", String(b.dataset.lang === L)); });
+    $$("[data-swatches]").forEach(function (box) { $$(".sw", box).forEach(function (b, i) { b.setAttribute("aria-label", NAMES[L][i]); b.setAttribute("data-tip", NAMES[L][i]); }); });
+    FEATURES.forEach(function (f, i) { var c = $("#grid").children[i]; if (c) { $("h3", c).textContent = tr("f" + f[1] + "t"); $("p", c).textContent = tr("f" + f[1] + "d"); } });
+    $$("#tabs .tab").forEach(function (b, i) { b.textContent = tr("g" + (i + 1)); });
+    $("#cap").textContent = tr("cap" + (tab + 1));
+    $("#stage-img").alt = tr("g" + (tab + 1));
+    renderTitle();
+    if (!first) save();
+  }
 
-    /* ---------- Theme (light / dark) + seed color (same OKLCH approach as the app) ---------- */
-    const PRESETS = ['#6750A4', '#1A73E8', '#00796B', '#2E7D32', '#C25E00', '#B3261E', '#C2185B', '#546E7A'];
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    let mode = null, seed = PRESETS[0];
-    try { mode = localStorage.getItem('mn.mode'); seed = localStorage.getItem('mn.seed') || seed; } catch (e) {}
+  /* ---------- build dynamic parts ---------- */
+  FEATURES.forEach(function (f, i) {
+    var c = document.createElement("article"); c.className = "card rv"; c.style.setProperty("--d", (i % 3) * 0.08 + "s");
+    c.innerHTML = '<div class="ico"><svg class="i"><use href="#i-' + f[0] + '"/></svg></div><h3></h3><p></p>';
+    $("#grid").appendChild(c);
+    c.addEventListener("pointermove", function (e) { var r = c.getBoundingClientRect(); c.style.setProperty("--mx", e.clientX - r.left + "px"); c.style.setProperty("--my", e.clientY - r.top + "px"); });
+  });
+  var tabs = $("#tabs");
+  for (var i = 1; i <= 4; i++) {
+    var b = document.createElement("button"); b.className = "tab ripple"; b.setAttribute("role", "tab"); b.dataset.i = i - 1;
+    b.setAttribute("aria-selected", String(i === 1)); tabs.appendChild(b);
+  }
+  function selectTab(i, focus) {
+    tab = (i + 4) % 4;
+    $$("#tabs .tab").forEach(function (b, j) { b.setAttribute("aria-selected", String(j === tab)); b.tabIndex = j === tab ? 0 : -1; if (focus && j === tab) b.focus(); });
+    var img = $("#stage-img"); var n = new Image();
+    img.style.animation = "none"; void img.offsetWidth; img.style.animation = "";
+    img.src = "screenshots/image0" + (tab + 1) + ".png"; img.alt = tr("g" + (tab + 1)); $("#cap").textContent = tr("cap" + (tab + 1));
+    n = null;
+  }
+  tabs.addEventListener("click", function (e) { var b = e.target.closest(".tab"); if (b) selectTab(+b.dataset.i); });
+  tabs.addEventListener("keydown", function (e) { if (e.key === "ArrowRight") { e.preventDefault(); selectTab(tab + 1, true); } else if (e.key === "ArrowLeft") { e.preventDefault(); selectTab(tab - 1, true); } });
 
-    function hexToOklch(hex) {
-      const n = parseInt(hex.replace('#', ''), 16);
-      const lin = (c) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
-      const r = lin(((n >> 16) & 255) / 255), g = lin(((n >> 8) & 255) / 255), b = lin((n & 255) / 255);
-      const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
-      const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
-      const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
-      const a = 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s;
-      const bb = 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s;
-      return { c: Math.hypot(a, bb), h: (Math.atan2(bb, a) * 180 / Math.PI + 360) % 360 };
-    }
-    const isDark = () => (mode ? mode === 'dark' : mq.matches);
-    function applyScheme() {
-      root.dataset.scheme = isDark() ? 'dark' : 'light';
-      $('#theme-use').setAttribute('href', isDark() ? '#l-sun' : '#l-moon');
-    }
-    function applySeed() {
-      const { c, h } = hexToOklch(seed);
-      root.style.setProperty('--h', h.toFixed(1));
-      root.style.setProperty('--c', Math.min(0.16, Math.max(0.03, c)).toFixed(3));
-      document.querySelectorAll('.swatch').forEach((s) => s.setAttribute('aria-pressed', String(s.dataset.hex.toLowerCase() === seed.toLowerCase())));
-    }
-    $('#btn-theme').addEventListener('click', () => {
-      mode = isDark() ? 'light' : 'dark';
-      try { localStorage.setItem('mn.mode', mode); } catch (e) {}
-      applyScheme();
-    });
-    mq.addEventListener('change', () => { if (!mode) applyScheme(); });
-
-    const box = $('#swatches');
-    PRESETS.forEach((hex) => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.className = 'swatch'; b.dataset.hex = hex; b.style.background = hex; b.title = hex;
-      b.setAttribute('aria-label', hex);
-      b.innerHTML = '<svg class="i"><use href="#l-check"/></svg>';
-      b.addEventListener('click', () => { seed = hex; try { localStorage.setItem('mn.seed', hex); } catch (e) {} applySeed(); });
+  $$("[data-swatches]").forEach(function (box) {
+    SEEDS.forEach(function (seed) {
+      var b = document.createElement("button"); b.className = "sw"; b.setAttribute("role", "radio"); b.dataset.seed = seed; b.style.background = seed;
+      b.innerHTML = '<svg class="i" style="stroke-width:3"><use href="#i-check"/></svg>';
+      b.addEventListener("click", function () { setTheme({ seed: seed }); });
       box.appendChild(b);
     });
+  });
+  $$("[data-mode]").forEach(function (b) { b.addEventListener("click", function (e) { setTheme({ mode: b.dataset.mode }, { x: e.clientX, y: e.clientY }); }); });
+  $("#quick").addEventListener("click", function (e) { var r = e.currentTarget.getBoundingClientRect(); setTheme({ mode: isDark() ? "light" : "dark" }, { x: r.left + r.width / 2, y: r.top + r.height / 2 }); });
+  $$("#lang button").forEach(function (b) { b.addEventListener("click", function () { state.lang = b.dataset.lang; applyLang(); }); });
 
-    /* ---------- App bar elevation, scroll reveal, ripple, screenshots fallback ---------- */
-    const bar = $('#appbar');
-    const onScroll = () => bar.classList.toggle('scrolled', window.scrollY > 8);
-    addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+  var track = $("#track");
+  SHORTCUTS.concat(SHORTCUTS).forEach(function (s) { var sp = document.createElement("span"); sp.innerHTML = "<kbd>" + s[0] + "</kbd>" + s[1]; track.appendChild(sp); });
+  $$("[data-dl]").forEach(function (a) { a.href = DOWNLOAD_FILE; a.setAttribute("download", ""); });
 
-    const items = document.querySelectorAll('.reveal');
-    if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-      items.forEach((el) => io.observe(el));
-    } else items.forEach((el) => el.classList.add('in'));
+  /* ---------- popover + mobile menu ---------- */
+  var pop = $("#pop"), pbtn = $("#customize-btn"), links = $("#links"), mbtn = $("#menu-btn");
+  function toggle(el, btn, on) { el.classList.toggle("open", on); btn.setAttribute("aria-expanded", String(on)); }
+  pbtn.addEventListener("click", function () { toggle(links, mbtn, false); toggle(pop, pbtn, !pop.classList.contains("open")); });
+  mbtn.addEventListener("click", function () { toggle(pop, pbtn, false); toggle(links, mbtn, !links.classList.contains("open")); });
+  document.addEventListener("pointerdown", function (e) {
+    if (!pop.contains(e.target) && !pbtn.contains(e.target)) toggle(pop, pbtn, false);
+    if (!links.contains(e.target) && !mbtn.contains(e.target)) toggle(links, mbtn, false);
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { toggle(pop, pbtn, false); toggle(links, mbtn, false); } });
 
-    document.addEventListener('pointerdown', (e) => {
-      const host = e.target.closest('.btn, .icon-btn');
-      if (!host || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      const r = host.getBoundingClientRect(), size = Math.max(r.width, r.height) * 2;
-      const dot = document.createElement('i');
-      dot.className = 'ripple';
-      dot.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - r.left - size / 2) + 'px;top:' + (e.clientY - r.top - size / 2) + 'px';
-      host.appendChild(dot);
-      setTimeout(() => dot.remove(), 650);
+  /* ---------- smooth scrolling, scroll-to-top, nav state ---------- */
+  function go(target) {
+    var el = target === "top" ? null : $(target);
+    var top = el ? el.getBoundingClientRect().top + scrollY - (parseInt(getComputedStyle(root).getPropertyValue("--nav-h")) || 68) + 2 : 0;
+    scrollTo({ top: Math.max(0, top), behavior: reduce ? "auto" : "smooth" });
+  }
+  $$('a[href^="#"], [data-scroll]').forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      var h = a.getAttribute("href");
+      if (a.dataset.scroll === "top" || h === "#top-anchor") { e.preventDefault(); go("top"); history.replaceState(null, "", location.pathname); }
+      else if (h && h.length > 1 && $(h)) { e.preventDefault(); go(h); history.replaceState(null, "", h); }
+      toggle(links, mbtn, false);
     });
+  });
+  var topBtn = $("#top"), nav = $("#nav");
+  topBtn.addEventListener("click", function () { go("top"); });
+  var ticking = false;
+  addEventListener("scroll", function () {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function () { ticking = false; nav.classList.toggle("scrolled", scrollY > 8); topBtn.classList.toggle("show", scrollY > 600); });
+  }, { passive: true });
+  var linkEls = $$(".links a");
+  var spy = new IntersectionObserver(function (es) {
+    es.forEach(function (en) { if (en.isIntersecting) linkEls.forEach(function (a) { a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id); }); });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  $$("main section[id]").forEach(function (s) { spy.observe(s); });
 
-    // screenshots that are not in the folder yet show a neutral placeholder instead of a broken image
-    document.querySelectorAll('.shot img').forEach((img) => {
-      const fail = () => img.closest('.shot').classList.add('empty');
-      img.addEventListener('error', fail);
-      if (img.complete && img.naturalWidth === 0) fail();
+  /* ---------- effects ---------- */
+  var rv = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); rv.unobserve(en.target); } }); }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+  $$(".rv").forEach(function (el) { rv.observe(el); });
+  document.addEventListener("pointerdown", function (e) {
+    var el = e.target.closest && e.target.closest(".ripple"); if (!el || e.button) return;
+    var r = el.getBoundingClientRect(), s = Math.hypot(Math.max(e.clientX - r.left, r.right - e.clientX), Math.max(e.clientY - r.top, r.bottom - e.clientY)) * 2;
+    var w = document.createElement("span"); w.className = "wave"; w.style.cssText = "width:" + s + "px;height:" + s + "px;left:" + (e.clientX - r.left - s / 2) + "px;top:" + (e.clientY - r.top - s / 2) + "px";
+    el.appendChild(w); w.addEventListener("animationend", function () { w.remove(); });
+  }, { passive: true });
+  var shot = $("#shot"), frame = $("#frame");
+  if (!reduce && matchMedia("(hover:hover)").matches) {
+    shot.addEventListener("pointermove", function (e) {
+      var r = shot.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+      frame.style.transform = "rotateY(" + (-7 + px * 10) + "deg) rotateX(" + (3 - py * 8) + "deg)";
     });
+    shot.addEventListener("pointerleave", function () { frame.style.transform = ""; });
+  }
 
-    applyLang(); applyScheme(); applySeed();
-  })();
-  </script>
+  /* ---------- go ---------- */
+  applyTheme(); applyLang(true); selectTab(0);
+  requestAnimationFrame(function () { document.body.classList.remove("no-anim"); });
+})();
+</script>
 </body>
 </html>

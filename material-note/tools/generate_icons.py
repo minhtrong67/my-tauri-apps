@@ -1,152 +1,155 @@
 #!/usr/bin/env python3
 """
-Material Note - icon generator (Material Design 3 style)
+Material Note - icon generator (Material 3 Expressive style)
 
-Generates every raster asset the project needs from code, so the icons stay
-reproducible and can be re-themed by editing the palette below.
+Everything is drawn from code, so the whole icon family stays reproducible and can be re-themed
+by editing the palette below. Shape language: the scalloped "cookie" container that Material 3
+Expressive uses for emphasis, holding a note page with a folded corner.
 
     pip install pillow
-    python tools/generate_icons.py
+    python tools/generate_icons.py          (or: npm run icons)
 
 Outputs
-  src-tauri/icons/            app icon set (png, ico, icns)
-  src-tauri/icons/installer/  installer.ico, uninstall.ico, NSIS + WiX imagery
+  app/public/logo.svg          vector mark used as the web favicon
+  src-tauri/icons/             app icon set (png, ico, icns, Windows Store logos)
+  src-tauri/icons/installer/   installer.ico, uninstall.ico, NSIS + WiX imagery
+  logo.svg / favicon.png       used by the landing page (project root)
 """
+import math
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
 ICONS = ROOT / "src-tauri" / "icons"
 INSTALLER = ICONS / "installer"
-for d in (ICONS, INSTALLER):
+for d in (ICONS, INSTALLER, ROOT / "app" / "public"):
     d.mkdir(parents=True, exist_ok=True)
 
-# --- M3 baseline palette -----------------------------------------------------
-PRIMARY = (103, 80, 164)        # #6750A4
-PRIMARY_CONTAINER = (234, 221, 255)  # #EADDFF
-PRIMARY_FIXED_DIM = (208, 188, 255)  # #D0BCFF
-TERTIARY = (125, 82, 96)        # #7D5260
-TERTIARY_CONTAINER = (255, 216, 228)  # #FFD8E4
-ERROR = (179, 38, 30)           # #B3261E
-GRAPHITE = (73, 69, 79)         # #49454F
-SURFACE = (254, 247, 255)       # #FEF7FF
+# --- Material 3 colour roles generated from the seed #6B4EFF ------------------------------
+PRIMARY = (89, 45, 255)               # #592DFF
+ON_PRIMARY = (255, 255, 255)
+PRIMARY_CONTAINER = (229, 222, 255)   # #E5DEFF
+PRIMARY_SOFT = (200, 191, 255)        # #C8BFFF
+TERTIARY = (116, 82, 126)             # #74527E
+TERTIARY_CONTAINER = (250, 215, 255)  # #FAD7FF
+ERROR = (186, 26, 26)                 # #BA1A1A
+ERROR_CONTAINER = (255, 218, 214)     # #FFDAD6
+SURFACE = (252, 248, 255)             # #FCF8FF
 WHITE = (255, 255, 255)
 
 DESIGN = 1024  # design grid
 K = 3          # supersampling factor
+U = DESIGN / 100  # the logo is authored on a 100 x 100 grid (same numbers as the in-app SVG mark)
 
 
 def s(v):
     return int(round(v * K))
 
 
+def u(v):
+    return s(v * U)
+
+
+def cookie(d, cx, cy, radius, amp, lobes, fill):
+    pts = []
+    for i in range(361):
+        a = i / 360 * math.tau
+        r = radius + amp * math.cos(lobes * a)
+        pts.append((s(cx + r * math.cos(a)), s(cy + r * math.sin(a))))
+    d.polygon(pts, fill=fill)
+
+
 def rrect(d, box, r, fill):
     x0, y0, x1, y1 = box
-    d.rounded_rectangle((s(x0), s(y0), s(x1), s(y1)), radius=s(r), fill=fill)
+    d.rounded_rectangle((u(x0), u(y0), u(x1), u(y1)), radius=u(r), fill=fill)
 
 
 def poly(d, pts, fill):
-    d.polygon([(s(x), s(y)) for x, y in pts], fill=fill)
+    d.polygon([(u(x), u(y)) for x, y in pts], fill=fill)
 
 
-def pencil_layer():
-    """Pencil drawn horizontally (tip on the left) on its own transparent layer."""
-    w, h = 520, 160
-    layer = Image.new("RGBA", (s(w), s(h)), (0, 0, 0, 0))
-    d = ImageDraw.Draw(layer)
-    rrect(d, (170, 20, 440, 140), 14, TERTIARY)            # body
-    rrect(d, (430, 20, 500, 140), 26, TERTIARY_CONTAINER)  # eraser
-    rrect(d, (404, 20, 440, 140), 0, PRIMARY_FIXED_DIM)    # ferrule band
-    poly(d, [(170, 20), (170, 140), (40, 80)], TERTIARY_CONTAINER)  # wood
-    poly(d, [(78, 62), (78, 98), (40, 80)], GRAPHITE)      # lead
-    return layer
-
-
-def badge(img, kind, cx, cy, r):
-    d = ImageDraw.Draw(img)
-    ring = r + 22
-    d.ellipse((s(cx - ring), s(cy - ring), s(cx + ring), s(cy + ring)), fill=PRIMARY)
-    color = TERTIARY if kind == "install" else ERROR
-    d.ellipse((s(cx - r), s(cy - r), s(cx + r), s(cy + r)), fill=color)
-    w = 26
-    if kind == "install":  # arrow down + tray
-        rrect(d, (cx - w / 2, cy - 78, cx + w / 2, cy + 20), 12, WHITE)
-        poly(d, [(cx - 58, cy - 6), (cx + 58, cy - 6), (cx, cy + 62)], WHITE)
-        rrect(d, (cx - 66, cy + 72, cx + 66, cy + 72 + w), 12, WHITE)
-    else:  # cross
-        d.line([(s(cx - 58), s(cy - 58)), (s(cx + 58), s(cy + 58))], fill=WHITE, width=s(w), joint="curve")
-        d.line([(s(cx + 58), s(cy - 58)), (s(cx - 58), s(cy + 58))], fill=WHITE, width=s(w), joint="curve")
-        for px, py in ((-58, -58), (58, 58), (58, -58), (-58, 58)):
-            d.ellipse((s(cx + px - w / 2), s(cy + py - w / 2), s(cx + px + w / 2), s(cy + py + w / 2)), fill=WHITE)
-
-
-def render(variant="app"):
+def logo(body=PRIMARY, page=ON_PRIMARY, fold=TERTIARY_CONTAINER, badge=None):
+    """The mark: cookie + note page. `badge` = None | 'install' | 'uninstall'."""
     img = Image.new("RGBA", (s(DESIGN), s(DESIGN)), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
+    cookie(d, DESIGN / 2, DESIGN / 2, 46 * U, 3.6 * U, 10, body)
 
-    # container
-    rrect(d, (64, 64, 960, 960), 232, PRIMARY)
+    # note page with a folded top-right corner
+    rrect(d, (28, 27, 67, 76), 5, page)
+    poly(d, [(55, 26), (68, 26), (68, 40)], body)        # cut the corner away
+    poly(d, [(55, 27), (55, 39), (67, 39)], fold)        # the fold
+    for i, w in enumerate((24, 24, 14)):
+        y = 48 + i * 10
+        rrect(d, (36, y, 36 + w, y + 4.6), 2.3, body)
 
-    # sheet with a folded corner
-    rrect(d, (276, 212, 748, 812), 44, PRIMARY_CONTAINER)
-    poly(d, [(604, 196), (764, 196), (764, 356)], PRIMARY)          # cut corner
-    poly(d, [(604, 212), (604, 356), (748, 356)], PRIMARY_FIXED_DIM)  # fold
-
-    # ruled lines
-    for i, width in enumerate((304, 304, 304, 170)):
-        y = 440 + i * 84
-        rrect(d, (352, y, 352 + width, y + 36), 18, PRIMARY)
-
-    if variant == "app":
-        pen = pencil_layer()
-        pen = pen.resize((int(pen.width * 0.85), int(pen.height * 0.85)), Image.LANCZOS)
-        pen = pen.rotate(45, resample=Image.BICUBIC, expand=True)
-        # outline ring around the pencil so it separates from the sheet
-        alpha = pen.split()[3].filter(ImageFilter.MaxFilter(s(28) | 1))
-        ring = Image.new("RGBA", pen.size, PRIMARY + (255,))
-        ring.putalpha(alpha)
-        px, py = s(712) - pen.width // 2, s(730) - pen.height // 2
-        img.alpha_composite(ring, (px, py))
-        img.alpha_composite(pen, (px, py))
-    else:
-        badge(img, variant, 744, 744, 138)
-
+    if badge:
+        cx, cy, r = 76, 76, 19
+        d.ellipse((u(cx - r - 3.2), u(cy - r - 3.2), u(cx + r + 3.2), u(cy + r + 3.2)), fill=body)  # cut-out ring
+        dark = TERTIARY if badge == "install" else ERROR_CONTAINER
+        ink = WHITE if badge == "install" else ERROR
+        d.ellipse((u(cx - r), u(cy - r), u(cx + r), u(cy + r)), fill=dark)
+        if badge == "install":  # arrow into a tray
+            rrect(d, (cx - 2.8, cy - 11, cx + 2.8, cy + 2), 2.8, ink)
+            poly(d, [(cx - 9, cy - 1), (cx + 9, cy - 1), (cx, cy + 9)], ink)
+            rrect(d, (cx - 11, cy + 9.5, cx + 11, cy + 13.5), 2, ink)
+        else:  # cross
+            w = u(5.6)
+            for a, b in (((-8, -8), (8, 8)), ((8, -8), (-8, 8))):
+                d.line([(u(cx + a[0]), u(cy + a[1])), (u(cx + b[0]), u(cy + b[1]))], fill=ink, width=w)
+                for px, py in (a, b):
+                    d.ellipse((u(cx + px) - w // 2, u(cy + py) - w // 2, u(cx + px) + w // 2, u(cy + py) + w // 2), fill=ink)
     return img.resize((DESIGN, DESIGN), Image.LANCZOS)
 
 
+def svg_mark():
+    pts = []
+    for i in range(181):
+        a = i / 180 * math.tau
+        r = 46 + 3.6 * math.cos(10 * a)
+        pts.append(f"{50 + r * math.cos(a):.2f} {50 + r * math.sin(a):.2f}")
+    hex_ = lambda c: "#%02x%02x%02x" % c
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
+        f'<path d="M{"L".join(pts)}Z" fill="{hex_(PRIMARY)}"/>'
+        f'<path d="M33 27h22l12 12v32a5 5 0 0 1-5 5H33a5 5 0 0 1-5-5V32a5 5 0 0 1 5-5z" fill="#fff"/>'
+        f'<path d="M55 27l12 12H59a4 4 0 0 1-4-4z" fill="{hex_(TERTIARY_CONTAINER)}"/>'
+        f'<rect x="36" y="48" width="24" height="4.6" rx="2.3" fill="{hex_(PRIMARY)}"/>'
+        f'<rect x="36" y="58" width="24" height="4.6" rx="2.3" fill="{hex_(PRIMARY)}"/>'
+        f'<rect x="36" y="68" width="14" height="4.6" rx="2.3" fill="{hex_(PRIMARY)}"/></svg>'
+    )
+
+
 def save_png_set(master, folder):
-    sizes = {"32x32.png": 32, "64x64.png": 64, "128x128.png": 128,
-             "128x128@2x.png": 256, "icon.png": 512}
+    sizes = {"32x32.png": 32, "64x64.png": 64, "128x128.png": 128, "128x128@2x.png": 256, "icon.png": 512}
     for name, px in sizes.items():
         master.resize((px, px), Image.LANCZOS).save(folder / name)
-    # Windows Store / MSIX logos (optional but harmless)
-    for px in (30, 44, 71, 89, 107, 142, 150, 284, 310):
+    for px in (30, 44, 71, 89, 107, 142, 150, 284, 310):  # Windows Store / MSIX logos
         master.resize((px, px), Image.LANCZOS).save(folder / f"Square{px}x{px}Logo.png")
     master.resize((50, 50), Image.LANCZOS).save(folder / "StoreLogo.png")
 
 
 ICO_SIZES = [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
 
-# --- app icon set -------------------------------------------------------------
-app = render("app")
+# --- app icon set --------------------------------------------------------------------------
+app = logo()
 save_png_set(app, ICONS)
 app.save(ICONS / "icon.ico", sizes=ICO_SIZES)
 app.save(ICONS / "icon.icns")
 
-# --- installer / uninstaller icons -------------------------------------------
-render("install").save(INSTALLER / "installer.ico", sizes=ICO_SIZES)
-render("uninstall").save(INSTALLER / "uninstall.ico", sizes=ICO_SIZES)
-render("install").resize((256, 256), Image.LANCZOS).save(INSTALLER / "installer.png")
-render("uninstall").resize((256, 256), Image.LANCZOS).save(INSTALLER / "uninstall.png")
+(ROOT / "app" / "public" / "logo.svg").write_text(svg_mark(), encoding="utf-8")
+(ROOT / "logo.svg").write_text(svg_mark(), encoding="utf-8")
+app.resize((192, 192), Image.LANCZOS).save(ROOT / "favicon.png")
+
+# --- installer / uninstaller ----------------------------------------------------------------
+installer = logo(badge="install")
+uninstall = logo(body=ERROR, fold=ERROR_CONTAINER, badge="uninstall")
+installer.save(INSTALLER / "installer.ico", sizes=ICO_SIZES)
+uninstall.save(INSTALLER / "uninstall.ico", sizes=ICO_SIZES)
+installer.resize((256, 256), Image.LANCZOS).save(INSTALLER / "installer.png")
+uninstall.resize((256, 256), Image.LANCZOS).save(INSTALLER / "uninstall.png")
 
 
-def flat(img, bg):
-    base = Image.new("RGB", img.size, bg)
-    base.paste(img, mask=img.split()[3])
-    return base
-
-
-def vertical_gradient(size, top, bottom):
+def gradient(size, top, bottom):
     w, h = size
     g = Image.new("RGB", size)
     gd = ImageDraw.Draw(g)
@@ -156,38 +159,45 @@ def vertical_gradient(size, top, bottom):
     return g
 
 
-# NSIS header (150x57) and sidebar (164x314)
-header = Image.new("RGB", (150, 57), SURFACE)
-header.paste(app.resize((44, 44), Image.LANCZOS), (98, 6), app.resize((44, 44), Image.LANCZOS))
-header.save(INSTALLER / "nsis-header.bmp")
+def big_cookie(img, cx, cy, radius, fill):
+    layer = Image.new("RGBA", (img.width * 3, img.height * 3), (0, 0, 0, 0))
+    ld = ImageDraw.Draw(layer)
+    pts = []
+    for i in range(361):
+        a = i / 360 * math.tau
+        r = radius + radius * 0.078 * math.cos(10 * a)
+        pts.append(((cx + r * math.cos(a)) * 3, (cy + r * math.sin(a)) * 3))
+    ld.polygon(pts, fill=fill)
+    small = layer.resize(img.size, Image.LANCZOS)
+    img.paste(small, (0, 0), small)
 
-# NSIS uninstaller header (150x57) uses the uninstall variant of the icon
-header_un = Image.new("RGB", (150, 57), SURFACE)
-un_logo = render("uninstall").resize((44, 44), Image.LANCZOS)
-header_un.paste(un_logo, (98, 6), un_logo)
-header_un.save(INSTALLER / "nsis-header-uninstall.bmp")
 
-side = vertical_gradient((164, 314), PRIMARY_CONTAINER, PRIMARY_FIXED_DIM)
-sd = ImageDraw.Draw(side)
-sd.ellipse((-60, 200, 120, 380), fill=PRIMARY_FIXED_DIM)
-sd.ellipse((60, 230, 240, 410), fill=(196, 172, 250))
-logo = app.resize((96, 96), Image.LANCZOS)
-side.paste(logo, (34, 40), logo)
-side.save(INSTALLER / "nsis-sidebar.bmp")
+def sidebar(size, mark, accent):
+    img = gradient(size, PRIMARY_CONTAINER, (243, 237, 255))
+    big_cookie(img, size[0] * 0.15, size[1] * 0.98, 118, PRIMARY_SOFT + (255,))
+    big_cookie(img, size[0] * 1.0, size[1] * 0.74, 70, accent + (255,))
+    m = mark.resize((88, 88), Image.LANCZOS)
+    img.paste(m, ((size[0] - 88) // 2, 30), m)
+    return img
+
+
+# NSIS header (150x57), uninstaller header, sidebar (164x314)
+for name, mark in (("nsis-header.bmp", app), ("nsis-header-uninstall.bmp", uninstall)):
+    h = Image.new("RGB", (150, 57), SURFACE)
+    m = mark.resize((44, 44), Image.LANCZOS)
+    h.paste(m, (98, 6), m)
+    h.save(INSTALLER / name)
+
+sidebar((164, 314), app, TERTIARY_CONTAINER).save(INSTALLER / "nsis-sidebar.bmp")
 
 # WiX (MSI) banner 493x58 and dialog 493x312
 banner = Image.new("RGB", (493, 58), SURFACE)
-b_logo = app.resize((44, 44), Image.LANCZOS)
-banner.paste(b_logo, (440, 7), b_logo)
+m = app.resize((44, 44), Image.LANCZOS)
+banner.paste(m, (440, 7), m)
 banner.save(INSTALLER / "wix-banner.bmp")
 
-dialog = Image.new("RGB", (493, 312), WHITE)
-left = vertical_gradient((164, 312), PRIMARY_CONTAINER, PRIMARY_FIXED_DIM)
-dialog.paste(left, (0, 0))
-dd = ImageDraw.Draw(dialog)
-dd.ellipse((-60, 200, 120, 380), fill=PRIMARY_FIXED_DIM)
-d_logo = app.resize((96, 96), Image.LANCZOS)
-dialog.paste(d_logo, (34, 40), d_logo)
+dialog = Image.new("RGB", (493, 312), SURFACE)
+dialog.paste(sidebar((164, 312), app, TERTIARY_CONTAINER), (0, 0))
 dialog.save(INSTALLER / "wix-dialog.bmp")
 
 print("Icons generated in", ICONS)

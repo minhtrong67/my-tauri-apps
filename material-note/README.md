@@ -1,19 +1,18 @@
 <div align="center">
 
-<img src="src/assets/logo.svg" alt="Material Note logo" width="120" height="120">
+<img src="src-tauri/icons/icon.png" width="120" alt="Material Note logo">
 
 # Material Note
 
-**A fast, tabbed notepad with Material Design 3 — built with Tauri.**
+**A fast, expressive notepad in Material 3 Expressive style.**
+Tabs · Find & replace · Command palette · Themes · English & Vietnamese
 
-[English](README.md) · [Tiếng Việt](README.vi.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-6b4eff.svg)](LICENSE)
+![Tauri 2](https://img.shields.io/badge/Tauri-2-24c8db)
+![React](https://img.shields.io/badge/React-18-61dafb)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)
 
-![Tauri](https://img.shields.io/badge/Tauri-2.x-24C8DB?logo=tauri&logoColor=white)
-![Rust](https://img.shields.io/badge/Rust-1.77%2B-DEA584?logo=rust&logoColor=white)
-![Design](https://img.shields.io/badge/Design-Material%203-6750A4)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Author](https://img.shields.io/badge/Author-minhtrong67-6750A4)
-![AI](https://img.shields.io/badge/AI-Claude-D97757)
+[Download](download/) · [Landing page](index.html) · [Tiếng Việt](README.vi.md)
 
 </div>
 
@@ -21,84 +20,76 @@
 
 ## Introduction
 
-Material Note is a lightweight desktop notepad in the spirit of Windows Notepad, redesigned around Google's **Material Design 3**. It starts instantly, keeps memory use low (Tauri + the system WebView) and stays out of your way while you write.
+Material Note is a lightweight desktop notepad built with **Tauri**, **React** and **TypeScript**. It starts instantly, stays out of your way, and looks like a modern Material 3 Expressive app: pill buttons that morph when pressed, spring animations, a circular reveal when you switch theme, and a colour palette generated from any colour you like.
+
+It is part of the open-source collection [my-tauri-apps](https://github.com/minhtrong67/my-tauri-apps).
 
 ## Screenshots
 
-<p align="center">
-  <img src="screenshots/image01.png" alt="Material Note - light theme" width="49%">
-  <img src="screenshots/image02.png" alt="Material Note - dark theme" width="49%">
-</p>
-<p align="center">
-  <img src="screenshots/image03.png" alt="Material Note - find and replace" width="49%">
-  <img src="screenshots/image04.png" alt="Material Note - settings" width="49%">
-</p>
+| | |
+|---|---|
+| ![Editor](screenshots/image01.png) | ![Find and replace](screenshots/image02.png) |
+| ![Settings](screenshots/image03.png) | ![Command palette](screenshots/image04.png) |
 
 ## Features
 
-| Area | What you get |
-| --- | --- |
-| **Documents** | Tabs (horizontal or vertical), New / Open (multi-select) / Save / Save as, unsaved-changes prompt per tab and on exit, drag & drop files, **reopen files on startup (with unsaved text, cursor and scroll position)**, **recent files list**, open from the command line or “Open with”, Print |
-| **Editing** | Undo / redo, cut / copy / paste, go to line, insert time & date (`F5`), CRLF ⇄ LF switch, optional spell check |
-| **Find & replace** | Next / previous, replace, replace all, match case, whole word (Unicode aware), regular expressions, **all matches highlighted**, live “3 / 12” counter |
-| **View** | Zoom (`Ctrl` + wheel / `+` / `-` / `0`), word wrap, status bar (line, column, characters, zoom, encoding, line ending), **40+ editor fonts** (sans-serif, serif, monospace, handwriting – only the ones installed on your PC are listed – or type any font name) and adjustable size, full screen (`F11`) |
-| **Window** | **Window options** in Settings: *remember window size* (reopens at the size you last resized to) or *always open maximized* |
-| **Appearance** | Light / dark / follow system, **custom theme color** (preset swatches + color picker), system UI font, Material motion (ripples, dialog and menu transitions; respects reduced-motion) |
-| **Languages** | English and Tiếng Việt, switchable at runtime; auto-detected on first launch |
-| **Packaging** | Custom app, installer and **uninstaller** icons plus NSIS / MSI artwork, all in the Material 3 style |
+- **Tabs that remember** – drag to reorder, middle-click to close, horizontal or vertical layout; open files, cursor, scroll position and even unsaved text are restored on the next launch.
+- **Find & replace** – live highlights, match case, whole word, regular expressions, match counter, replace all.
+- **Command palette** – `Ctrl+Shift+P` runs any action by name.
+- **Encodings & safe saving** – UTF-8 (with/without BOM), UTF-16, Windows-125x, Shift-JIS, GBK and more; line-ending toggle (LF/CRLF); atomic saves; warning when a file changes on disk.
+- **Editing helpers** – go to line, duplicate/delete line, upper/lower case, insert time/date, zoom with `Ctrl+Wheel`, word wrap, focus mode, full screen, print.
+- **Auto save** for files that already have a name, and automatic session recovery.
+- **Settings** – light / dark / system, 10 Material theme colours plus a custom colour picker, five fonts (System UI, Roboto, Inter, Lora, JetBrains Mono), Small / Medium / Large text, English and Vietnamese, and the window start behaviour (remember size or always maximised).
+- **Polished UX** – custom tooltips, custom dropdowns, 4-variant toasts (info, success, warning, error), icon + label + colour on every dialog action, back-to-top buttons, drag & drop files, single instance.
+- **Open files from Explorer** – `.txt`, `.md`, `.log`, `.json`, `.csv` and more.
 
 ### Keyboard shortcuts
 
 | Action | Shortcut | Action | Shortcut |
-| --- | --- | --- | --- |
-| New tab | `Ctrl+N` | Find | `Ctrl+F` |
-| Open | `Ctrl+O` | Replace | `Ctrl+H` |
-| Save | `Ctrl+S` | Find next / previous | `F3` / `Shift+F3` |
-| Save as | `Ctrl+Shift+S` | Go to line | `Ctrl+G` |
-| Close tab | `Ctrl+W` | Time / date | `F5` |
-| Next / previous tab | `Ctrl+Tab` / `Ctrl+Shift+Tab` | Settings | `Ctrl+,` |
-| Print | `Ctrl+P` | Full screen | `F11` |
-
-## Download
-
-Get the latest Windows installer (`Material Note_x.y.z_x64-setup.exe`) from the **[Releases](https://github.com/minhtrong67/material-note/releases/latest)** page, or from the project's landing page (`index.html`), which links to `download/Material-Note-Setup.exe`.
-
-> **Landing page.** `index.html` at the project root is a single-file Material Design 3 landing page (English / Tiếng Việt, light / dark, SEO and social-sharing meta tags). Put the installer in [`download/`](download/) as `Material-Note-Setup.exe` and publish the page (for example with GitHub Pages).
+|---|---|---|---|
+| New tab | `Ctrl+N` | Find / Replace | `Ctrl+F` / `Ctrl+H` |
+| Open / Save | `Ctrl+O` / `Ctrl+S` | Go to line | `Ctrl+G` |
+| Save as | `Ctrl+Shift+S` | Command palette | `Ctrl+Shift+P` |
+| Close tab | `Ctrl+W` | Settings | `Ctrl+,` |
+| Next / previous tab | `Ctrl+Tab` / `Ctrl+Shift+Tab` | Focus mode | `Ctrl+Shift+Enter` |
 
 ## Installation
 
-1. Download and run the installer — it installs for the current user, no administrator rights needed.
-2. Start **Material Note** from the Start menu.
-3. To uninstall, use *Settings → Apps* (or run the uninstaller from the install folder).
+1. Download the latest installer from the [`download`](download/) folder (`Material-Note-Setup.exe`).
+2. Run it. It installs for the current user, no administrator rights needed.
+3. Start **Material Note** from the Start menu, or right-click a text file and choose *Open with*.
+
+> Requires Windows 10 / 11 (64-bit). The app uses the WebView2 runtime that ships with Windows 11 and is installed automatically on Windows 10.
 
 ## Tech stack
 
 | Layer | Technology |
-| --- | --- |
-| Framework | [Tauri 2](https://tauri.app) |
-| Backend | Rust — [`tauri-plugin-dialog`](https://crates.io/crates/tauri-plugin-dialog) |
-| Frontend | Plain HTML / CSS / JavaScript (no bundler) |
-| Design | Material Design 3 (OKLCH-based tonal palettes generated from a seed color) |
-| Tooling | npm (Tauri CLI), Python + Pillow (icon generator) |
+|---|---|
+| Desktop shell | [Tauri 2](https://tauri.app) (Rust) |
+| UI | React 18 · TypeScript · Vite · Tailwind CSS 4 |
+| State | Zustand |
+| Design | Material 3 Expressive, colours from `@material/material-color-utilities` |
+| Icons | [Lucide](https://lucide.dev) |
+| Fonts | Roboto, Inter, Lora, JetBrains Mono (bundled, offline) |
 
 ## Development
 
-Requirements:
+Prerequisites: [Node.js](https://nodejs.org) 20+, [Rust](https://rustup.rs) and the [Tauri prerequisites](https://tauri.app/start/prerequisites/) for your OS.
 
-- [Rust](https://rustup.rs) 1.77+
-- [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) (on Windows: Microsoft C++ Build Tools and WebView2)
-- [Node.js](https://nodejs.org) (npm)
+This project lives in a Cargo workspace folder (see the root `Cargo.toml`: every `*/src-tauri` is a member and all projects share one `target` cache).
 
 ```bash
-cd material-note
-
-npm install        # once: installs the Tauri CLI
-npm run dev        # run in development
+npm install      # install dependencies
+npm run dev      # start the desktop app with hot reload
 ```
 
-The project is designed to live in a Cargo workspace (`members = ["*/src-tauri"]`) and share its `target/` build cache. To use it on its own, add an empty `[workspace]` table to `src-tauri/Cargo.toml`.
+Useful extras:
 
-To regenerate every icon (app, installer, uninstaller, NSIS / MSI artwork): `pip install pillow` then `python tools/generate_icons.py`.
+```bash
+npm run web:dev    # the UI alone in a browser (http://127.0.0.1:1420)
+npm run icons      # regenerate every app / installer icon (needs Python + Pillow)
+npm run palettes   # regenerate the colour palettes embedded in index.html
+```
 
 ## Build
 
@@ -106,47 +97,33 @@ To regenerate every icon (app, installer, uninstaller, NSIS / MSI artwork): `pip
 npm run build
 ```
 
-Installers are written to `<workspace>/target/release/bundle/` (`nsis/` for the `.exe` setup, `msi/` for the `.msi`).
-
-> **Icons.** The app icon, the setup icon and a separate **uninstaller icon** (`uninstallerIcon`, Tauri 2.9+) are all generated in the Material 3 style — standard sizes 16 – 256 px in the `.ico`, plus 32 / 128 / 256 / 512 px PNGs.
+The installers are written to `target/release/bundle/` (NSIS `.exe` and WiX `.msi`). Rename the `.exe` to `Material-Note-Setup.exe` and copy it into [`download/`](download/) so the landing page's download button works.
 
 ## Project structure
 
 ```
 material-note/
-├── index.html                # Landing page (single file, Material Design 3)
-├── download/                 # Put Material-Note-Setup.exe here (linked by the landing page)
-├── screenshots/              # image01.png, image02.png, ... used by this README
-├── src/                      # Frontend (plain HTML / CSS / JS, no bundler)
-│   ├── index.html
-│   ├── styles.css            # Material Design 3 tokens and components
-│   ├── theme.js              # Seed color → M3 palette, light/dark/system
-│   ├── boot.js               # Applies the saved theme before first paint
-│   ├── i18n.js               # English + Vietnamese strings
-│   ├── app.js                # Tabs, files, find/replace, menus, settings
-│   └── assets/logo.svg
-├── src-tauri/                # Rust backend
-│   ├── src/main.rs           # File read/write commands
-│   ├── tauri.conf.json       # Window, bundle, installer configuration
-│   ├── capabilities/         # Tauri permissions
-│   └── icons/                # App icons + installer/ (setup & uninstall icons, artwork)
-├── tools/generate_icons.py   # Regenerates every icon from code
-├── package.json
-├── LICENSE
-└── README.md
+├─ index.html              Landing page (single file: themes, EN/VI, animations)
+├─ app/                    Frontend (Vite root)
+│  ├─ index.html
+│  └─ src/
+│     ├─ components/       AppBar, TabStrip, Editor, FindBar, StatusBar, dialogs …
+│     │  └─ ui/            Button, Select, Popover/Menu, Dialog, Toast, Tooltip …
+│     ├─ lib/              actions, commands, find, session, theme, i18n, tauri …
+│     ├─ store/            Zustand stores: settings, documents, UI
+│     └─ index.css         Tailwind + Material 3 Expressive tokens & animations
+├─ src-tauri/              Rust side (file I/O, encodings, single instance)
+│  ├─ src/main.rs · files.rs
+│  └─ icons/               App icons + installer / uninstaller artwork
+├─ tools/                  Icon and palette generators
+├─ screenshots/            image01 … image04
+├─ download/               Put the installer here
+└─ package.json
 ```
-
-### Limitations
-
-- Files are read and written as UTF-8 (a BOM is dropped; invalid bytes are replaced).
-- Undo history is per tab and is cleared when the tab is closed or the app restarts.
-- Unsaved text is kept in the session only up to about 3 million characters; above that the app asks to save on exit, as usual.
-- Colors use `oklch()` and `color-mix()`, which need a reasonably current WebView2 / WebKit.
-
-## Credits
-
-Created by **minhtrong67** with the support of the AI assistant **Claude** ([Anthropic](https://www.anthropic.com)).
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Material Note is open source software released under the [MIT License](LICENSE).
+
+Created by **minhtrong67** with the support of **Claude**.
+Project home: <https://github.com/minhtrong67/my-tauri-apps>
