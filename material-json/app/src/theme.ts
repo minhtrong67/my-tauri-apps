@@ -38,6 +38,7 @@ function paint() {
   root.style.colorScheme = dark ? 'dark' : 'light';
   root.dataset.fs = settings.fontSize;
   root.dataset.font = settings.font;
+  root.dataset.codeFont = settings.codeFont;
   root.dataset.motion = settings.motion ? 'on' : 'off';
 }
 

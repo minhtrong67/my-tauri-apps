@@ -1,4 +1,4 @@
-"""Generates the Material You style source artwork (app / setup / uninstall icons
+"""Generates the Material 3 Expressive source artwork (app / setup / uninstall icons
 and the NSIS installer bitmaps). Requires Pillow. Run: python tools/make_icons.py"""
 from PIL import Image, ImageDraw
 import os, math
@@ -14,9 +14,9 @@ k = S / 1024
 def hx(h, a=255):
     h = h.lstrip("#"); return (int(h[0:2],16), int(h[2:4],16), int(h[4:6],16), a)
 
-PRIMARY, ON_PRIMARY = hx("#6750A4"), hx("#FFFFFF")
-PRIMARY_C, SECONDARY_C, SECONDARY_ON = hx("#EADDFF"), hx("#E8DEF8"), hx("#4A4458")
-TERTIARY_C, TERTIARY_ON = hx("#FFD8E4"), hx("#633B48")
+PRIMARY, ON_PRIMARY = hx("#6A3DE8"), hx("#FFFFFF")
+PRIMARY_C, SECONDARY_C, SECONDARY_ON = hx("#E6DEFF"), hx("#D9CCFF"), hx("#2A1670")
+TERTIARY_C, TERTIARY_ON = hx("#FFB4D0"), hx("#650033")
 ERROR_C, ERROR_ON = hx("#F9DEDC"), hx("#8C1D18")
 
 def rr(d, box, r, fill):
@@ -42,21 +42,29 @@ def glyph(d, kind, cx, cy, size, t, fill):
     elif kind == "equals":
         bar(d, cx, cy-size*0.22, size, t, fill); bar(d, cx, cy+size*0.22, size, t, fill)
 
+def scallop(d, cx, cy, r, n, amp, fill):
+    pts = []
+    for i in range(720):
+        a = 2*math.pi*i/720
+        rr_ = r + amp*math.cos(n*a)
+        pts.append(((cx + rr_*math.cos(a))*k, (cy + rr_*math.sin(a))*k))
+    d.polygon(pts, fill=fill)
+
 def app_icon():
     im = Image.new("RGBA", (S,S), (0,0,0,0)); d = ImageDraw.Draw(im)
-    rr(d, (80,80,944,944), 210, PRIMARY)
+    scallop(d, 512, 512, 408, 10, 26, PRIMARY)
     # display
-    rr(d, (176,176,848,376), 60, PRIMARY_C)
-    bar(d, 848-56-120, 276, 240, 52, PRIMARY)
-    bar(d, 176+56+34, 276, 68, 28, hx("#B69DF8"))
+    rr(d, (196,206,828,386), 74, PRIMARY_C)
+    bar(d, 828-56-120, 296, 240, 52, PRIMARY)
+    bar(d, 196+56+34, 296, 68, 28, hx("#9B7CFF"))
     # keys
-    kw, kh, gap = 320, 204, 32
+    kw, kh, gap = 300, 186, 28
     keys = [("plus",SECONDARY_C,SECONDARY_ON),("minus",SECONDARY_C,SECONDARY_ON),
             ("times",SECONDARY_C,SECONDARY_ON),("equals",TERTIARY_C,TERTIARY_ON)]
     for i,(g,bg,fg) in enumerate(keys):
         col, row = i%2, i//2
-        x0 = 176 + col*(kw+gap); y0 = 408 + row*(kh+gap)
-        rr(d, (x0,y0,x0+kw,y0+kh), 76, bg)
+        x0 = 196 + col*(kw+gap); y0 = 418 + row*(kh+gap)
+        rr(d, (x0,y0,x0+kw,y0+kh), 93 if g!='equals' else 56, bg)
         glyph(d, g, x0+kw/2, y0+kh/2, 96, 30, fg)
     return im
 
@@ -101,14 +109,14 @@ def logo(px): return app.resize((px,px), Image.LANCZOS)
 
 def sidebar():
     W,H = 164,314; sc = 3
-    im = Image.new("RGBA", (W*sc,H*sc), hx("#F7F2FA")); d = ImageDraw.Draw(im)
-    d.ellipse((-70*sc, 150*sc, 150*sc, 370*sc), fill=hx("#EADDFF"))
-    d.ellipse((60*sc, 190*sc, 230*sc, 360*sc), fill=hx("#E8DEF8"))
-    d.ellipse((90*sc, -50*sc, 210*sc, 70*sc), fill=hx("#FFD8E4", 140))
+    im = Image.new("RGBA", (W*sc,H*sc), hx("#F6F1FF")); d = ImageDraw.Draw(im)
+    d.ellipse((-70*sc, 150*sc, 150*sc, 370*sc), fill=hx("#E6DEFF"))
+    d.ellipse((60*sc, 190*sc, 230*sc, 360*sc), fill=hx("#D9CCFF"))
+    d.ellipse((90*sc, -50*sc, 210*sc, 70*sc), fill=hx("#FFB4D0", 150))
     lg = app.resize((88*sc, 88*sc), Image.LANCZOS)
     im.alpha_composite(lg, (38*sc, 64*sc))
     # tiny key row
-    for i,(c) in enumerate(["#6750A4","#CCC2DC","#CCC2DC","#EFB8C8"]):
+    for i,(c) in enumerate(["#6A3DE8","#B69DF8","#B69DF8","#FF7FAE"]):
         x = 22*sc + i*34*sc
         d.rounded_rectangle((x, 262*sc, x+26*sc, 288*sc), radius=9*sc, fill=hx(c))
     return im.resize((W,H), Image.LANCZOS)

@@ -1,14 +1,111 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#FEF7FF" />
-    <link rel="icon" type="image/png" href="/icon.png" />
-    <title>Material Calculator</title>
-  </head>
-  <body>
-    <div id="app" class="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Material Calculator — a Material 3 Expressive desktop calculator</title>
+<meta name="description" content="Material Calculator is a fast, free and open-source desktop calculator with Standard, Scientific, Programmer, Converter and Date modes. Built with Tauri, React and Material 3 Expressive.">
+<meta name="keywords" content="calculator, desktop app, Tauri, React, Material 3 Expressive, scientific calculator, programmer calculator, unit converter, open source, Windows">
+<meta name="author" content="minhtrong67">
+<meta name="theme-color" content="#6A3DE8">
+<link rel="canonical" href="https://github.com/minhtrong67/my-tauri-apps">
+<link rel="icon" type="image/png" href="public/favicon.png">
+<meta property="og:type" content="website"><meta property="og:title" content="Material Calculator — Material 3 Expressive desktop calculator">
+<meta property="og:description" content="Five modes, live theming, EN/VI, tiny native install. Free and open source.">
+<meta property="og:image" content="screenshots/image01.png"><meta property="og:url" content="https://github.com/minhtrong67/my-tauri-apps">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Material Calculator"><meta name="twitter:description" content="A Material 3 Expressive desktop calculator. Free and open source."><meta name="twitter:image" content="screenshots/image01.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material Calculator","operatingSystem":"Windows","applicationCategory":"UtilitiesApplication","author":{"@type":"Person","name":"minhtrong67"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<style>
+:root{--h:262;--sp:cubic-bezier(.34,1.56,.64,1);--em:cubic-bezier(.2,0,0,1)}
+:root,[data-s=light]{--p:hsl(var(--h) 72% 52%);--op:#fff;--pc:hsl(var(--h) 90% 91%);--opc:hsl(var(--h) 80% 20%);--sc:hsl(var(--h) 60% 88%);--tc:hsl(calc(var(--h) + 70) 100% 85%);--otc:hsl(calc(var(--h) + 70) 80% 22%);--bg:hsl(var(--h) 100% 98.5%);--s1:hsl(var(--h) 45% 95%);--s2:hsl(var(--h) 40% 92%);--tx:hsl(var(--h) 25% 12%);--mu:hsl(var(--h) 12% 38%)}
+[data-s=dark]{--p:hsl(var(--h) 100% 78%);--op:hsl(var(--h) 80% 16%);--pc:hsl(var(--h) 55% 28%);--opc:hsl(var(--h) 100% 91%);--sc:hsl(var(--h) 30% 26%);--tc:hsl(calc(var(--h) + 70) 55% 28%);--otc:hsl(calc(var(--h) + 70) 100% 90%);--bg:hsl(var(--h) 25% 8%);--s1:hsl(var(--h) 22% 12%);--s2:hsl(var(--h) 20% 16%);--tx:hsl(var(--h) 30% 94%);--mu:hsl(var(--h) 15% 70%)}
+*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);overflow-x:hidden;transition:background .4s,color .4s}
+a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.w{width:min(1120px,100% - 40px);margin-inline:auto}
+nav{position:fixed;z-index:50;top:12px;left:50%;translate:-50% 0;width:min(1120px,100% - 24px);display:flex;align-items:center;gap:6px;padding:8px 10px 8px 16px;border-radius:32px;background:color-mix(in srgb,var(--s1) 82%,transparent);backdrop-filter:blur(18px);box-shadow:0 6px 24px -10px #0006}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;margin-right:auto}.logo img{width:32px;height:32px}
+.links{display:flex;gap:2px}.links a{padding:8px 14px;border-radius:20px;font-size:14px;font-weight:500;color:var(--mu);transition:.3s var(--sp)}.links a:hover,.links a.on{background:var(--pc);color:var(--opc);border-radius:12px}
+.ib{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--s2);transition:.3s var(--sp);font-size:13px;font-weight:700}.ib:hover{border-radius:14px;background:var(--pc)}.ib svg{width:20px;height:20px}
+.pop{position:relative}.pal{position:absolute;right:0;top:50px;display:flex;gap:8px;flex-wrap:wrap;width:196px;padding:14px;border-radius:24px;background:var(--s2);box-shadow:0 12px 32px -8px #0007;opacity:0;visibility:hidden;translate:0 -8px;scale:.95;transition:.25s var(--em)}.pal.open{opacity:1;visibility:visible;translate:0;scale:1}
+.pal button{width:34px;height:34px;border-radius:50%;background:hsl(var(--c) 72% 52%);transition:.3s var(--sp)}.pal button:hover,.pal button.on{border-radius:11px;scale:1.1}
+.btn{display:inline-flex;align-items:center;gap:10px;height:56px;padding:0 30px;border-radius:28px;font-weight:600;transition:.35s var(--sp);position:relative;overflow:hidden}.btn:hover{border-radius:16px;translate:0 -3px}.btn:active{scale:.96}
+.b1{background:var(--p);color:var(--op);box-shadow:0 12px 28px -10px var(--p)}.b2{background:var(--sc);color:var(--opc)}.btn svg{width:22px;height:22px}
+header.hero{position:relative;min-height:100svh;display:grid;place-items:center;padding:120px 0 70px;overflow:hidden}
+.blob{position:absolute;border-radius:62% 38% 55% 45%/48% 58% 42% 52%;filter:blur(2px);opacity:.55;animation:morph 14s ease-in-out infinite,float 9s ease-in-out infinite}
+.blob.a{width:520px;height:520px;background:var(--pc);top:-120px;left:-140px}.blob.b{width:420px;height:420px;background:var(--tc);right:-100px;bottom:-60px;animation-delay:-5s}.blob.c{width:200px;height:200px;background:var(--sc);right:30%;top:14%;animation-delay:-8s}
+@keyframes morph{50%{border-radius:40% 60% 45% 55%/60% 40% 60% 40%;rotate:25deg}}@keyframes float{50%{translate:20px -26px}}
+.hero .w{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:16px;background:var(--tc);color:var(--otc);font-size:13px;font-weight:600}
+h1{font-size:clamp(40px,6.2vw,76px);line-height:1.04;letter-spacing:-.03em;margin:18px 0;font-weight:800}h1 em{font-style:normal;color:var(--p)}
+.lead{font-size:18px;color:var(--mu);max-width:520px}.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.meta{margin-top:18px;font-size:13px;color:var(--mu);display:flex;gap:16px;flex-wrap:wrap}
+.shot{border-radius:36px;overflow:hidden;box-shadow:0 30px 60px -24px #0008;background:var(--s1);transition:transform .5s var(--sp),border-radius .5s var(--sp);transform-style:preserve-3d}.shot img{display:block;width:100%}.shot:hover{border-radius:20px 56px 20px 56px}
+section{padding:96px 0}h2{font-size:clamp(30px,4.2vw,48px);letter-spacing:-.02em;line-height:1.1;font-weight:800}.sub{color:var(--mu);margin:12px 0 44px;max-width:560px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{padding:28px;border-radius:32px;background:var(--s1);transition:.45s var(--sp)}.card:hover{border-radius:48px 20px 48px 20px;translate:0 -6px;background:var(--s2)}
+.card i{display:grid;place-items:center;width:56px;height:56px;border-radius:20px 10px 20px 10px;background:var(--pc);color:var(--opc);margin-bottom:18px;font-style:normal;font-size:26px;font-weight:700}.card h3{font-size:20px;margin-bottom:6px}.card p{color:var(--mu);font-size:15px}
+.gal{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.gal .shot:nth-child(even){margin-top:36px}
+.dl{border-radius:48px;padding:64px 28px;text-align:center;background:var(--p);color:var(--op);position:relative;overflow:hidden}.dl:before,.dl:after{content:"";position:absolute;border-radius:50%;background:var(--op);opacity:.1;animation:float 8s ease-in-out infinite}.dl:before{width:320px;height:320px;left:-80px;top:-100px}.dl:after{width:240px;height:240px;right:-60px;bottom:-90px;animation-delay:-4s}
+.dl h2,.dl p,.dl .cta{position:relative}.dl p{opacity:.85;margin:12px auto 28px;max-width:520px}.dl .cta{justify-content:center}.dl .b1{background:var(--op);color:var(--p)}
+footer{padding:36px 0 60px;text-align:center;color:var(--mu);font-size:14px}.au{display:inline-flex;gap:6px;padding:3px 12px;border-radius:12px;background:var(--pc);color:var(--opc);font-weight:700}.ai{background:var(--tc);color:var(--otc)}
+#top{position:fixed;z-index:40;right:20px;bottom:20px;width:54px;height:54px;border-radius:20px;background:var(--pc);color:var(--opc);display:grid;place-items:center;box-shadow:0 8px 20px -6px #0007;opacity:0;translate:0 24px;scale:.8;pointer-events:none;transition:.4s var(--sp)}#top.show{opacity:1;translate:0;scale:1;pointer-events:auto}#top:hover{border-radius:27px}#top svg{width:24px;height:24px}
+.rv{opacity:0;translate:0 36px;scale:.97;transition:opacity .7s var(--em),translate .8s var(--sp),scale .8s var(--sp)}.rv.in{opacity:1;translate:0;scale:1}
+@media(max-width:860px){.links{display:none}.hero .w{grid-template-columns:1fr;text-align:center}.lead{margin-inline:auto}.cta,.meta{justify-content:center}.gal{grid-template-columns:1fr}.gal .shot:nth-child(even){margin-top:0}section{padding:68px 0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.rv{opacity:1;translate:0;scale:1}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="#top-anchor"><img src="public/icon.png" alt="" width="32" height="32"><span>Material Calculator</span></a>
+  <div class="links"><a href="#features" data-i="n1">Features</a><a href="#modes" data-i="n2">Modes</a><a href="#screens" data-i="n3">Screenshots</a><a href="#download" data-i="n4">Download</a></div>
+  <div class="pop"><button class="ib" id="palBtn" aria-label="Theme color"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2H17a4 4 0 0 0 4-4c0-4.4-4-7.4-9-7.4z"/><circle cx="7.5" cy="11" r=".6"/><circle cx="10" cy="7" r=".6"/><circle cx="15" cy="7" r=".6"/></svg></button><div class="pal" id="pal"></div></div>
+  <button class="ib" id="themeBtn" aria-label="Theme"></button><button class="ib" id="langBtn" aria-label="Language">EN</button>
+</nav>
+<span id="top-anchor"></span>
+<header class="hero"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div>
+  <div class="w"><div>
+    <span class="chip rv" data-i="chip">✦ Free &amp; open source</span>
+    <h1 class="rv" data-h="h1">A calculator with <em>personality</em>.</h1>
+    <p class="lead rv" data-i="lead">Standard, Scientific, Programmer, Converter and Date in one tiny native app — springy, colourful and Material 3 Expressive from key to key.</p>
+    <div class="cta rv"><a class="btn b1" href="download/Material-Calculator-setup.exe" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg><span data-i="dl">Download for Windows</span></a><a class="btn b2" href="#features" data-i="more">Explore features</a></div>
+    <div class="meta rv"><span>⚡ Tauri 2</span><span>⚛ React + TS</span><span>🌐 EN · VI</span></div>
+  </div><div class="shot rv" id="tilt"><img src="screenshots/image01.png" alt="Material Calculator standard mode" width="1372" height="892"></div></div>
+</header>
+<section id="features"><div class="w"><h2 class="rv" data-i="fh">Everything you need, nothing you don’t</h2><p class="sub rv" data-i="fs">Fast, offline and respectful of your desktop.</p>
+  <div class="grid" id="fgrid"></div></div></section>
+<section id="modes" style="background:var(--s1)"><div class="w"><h2 class="rv" data-i="mh">Five modes, one fluid app</h2><p class="sub rv" data-i="ms">Switch instantly with Ctrl+1…5.</p><div class="grid" id="mgrid"></div></div></section>
+<section id="screens"><div class="w"><h2 class="rv" data-i="sh">See it in action</h2><p class="sub rv" data-i="ss">Light, dark and your own colours.</p>
+  <div class="gal"><div class="shot rv"><img loading="lazy" src="screenshots/image01.png" alt="Standard" width="1372" height="892"></div><div class="shot rv"><img loading="lazy" src="screenshots/image02.png" alt="Scientific" width="1372" height="892"></div><div class="shot rv"><img loading="lazy" src="screenshots/image03.png" alt="Programmer" width="1372" height="892"></div><div class="shot rv"><img loading="lazy" src="screenshots/image04.png" alt="Converter" width="1372" height="892"></div></div></div></section>
+<section id="download"><div class="w"><div class="dl rv"><h2 data-i="dh">Get Material Calculator</h2><p data-i="dp">Free forever. Windows 10/11 installer, under 2 MB, no account required.</p>
+  <div class="cta"><a class="btn b1" href="download/Material-Calculator-setup.exe" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg><span data-i="dl">Download for Windows</span></a><a class="btn b2" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener">GitHub</a></div></div></div></section>
+<footer><div class="w"><span data-i="by">Made by</span> <span class="au">minhtrong67</span> <span data-i="with">with the help of</span> <span class="au ai">Claude</span><br><small>MIT License · © 2026 · <a href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener">github.com/minhtrong67/my-tauri-apps</a></small></div></footer>
+<button id="top" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+<script>
+const D={en:{n1:'Features',n2:'Modes',n3:'Screenshots',n4:'Download',chip:'✦ Free & open source',lead:'Standard, Scientific, Programmer, Converter and Date in one tiny native app — springy, colourful and Material 3 Expressive from key to key.',dl:'Download for Windows',more:'Explore features',fh:'Everything you need, nothing you don’t',fs:'Fast, offline and respectful of your desktop.',mh:'Five modes, one fluid app',ms:'Switch instantly with Ctrl+1…5.',sh:'See it in action',ss:'Light, dark and your own colours.',dh:'Get Material Calculator',dp:'Free forever. Windows 10/11 installer, under 2 MB, no account required.',by:'Made by',with:'with the help of',h1:'A calculator with <em>personality</em>.',
+ F:[['🎨','Live theming','Pick any seed colour; the whole palette follows in light or dark.'],['⌨','Keyboard first','Type expressions, use shortcuts, copy results in a keystroke.'],['🕘','History & memory','Every result is saved; reuse it with one click.'],['🌍','English & Tiếng Việt','Switch language instantly, with locale-aware numbers.'],['🔤','Fonts & text size','Roboto, Inter, Nunito, Open Sans or system, in three sizes.'],['🪟','Smart window','Remember size or always start maximised; stay on top.']],
+ M:[['＝','Standard','Expressions, %, memory keys and history.'],['√','Scientific','Trig, logs, powers, factorials, deg/rad/grad.'],['‹/›','Programmer','HEX/DEC/OCT/BIN, bit toggles, word sizes.'],['⇄','Converter','Length, mass, temperature, data and more.'],['📅','Date','Differences and date arithmetic.']]},
+vi:{n1:'Tính năng',n2:'Chế độ',n3:'Ảnh chụp',n4:'Tải về',chip:'✦ Miễn phí & mã nguồn mở',lead:'Tiêu chuẩn, Khoa học, Lập trình viên, Chuyển đổi và Ngày tháng trong một ứng dụng gọn nhẹ — mượt mà, nhiều màu sắc, chuẩn Material 3 Expressive.',dl:'Tải cho Windows',more:'Khám phá tính năng',fh:'Đủ mọi thứ bạn cần, không thừa',fs:'Nhanh, chạy offline và gọn nhẹ trên máy tính của bạn.',mh:'Năm chế độ, một ứng dụng liền mạch',ms:'Chuyển nhanh bằng Ctrl+1…5.',sh:'Xem ứng dụng hoạt động',ss:'Sáng, tối và màu sắc theo ý bạn.',dh:'Tải Material Calculator',dp:'Miễn phí mãi mãi. Bộ cài Windows 10/11, dưới 2 MB, không cần tài khoản.',by:'Tạo bởi',with:'với sự hỗ trợ của',h1:'Máy tính có <em>cá tính</em>.',
+ F:[['🎨','Đổi màu trực tiếp','Chọn màu chủ đề bất kỳ; toàn bộ bảng màu đổi theo ở chế độ sáng/tối.'],['⌨','Ưu tiên bàn phím','Gõ biểu thức, dùng phím tắt, sao chép kết quả bằng một phím.'],['🕘','Lịch sử & bộ nhớ','Mọi kết quả đều được lưu, dùng lại chỉ với một cú nhấp.'],['🌍','Tiếng Anh & Tiếng Việt','Đổi ngôn ngữ tức thì, số liệu theo chuẩn địa phương.'],['🔤','Phông & cỡ chữ','Roboto, Inter, Nunito, Open Sans hoặc hệ thống, ba cỡ chữ.'],['🪟','Cửa sổ thông minh','Nhớ kích thước hoặc luôn phóng to; ghim trên cùng.']],
+ M:[['＝','Tiêu chuẩn','Biểu thức, %, phím bộ nhớ và lịch sử.'],['√','Khoa học','Lượng giác, logarit, lũy thừa, giai thừa, độ/rad/grad.'],['‹/›','Lập trình viên','HEX/DEC/OCT/BIN, bật tắt bit, độ rộng từ.'],['⇄','Chuyển đổi','Độ dài, khối lượng, nhiệt độ, dung lượng…'],['📅','Ngày tháng','Khoảng cách và cộng trừ ngày.']]}};
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)],R=document.documentElement,S=(k,d)=>{try{return localStorage.getItem(k)??d}catch{return d}},W=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
+let lang=S('lang',(navigator.language||'en').startsWith('vi')?'vi':'en'),mode=S('mode','system'),hue=+S('hue',262);
+const HUES=[262,340,12,38,150,185,215,290],ICON={light:'☀',dark:'☾',system:'◐'};
+function cards(id,arr){$('#'+id).innerHTML=arr.map(([i,t,p])=>`<div class="card rv"><i>${i}</i><h3>${t}</h3><p>${p}</p></div>`).join('');observe()}
+function applyLang(){const d=D[lang];R.lang=lang;$$('[data-i]').forEach(e=>e.textContent=d[e.dataset.i]);$('[data-h]').innerHTML=d.h1;$('#langBtn').textContent=lang.toUpperCase();cards('fgrid',d.F);cards('mgrid',d.M)}
+function applyTheme(){const dark=mode==='dark'||(mode==='system'&&matchMedia('(prefers-color-scheme:dark)').matches);R.dataset.s=dark?'dark':'light';$('#themeBtn').textContent=ICON[mode];R.style.setProperty('--h',hue);$$('#pal button').forEach(b=>b.classList.toggle('on',+b.dataset.h===hue));$('meta[name=theme-color]').content=getComputedStyle(R).getPropertyValue('--bg')||'#fff'}
+$('#pal').innerHTML=HUES.map(h=>`<button data-h="${h}" style="--c:${h}" aria-label="Hue ${h}"></button>`).join('');
+$('#pal').onclick=e=>{const b=e.target.closest('button');if(b){hue=+b.dataset.h;W('hue',hue);applyTheme()}};
+$('#palBtn').onclick=e=>{e.stopPropagation();$('#pal').classList.toggle('open')};document.onclick=e=>{if(!e.target.closest('.pop'))$('#pal').classList.remove('open')};
+$('#themeBtn').onclick=()=>{mode={light:'dark',dark:'system',system:'light'}[mode];W('mode',mode);applyTheme()};
+$('#langBtn').onclick=()=>{lang=lang==='en'?'vi':'en';W('lang',lang);applyLang()};
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',applyTheme);
+let io;function observe(){io??=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});$$('.rv:not(.in)').forEach((e,i)=>{e.style.transitionDelay=(i%6)*70+'ms';io.observe(e)})}
+const top=$('#top'),secs=$$('section[id]'),links=$$('.links a');
+addEventListener('scroll',()=>{top.classList.toggle('show',scrollY>500);const y=scrollY+140;secs.forEach(s=>{if(y>=s.offsetTop&&y<s.offsetTop+s.offsetHeight)links.forEach(a=>a.classList.toggle('on',a.hash==='#'+s.id))})},{passive:true});
+top.onclick=()=>scrollTo({top:0,behavior:'smooth'});
+const tilt=$('#tilt');if(matchMedia('(hover:hover)').matches)tilt.parentElement.addEventListener('pointermove',e=>{const r=tilt.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;tilt.style.transform=`perspective(900px) rotateY(${x*10}deg) rotateX(${-y*10}deg)`});tilt.addEventListener('pointerleave',()=>tilt.style.transform='');
+applyLang();applyTheme();observe();
+</script>
+</body>
 </html>

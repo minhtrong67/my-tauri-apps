@@ -5,12 +5,17 @@ import { bus } from '../bus';
 import { icon } from '../icons';
 import { currentView } from '../nav';
 import { captureWindow, isTauri } from '../tauri';
-import { esc, toast } from '../ui';
+import { esc, h, toast } from '../ui';
 
 let el: HTMLElement;
 const FONTS: [Settings['font'], string, string][] = [
   ['system', 'System', 'system-ui, sans-serif'], ['google-sans-flex', 'Google Sans Flex', "'Google Sans Flex Variable', sans-serif"], ['roboto-flex', 'Roboto Flex', "'Roboto Flex Variable', sans-serif"],
   ['roboto', 'Roboto', "'Roboto', sans-serif"], ['arial', 'Arial', 'Arial, Helvetica, sans-serif'], ['inter', 'Inter', "'Inter Variable', sans-serif"], ['be-vietnam-pro', 'Be Vietnam Pro', "'Be Vietnam Pro', sans-serif"],
+];
+const CODE_FONTS: [Settings['codeFont'], string, string][] = [
+  ['default', '', 'var(--mono-default)'], ['jetbrains-mono', 'JetBrains Mono', "'JetBrains Mono Variable', monospace"], ['fira-code', 'Fira Code', "'Fira Code Variable', monospace"],
+  ['cascadia-code', 'Cascadia Code', "'Cascadia Code Variable', monospace"], ['source-code-pro', 'Source Code Pro', "'Source Code Pro Variable', monospace"],
+  ['roboto-mono', 'Roboto Mono', "'Roboto Mono Variable', monospace"], ['ibm-plex-mono', 'IBM Plex Mono', "'IBM Plex Mono', monospace"], ['consolas', 'Consolas', "Consolas, 'Courier New', monospace"],
 ];
 const SHORTCUTS: [Parameters<typeof t>[0], string][] = [
   ['sc.k.new', 'Ctrl+N'], ['sc.k.open', 'Ctrl+O'], ['sc.k.save', 'Ctrl+S'], ['sc.k.saveAs', 'Ctrl+Shift+S'], ['sc.k.close', 'Ctrl+W'],
@@ -24,7 +29,7 @@ export function mountSettings(host: HTMLElement) {
   el.addEventListener('change', onChange);
   bus.on('view', () => { if (currentView() === 'settings') render(); });
   bus.on('lang', () => { if (currentView() === 'settings') render(); });
-  bus.on('settings', () => { if (currentView() === 'settings') render(); });
+  bus.on('settings', (keys: string[]) => { if (currentView() !== 'settings') return; if (keys.length > 6) render(); else sync(); });
 }
 
 const seg = (name: string, cur: unknown, items: [unknown, string, string?][]) => `<div class="seg" role="radiogroup" data-seg="${name}">${items.map(([v, l, ic]) =>
@@ -67,6 +72,8 @@ function render() {
 
     <section class="card">
       <h2 class="card-title">${icon('code')}${esc(t('set.editor'))}</h2>
+      <div class="set-row col"><div class="set-text"><strong>${esc(t('set.codeFont'))}</strong><span>${esc(t('set.codeFontDesc'))}</span></div>
+        <div class="fonts code-fonts" role="radiogroup">${CODE_FONTS.map(([id, name, fam]) => `<button class="font-card" role="radio" data-code="${id}" aria-checked="${settings.codeFont === id}" style="font-family:${fam}"><span class="aa">{ }</span><span class="fn">${esc(id === 'default' ? t('set.codeDefault') : name)}</span></button>`).join('')}</div></div>
       ${row(t('set.indent'), '', seg('indent', settings.indent, [[2, t('set.spaces', { n: 2 })], [4, t('set.spaces', { n: 4 })], ['tab', t('set.tab')]]))}
       ${row(t('set.wrap'), t('set.wrapDesc'), sw('set-wrap', settings.wrap))}
       ${row(t('set.restore'), t('set.restoreDesc'), sw('set-restore', settings.restore))}
@@ -107,11 +114,13 @@ function onClick(e: Event) {
     if (name === 'lang') setLang(v as Settings['lang']);
     return;
   }
-  const fc = tg.closest<HTMLElement>('[data-font]');
+  const cf = tg.closest<HTMLElement>('.font-card[data-code]');
+  if (cf) { update({ codeFont: cf.dataset.code as Settings['codeFont'] }); applyTheme(); return; }
+  const fc = tg.closest<HTMLElement>('.font-card[data-font]'); // not '[data-font]': <html data-font> would match every click
   if (fc) { update({ font: fc.dataset.font as Settings['font'] }); applyTheme(); return; }
   const sw = tg.closest<HTMLElement>('.swatch[data-color]');
   if (sw) { update({ color: sw.dataset.color! }); applyTheme(origin(e)); return; }
-  const win = tg.closest<HTMLElement>('[data-win]');
+  const win = tg.closest<HTMLElement>('.radio-card[data-win]');
   if (win) {
     update({ windowMode: win.dataset.win as Settings['windowMode'] });
     if (settings.windowMode === 'remember') captureWindow();
@@ -126,4 +135,29 @@ function onChange(e: Event) {
   else if (i.id === 'set-motion') { update({ motion: i.checked }); applyTheme(); }
   else if (i.id === 'set-wrap') update({ wrap: i.checked });
   else if (i.id === 'set-restore') update({ restore: i.checked });
+}
+
+/** Reflect the current settings on the existing controls — no re-render, so nothing flashes or jumps. */
+function sync() {
+  const on = (b: Element, v: boolean) => { b.setAttribute('aria-checked', String(v)); if (b.hasAttribute('aria-pressed')) b.setAttribute('aria-pressed', String(v)); };
+  el.querySelectorAll<HTMLElement>('[data-seg]').forEach((g) => {
+    const cur = String(settings[g.dataset.seg as keyof Settings]);
+    g.querySelectorAll<HTMLElement>('button').forEach((b) => on(b, b.dataset.v === cur));
+  });
+  el.querySelectorAll<HTMLElement>('.swatch[data-color]').forEach((b) => on(b, b.dataset.color!.toLowerCase() === settings.color.toLowerCase()));
+  el.querySelectorAll<HTMLElement>('.font-card[data-font]').forEach((b) => on(b, b.dataset.font === settings.font));
+  el.querySelectorAll<HTMLElement>('.font-card[data-code]').forEach((b) => on(b, b.dataset.code === settings.codeFont));
+  el.querySelectorAll<HTMLElement>('.radio-card[data-win]').forEach((b) => on(b, b.dataset.win === settings.windowMode));
+  const sw: [string, boolean][] = [['set-motion', settings.motion], ['set-wrap', settings.wrap], ['set-restore', settings.restore]];
+  for (const [id, v] of sw) { const i = el.querySelector<HTMLInputElement>('#' + id); if (i && i.checked !== v) i.checked = v; }
+  const custom = !PALETTE.some((p) => p.hex.toLowerCase() === settings.color.toLowerCase());
+  const lab = el.querySelector<HTMLElement>('.swatch.custom');
+  if (lab) {
+    on(lab, custom);
+    lab.style.setProperty('--c', custom ? settings.color : 'transparent');
+    const want = custom ? 'check' : 'plus';
+    if (lab.dataset.ic !== want) { lab.dataset.ic = want; lab.querySelector('svg')?.replaceWith(h(icon(want))); }
+    const inp = lab.querySelector<HTMLInputElement>('input');
+    if (inp && custom && inp.value.toLowerCase() !== settings.color.toLowerCase()) inp.value = settings.color;
+  }
 }

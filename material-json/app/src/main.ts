@@ -320,6 +320,7 @@ onOpenFiles((paths) => { void docs.openPaths(paths); setView('editor'); });
 
 /* ───────────────────────────── settings reactions ───────────────────────────── */
 bus.on('settings', (keys: string[]) => {
+  if (keys.includes('codeFont')) ed.measure();
   if (keys.includes('wrap') || keys.includes('indent') || keys.includes('theme') || keys.includes('color')) ed.syncConfig();
   if (keys.includes('viewMode') || keys.includes('splitRatio')) applyMode();
   if (keys.includes('wrap')) paintToolbar();

@@ -1,8 +1,8 @@
 {
   "name": "material-calculator",
   "private": true,
-  "version": "1.0.0",
-  "description": "A fast, full-featured Material Design 3 calculator for the desktop, built with Tauri 2.",
+  "version": "2.0.0",
+  "description": "A fast, full-featured Material 3 Expressive calculator for the desktop, built with Tauri 2, React and TypeScript.",
   "author": "minhtrong67",
   "license": "MIT",
   "type": "module",
@@ -10,16 +10,28 @@
     "dev": "tauri dev",
     "build": "tauri build",
     "dev:web": "vite",
-    "build:web": "vite build",
+    "build:web": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "tauri": "tauri"
   },
   "dependencies": {
     "@material/material-color-utilities": "^0.3.0",
-    "@tauri-apps/api": "^2.10.0"
+    "@tauri-apps/api": "^2.10.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
     "@tauri-apps/cli": "^2.10.0",
-    "vite": "^6.0.0"
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0",
+    "@fontsource/roboto": "^5.1.0",
+    "@fontsource/inter": "^5.1.0",
+    "@fontsource/nunito": "^5.1.0",
+    "@fontsource/open-sans": "^5.1.0"
   }
 }

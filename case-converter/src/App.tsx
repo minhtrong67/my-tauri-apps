@@ -54,13 +54,13 @@ function Shell() {
   const history = useHistory();
 
   const [session, setSession] = useState<Session>(() => {
-    const v = loadJSON<Session>(SESSION_KEY, { tab: 'convert', caseId: 'upper', toolId: 'dedupe', input: '', pickerOpen: false });
+    const v = loadJSON<Session>(SESSION_KEY, { tab: 'convert', caseId: 'upper', toolId: 'dedupe', input: '', pickerOpen: true });
     return {
       tab: (['convert', 'all', 'tools'] as const).includes(v.tab) ? v.tab : 'convert',
       caseId: CASES.some((c) => c.id === v.caseId) ? v.caseId : 'upper',
       toolId: TOOLS.some((x) => x.id === v.toolId) ? v.toolId : 'dedupe',
       input: typeof v.input === 'string' ? v.input : '',
-      pickerOpen: v.pickerOpen === true,
+      pickerOpen: v.pickerOpen !== false,
     };
   });
   const { tab, caseId, toolId, input, pickerOpen } = session;
@@ -174,10 +174,10 @@ function Shell() {
       const c = CASES.find((x) => x.id === id);
       const r = c ? compute(c, input, { ...opts, p: {} }) : null;
       if (r?.out) {
-        try { await writeClipboard(r.out); toast({ type: 'success', message: t('autoCopied') }); } catch { /* ignore */ }
+        try { await writeClipboard(r.out); } catch { /* auto copy is best effort and stays silent */ }
       }
     }
-  }, [patch, tab, s.autoCopy, input, opts, toast, t]);
+  }, [patch, tab, s.autoCopy, input, opts]);
 
   const toggleFavorite = useCallback(() => {
     const on = s.favorites.includes(caseId);
@@ -240,10 +240,11 @@ function Shell() {
     { id: 'settings', label: t('actSettings'), icon: SettingsIcon, kbd: `${MOD}+,`, run: () => setSettingsOpen(true) },
     { id: 'about', label: t('actAbout'), icon: Info, run: () => setAboutOpen(true) },
   ], [t, copyResult, openFile, pasteText, clearText, update, dark]);
+  const pickTool = useCallback((id: string) => patch({ toolId: id }), [patch]);
   const pickFromPalette = useCallback((id: string, kind: 'case' | 'tool') => {
-    if (kind === 'case') patch({ caseId: id, tab: 'convert' });
-    else patch({ toolId: id, tab: 'tools' });
-  }, [patch]);
+    if (kind === 'case') { patch({ tab: 'convert' }); void pickCase(id); }
+    else { patch({ tab: 'tools' }); pickTool(id); }
+  }, [patch, pickCase, pickTool]);
 
   const onScroll = () => setShowTop((scroller.current?.scrollTop ?? 0) > 240);
   const changeTab = (next: Tab) => { patch({ tab: next }); scroller.current?.scrollTo({ top: 0, behavior: 'smooth' }); };
@@ -257,22 +258,6 @@ function Shell() {
         <main className="relative min-h-0 min-w-0 flex-1 md:mb-3 md:mr-3">
           <div ref={scroller} onScroll={onScroll} className="h-full overflow-y-auto bg-surface-container-lowest max-md:rounded-b-xl md:rounded-xl">
             <div key={tab} className="anim-pop mx-auto flex min-h-full max-w-6xl flex-col gap-3 p-3 sm:p-4">
-              {tab === 'convert' && (
-                <CasePicker
-                  t={t} lang={lang} value={caseId} favorites={s.favorites} smart={s.smartTitle} keepAcronyms={s.keepAcronyms}
-                  open={pickerOpen} onToggle={() => patch({ pickerOpen: !pickerOpen })}
-                  onPick={pickCase} onSmart={(v) => update({ smartTitle: v })} onKeepAcronyms={(v) => update({ keepAcronyms: v })}
-                />
-              )}
-              {tab === 'tools' && (
-                <>
-                  <ToolPicker t={t} lang={lang} value={toolId} open={pickerOpen} onToggle={() => patch({ pickerOpen: !pickerOpen })} onPick={(id) => patch({ toolId: id })} />
-                  <ToolParams
-                    lang={lang} tool={toolItem} params={params}
-                    onParam={(id, v) => setToolParams((p) => ({ ...p, [toolId]: { ...(p[toolId] ?? {}), [id]: v } }))}
-                  />
-                </>
-              )}
               <div className="grid flex-1 gap-3 lg:grid-cols-2 lg:[grid-auto-rows:minmax(22rem,1fr)]">
                 <SourceCard className={tab === 'all' ? 'lg:sticky lg:top-0 lg:h-[min(34rem,calc(100dvh-9rem))] lg:self-start' : undefined} t={t} value={input} onChange={setInput} onOpen={openFile} onPaste={pasteText} onClear={clearText} onSample={() => setInput(t('sampleText'))} />
                 {tab === 'all' ? (
@@ -285,6 +270,22 @@ function Shell() {
                   />
                 )}
               </div>
+              {tab === 'convert' && (
+                <CasePicker
+                  t={t} lang={lang} value={caseId} favorites={s.favorites} smart={s.smartTitle} keepAcronyms={s.keepAcronyms}
+                  open={pickerOpen} onToggle={() => patch({ pickerOpen: !pickerOpen })}
+                  onPick={pickCase} onSmart={(v) => update({ smartTitle: v })} onKeepAcronyms={(v) => update({ keepAcronyms: v })}
+                />
+              )}
+              {tab === 'tools' && (
+                <>
+                  <ToolParams
+                    lang={lang} tool={toolItem} params={params}
+                    onParam={(id, v) => setToolParams((p) => ({ ...p, [toolId]: { ...(p[toolId] ?? {}), [id]: v } }))}
+                  />
+                  <ToolPicker t={t} lang={lang} value={toolId} open={pickerOpen} onToggle={() => patch({ pickerOpen: !pickerOpen })} onPick={pickTool} />
+                </>
+              )}
             </div>
           </div>
           <ScrollTop visible={showTop} label={t('scrollTop')} onClick={() => scroller.current?.scrollTo({ top: 0, behavior: 'smooth' })} />

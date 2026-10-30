@@ -183,8 +183,7 @@ button.chip:hover { border-radius: 999px; background: var(--md-primary-container
 .st-chip { height: 24px; }
 
 /* nicer long-page behaviour */
-.view { scroll-behavior: smooth; scroll-padding-top: 12px; }
-html[data-motion='off'] .view { scroll-behavior: auto; }
+.view { scroll-padding-top: 12px; } /* no CSS smooth scrolling here: settings re-render restores scrollTop and must not animate */
 .splash-logo img { border-radius: 26px; }
 
 /* toast colours: fixed semantic hues, readable in light and dark (not tinted by the theme seed) */
@@ -194,3 +193,6 @@ html[data-motion='off'] .view { scroll-behavior: auto; }
 html[data-theme='dark'] .snackbar.success { --tk: #66bb6a; --tb: color-mix(in srgb, #66bb6a 16%, var(--md-surface-container-high)); }
 html[data-theme='dark'] .snackbar.warning { --tk: #ffb74d; }
 html[data-theme='dark'] .snackbar.error { --tk: #ff8a80; }
+
+.code-fonts { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.code-fonts .font-card .aa { font-size: 1.25rem; letter-spacing: -.02em; }

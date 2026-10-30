@@ -10,6 +10,8 @@ export interface ToastInput {
   message: string;
   action?: { label: string; icon?: LucideIcon; onClick: () => void };
   duration?: number;
+  /** Toasts with the same key replace each other instead of stacking. */
+  key?: string;
 }
 interface ToastItem extends ToastInput { id: number; type: ToastType; leaving: boolean }
 
@@ -40,7 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const push = useCallback((input: ToastInput) => {
     const id = ++seq.current;
-    setItems((p) => [...p.filter((x) => !x.leaving).slice(-2), { ...input, id, type: input.type ?? 'info', leaving: false }]);
+    setItems((p) => [...p.filter((x) => !x.leaving && (!input.key || x.key !== input.key)).slice(-2), { ...input, id, type: input.type ?? 'info', leaving: false }]);
   }, []);
 
   // Keep the stack in the top layer so toasts also show above open dialogs and sheets.

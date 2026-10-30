@@ -48,7 +48,7 @@ It is built with [Tauri](https://tauri.app), so it is small, quick to start and 
 - Analyze: extract emails, extract links, word frequency.
 
 **Experience**
-- Collapsible (accordion) style and tool pickers above the text areas keep the source and result boxes large.
+- Large source and result boxes on top, with a collapsible (accordion) style and tool picker below them.
 - Command palette (`Ctrl+K`), keyboard shortcuts, drag and drop text files, open and save `.txt`.
 - Material 3 Expressive UI with spring animations, ripples, custom tooltips, custom dropdowns, toasts (info, success, warning, error), confirm dialogs and a back-to-top button.
 - Settings: light, dark or system theme; 19 Material theme colors plus any custom color; small, medium or large text; English or Vietnamese; font (System, Roboto, Inter, Open Sans, Noto Sans, Be Vietnam Pro); window behavior (remember size or always open maximized).

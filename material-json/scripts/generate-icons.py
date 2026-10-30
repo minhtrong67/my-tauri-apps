@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Generate every icon used by Material JSON in the Material 3 Expressive style:
-a scalloped "cookie" container in Material red with a bold, round-capped { : } glyph.
+a scalloped "cookie" container in Material light green with a bold, round-capped { : } glyph.
 
 Outputs: app icon (PNG/ICO/ICNS, all desktop sizes), installer + uninstaller icons, and the NSIS banners.
 
@@ -19,8 +19,8 @@ S = 1024          # final master size
 SS = 2            # supersampling factor for crisp edges
 W = S * SS
 
-RED = ((255, 99, 88), (198, 40, 40))        # Material red: vivid 400-ish -> deep 800-ish
-MUTED = ((190, 140, 138), (112, 62, 62))    # desaturated red for the uninstaller
+RED = ((156, 204, 101), (85, 139, 47))      # Material light green: 400 -> 800 (name kept for brevity)
+MUTED = ((176, 196, 160), (96, 118, 80))    # desaturated light green for the uninstaller
 
 def lerp(c1, c2, t): return tuple(int(c1[i] + (c2[i] - c1[i]) * t) for i in range(3))
 
@@ -90,7 +90,7 @@ def tile(colors, glyph=(255, 255, 255, 255)):
     ImageDraw.Draw(ring).bitmap((0, 0), ringmask, fill=(255, 255, 255, 20))
     img = Image.alpha_composite(img, ring)
     # glyph with a soft coloured shadow
-    shadow = glyph_layer((90, 8, 12, 255)).filter(ImageFilter.GaussianBlur(10 * SS))
+    shadow = glyph_layer((22, 62, 12, 255)).filter(ImageFilter.GaussianBlur(10 * SS))
     shadow = Image.merge('RGBA', (*shadow.split()[:3], shadow.split()[3].point(lambda v: int(v * .38))))
     sh = Image.new('RGBA', (W, W), (0, 0, 0, 0)); sh.paste(shadow, (0, 12 * SS), shadow)
     img = Image.alpha_composite(img, sh)
@@ -107,7 +107,7 @@ def badge(img, kind):
     ImageDraw.Draw(shadow).ellipse([cx - r, cy - r + 14 * SS, cx + r, cy + r + 14 * SS], fill=(0, 0, 0, 90))
     big = Image.alpha_composite(big, shadow.filter(ImageFilter.GaussianBlur(14 * SS)))
     d = ImageDraw.Draw(big)
-    fill, ink = ((255, 255, 255, 255), (198, 40, 40, 255)) if kind == 'download' else ((43, 30, 30, 255), (255, 255, 255, 255))
+    fill, ink = ((255, 255, 255, 255), (60, 110, 30, 255)) if kind == 'download' else ((32, 42, 28, 255), (255, 255, 255, 255))
     d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=fill)
     w = 58 * SS
     def line(a, b):
@@ -169,7 +169,7 @@ def sidebar(c1, c2, logo_tile, label):
 
 def header(logo_tile, accent):
     Wd, H = 150, 57
-    bg = Image.new('RGB', (Wd, H), (255, 251, 250))
+    bg = Image.new('RGB', (Wd, H), (248, 253, 244))
     ImageDraw.Draw(bg).rectangle([0, H - 4, Wd, H], fill=accent)
     logo = logo_tile.resize((44, 44), Image.LANCZOS)
     bg.paste(logo, (Wd - 52, 5), logo)

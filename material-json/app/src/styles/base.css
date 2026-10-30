@@ -11,7 +11,8 @@
   --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 28px; --r-full: 999px;
   --ease: cubic-bezier(.2, 0, 0, 1); --ease-emph: cubic-bezier(.3, 0, 0, 1.2);
   --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-  --mono: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, Menlo, 'Liberation Mono', monospace;
+  --mono-default: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, Menlo, 'Liberation Mono', monospace;
+  --mono: var(--mono-default);
   --rail-w: 80px; --bar-h: 56px; --tab-h: 40px; --status-h: 28px;
   --dur: 1;
 }

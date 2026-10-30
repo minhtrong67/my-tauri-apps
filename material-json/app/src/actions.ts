@@ -6,7 +6,8 @@ import { settings } from './settings';
 
 const indent = () => indentString(settings.indent);
 
-function done(msg: Parameters<typeof t>[0]) { ed.flash(); toast(t(msg), 'success'); }
+/** Toolbar actions give feedback through the editor flash only — no toast. Errors still use toasts. */
+function done(_msg?: Parameters<typeof t>[0]) { ed.flash(); }
 
 /** Parse the whole document; falls back to the lenient parser so Format also repairs. */
 function parsed(): { node: ReturnType<typeof parseJson>; repaired: boolean } | null {
@@ -66,7 +67,7 @@ export async function copyDoc() {
   const s = ed.selection();
   const text = s.empty ? ed.text() : ed.state.sliceDoc(s.from, s.to);
   if (!text) return toast(t('toast.nothingToCopy'), 'warning');
-  toast(t((await copyText(text)) ? 'toast.copied' : 'toast.pasteFail'), 'success');
+  if (!(await copyText(text))) toast(t('toast.pasteFail'), 'warning');
 }
 export async function pasteDoc() {
   try {

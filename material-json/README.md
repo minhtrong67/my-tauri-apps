@@ -53,7 +53,7 @@ A landing page lives in [`index.html`](index.html) (open it in a browser). It li
 **Personalisation**
 - Light / Dark / System theme with a circular reveal animation
 - Material theme colours (18 swatches + custom) generated with `@material/material-color-utilities` (vibrant scheme)
-- 7 fonts: **System**, **Google Sans Flex**, **Roboto Flex**, **Roboto**, **Arial**, **Inter**, **Be Vietnam Pro** (all bundled, work offline) and 3 font sizes
+- 7 fonts: **System**, **Google Sans Flex**, **Roboto Flex**, **Roboto**, **Arial**, **Inter**, **Be Vietnam Pro** (all bundled, work offline) 3 font sizes and 8 **code fonts** for the editor (JetBrains Mono, Fira Code, Cascadia Code, Source Code Pro, Roboto Mono, IBM Plex Mono, Consolas or the system default)
 - English and Vietnamese (auto-detected, switchable)
 - Window behaviour: **remember size & position** or **always start maximized**
 - Custom tooltips, stacked toasts (info / success / warning / error), themed dropdowns, scroll-to-top button on long pages

@@ -6,6 +6,7 @@ export interface Settings {
   theme: 'light' | 'dark' | 'system';
   color: string;
   fontSize: 'small' | 'medium' | 'large';
+  codeFont: 'default' | 'jetbrains-mono' | 'fira-code' | 'cascadia-code' | 'source-code-pro' | 'roboto-mono' | 'ibm-plex-mono' | 'consolas';
   font: 'system' | 'google-sans-flex' | 'roboto-flex' | 'roboto' | 'arial' | 'inter' | 'be-vietnam-pro';
   lang: LangSetting;
   windowMode: 'remember' | 'maximized';
@@ -20,12 +21,13 @@ export interface Settings {
 }
 
 export const DEFAULTS: Settings = {
-  theme: 'system', color: '#F44336', fontSize: 'medium', font: 'system', lang: 'auto', windowMode: 'remember',
+  theme: 'system', color: '#F44336', codeFont: 'default', fontSize: 'medium', font: 'system', lang: 'auto', windowMode: 'remember',
   indent: 2, wrap: false, restore: true, motion: true, viewMode: 'split', splitRatio: 0.55, treeSync: true,
 };
 
 const KEY = 'material-json:settings';
 
+export const CODE_FONT_IDS = ['default', 'jetbrains-mono', 'fira-code', 'cascadia-code', 'source-code-pro', 'roboto-mono', 'ibm-plex-mono', 'consolas'];
 const FONT_IDS = ['system', 'google-sans-flex', 'roboto-flex', 'roboto', 'arial', 'inter', 'be-vietnam-pro'];
 
 function load(): Settings {
@@ -33,6 +35,7 @@ function load(): Settings {
     const s: Settings = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) || '{}') };
     if (!FONT_IDS.includes(s.font)) s.font = 'system'; // fonts removed in v1.1 fall back to the system font
     if (!/^#[0-9a-f]{6}$/i.test(s.color)) s.color = DEFAULTS.color;
+    if (!CODE_FONT_IDS.includes(s.codeFont)) s.codeFont = 'default';
     return s;
   } catch { return { ...DEFAULTS }; }
 }
