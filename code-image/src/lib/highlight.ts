@@ -26,18 +26,29 @@ import markdown from "highlight.js/lib/languages/markdown";
 import dockerfile from "highlight.js/lib/languages/dockerfile";
 import graphql from "highlight.js/lib/languages/graphql";
 import plaintext from "highlight.js/lib/languages/plaintext";
+import diff from "highlight.js/lib/languages/diff";
+import lua from "highlight.js/lib/languages/lua";
+import r from "highlight.js/lib/languages/r";
+import scala from "highlight.js/lib/languages/scala";
+import elixir from "highlight.js/lib/languages/elixir";
+import haskell from "highlight.js/lib/languages/haskell";
+import perl from "highlight.js/lib/languages/perl";
+import nginx from "highlight.js/lib/languages/nginx";
+import latex from "highlight.js/lib/languages/latex";
 import { LANGUAGES } from "./constants";
 
 const registry: Record<string, Parameters<typeof hljs.registerLanguage>[1]> = {
   javascript, typescript, python, xml, css, scss, sql, json, bash, powershell, java, kotlin, swift,
   c, cpp, csharp, go, rust, php, ruby, dart, yaml, ini, markdown, dockerfile, graphql, plaintext,
+  diff, lua, r, scala, elixir, haskell, perl, nginx, latex,
 };
 for (const [k, v] of Object.entries(registry)) hljs.registerLanguage(k, v);
 
-const AUTO_SUBSET = LANGUAGES.map((l) => l.id).filter((id) => id !== "plaintext" && id !== "ini" && id !== "markdown");
+const AUTO_SUBSET = LANGUAGES.map((l) => l.id).filter((id) => !["plaintext", "ini", "markdown", "diff", "latex", "nginx", "r"].includes(id));
 
 export interface Highlighted {
   lines: string[]; // html per line
+  raw: string[]; // plain text per line
   language: string; // resolved language id
 }
 
@@ -59,17 +70,27 @@ function splitLines(html: string): string[] {
 
 const escapeHtml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+let last: { k: string; v: Highlighted } | null = null;
+
+/** Highlight code. A one-entry cache means the editor and the canvas share a single (expensive) auto-detect pass. */
 export function highlightCode(code: string, language: string): Highlighted {
+  const k = language + "\u0000" + code;
+  if (last && last.k === k) return last.v;
   const src = code.replace(/\r\n?/g, "\n").replace(/\t/g, "  ");
+  const raw = src.split("\n");
+  let v: Highlighted;
   try {
     if (language !== "auto" && hljs.getLanguage(language)) {
-      return { lines: splitLines(hljs.highlight(src, { language, ignoreIllegals: true }).value), language };
+      v = { lines: splitLines(hljs.highlight(src, { language, ignoreIllegals: true }).value), raw, language };
+    } else {
+      const res = hljs.highlightAuto(src, AUTO_SUBSET);
+      v = { lines: splitLines(res.value), raw, language: res.language ?? "plaintext" };
     }
-    const r = hljs.highlightAuto(src, AUTO_SUBSET);
-    return { lines: splitLines(r.value), language: r.language ?? "plaintext" };
   } catch {
-    return { lines: src.split("\n").map(escapeHtml), language: "plaintext" };
+    v = { lines: raw.map(escapeHtml), raw, language: "plaintext" };
   }
+  last = { k, v };
+  return v;
 }
 
 /** "2,4-6" -> Set{2,4,5,6} */

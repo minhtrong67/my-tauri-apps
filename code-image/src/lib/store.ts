@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { DEFAULT_SEED } from "./constants";
 
 export type ThemeMode = "light" | "dark" | "system";
 export type FontScale = "small" | "medium" | "large";
@@ -35,9 +36,14 @@ export interface Design {
   watermarkText: string;
   watermarkPos: WmPos;
   watermarkOpacity: number;
+  focus: boolean;
+  ligatures: boolean;
   scale: number;
   format: ExportFormat;
 }
+
+export type StyleDesign = Omit<Design, "code" | "fileName" | "language">;
+export interface UserPreset { id: string; name: string; design: StyleDesign }
 
 export interface Settings {
   themeMode: ThemeMode;
@@ -47,6 +53,11 @@ export interface Settings {
   windowMode: WindowMode;
   winSize: { w: number; h: number } | null;
   askBeforeSave: boolean;
+  saveDir: string | null;
+  uiFont: string;
+  formatOnPaste: boolean;
+  showLeft: boolean;
+  showRight: boolean;
 }
 
 export const SAMPLE = `// Debounce a function call
@@ -93,39 +104,78 @@ export const defaultDesign: Design = {
   watermarkText: "@minhtrong67",
   watermarkPos: "right",
   watermarkOpacity: 0.6,
+  focus: false,
+  ligatures: true,
   scale: 2,
   format: "png",
 };
 
 const defaultSettings: Settings = {
   themeMode: "system",
-  seed: "#2196F3",
+  seed: DEFAULT_SEED,
   fontScale: "medium",
   lang: "system",
   windowMode: "remember",
   winSize: null,
   askBeforeSave: true,
+  saveDir: null,
+  uiFont: "system",
+  formatOnPaste: true,
+  showLeft: true,
+  showRight: true,
 };
 
 interface AppState extends Settings {
   design: Design;
+  presets: UserPreset[];
   set: (p: Partial<Settings>) => void;
   setDesign: (p: Partial<Design>) => void;
   resetDesign: () => void;
+  resetSettings: () => void;
+  savePreset: (name: string) => void;
+  deletePreset: (id: string) => void;
 }
+
+// Debounced storage: typing code must not hit localStorage on every keystroke.
+let timer: number | undefined;
+let pending: [string, string] | null = null;
+const flush = () => { if (pending) { try { localStorage.setItem(...pending); } catch { /* quota */ } pending = null; } };
+export const flushPersist = flush;
+if (typeof window !== "undefined") {
+  window.addEventListener("pagehide", flush);
+  window.addEventListener("beforeunload", flush);
+}
+const storage = createJSONStorage(() => ({
+  getItem: (n: string) => localStorage.getItem(n),
+  setItem: (n: string, v: string) => { pending = [n, v]; window.clearTimeout(timer); timer = window.setTimeout(flush, 350); },
+  removeItem: (n: string) => localStorage.removeItem(n),
+}));
 
 export const useApp = create<AppState>()(
   persist(
     (set) => ({
       ...defaultSettings,
       design: defaultDesign,
+      presets: [],
       set: (p) => set(p),
       setDesign: (p) => set((s) => ({ design: { ...s.design, ...p } })),
       resetDesign: () => set((s) => ({ design: { ...defaultDesign, code: s.design.code, fileName: s.design.fileName } })),
+      resetSettings: () => set((s) => ({ ...defaultSettings, winSize: s.winSize })),
+      savePreset: (name) => set((s) => {
+        const { code: _c, fileName: _f, language: _l, ...style } = s.design;
+        return { presets: [...s.presets, { id: Math.random().toString(36).slice(2, 9), name, design: style }].slice(-12) };
+      }),
+      deletePreset: (id) => set((s) => ({ presets: s.presets.filter((p) => p.id !== id) })),
     }),
     {
       name: "code-image",
-      version: 1,
+      version: 2,
+      storage,
+      migrate: (persisted, version) => {
+        const p = (persisted ?? {}) as Partial<AppState>;
+        if (version < 2 && (!p.seed || p.seed.toLowerCase() === "#2196f3")) p.seed = DEFAULT_SEED;
+        return p as AppState;
+      },
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<AppState>;
         return { ...current, ...p, design: { ...current.design, ...(p.design ?? {}) } };

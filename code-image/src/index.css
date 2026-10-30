@@ -9,22 +9,42 @@
 @import "@fontsource/inconsolata/latin-400.css";
 @import "@fontsource/dm-mono/latin-400.css";
 
+@import "@fontsource-variable/google-sans-flex/index.css";
+@import "@fontsource-variable/roboto-flex/index.css";
+@import "@fontsource-variable/inter/index.css";
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
+@import "@fontsource/be-vietnam-pro/400.css";
+@import "@fontsource/be-vietnam-pro/500.css";
+@import "@fontsource/be-vietnam-pro/600.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --md-primary: 0 97 164; --md-on-primary: 255 255 255;
-  --md-primary-container: 211 228 255; --md-on-primary-container: 0 28 57;
-  --md-secondary: 83 95 112; --md-on-secondary: 255 255 255;
-  --md-secondary-container: 215 227 248; --md-on-secondary-container: 16 28 43;
-  --md-tertiary: 107 87 120; --md-tertiary-container: 243 218 255; --md-on-tertiary-container: 36 21 48;
-  --md-error: 186 26 26; --md-error-container: 255 218 214; --md-on-error-container: 65 0 2;
-  --md-surface: 248 249 255; --md-on-surface: 25 28 32; --md-on-surface-variant: 67 71 78;
-  --md-outline: 115 119 127; --md-outline-variant: 195 198 207;
-  --md-inverse-surface: 46 48 53; --md-inverse-on-surface: 240 240 247;
-  --md-surface-dim: 216 218 224; --md-surface-low: 242 243 250; --md-surface-container: 236 238 244;
-  --md-surface-high: 230 232 239; --md-surface-highest: 225 226 233;
+  --ui-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --md-primary: 188 0 75; --md-on-primary: 255 255 255;
+  --md-primary-container: 255 217 222; --md-on-primary-container: 64 0 20;
+  --md-secondary: 117 86 91; --md-on-secondary: 255 255 255;
+  --md-secondary-container: 255 217 222; --md-on-secondary-container: 44 21 25;
+  --md-tertiary: 121 88 49; --md-tertiary-container: 255 221 186; --md-on-tertiary-container: 43 23 0;
+  --md-error: 186 26 26; --md-on-error: 255 255 255; --md-error-container: 255 218 214; --md-on-error-container: 65 0 2;
+  --md-surface: 255 251 255; --md-on-surface: 32 26 27; --md-on-surface-variant: 82 67 69;
+  --md-outline: 132 115 117; --md-outline-variant: 214 194 195;
+  --md-inverse-surface: 53 47 48; --md-inverse-on-surface: 250 238 239;
+  --md-surface-dim: 227 215 216; --md-surface-low: 253 241 241; --md-surface-container: 248 235 235;
+  --md-surface-high: 242 229 230; --md-surface-highest: 236 224 224;
+  /* semantic status colours (light) */
+  --md-success: 27 109 46; --md-on-success: 255 255 255; --md-success-container: 200 240 205; --md-on-success-container: 0 33 10;
+  --md-warning: 140 90 0; --md-on-warning: 255 255 255; --md-warning-container: 255 222 160; --md-on-warning-container: 40 25 0;
+  --md-info: 0 100 150; --md-on-info: 255 255 255; --md-info-container: 205 230 255; --md-on-info-container: 0 30 50;
+}
+.dark {
+  --md-success: 120 220 140; --md-on-success: 0 55 18; --md-success-container: 15 80 35; --md-on-success-container: 200 240 205;
+  --md-warning: 255 185 70; --md-on-warning: 70 42 0; --md-warning-container: 95 60 0; --md-on-warning-container: 255 222 160;
+  --md-info: 140 200 255; --md-on-info: 0 50 80; --md-info-container: 0 75 115; --md-on-info-container: 205 230 255;
 }
 
 html { font-size: 16px; }
@@ -32,7 +52,7 @@ html[data-fs="small"] { font-size: 14px; }
 html[data-fs="large"] { font-size: 18px; }
 html, body, #root { height: 100%; }
 body {
-  margin: 0; overflow: hidden; -webkit-font-smoothing: antialiased; user-select: none;
+  margin: 0; overflow: hidden; font-family: var(--ui-font); -webkit-font-smoothing: antialiased; user-select: none;
   background: rgb(var(--md-surface)); color: rgb(var(--md-on-surface));
   transition: background-color .3s ease, color .3s ease;
 }
@@ -77,3 +97,21 @@ textarea, input { user-select: text; }
 .ci-code .hljs-deletion { color: var(--c-tag); }
 .ci-code .hljs-emphasis { font-style: italic; }
 .ci-code .hljs-strong { font-weight: 700; }
+
+button, input, textarea { font-family: inherit; }
+
+/* Shimmer skeleton while exporting */
+.skeleton { background: linear-gradient(90deg, transparent 25%, rgb(var(--md-on-surface) / .12) 50%, transparent 75%); background-size: 200% 100%; }
+
+/* Animated accordion: grid rows 0fr -> 1fr */
+.acc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .38s cubic-bezier(.2, 0, 0, 1), opacity .3s; opacity: 0; }
+.acc[data-open="true"] { grid-template-rows: 1fr; opacity: 1; }
+.acc > div { overflow: hidden; min-height: 0; }
+
+/* Subtle shine that sweeps across primary buttons on hover */
+.shine::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / .28) 50%, transparent 70%);
+  transform: translateX(-120%); transition: transform .7s cubic-bezier(.2, 0, 0, 1);
+}
+.shine:hover::after { transform: translateX(120%); }

@@ -1,23 +1,44 @@
-import { useMemo } from "react";
-import { FileUp, Sparkles, Trash2 } from "lucide-react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { FileUp, Sparkles, Trash2, WandSparkles } from "lucide-react";
+import { toast } from "../lib/toast";
 import { useApp, SAMPLE } from "../lib/store";
 import { useT } from "../lib/i18n";
 import { LANGUAGES } from "../lib/constants";
 import { highlightCode, languageFromFile } from "../lib/highlight";
+import { formatCode, tabsToSpaces } from "../lib/format";
 import { pickCodeFile } from "../lib/tauri";
-import { Btn, SelectBox } from "./ui";
+import { Btn, ConfirmDialog, IconBtn, SelectBox, Tooltip } from "./ui";
+import { CodeEditor, insertText } from "./CodeEditor";
+
+export const MAX_FILE = 500_000;
 
 export function EditorPanel() {
   const t = useT();
   const { code, language, fileName } = useApp((s) => s.design);
   const setDesign = useApp((s) => s.setDesign);
-  const detected = useMemo(() => (language === "auto" ? highlightCode(code, "auto").language : null), [code, language]);
+  const ta = useRef<HTMLTextAreaElement>(null);
+  const deferred = useDeferredValue(code);
+  const [askClear, setAskClear] = useState(false);
+  const detected = useMemo(() => (language === "auto" ? highlightCode(deferred, "auto").language : null), [deferred, language]);
   const detectedName = LANGUAGES.find((l) => l.id === detected)?.name ?? detected;
 
   const open = async () => {
     const f = await pickCodeFile();
-    if (f) setDesign({ code: f.text, fileName: f.name, language: languageFromFile(f.name) ?? "auto" });
+    if (f && f.text.length > MAX_FILE) { toast.warning(t("fileTooLarge")); return; }
+    if (f) setDesign({ code: tabsToSpaces(f.text), fileName: f.name, language: languageFromFile(f.name) ?? "auto" });
   };
+  const format = async () => {
+    const el = ta.current;
+    if (!el || !code.trim()) return;
+    const out = await formatCode(code, language);
+    if (out !== code) insertText(el, 0, el.value.length, out, (v) => setDesign({ code: v }));
+  };
+
+  useEffect(() => {
+    window.addEventListener("ci:open", open);
+    return () => window.removeEventListener("ci:open", open);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  });
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 p-4">
@@ -37,28 +58,28 @@ export function EditorPanel() {
       </div>
       {detectedName && <div className="-mt-1 animate-fadeIn text-xs text-on-surface-variant">{t("detected")}: <span className="font-medium text-primary">{detectedName}</span></div>}
 
-      <textarea
-        value={code} spellCheck={false} placeholder={t("codePlaceholder")} aria-label={t("code")}
-        onChange={(e) => setDesign({ code: e.target.value })}
-        onKeyDown={(e) => {
-          if (e.key !== "Tab") return;
-          e.preventDefault();
-          const el = e.currentTarget, a = el.selectionStart, b = el.selectionEnd;
-          setDesign({ code: code.slice(0, a) + "  " + code.slice(b) });
-          requestAnimationFrame(() => { el.selectionStart = el.selectionEnd = a + 2; });
-        }}
-        className="min-h-[220px] w-full flex-1 resize-none rounded-m3 border border-outline-variant bg-surface-low p-3 font-mono text-[13px] leading-relaxed text-on-surface transition-colors placeholder:text-on-surface-variant focus:border-primary"
-        style={{ tabSize: 2, whiteSpace: "pre", overflow: "auto" }}
-      />
+      <CodeEditor taRef={ta} onFormat={format} />
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Btn variant="tonal" onClick={open} icon={<FileUp size={18} />}>{t("openFile")}</Btn>
-        <Btn variant="text" onClick={() => setDesign({ code: SAMPLE, fileName: "debounce.ts", language: "auto" })} icon={<Sparkles size={18} />}>{t("sample")}</Btn>
-        <Btn variant="text" onClick={() => setDesign({ code: "" })} icon={<Trash2 size={18} />} disabled={!code}>{t("clear")}</Btn>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <Btn variant="tonal" onClick={open} className="!px-4" icon={<FileUp size={18} />}>{t("openFile")}</Btn>
+        <Tooltip label={t("formatHint")} hint="Shift+Alt+F">
+          <Btn variant="text" onClick={format} className="!px-3" icon={<WandSparkles size={18} />} disabled={!code.trim()}>{t("formatCode")}</Btn>
+        </Tooltip>
+        <IconBtn label={t("sample")} onClick={() => setDesign({ code: SAMPLE, fileName: "debounce.ts", language: "auto" })}><Sparkles size={20} /></IconBtn>
+        <IconBtn label={t("clear")} onClick={() => setAskClear(true)} disabled={!code}><Trash2 size={20} /></IconBtn>
         <span className="ml-auto text-xs tabular-nums text-on-surface-variant">
           {code ? code.split("\n").length : 0} {t("lines")} · {code.length} {t("chars")}
         </span>
       </div>
+
+      {askClear && (
+        <ConfirmDialog
+          title={t("clearTitle")} message={t("clearMsg")} icon={<Trash2 size={26} />}
+          confirmLabel={t("clear")} cancelLabel={t("cancel")} confirmIcon={<Trash2 size={18} />}
+          onCancel={() => setAskClear(false)}
+          onConfirm={() => { setDesign({ code: "" }); setAskClear(false); }}
+        />
+      )}
     </div>
   );
 }

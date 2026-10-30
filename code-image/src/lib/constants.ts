@@ -71,6 +71,26 @@ export const FONTS: { id: string; label: string; family: string }[] = [
 
 export const MONO_FALLBACK = 'ui-monospace, "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace';
 
+export const DEFAULT_SEED = "#E91E63";
+
+export const UI_FONTS: { id: string; label: string; family: string }[] = [
+  { id: "system", label: "System", family: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' },
+  { id: "google-sans-flex", label: "Google Sans Flex", family: '"Google Sans Flex Variable", system-ui, sans-serif' },
+  { id: "roboto-flex", label: "Roboto Flex", family: '"Roboto Flex Variable", system-ui, sans-serif' },
+  { id: "roboto", label: "Roboto", family: 'Roboto, system-ui, sans-serif' },
+  { id: "arial", label: "Arial", family: 'Arial, "Helvetica Neue", Helvetica, sans-serif' },
+  { id: "inter", label: "Inter", family: '"Inter Variable", system-ui, sans-serif' },
+  { id: "be-vietnam-pro", label: "Be Vietnam Pro", family: '"Be Vietnam Pro", system-ui, sans-serif' },
+];
+
+/** Built-in style presets (partial design overrides). */
+export const BUILTIN_PRESETS: { id: string; name: string; patch: Record<string, string | number | boolean> }[] = [
+  { id: "x", name: "X / Twitter", patch: { ratio: "16:9", fit: true, padding: 56, scale: 2 } },
+  { id: "linkedin", name: "LinkedIn", patch: { ratio: "2:1", fit: true, padding: 48, scale: 2 } },
+  { id: "instagram", name: "Instagram", patch: { ratio: "4:5", fit: true, fontSize: 17, padding: 56, scale: 2 } },
+  { id: "readme", name: "README", patch: { ratio: "auto", chrome: "none", padding: 24, shadow: false, bgType: "transparent", scale: 2 } },
+];
+
 export const M3_SEEDS = [
   "#F44336", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5", "#2196F3",
   "#03A9F4", "#00BCD4", "#009688", "#4CAF50", "#8BC34A", "#CDDC39",
@@ -105,5 +125,14 @@ export const LANGUAGES: Lang_[] = [
   { id: "markdown", name: "Markdown", exts: ["md", "markdown"] },
   { id: "dockerfile", name: "Dockerfile", exts: ["dockerfile"] },
   { id: "graphql", name: "GraphQL", exts: ["graphql", "gql"] },
+  { id: "diff", name: "Diff / Patch", exts: ["diff", "patch"] },
+  { id: "lua", name: "Lua", exts: ["lua"] },
+  { id: "r", name: "R", exts: ["r"] },
+  { id: "scala", name: "Scala", exts: ["scala"] },
+  { id: "elixir", name: "Elixir", exts: ["ex", "exs"] },
+  { id: "haskell", name: "Haskell", exts: ["hs"] },
+  { id: "perl", name: "Perl", exts: ["pl", "pm"] },
+  { id: "nginx", name: "Nginx", exts: ["conf"] },
+  { id: "latex", name: "LaTeX", exts: ["tex"] },
   { id: "plaintext", name: "Plain text", exts: ["txt", "log"] },
 ];

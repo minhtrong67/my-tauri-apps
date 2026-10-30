@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
-import { Check, ChevronDown } from "lucide-react";
+import { ArrowUp, Check, ChevronDown, X } from "lucide-react";
 
 export const cx = (...a: (string | false | null | undefined)[]) => a.filter(Boolean).join(" ");
 
@@ -18,12 +18,13 @@ export function useRipple() {
   };
 }
 
-type Variant = "filled" | "tonal" | "outlined" | "text";
+type Variant = "filled" | "tonal" | "outlined" | "text" | "danger";
 const variants: Record<Variant, string> = {
   filled: "bg-primary text-on-primary shadow-e1 hover:shadow-e2",
   tonal: "bg-secondary-container text-on-secondary-container hover:shadow-e1",
   outlined: "border border-outline text-primary hover:bg-primary/10",
   text: "text-primary hover:bg-primary/10",
+  danger: "bg-error text-on-error shadow-e1 hover:shadow-e2",
 };
 
 interface BtnProps extends ButtonHTMLAttributes<HTMLButtonElement> { variant?: Variant; icon?: ReactNode }
@@ -35,7 +36,8 @@ export function Btn({ variant = "tonal", icon, children, className, ...p }: BtnP
       onPointerDown={(e) => { ripple(e); p.onPointerDown?.(e); }}
       className={cx(
         "relative inline-flex h-10 shrink-0 items-center justify-center gap-2 overflow-hidden rounded-full px-5 text-sm font-medium",
-        "transition-all duration-200 active:scale-[.97] disabled:pointer-events-none disabled:opacity-50",
+        "transition-all duration-300 ease-spring active:scale-[.96] active:rounded-2xl disabled:pointer-events-none disabled:opacity-50",
+        (variant === "filled" || variant === "danger") && "shine",
         variants[variant], className
       )}
     >
@@ -44,17 +46,58 @@ export function Btn({ variant = "tonal", icon, children, className, ...p }: BtnP
   );
 }
 
-export function IconBtn({ children, className, label, ...p }: ButtonHTMLAttributes<HTMLButtonElement> & { label: string }) {
+export function IconBtn({ children, className, label, hint, ...p }: ButtonHTMLAttributes<HTMLButtonElement> & { label: string; hint?: string }) {
   const ripple = useRipple();
   return (
-    <button
-      {...p} title={label} aria-label={label}
-      onPointerDown={(e) => { ripple(e); p.onPointerDown?.(e); }}
-      className={cx(
-        "relative grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full text-on-surface-variant",
-        "transition-all duration-200 hover:bg-on-surface/10 active:scale-90 disabled:opacity-50", className
-      )}
-    >{children}</button>
+    <Tooltip label={label} hint={hint}>
+      <button
+        {...p} aria-label={label}
+        onPointerDown={(e) => { ripple(e); p.onPointerDown?.(e); }}
+        className={cx(
+          "relative grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full text-on-surface-variant",
+          "transition-all duration-300 ease-spring hover:bg-on-surface/10 active:scale-90 active:rounded-xl disabled:opacity-50", className
+        )}
+      >{children}</button>
+    </Tooltip>
+  );
+}
+
+/** Custom tooltip: themed, delayed, flips above/below and shows an optional shortcut hint. */
+export function Tooltip({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const timer = useRef<number>();
+  const [pos, setPos] = useState<{ x: number; y: number; up: boolean } | null>(null);
+  const show = () => {
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => {
+      const r = ref.current?.getBoundingClientRect();
+      if (!r) return;
+      const up = r.bottom + 64 > window.innerHeight;
+      setPos({ x: Math.min(Math.max(r.left + r.width / 2, 90), window.innerWidth - 90), y: up ? r.top - 8 : r.bottom + 8, up });
+    }, 380);
+  };
+  const hide = () => { window.clearTimeout(timer.current); setPos(null); };
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+  useEffect(() => {
+    if (!pos) return;
+    window.addEventListener("scroll", hide, true);
+    return () => window.removeEventListener("scroll", hide, true);
+  }, [pos]);
+  return (
+    <span
+      ref={ref} className="inline-flex"
+      onPointerEnter={show} onPointerLeave={hide} onPointerDown={hide}
+      onFocus={(e) => { if ((e.target as HTMLElement).matches(":focus-visible")) show(); }} onBlur={hide}
+    >
+      {children}
+      {pos && createPortal(
+        <div className="pointer-events-none fixed z-[80]" style={{ left: pos.x, top: pos.y, transform: `translate(-50%, ${pos.up ? "-100%" : "0"})` }}>
+          <div role="tooltip" className="flex animate-pop items-center gap-2 whitespace-nowrap rounded-lg bg-inverse-surface px-2.5 py-1.5 text-xs font-medium text-inverse-on-surface shadow-e2">
+            {label}
+            {hint && <kbd className="rounded bg-inverse-on-surface/20 px-1.5 py-0.5 font-sans text-[10px] tracking-wide">{hint}</kbd>}
+          </div>
+        </div>, document.body)}
+    </span>
   );
 }
 
@@ -73,22 +116,26 @@ export function Switch({ checked, onChange, label }: { checked: boolean; onChang
   );
 }
 
+/** Material 3 Expressive connected button group: the selected item morphs into a full pill. */
 export function Segmented<T extends string>({ value, onChange, options }: {
   value: T; onChange: (v: T) => void; options: { value: T; label: string; icon?: ReactNode }[];
 }) {
   return (
-    <div className="flex w-full overflow-hidden rounded-full border border-outline">
-      {options.map((o, i) => (
-        <button
-          key={o.value} onClick={() => onChange(o.value)}
-          className={cx("flex h-9 flex-1 items-center justify-center gap-1.5 px-2 text-xs font-medium transition-colors duration-200 sm:text-sm",
-            i > 0 && "border-l border-outline",
-            value === o.value ? "bg-secondary-container text-on-secondary-container" : "text-on-surface hover:bg-on-surface/8")}
-        >
-          {value === o.value ? <Check size={14} className="animate-fadeIn" /> : o.icon}
-          <span className="truncate">{o.label}</span>
-        </button>
-      ))}
+    <div role="radiogroup" className="flex w-full gap-0.5">
+      {options.map((o, i) => {
+        const on = value === o.value;
+        const edge = i === 0 ? "rounded-l-full rounded-r-lg" : i === options.length - 1 ? "rounded-r-full rounded-l-lg" : "rounded-lg";
+        return (
+          <button
+            key={o.value} role="radio" aria-checked={on} onClick={() => onChange(o.value)}
+            className={cx("flex h-10 min-w-0 flex-1 items-center justify-center gap-1 px-1.5 text-xs font-medium transition-all duration-300 ease-spring active:scale-95",
+              on ? "rounded-full bg-primary text-on-primary shadow-e1" : cx("bg-secondary-container/60 text-on-secondary-container hover:bg-secondary-container", edge))}
+          >
+            {on ? <Check size={14} strokeWidth={3} className="animate-pop" /> : o.icon}
+            <span className="truncate">{o.label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -97,7 +144,7 @@ export function Chip({ active, onClick, children }: { active: boolean; onClick: 
   return (
     <button
       onClick={onClick}
-      className={cx("h-8 rounded-lg border px-3 text-sm transition-all duration-200 active:scale-95",
+      className={cx("h-8 rounded-lg border px-3 text-sm transition-all duration-300 ease-spring active:scale-95 hover:rounded-xl",
         active ? "border-transparent bg-secondary-container text-on-secondary-container" : "border-outline text-on-surface-variant hover:bg-on-surface/8")}
     >{children}</button>
   );
@@ -222,15 +269,123 @@ export function ColorField({ value, onChange, label }: { value: string; onChange
 }
 
 export function Section({ icon, title, children, defaultOpen = true }: { icon: ReactNode; title: string; children: ReactNode; defaultOpen?: boolean }) {
-  const ref = useRef<HTMLDetailsElement>(null);
+  const [open, setOpen] = useState(defaultOpen);
+  const id = useId();
   return (
-    <details ref={ref} open={defaultOpen} className="group rounded-m3l bg-surface-low">
-      <summary className="flex h-12 cursor-pointer list-none items-center gap-3 rounded-m3l px-4 text-sm font-medium text-on-surface transition-colors hover:bg-on-surface/5 [&::-webkit-details-marker]:hidden">
-        <span className="text-primary">{icon}</span>
-        <span className="flex-1">{title}</span>
-        <ChevronDown size={18} className="text-on-surface-variant transition-transform duration-300 group-open:rotate-180" />
-      </summary>
-      <div className="animate-fadeIn space-y-4 px-4 pb-4 pt-1">{children}</div>
-    </details>
+    <section className="rounded-m3xl bg-surface-low">
+      <button
+        aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}
+        className="flex h-14 w-full items-center gap-3 rounded-m3xl px-4 text-sm font-medium text-on-surface transition-colors hover:bg-on-surface/5"
+      >
+        <span className="grid h-8 w-8 place-items-center rounded-full bg-primary-container text-on-primary-container">{icon}</span>
+        <span className="flex-1 text-left">{title}</span>
+        <ChevronDown size={18} className={cx("text-on-surface-variant transition-transform duration-500 ease-spring", open && "rotate-180")} />
+      </button>
+      <div id={id} className="acc" data-open={open} aria-hidden={!open} {...(open ? {} : ({ inert: "" } as object))}>
+        <div><div className="space-y-4 px-4 pb-4 pt-1">{children}</div></div>
+      </div>
+    </section>
+  );
+}
+
+/** Modal shell: scrim, spring-in, Esc to close, focus trap and focus restore. */
+export function Modal({ onClose, children, className, label }: { onClose: () => void; children: ReactNode; className?: string; label: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const close = useRef(onClose);
+  close.current = onClose;
+  useEffect(() => {
+    const el = ref.current!;
+    const prev = document.activeElement as HTMLElement | null;
+    const items = () => [...el.querySelectorAll<HTMLElement>('button:not([disabled]),input,textarea,[tabindex]:not([tabindex="-1"])')].filter((n) => n.offsetParent !== null);
+    (el.querySelector<HTMLElement>("[data-autofocus]") ?? items()[0])?.focus();
+    const key = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { e.stopPropagation(); close.current(); return; }
+      if (e.key !== "Tab") return;
+      const l = items();
+      if (!l.length) return;
+      const a = l[0], b = l[l.length - 1];
+      if (e.shiftKey && document.activeElement === a) { e.preventDefault(); b.focus(); }
+      else if (!e.shiftKey && document.activeElement === b) { e.preventDefault(); a.focus(); }
+    };
+    el.addEventListener("keydown", key);
+    return () => { el.removeEventListener("keydown", key); prev?.focus?.(); };
+  }, []);
+  return createPortal(
+    <div className="fixed inset-0 z-50 grid animate-fadeIn place-items-center bg-black/45 p-3 backdrop-blur-[3px]"
+      onPointerDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div ref={ref} role="dialog" aria-modal="true" aria-label={label}
+        className={cx("animate-pop overflow-hidden rounded-m3xxl bg-surface-container shadow-e3 ring-1 ring-outline-variant/60", className)}>
+        {children}
+      </div>
+    </div>, document.body);
+}
+
+/** Confirm dialog: both actions carry a label, an icon and a distinct colour. */
+export function ConfirmDialog({ title, message, icon, confirmLabel, cancelLabel, confirmIcon, tone = "danger", onConfirm, onCancel }: {
+  title: string; message: string; icon: ReactNode; confirmLabel: string; cancelLabel: string; confirmIcon: ReactNode;
+  tone?: "danger" | "primary"; onConfirm: () => void; onCancel: () => void;
+}) {
+  return (
+    <Modal onClose={onCancel} label={title} className="w-full max-w-sm p-6">
+      <div className={cx("mb-4 grid h-14 w-14 place-items-center rounded-[40%_60%_55%_45%/55%_45%_60%_40%]", tone === "danger" ? "bg-error-container text-on-error-container" : "bg-primary-container text-on-primary-container")}>{icon}</div>
+      <h2 className="text-xl font-medium text-on-surface">{title}</h2>
+      <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">{message}</p>
+      <div className="mt-6 flex justify-end gap-2">
+        <Btn variant="tonal" icon={<X size={18} />} onClick={onCancel}>{cancelLabel}</Btn>
+        <Btn variant={tone === "danger" ? "danger" : "filled"} icon={confirmIcon} onClick={onConfirm} data-autofocus>{confirmLabel}</Btn>
+      </div>
+    </Modal>
+  );
+}
+
+/** Small dialog with a single text input. */
+export function PromptDialog({ title, label, placeholder, confirmLabel, cancelLabel, icon, confirmIcon, onSubmit, onCancel }: {
+  title: string; label: string; placeholder: string; confirmLabel: string; cancelLabel: string; icon: ReactNode; confirmIcon: ReactNode;
+  onSubmit: (v: string) => void; onCancel: () => void;
+}) {
+  const [v, setV] = useState("");
+  const ok = v.trim().length > 0;
+  return (
+    <Modal onClose={onCancel} label={title} className="w-full max-w-sm p-6">
+      <div className="mb-4 grid h-14 w-14 place-items-center rounded-[55%_45%_40%_60%/45%_55%_45%_55%] bg-primary-container text-on-primary-container">{icon}</div>
+      <h2 className="text-xl font-medium text-on-surface">{title}</h2>
+      <label className="mt-4 block text-xs text-on-surface-variant">{label}</label>
+      <input
+        data-autofocus value={v} maxLength={32} placeholder={placeholder}
+        onChange={(e) => setV(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && ok) onSubmit(v.trim()); }}
+        className="mt-1 h-12 w-full rounded-xl border border-outline bg-transparent px-4 text-sm text-on-surface focus:border-primary"
+      />
+      <div className="mt-6 flex justify-end gap-2">
+        <Btn variant="tonal" icon={<X size={18} />} onClick={onCancel}>{cancelLabel}</Btn>
+        <Btn variant="filled" icon={confirmIcon} disabled={!ok} onClick={() => onSubmit(v.trim())}>{confirmLabel}</Btn>
+      </div>
+    </Modal>
+  );
+}
+
+/** Scrollable area with a "scroll to top" FAB that appears once the content is scrolled. */
+export function ScrollArea({ className, innerClassName, children, label, scrollRef, onScroll }: {
+  className?: string; innerClassName?: string; children: ReactNode; label: string;
+  scrollRef?: RefObject<HTMLDivElement>; onScroll?: (el: HTMLDivElement) => void;
+}) {
+  const own = useRef<HTMLDivElement>(null);
+  const ref = scrollRef ?? own;
+  const [show, setShow] = useState(false);
+  return (
+    <div className={cx("relative min-h-0", className)}>
+      <div ref={ref} className={cx("h-full overflow-y-auto overscroll-contain", innerClassName)}
+        onScroll={(e) => { const el = e.currentTarget; setShow(el.scrollTop > 240); onScroll?.(el); }}>
+        {children}
+      </div>
+      <div className={cx("absolute bottom-4 right-4 transition-all duration-500 ease-spring", show ? "scale-100 opacity-100" : "pointer-events-none scale-50 opacity-0")}>
+        <Tooltip label={label}>
+          <button
+            aria-label={label} tabIndex={show ? 0 : -1}
+            onClick={() => ref.current?.scrollTo({ top: 0, behavior: "smooth" })}
+            className="grid h-12 w-12 place-items-center rounded-2xl bg-primary-container text-on-primary-container shadow-e3 transition-all duration-300 ease-spring hover:rounded-full active:scale-90"
+          ><ArrowUp size={22} /></button>
+        </Tooltip>
+      </div>
+    </div>
   );
 }

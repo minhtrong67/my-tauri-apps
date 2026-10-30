@@ -2,7 +2,7 @@ import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import { downloadDir, join } from "@tauri-apps/api/path";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { readTextFile, writeFile } from "@tauri-apps/plugin-fs";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import { openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
 import type { WindowMode } from "./store";
 import { LANGUAGES } from "./constants";
 
@@ -12,6 +12,7 @@ export const isTauri = () => typeof window !== "undefined" && "__TAURI_INTERNALS
 export async function applyStartup(mode: WindowMode, size: { w: number; h: number } | null) {
   if (!isTauri()) return;
   const w = getCurrentWindow();
+  const safety = window.setTimeout(() => { w.show().catch(() => {}); }, 3000); // never leave the window hidden
   try {
     if (mode === "maximized") await w.maximize();
     else if (size && size.w >= 640 && size.h >= 480) {
@@ -19,6 +20,7 @@ export async function applyStartup(mode: WindowMode, size: { w: number; h: numbe
       await w.center();
     }
   } finally {
+    window.clearTimeout(safety);
     await w.show();
     await w.setFocus();
   }
@@ -40,7 +42,7 @@ export async function watchWindowSize(cb: (s: { w: number; h: number }) => void)
   return () => { window.clearTimeout(timer); un(); };
 }
 
-export async function saveBlob(blob: Blob, name: string, ask: boolean): Promise<string | null> {
+export async function saveBlob(blob: Blob, name: string, ask: boolean, dir: string | null = null): Promise<string | null> {
   if (!isTauri()) {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -50,7 +52,7 @@ export async function saveBlob(blob: Blob, name: string, ask: boolean): Promise<
     return name;
   }
   const ext = name.split(".").pop() ?? "png";
-  const base = await downloadDir();
+  const base = dir || (await downloadDir());
   let path: string | null;
   if (ask) {
     path = await save({ defaultPath: await join(base, name), filters: [{ name: ext.toUpperCase(), extensions: [ext] }] });
@@ -76,7 +78,33 @@ export async function pickCodeFile(): Promise<{ name: string; text: string } | n
   return { name: path.split(/[\\/]/).pop() ?? "code.txt", text };
 }
 
+/** Let the user pick the default save folder. */
+export async function pickFolder(): Promise<string | null> {
+  if (!isTauri()) return null;
+  const p = await open({ directory: true, multiple: false });
+  return typeof p === "string" ? p : null;
+}
+
+export async function revealFile(path: string) {
+  if (isTauri()) await revealItemInDir(path);
+}
+
+export async function defaultSaveDir(): Promise<string> {
+  return isTauri() ? downloadDir() : "Downloads";
+}
+
 export async function openLink(url: string) {
   if (isTauri()) await openUrl(url);
   else window.open(url, "_blank", "noopener");
+}
+
+/** Intercept the window close button. `onRequest` is called instead of closing; call `closeApp()` to really quit. */
+export async function watchCloseRequest(onRequest: () => void) {
+  if (!isTauri()) return () => {};
+  return getCurrentWindow().onCloseRequested((e) => { e.preventDefault(); onRequest(); });
+}
+
+export async function closeApp() {
+  if (isTauri()) await getCurrentWindow().destroy();
+  else window.close();
 }

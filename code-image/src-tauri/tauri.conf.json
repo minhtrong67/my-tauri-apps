@@ -23,16 +23,27 @@
         "dragDropEnabled": false
       }
     ],
-    "security": { "csp": null }
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost data: blob:; object-src 'none'; base-uri 'self'",
+      "devCsp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' http://127.0.0.1:1420 ws://127.0.0.1:1420; img-src 'self' data: blob:; font-src 'self' data: http://127.0.0.1:1420; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:1420 ws://127.0.0.1:1420 data: blob:"
+    }
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis"],
+    "targets": [
+      "nsis"
+    ],
     "publisher": "minhtrong67",
     "copyright": "© 2026 minhtrong67 · MIT License",
     "shortDescription": "Turn your code into beautiful images",
     "category": "DeveloperTool",
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
     "windows": {
       "nsis": {
         "installerIcon": "icons/icon.ico",
@@ -40,7 +51,10 @@
         "sidebarImage": "icons/nsis-sidebar.bmp",
         "installMode": "currentUser",
         "displayLanguageSelector": true,
-        "languages": ["English", "Vietnamese"]
+        "languages": [
+          "English",
+          "Vietnamese"
+        ]
       }
     }
   }

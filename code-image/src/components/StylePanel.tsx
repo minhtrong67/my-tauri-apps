@@ -1,8 +1,59 @@
-import { AppWindow, Check, Droplet, Highlighter, ImageDown, Layers, Palette, RotateCcw, Stamp, Type } from "lucide-react";
+import { useState } from "react";
+import { AppWindow, Bookmark, BookmarkPlus, Check, Droplet, Highlighter, ImageDown, Layers, Palette, RotateCcw, Stamp, Trash2, Type, X } from "lucide-react";
 import { useApp, type Design } from "../lib/store";
 import { useT } from "../lib/i18n";
-import { CODE_THEMES, FONTS, GRADIENTS, RATIOS } from "../lib/constants";
-import { Btn, Chip, ColorField, Field, Section, Segmented, SelectBox, Slider, Switch, cx } from "./ui";
+import { BUILTIN_PRESETS, CODE_THEMES, FONTS, GRADIENTS, RATIOS } from "../lib/constants";
+import { Btn, Chip, ColorField, ConfirmDialog, Field, PromptDialog, Section, Segmented, SelectBox, Slider, Switch, Tooltip, cx } from "./ui";
+
+function Presets() {
+  const t = useT();
+  const presets = useApp((s) => s.presets);
+  const savePreset = useApp((s) => s.savePreset);
+  const deletePreset = useApp((s) => s.deletePreset);
+  const setDesign = useApp((s) => s.setDesign);
+  const [naming, setNaming] = useState(false);
+  const [del, setDel] = useState<string | null>(null);
+  return (
+    <Section icon={<Bookmark size={20} />} title={t("presets")} defaultOpen={false}>
+      <Field label={t("builtin")}>
+        <div className="flex flex-wrap gap-2">
+          {BUILTIN_PRESETS.map((p) => (
+            <Chip key={p.id} active={false} onClick={() => { setDesign(p.patch as Partial<Design>); }}>{p.name}</Chip>
+          ))}
+        </div>
+      </Field>
+      {presets.length > 0 && (
+        <Field label={t("yours")}>
+          <div className="flex flex-wrap gap-2">
+            {presets.map((p) => (
+              <span key={p.id} className="inline-flex h-8 animate-pop items-center overflow-hidden rounded-lg bg-secondary-container text-sm text-on-secondary-container">
+                <button className="h-full pl-3 pr-2 hover:bg-on-surface/8" onClick={() => { setDesign(p.design); }}>{p.name}</button>
+                <Tooltip label={t("deletePreset")}>
+                  <button aria-label={t("deletePreset")} onClick={() => setDel(p.id)} className="grid h-full w-7 place-items-center hover:bg-error/15 hover:text-error"><X size={14} /></button>
+                </Tooltip>
+              </span>
+            ))}
+          </div>
+        </Field>
+      )}
+      <Btn variant="tonal" className="w-full" icon={<BookmarkPlus size={18} />} onClick={() => setNaming(true)}>{t("savePreset")}</Btn>
+      {naming && (
+        <PromptDialog
+          title={t("savePreset")} label={t("presetName")} placeholder={t("presetNamePh")} icon={<BookmarkPlus size={26} />}
+          confirmLabel={t("save")} cancelLabel={t("cancel")} confirmIcon={<Check size={18} />}
+          onCancel={() => setNaming(false)} onSubmit={(v) => { savePreset(v); setNaming(false); }}
+        />
+      )}
+      {del && (
+        <ConfirmDialog
+          title={t("deletePresetTitle")} message={t("deletePresetMsg")} icon={<Trash2 size={26} />}
+          confirmLabel={t("delete")} cancelLabel={t("cancel")} confirmIcon={<Trash2 size={18} />}
+          onCancel={() => setDel(null)} onConfirm={() => { deletePreset(del); setDel(null); }}
+        />
+      )}
+    </Section>
+  );
+}
 
 export function StylePanel() {
   const t = useT();
@@ -11,9 +62,12 @@ export function StylePanel() {
   const reset = useApp((s) => s.resetDesign);
   const up = (p: Partial<Design>) => setDesign(p);
   const ratio = RATIOS.find((r) => r.id === d.ratio);
+  const [askReset, setAskReset] = useState(false);
 
   return (
     <div className="space-y-3 p-4">
+      <Presets />
+
       <Section icon={<Palette size={20} />} title={t("codeTheme")}>
         <div className="grid grid-cols-2 gap-2">
           {CODE_THEMES.map((th) => {
@@ -25,8 +79,12 @@ export function StylePanel() {
                   on ? "border-primary" : "border-transparent")}
                 style={{ background: th.bg }}
               >
-                <div className="mb-1.5 flex gap-1">
-                  {[th.keyword, th.string, th.fn, th.number].map((c, i) => <span key={i} className="h-1.5 flex-1 rounded-full" style={{ background: c }} />)}
+                <div className="mb-2 space-y-1">
+                  {[[[th.keyword, 18], [th.fn, 30]], [[th.string, 38], [th.number, 14]], [[th.comment, 52]]].map((row, r) => (
+                    <div key={r} className="flex gap-1" style={{ paddingLeft: r === 1 ? 8 : 0 }}>
+                      {row.map(([c, w], i) => <span key={i} className="h-1.5 rounded-full" style={{ background: c as string, width: w as number }} />)}
+                    </div>
+                  ))}
                 </div>
                 <div className="truncate text-xs font-medium" style={{ color: th.fg }}>{th.name}</div>
                 {on && <span className="absolute right-1.5 top-1.5 grid h-4 w-4 animate-fadeIn place-items-center rounded-full bg-primary text-on-primary"><Check size={11} strokeWidth={3} /></span>}
@@ -46,9 +104,11 @@ export function StylePanel() {
               {GRADIENTS.map((g) => {
                 const on = g.g1 === d.g1 && g.g2 === d.g2;
                 return (
-                  <button key={g.name} title={g.name} aria-label={g.name} onClick={() => up({ g1: g.g1, g2: g.g2, angle: g.angle })}
-                    className={cx("aspect-square rounded-full ring-offset-2 ring-offset-surface-low transition-all duration-200 hover:scale-110 active:scale-95", on && "ring-2 ring-primary")}
-                    style={{ background: `linear-gradient(${g.angle}deg, ${g.g1}, ${g.g2})` }} />
+                  <Tooltip key={g.name} label={g.name}>
+                    <button aria-label={g.name} onClick={() => up({ g1: g.g1, g2: g.g2, angle: g.angle })}
+                      className={cx("aspect-square w-full transition-all duration-300 ease-spring hover:scale-110 active:scale-90", on ? "rounded-xl ring-2 ring-primary ring-offset-2 ring-offset-surface-low" : "rounded-full")}
+                      style={{ background: `linear-gradient(${g.angle}deg, ${g.g1}, ${g.g2})` }} />
+                  </Tooltip>
                 );
               })}
             </div>
@@ -88,6 +148,8 @@ export function StylePanel() {
             className="h-10 w-full rounded-lg border border-outline bg-transparent px-3 text-sm text-on-surface focus:border-primary"
           />
         </Field>
+        <Field label={t("focusMode")} hint={d.highlight.trim() ? t("focusHint") : t("highlightFirst")} right={<Switch label={t("focusMode")} checked={d.focus} onChange={(v) => up({ focus: v })} />} />
+        <Field label={t("ligatures")} right={<Switch label={t("ligatures")} checked={d.ligatures} onChange={(v) => up({ ligatures: v })} />} />
       </Section>
 
       <Section icon={<AppWindow size={20} />} title={t("windowSection")}>
@@ -131,7 +193,14 @@ export function StylePanel() {
         </Field>
       </Section>
 
-      <Btn variant="outlined" className="w-full" onClick={reset} icon={<RotateCcw size={18} />}>{t("resetDesign")}</Btn>
+      <Btn variant="outlined" className="w-full" onClick={() => setAskReset(true)} icon={<RotateCcw size={18} />}>{t("resetDesign")}</Btn>
+      {askReset && (
+        <ConfirmDialog
+          title={t("resetDesignTitle")} message={t("resetDesignMsg")} icon={<RotateCcw size={26} />}
+          confirmLabel={t("reset")} cancelLabel={t("cancel")} confirmIcon={<RotateCcw size={18} />} tone="primary"
+          onCancel={() => setAskReset(false)} onConfirm={() => { reset(); setAskReset(false); }}
+        />
+      )}
     </div>
   );
 }

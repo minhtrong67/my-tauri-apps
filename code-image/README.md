@@ -1,16 +1,18 @@
 <div align="center">
 
-<img src="src-tauri/icons/128x128@2x.png" width="96" alt="Code Image logo" />
+<img src="src-tauri/icons/128x128@2x.png" width="112" alt="Code Image logo" />
 
 # Code Image
 
-**Turn your code into beautiful, shareable images.**
+**Biến code của bạn thành những hình ảnh đẹp mắt, sẵn sàng chia sẻ.**
+*Turn your code into beautiful, shareable images.*
 
-A free and open-source desktop app built with Tauri, React and Material Design 3.
+Ứng dụng desktop miễn phí, mã nguồn mở — xây dựng với Tauri, React và Material 3 Expressive.
 
 ![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 </div>
@@ -19,108 +21,128 @@ A free and open-source desktop app built with Tauri, React and Material Design 3
 
 ## Giới thiệu
 
-**Code Image** biến đoạn code của bạn thành một hình ảnh đẹp mắt để chia sẻ trên mạng xã hội, bài viết, slide hay tài liệu.
-Dán code, chọn theme, tinh chỉnh giao diện rồi xuất ảnh PNG sắc nét chỉ với một cú nhấp. Mọi thứ chạy hoàn toàn trên máy của bạn, không cần đăng ký hay tải code lên đâu cả.
+**Code Image** biến đoạn code thành một bức ảnh đẹp để chia sẻ lên mạng xã hội, bài viết, slide hay tài liệu.
+Dán code, chọn theme, tuỳ chỉnh nền và khung cửa sổ rồi xuất ảnh PNG / JPG / SVG sắc nét chỉ với một cú nhấp.
+Mọi thứ chạy hoàn toàn trên máy của bạn: không cần tài khoản, không tải code lên đâu cả.
 
-> **Introduction:** paste your code, pick a theme and export a crisp image in one click. Everything runs locally on your computer.
+> **In short:** paste code → pick a theme → export a crisp image. 100% local and private.
+
+Giao diện theo phong cách **Material 3 Expressive (2026)**: bo góc hữu cơ, hình khối "cookie", chuyển động spring và bảng màu động sinh ra từ một màu chủ đạo.
 
 ## Screenshot
 
 | | |
 |---|---|
-| ![Light](screenshots/image01.png) | ![Dark](screenshots/image02.png) |
-| ![Settings](screenshots/image03.png) | ![Mobile](screenshots/image04.png) |
+| ![Giao diện chính (sáng)](screenshots/image01.png) | ![Chế độ tối, dòng tập trung, toast](screenshots/image02.png) |
+| **Giao diện chính** — soạn thảo, xem trước trực tiếp và bảng tuỳ chỉnh | **Chế độ tối** — làm nổi bật dòng, thông báo thành công |
+| ![Cài đặt](screenshots/image03.png) | ![Giao diện responsive](screenshots/image04.png) |
+| **Cài đặt** — giao diện, màu, font, thư mục lưu, tác giả | **Responsive** — cửa sổ hẹp, preset |
 
 ## Tính năng
 
-**Code**
-- Nhận diện ngôn ngữ tự động, hỗ trợ JavaScript, TypeScript, Python, HTML, CSS, SCSS, SQL, JSON, Bash, PowerShell, Java, Kotlin, Swift, C, C++, C#, Go, Rust, PHP, Ruby, Dart, YAML, TOML, Markdown, Dockerfile, GraphQL…
-- Mở tệp từ máy hoặc kéo thả tệp vào cửa sổ.
+**Tạo ảnh**
+- 14 theme code (Dracula, Tokyo Night, Nord, Catppuccin, GitHub, Monokai, Gruvbox…) có xem trước thu nhỏ ngay trong bảng chọn.
+- Nền gradient (12 mẫu + màu/góc tuỳ chỉnh), màu đặc hoặc trong suốt.
+- Tỉ lệ cho mạng xã hội: Auto, 16:9, 4:3, 1:1, 3:2, 2:1, 21:9, 4:5, 9:16 — có tự động thu vừa khung.
+- 10 font code, bật/tắt ligature, cỡ chữ, padding, bo góc, đổ bóng, số dòng, watermark.
+- Khung cửa sổ macOS / Windows / không khung, hiển thị tên tệp.
+- Tự nhận diện hơn 35 ngôn ngữ; hỗ trợ **diff** (+/− xanh đỏ), **đánh dấu dòng** và **chế độ tập trung** (làm mờ dòng còn lại).
+- **Preset**: có sẵn X/Twitter, LinkedIn, Instagram, README; lưu và dùng lại phong cách riêng.
 
-**Giao diện ảnh**
-- 14 theme dành cho lập trình viên: Dracula, Tokyo Night, One Dark, Nord, Catppuccin (Mocha/Latte), Monokai, GitHub (Dark/Light), Solarized Dark, Gruvbox, Night Owl, Material Palenight, Rosé Pine.
-- Nền chuyển màu (12 mẫu + tuỳ chỉnh màu và góc), nền một màu hoặc trong suốt.
-- Tỉ lệ ảnh: Auto, 16:9, 4:3, 1:1, 3:2, 2:1, 21:9, 4:5, 9:16, kèm chế độ "Vừa khít với ảnh".
-- 10 font code (JetBrains Mono, Fira Code, Source Code Pro, Cascadia Code…), cỡ chữ, padding, độ bo góc.
-- Số dòng, đánh dấu dòng (`2, 4-6`), khung cửa sổ macOS / Windows / không khung, đổ bóng, tên tệp.
-- Watermark tuỳ chỉnh (nội dung, vị trí, độ mờ).
+**Trình soạn thảo**
+- Editor thật sự: tô màu cú pháp theo theme đang chọn, số dòng, làm nổi dòng hiện tại, tự thụt dòng khi xuống dòng, `Tab` / `Shift+Tab` thụt/lùi, thanh trạng thái `Ln, Col`.
+- **Tự định dạng khi dán** bằng Prettier (JS/TS, JSON, CSS/SCSS, HTML, Markdown, YAML) — ngôn ngữ khác sẽ được dọn dẹp và căn lề. Có nút **Định dạng code** (`Shift+Alt+F`); tắt/bật trong Cài đặt.
+- Ẩn/hiện **khung code** (`Ctrl+B`) và **bảng tuỳ chỉnh** (`Ctrl+Alt+B`) để xem ảnh rõ hơn ở khu vực chính.
+- Nhắc **lưu / không lưu / huỷ** khi đóng app lúc còn thay đổi chưa xuất ảnh.
 
 **Xuất ảnh**
-- PNG, JPG, SVG ở độ phân giải 1×–4×, lưu bằng hộp thoại hoặc vào thư mục Downloads, hoặc sao chép ảnh thẳng vào clipboard.
-- Phím tắt: `Ctrl+S` lưu, `Ctrl+Shift+C` sao chép.
+- PNG, JPG, SVG, độ phân giải 1×–4×; sao chép ảnh vào clipboard; **mở thư mục** ngay sau khi lưu.
+- Kéo thả hoặc mở tệp code (`Ctrl+O`), phím tắt `Ctrl+S` lưu, `Ctrl+Shift+C` sao chép, `Ctrl+,` mở cài đặt.
 
-**Ứng dụng**
-- Material Design 3: giao diện sáng / tối / theo hệ thống, 18 màu chủ đề và màu tuỳ chỉnh.
-- 3 cỡ chữ giao diện, tiếng Anh và tiếng Việt (tự nhận diện).
-- Tuỳ chọn khi mở app: ghi nhớ kích thước cửa sổ hoặc luôn phóng to tối đa.
-- Responsive, animation mượt, tôn trọng `prefers-reduced-motion`.
+**Cài đặt**
+- Giao diện sáng / tối / theo hệ thống; **18 màu chủ đề** Material (kèm chọn màu tuỳ ý).
+- Font giao diện: System, Google Sans Flex, Roboto Flex, Roboto, Arial, Inter, Be Vietnam Pro; cỡ chữ nhỏ / vừa / lớn.
+- Ngôn ngữ tiếng Việt / English; thư mục lưu tuỳ chỉnh; mở app ghi nhớ kích thước hoặc luôn phóng to tối đa.
 
-## Download
-
-Tải bản cài đặt Windows trong thư mục [`download`](download/), hoặc mở trang giới thiệu [`index.html`](index.html).
+**Trải nghiệm**
+- Tooltip tuỳ biến, toast 4 mức (info / success / warning / error) cho cả sáng và tối, dropdown tuỳ biến có cuộn, nút lên đầu trang, hộp thoại xác nhận có icon + màu rõ ràng.
+- Chỉ dùng toast cho việc thật sự cần (lưu/sao chép ảnh, lỗi, cảnh báo).
+- Hiệu năng: highlight dùng chung một lần cho editor và canvas, `useDeferredValue`, lưu cài đặt có debounce.
 
 ## Cài đặt
 
-Chạy file `Code Image_1.0.0_x64-setup.exe` và làm theo hướng dẫn. Gỡ cài đặt tại **Settings → Apps** của Windows.
+**Cách 1 — Dùng bản cài đặt (Windows 10/11, 64-bit)**
+
+1. Tải `Code Image_1.0.0_x64-setup.exe` trong thư mục [`download`](download/) (hoặc trang Releases).
+2. Chạy tệp cài đặt và làm theo hướng dẫn. Gỡ cài đặt qua *Settings → Apps*.
+
+**Cách 2 — Tự build từ mã nguồn:** xem phần [Development](#development) và [Build](#build).
 
 ## Tech stack
 
 | Thành phần | Công nghệ |
 |---|---|
 | Desktop shell | [Tauri 2](https://tauri.app) (Rust) |
-| UI | React 18, TypeScript, Vite |
-| Style | Tailwind CSS, Material Design 3 (`@material/material-color-utilities`) |
+| Giao diện | React 18 + TypeScript 5 |
+| Build tool | Vite 5 |
+| Style | Tailwind CSS 3 + Material 3 Expressive (`@material/material-color-utilities`) |
 | Icon | [Lucide](https://lucide.dev) |
-| Highlight | highlight.js |
+| Tô màu code | highlight.js |
 | Xuất ảnh | html-to-image |
-| State | Zustand |
+| State | Zustand (persist) |
+| Font | `@fontsource/*` (Google Sans Flex, Roboto Flex, Inter, Be Vietnam Pro, JetBrains Mono…) |
 
 ## Development
 
-Yêu cầu: [Node.js](https://nodejs.org) 18+, [Rust](https://www.rust-lang.org/tools/install) và [Tauri prerequisites](https://tauri.app/start/prerequisites/) (WebView2 + Visual Studio Build Tools trên Windows).
+Yêu cầu: [Node.js](https://nodejs.org) ≥ 18, [Rust](https://rustup.rs) và [các phụ thuộc của Tauri](https://tauri.app/start/prerequisites/).
 
 ```bash
-npm install
-npm run dev        # chạy app desktop (tauri dev)
+npm install     # cài đặt dependencies
+npm run dev     # chạy app desktop ở chế độ phát triển (Tauri + Vite)
 ```
 
-Chỉ chạy giao diện web để debug nhanh: `npm run web:dev` (mở http://127.0.0.1:1420).
+> Dự án nằm trong Cargo workspace chung: mọi project dùng chung thư mục `target` ở gốc workspace.
+> Chỉ muốn xem giao diện trên trình duyệt? Chạy `npm run web:dev`.
 
 ## Build
 
 ```bash
-npm run build      # tauri build → bộ cài NSIS
+npm run build   # đóng gói bản cài đặt
 ```
 
-Bộ cài nằm ở `target/release/bundle/nsis/` của workspace (copy vào thư mục `download/` để landing page tải về).
+Tệp cài đặt NSIS nằm ở `target/release/bundle/nsis/` (thư mục `target` của workspace). Đặt tệp `Code Image_1.0.0_x64-setup.exe` vào thư mục `download/` để nút **Download** trên landing page hoạt động.
 
 ## Cấu trúc project
 
 ```
 code-image/
-├── index.html            # Landing page (1 file)
-├── og-image.png          # Ảnh chia sẻ mạng xã hội
-├── download/             # Đặt file setup .exe vào đây
-├── screenshots/          # image01.png, image02.png, …
-├── src/                  # Giao diện React
-│   ├── components/       # AppBar, EditorPanel, StylePanel, Preview, CodeCanvas, SettingsDialog
-│   ├── lib/              # store, i18n, themes, highlight, export, Tauri helpers
-│   ├── index.html
-│   └── main.tsx
-├── src-tauri/            # Rust + cấu hình Tauri
-│   ├── icons/            # Icon app, setup/uninstall, ảnh bộ cài
-│   ├── capabilities/
+├── index.html              # Landing page (1 file, Material 3 Expressive)
+├── og-image.png            # Ảnh chia sẻ mạng xã hội
+├── download/               # Đặt tệp cài đặt .exe tại đây
+├── screenshots/            # image01 … image04 (dùng cho README + landing)
+├── src/                    # Frontend (Vite root)
+│   ├── components/         # AppBar, EditorPanel, StylePanel, Preview, CodeCanvas,
+│   │                       # SettingsDialog, Toaster, ui (Btn, Tooltip, Modal, Select…)
+│   ├── lib/                # store, i18n, material, highlight, export, toast, tauri, constants
+│   ├── App.tsx · main.tsx · index.css
+├── src-tauri/              # Backend Tauri (Rust)
+│   ├── src/                # lib.rs, main.rs
+│   ├── capabilities/       # Quyền của cửa sổ
+│   ├── icons/              # Bộ icon app + ảnh NSIS (header, sidebar)
 │   └── tauri.conf.json
-├── package.json
+├── package.json · vite.config.ts · tailwind.config.js · tsconfig.json
 └── LICENSE
 ```
 
-> Dự án nằm trong Cargo workspace chung (`members = ["*/src-tauri"]`), toàn bộ project dùng chung thư mục `target` ở ngoài.
-
-## Tác giả
-
-Phát triển bởi **minhtrong67** với sự hỗ trợ của AI **Claude** (Anthropic).
-
 ## License
 
-Dự án public và mã nguồn mở theo giấy phép [MIT](LICENSE).
+Dự án **public và mã nguồn mở**, phát hành theo giấy phép [MIT](LICENSE).
+Mã nguồn chung của các ứng dụng Tauri: **[github.com/minhtrong67/my-tauri-apps](https://github.com/minhtrong67/my-tauri-apps)**
+
+---
+
+<div align="center">
+
+Tác giả **[minhtrong67](https://github.com/minhtrong67)** · xây dựng với sự hỗ trợ của **Claude AI** ✨
+
+</div>

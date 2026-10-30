@@ -1,271 +1,626 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Code Image – Turn code into beautiful images | Free desktop app</title>
-<meta name="description" content="Code Image is a free, open-source desktop app that turns your code into beautiful, shareable PNG images. 14 developer themes, custom backgrounds, ratios, fonts, line numbers and watermark." />
-<meta name="keywords" content="code image, code to image, code screenshot, code snippet image, carbon alternative, syntax highlighting, tauri, desktop app, dracula, tokyo night, one dark, nord, catppuccin" />
-<meta name="author" content="minhtrong67" />
-<meta name="robots" content="index, follow" />
-<meta name="color-scheme" content="light dark" />
-<meta name="theme-color" content="#f8f9ff" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#10131a" media="(prefers-color-scheme: dark)" />
-<link rel="canonical" href="https://minhtrong67.github.io/code-image/" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='15'%20fill='%23673AB7'/%3E%3Crect%20x='10'%20y='15'%20width='44'%20height='35'%20rx='6'%20fill='%23fff'/%3E%3Cpath%20d='M10%2021a6%206%200%200%201%206-6h32a6%206%200%200%201%206%206v3H10Z'%20fill='%23E8DEF8'/%3E%3Ccircle%20cx='17'%20cy='19.5'%20r='1.6'%20fill='%23673AB7'/%3E%3Ccircle%20cx='23'%20cy='19.5'%20r='1.6'%20fill='%23673AB7'/%3E%3Ccircle%20cx='29'%20cy='19.5'%20r='1.6'%20fill='%23673AB7'/%3E%3Cpath%20d='M26%2031l-6%206%206%206M38%2031l6%206-6%206'%20fill='none'%20stroke='%23673AB7'%20stroke-width='3.4'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E" />
-
-<meta property="og:type" content="website" />
-<meta property="og:site_name" content="Code Image" />
-<meta property="og:title" content="Code Image – Turn code into beautiful images" />
-<meta property="og:description" content="Free, open-source desktop app: 14 developer themes, custom backgrounds, ratios, fonts and one-click PNG export." />
-<meta property="og:url" content="https://minhtrong67.github.io/code-image/" />
-<meta property="og:image" content="https://minhtrong67.github.io/code-image/og-image.png" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:locale" content="en_US" />
-<meta property="og:locale:alternate" content="vi_VN" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Code Image – Turn code into beautiful images" />
-<meta name="twitter:description" content="Free, open-source desktop app that turns code into beautiful, shareable images." />
-<meta name="twitter:image" content="https://minhtrong67.github.io/code-image/og-image.png" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Code Image — Turn your code into beautiful images | Free desktop app</title>
+<meta name="description" content="Code Image is a free, open-source desktop app that turns code snippets into beautiful, social-ready images. 14 themes, gradient backgrounds, presets, PNG/JPG/SVG export. Material 3 Expressive design. Windows 10/11.">
+<meta name="keywords" content="code to image, code screenshot, code snippet image, carbon alternative, ray.so alternative, Tauri app, Material 3 Expressive, syntax highlighting, Windows, open source, tạo ảnh code, ảnh code đẹp">
+<meta name="author" content="minhtrong67">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#E91E63">
+<meta name="application-name" content="Code Image">
+<link rel="canonical" href="https://minhtrong67.github.io/my-tauri-apps/code-image/">
+<link rel="icon" type="image/svg+xml" href="src-tauri/icons/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="src-tauri/icons/32x32.png">
+<link rel="apple-touch-icon" href="src-tauri/icons/128x128@2x.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Code Image">
+<meta property="og:title" content="Code Image — Turn your code into beautiful images">
+<meta property="og:description" content="Free, open-source desktop app: paste code, pick a theme, export a stunning image in one click.">
+<meta property="og:url" content="https://minhtrong67.github.io/my-tauri-apps/code-image/">
+<meta property="og:image" content="https://raw.githubusercontent.com/minhtrong67/my-tauri-apps/main/code-image/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Code Image app showing a code snippet on a gradient background">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="vi_VN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Code Image — Turn your code into beautiful images">
+<meta name="twitter:description" content="Free, open-source desktop app: paste code, pick a theme, export a stunning image in one click.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/minhtrong67/my-tauri-apps/main/code-image/og-image.png">
+<meta name="twitter:image:alt" content="Code Image app showing a code snippet on a gradient background">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Code Image","operatingSystem":"Windows","applicationCategory":"DeveloperApplication","description":"Free open-source desktop app that turns code into beautiful images.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"minhtrong67"},"license":"https://opensource.org/licenses/MIT","softwareVersion":"1.0.0"}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Code Image","applicationCategory":"DeveloperApplication","operatingSystem":"Windows 10, Windows 11","description":"Turn code snippets into beautiful, shareable images.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"minhtrong67","url":"https://github.com/minhtrong67"},"downloadUrl":"https://github.com/minhtrong67/my-tauri-apps","softwareVersion":"1.0.0"}
 </script>
-
+<script>
+// Pre-paint: apply saved light/dark mode to avoid a flash.
+try{var s=JSON.parse(localStorage.getItem("ci-landing")||"{}");var m=s.mode||"system";var d=m==="dark"||(m==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.style.background=d?"#201a1b":"#fffbff";document.documentElement.style.colorScheme=d?"dark":"light"}catch(e){}
+</script>
 <style>
 :root{
-  --p:#5b4bd6;--onp:#fff;--pc:#e5deff;--onpc:#1a0063;--sc:#e4e0f1;--onsc:#1b1a2c;
-  --bg:#fbf8ff;--s1:#f3effa;--s2:#ece8f4;--on:#1b1b21;--onv:#47464f;--ol:#787680;--olv:#c8c5d0;
-  --code:#1a1b26;--e1:0 1px 3px rgb(0 0 0/.18);--e3:0 8px 24px rgb(40 30 90/.18);
-}
-:root[data-theme="dark"]{
-  --p:#c8bfff;--onp:#2c1d9a;--pc:#4332b8;--onpc:#e5deff;--sc:#46445a;--onsc:#e4e0f1;
-  --bg:#13121a;--s1:#1c1b24;--s2:#23222c;--on:#e5e1e9;--onv:#c9c5d0;--ol:#928f99;--olv:#47464f;
-  --e3:0 8px 24px rgb(0 0 0/.5);
+  --p:#bc004b;--op:#fff;--pc:#ffd9de;--opc:#400014;--s:#75565b;--sc:#ffd9de;--osc:#2c1519;--t:#795831;--tc:#ffddba;--otc:#2b1700;
+  --sf:#fffbff;--os:#201a1b;--osv:#524345;--ol:#847375;--olv:#d6c2c3;--sl:#fdf1f1;--sct:#f8ebeb;--sh:#f2e5e6;--shh:#ece0e0;
+  --ease:cubic-bezier(.2,0,0,1);--spring:cubic-bezier(.34,1.56,.64,1);--hdr:72px;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --mono:ui-monospace,"Cascadia Code","SF Mono",Consolas,Menlo,monospace;
 }
 *{box-sizing:border-box;margin:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--on);line-height:1.6;transition:background .3s,color .3s;overflow-x:hidden}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hdr) + 12px);-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--sf);color:var(--os);line-height:1.6;overflow-x:hidden;transition:background-color .4s,color .4s;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
-:focus-visible{outline:2px solid var(--p);outline-offset:3px}
-.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
-svg.i{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+:focus-visible{outline:3px solid var(--p);outline-offset:3px;border-radius:12px}
+.wrap{width:min(1200px,100% - 40px);margin-inline:auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+svg.i{width:1.25em;height:1.25em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
-/* top bar */
-header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s}
-header.scrolled{border-color:var(--olv)}
-.bar{display:flex;align-items:center;gap:12px;height:64px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:1.15rem}
-.brand img,.brand svg{width:34px;height:34px}
-.nav{margin-left:auto;display:flex;align-items:center;gap:4px}
-.nav a.l{padding:8px 14px;border-radius:99px;color:var(--onv);font-size:.95rem;transition:background .2s}
-.nav a.l:hover{background:color-mix(in srgb,var(--on) 8%,transparent)}
-.ib{display:grid;place-items:center;width:40px;height:40px;border-radius:99px;border:0;background:none;color:var(--onv);cursor:pointer;transition:background .2s,transform .2s}
-.ib:hover{background:color-mix(in srgb,var(--on) 10%,transparent)}.ib:active{transform:scale(.9)}
-.seg{display:flex;border:1px solid var(--ol);border-radius:99px;overflow:hidden}
-.seg button{border:0;background:none;color:var(--on);font:inherit;font-size:.8rem;padding:6px 11px;cursor:pointer;transition:background .2s}
-.seg button+button{border-left:1px solid var(--ol)}
-.seg button[aria-pressed=true]{background:var(--sc);color:var(--onsc);font-weight:600}
+/* progress + header */
+#bar{position:fixed;inset:0 0 auto 0;height:4px;z-index:100;background:linear-gradient(90deg,var(--p),var(--t));transform-origin:0 50%;transform:scaleX(0)}
+header.nav{position:fixed;inset:0 0 auto 0;height:var(--hdr);z-index:90;display:flex;align-items:center;transition:background .35s,box-shadow .35s,backdrop-filter .35s}
+header.nav.stuck{background:color-mix(in srgb,var(--sf) 82%,transparent);backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 1px 0 var(--olv)}
+.nav .wrap{display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.2rem;letter-spacing:-.02em}
+.brand svg{width:40px;height:40px;transition:transform .6s var(--spring)}
+.brand:hover svg{transform:rotate(24deg) scale(1.12)}
+.links{display:flex;gap:4px;margin-left:auto}
+.links a{padding:8px 16px;border-radius:99px;font-weight:500;font-size:.95rem;color:var(--osv);transition:all .35s var(--spring)}
+.links a:hover{background:color-mix(in srgb,var(--os) 8%,transparent)}
+.links a[aria-current=true]{background:var(--sc);color:var(--osc)}
+.ctrl{display:flex;align-items:center;gap:6px}
+.ib{position:relative;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--osv);transition:all .35s var(--spring);overflow:hidden}
+.ib:hover{background:color-mix(in srgb,var(--os) 10%,transparent)}
+.ib:active{transform:scale(.88);border-radius:14px}
+.seg{display:flex;gap:2px}
+.seg button{height:36px;padding:0 12px;font-size:.82rem;font-weight:600;border-radius:8px;background:color-mix(in srgb,var(--sc) 70%,transparent);color:var(--osc);transition:all .4s var(--spring)}
+.seg button:first-child{border-radius:99px 8px 8px 99px}.seg button:last-child{border-radius:8px 99px 99px 8px}
+.seg button[aria-checked=true]{background:var(--p);color:var(--op);border-radius:99px}
+#burger{display:none}
+.pop{position:absolute;top:calc(100% + 8px);right:0;width:min(320px,calc(100vw - 32px));background:var(--sh);border-radius:28px;padding:18px;box-shadow:0 8px 30px rgb(0 0 0/.18);transform-origin:top right;transform:scale(.86) translateY(-8px);opacity:0;pointer-events:none;transition:all .4s var(--spring)}
+.pop.open{transform:none;opacity:1;pointer-events:auto}
+.pop h4{font-size:.85rem;color:var(--osv);margin-bottom:12px;font-weight:600}
+.sw{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.sw button{aspect-ratio:1;border-radius:50%;transition:all .4s var(--spring);position:relative}
+.sw button:hover{transform:scale(1.14)}
+.sw button[aria-pressed=true]{border-radius:30%;box-shadow:0 0 0 3px var(--sh),0 0 0 5px var(--p)}
+.sw button[aria-pressed=true]::after{content:"";position:absolute;inset:0;margin:auto;width:10px;height:6px;border:solid #fff;border-width:0 0 3px 3px;transform:translateY(-1px) rotate(-45deg);mix-blend-mode:difference}
+.rel{position:relative}
 
-.btn{position:relative;display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 28px;border-radius:99px;font-weight:600;font-size:1rem;border:0;cursor:pointer;overflow:hidden;transition:transform .2s,box-shadow .2s}
-.btn:active{transform:scale(.97)}
-.btn.f{background:var(--p);color:var(--onp);box-shadow:var(--e1)}.btn.f:hover{box-shadow:var(--e3);transform:translateY(-2px)}
-.btn.t{background:var(--sc);color:var(--onsc)}.btn.t:hover{transform:translateY(-2px)}
-.ripple{position:absolute;border-radius:50%;background:currentColor;opacity:.2;transform:scale(0);animation:rp .6s ease-out forwards;pointer-events:none}
+/* buttons */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 28px;border-radius:99px;font-weight:700;font-size:1.02rem;transition:all .45s var(--spring)}
+.btn:hover{transform:translateY(-3px);border-radius:20px}
+.btn:active{transform:scale(.95)}
+.btn.fill{background:var(--p);color:var(--op);box-shadow:0 8px 24px color-mix(in srgb,var(--p) 40%,transparent)}
+.btn.tonal{background:var(--sc);color:var(--osc)}
+.btn.big{height:60px;padding:0 28px;font-size:1.04rem}
+.btn.fill::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgb(255 255 255/.35) 50%,transparent 70%);transform:translateX(-120%);transition:transform .8s var(--ease)}
+.btn.fill:hover::after{transform:translateX(120%)}
+.rp{position:absolute;border-radius:50%;background:currentColor;opacity:.22;transform:scale(0);pointer-events:none;animation:rp .6s var(--ease) forwards}
 @keyframes rp{to{transform:scale(1);opacity:0}}
 
 /* hero */
-.hero{padding:72px 0 56px;display:grid;grid-template-columns:1fr 1.15fr;gap:48px;align-items:center}
-.hero h1{font-size:clamp(2.3rem,5.4vw,4rem);line-height:1.06;letter-spacing:-.02em;font-weight:700}
-.hero p.lead{margin:20px 0 32px;font-size:1.15rem;color:var(--onv);max-width:34ch}
-.cta{display:flex;flex-wrap:wrap;gap:12px}
-.meta{margin-top:18px;font-size:.85rem;color:var(--ol)}
-.demo{position:relative;border-radius:28px;padding:44px 40px;background:linear-gradient(135deg,#4776e6,#8e54e9);box-shadow:var(--e3);transition:background .6s}
-.win{border-radius:14px;overflow:hidden;background:var(--c-bg);color:var(--c-fg);box-shadow:0 30px 60px -15px rgb(0 0 0/.55);transition:background .4s,color .4s,transform .5s cubic-bezier(.2,0,0,1);font-family:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;font-size:clamp(.7rem,1.55vw,.9rem)}
-.demo:hover .win{transform:translateY(-4px) rotate(-.4deg)}
-.wb{display:flex;gap:7px;padding:12px 14px;background:var(--c-bar)}
-.wb i{width:11px;height:11px;border-radius:50%}
-.win pre{padding:14px 18px 18px;line-height:1.7;overflow:hidden;white-space:pre;font:inherit}
-.ln{color:var(--c-cm);margin-right:1.4em;display:inline-block;width:1.2em;text-align:right;opacity:.7}
-.k{color:var(--c-k)}.s{color:var(--c-s)}.n{color:var(--c-n)}.f{color:var(--c-f)}.c{color:var(--c-cm);font-style:italic}
-.caret{display:inline-block;width:.55em;height:1.1em;background:var(--c-fg);vertical-align:-.2em;animation:blink 1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;justify-content:center}
-.chips button{border:0;border-radius:99px;padding:6px 14px;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;background:rgb(255 255 255/.22);color:#fff;backdrop-filter:blur(6px);transition:transform .2s,background .2s}
-.chips button:hover{transform:translateY(-2px)}.chips button[aria-pressed=true]{background:#fff;color:#2b1d80}
+#top{position:relative;padding:calc(var(--hdr) + 56px) 0 80px;overflow:hidden}
+.blob{position:absolute;z-index:-1;filter:blur(2px);opacity:.75;animation:morph 14s ease-in-out infinite;will-change:transform,border-radius}
+.b1{width:520px;height:520px;background:var(--pc);top:-120px;right:-120px}
+.b2{width:380px;height:380px;background:var(--tc);bottom:-80px;left:-120px;animation-duration:18s;animation-direction:reverse}
+.b3{width:200px;height:200px;background:var(--sc);top:42%;left:44%;animation-duration:11s;opacity:.55}
+@keyframes morph{0%,100%{border-radius:42% 58% 55% 45%/48% 42% 58% 52%;transform:rotate(0)}33%{border-radius:58% 42% 40% 60%/55% 60% 40% 45%;transform:rotate(60deg) scale(1.05)}66%{border-radius:48% 52% 62% 38%/40% 52% 48% 60%;transform:rotate(130deg) scale(.96)}}
+.hero{display:grid;grid-template-columns:1.08fr 1fr;gap:40px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px 8px 10px;border-radius:99px;background:var(--tc);color:var(--otc);font-weight:600;font-size:.88rem;margin-bottom:22px}
+.badge b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--t);color:#fff}
+h1{text-wrap:balance;font-size:clamp(2.3rem,4.4vw,3.8rem);line-height:1.04;letter-spacing:-.035em;font-weight:800}
+.grad{background:linear-gradient(100deg,var(--p),var(--t),var(--p));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gs 6s linear infinite;display:inline-block;transition:opacity .35s,transform .35s var(--ease)}
+.grad.out{opacity:0;transform:translateY(14px)}
+@keyframes gs{to{background-position:-200% 0}}
+.lead{font-size:clamp(1.05rem,1.6vw,1.22rem);color:var(--osv);margin:24px 0 32px;max-width:36em}
+.cta{display:flex;flex-wrap:wrap;gap:14px}
+.note{margin-top:18px;font-size:.88rem;color:var(--osv);display:flex;align-items:center;gap:8px}
+.stage{position:relative;perspective:1200px}
+.frame{position:relative;border-radius:32px;overflow:hidden;background:var(--sh);box-shadow:0 30px 70px -20px color-mix(in srgb,var(--p) 55%,transparent),0 0 0 1px var(--olv);transform:rotateY(var(--ry,-4deg)) rotateX(var(--rx,2deg));transition:transform .5s var(--ease);will-change:transform}
+.frame img{width:100%;height:auto}
+.chip{position:absolute;display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:99px;font-weight:700;font-size:.85rem;box-shadow:0 10px 30px rgb(0 0 0/.18);animation:fl 5s ease-in-out infinite}
+.c1{background:var(--p);color:var(--op);top:-18px;left:-16px}
+.c2{background:var(--tc);color:var(--otc);bottom:36px;right:-14px;animation-delay:-2s}
+.c3{background:var(--sc);color:var(--osc);bottom:-20px;left:12%;animation-delay:-3.4s}
+@keyframes fl{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+
+/* marquee */
+.marq{overflow:hidden;padding:18px 0;background:var(--sct);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.marq div{display:flex;gap:14px;width:max-content;animation:mq 45s linear infinite}
+.marq:hover div{animation-play-state:paused}
+.marq span{padding:8px 20px;border-radius:99px;background:var(--sc);color:var(--osc);font-weight:600;font-size:.92rem;white-space:nowrap}
+.marq span:nth-child(3n){background:var(--tc);color:var(--otc)}.marq span:nth-child(3n+1){background:var(--pc);color:var(--opc)}
+@keyframes mq{to{transform:translateX(-50%)}}
 
 /* sections */
-section{padding:72px 0}
-h2{font-size:clamp(1.7rem,3.4vw,2.5rem);line-height:1.15;letter-spacing:-.01em;margin-bottom:12px}
-.sub{color:var(--onv);max-width:56ch;margin-bottom:40px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.card{background:var(--s1);border-radius:24px;padding:26px;transition:transform .3s cubic-bezier(.2,0,0,1),box-shadow .3s,background .3s}
-.card:hover{transform:translateY(-6px);box-shadow:var(--e3);background:var(--s2)}
-.card .ic{display:grid;place-items:center;width:48px;height:48px;border-radius:16px;background:var(--pc);color:var(--onpc);margin-bottom:16px;font-size:1.1rem;transition:transform .4s}
-.card:hover .ic{transform:rotate(-8deg) scale(1.08)}
-.card h3{font-size:1.1rem;margin-bottom:6px}.card p{color:var(--onv);font-size:.95rem}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
-.steps .card{counter-increment:s;position:relative}
-.steps .card::before{content:counter(s);position:absolute;right:20px;top:14px;font-size:3rem;font-weight:700;color:var(--pc);line-height:1}
-.dl{background:var(--pc);color:var(--onpc);border-radius:36px;padding:56px 32px;text-align:center}
-.dl h2{margin-bottom:10px}.dl p{max-width:48ch;margin:0 auto 28px;opacity:.85}
-.dl .btn.f{background:var(--onpc);color:var(--pc)}
-footer{padding:40px 0 56px;text-align:center;color:var(--onv);font-size:.9rem}
-footer b{color:var(--on)}footer .ai{color:var(--p);font-weight:600}
+section.sec{padding:104px 0;position:relative}
+.eyebrow{display:inline-block;padding:6px 14px;border-radius:99px;background:var(--pc);color:var(--opc);font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
+h2{font-size:clamp(2rem,4vw,3.2rem);line-height:1.1;letter-spacing:-.03em;font-weight:800;max-width:18em}
+.sub{color:var(--osv);font-size:1.12rem;margin-top:16px;max-width:40em}
+.head{margin-bottom:56px}
+.head.c{text-align:center}.head.c h2,.head.c .sub{margin-inline:auto}
 
-.rv{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,0,0,1),transform .7s cubic-bezier(.2,0,0,1);transition-delay:var(--d,0s)}
+/* bento */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{position:relative;overflow:hidden;border-radius:32px;padding:28px;background:var(--sl);transition:transform .5s var(--spring),border-radius .5s var(--spring),background .4s;isolation:isolate}
+.card::before{content:"";position:absolute;inset:0;z-index:-1;opacity:0;background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--p) 16%,transparent),transparent 60%);transition:opacity .4s}
+.card:hover{transform:translateY(-6px);border-radius:44px 24px 44px 24px}
+.card:hover::before{opacity:1}
+.card.w2{grid-column:span 2}
+.card.hl{background:var(--p);color:var(--op)}.card.hl p{color:color-mix(in srgb,var(--op) 85%,transparent)}
+.card.tt{background:var(--tc);color:var(--otc)}.card.tt p{color:color-mix(in srgb,var(--otc) 80%,transparent)}
+.ico{display:grid;place-items:center;width:56px;height:56px;margin-bottom:20px;background:var(--pc);color:var(--p);border-radius:42% 58% 55% 45%/52% 48% 52% 48%;font-size:1.5rem;transition:all .6s var(--spring)}
+.card:hover .ico{border-radius:50%;transform:rotate(-12deg) scale(1.1)}
+.card.hl .ico{background:var(--op);color:var(--p)}.card.tt .ico{background:var(--t);color:#fff}
+.card h3{font-size:1.25rem;letter-spacing:-.01em;margin-bottom:8px}
+.card p{color:var(--osv);font-size:.98rem}
+.swr{display:flex;gap:8px;margin-top:18px}.swr i{flex:1;height:10px;border-radius:99px}
+
+/* gallery */
+#screenshots{background:var(--sct)}
+.gal{display:grid;grid-template-columns:1fr;gap:20px}
+.view{position:relative;border-radius:36px;overflow:hidden;background:var(--sh);box-shadow:0 24px 60px -24px rgb(0 0 0/.35),0 0 0 1px var(--olv);cursor:zoom-in;aspect-ratio:1440/900;max-height:700px;margin-inline:auto;width:100%}
+.view img{width:100%;height:100%;object-fit:contain;transition:opacity .45s,transform .7s var(--ease)}
+.view.m{aspect-ratio:auto;width:min(380px,100%)}
+.view img.swp{opacity:0;transform:scale(1.03)}
+.cap{text-align:center;color:var(--osv);min-height:1.7em;font-weight:500}
+.tabs{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.tabs button{display:flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:99px;background:var(--sc);color:var(--osc);font-weight:600;transition:all .45s var(--spring)}
+.tabs button[aria-selected=true]{background:var(--p);color:var(--op);transform:scale(1.06)}
+.gnav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:color-mix(in srgb,var(--sf) 85%,transparent);backdrop-filter:blur(8px);display:grid;place-items:center;box-shadow:0 4px 14px rgb(0 0 0/.2);transition:all .4s var(--spring);z-index:2}
+.gnav:hover{background:var(--p);color:var(--op);border-radius:16px}
+.gnav.l{left:14px}.gnav.r{right:14px}
+.lb{position:fixed;inset:0;z-index:200;background:rgb(0 0 0/.82);display:grid;place-items:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .35s;backdrop-filter:blur(6px)}
+.lb.open{opacity:1;pointer-events:auto}
+.lb img{max-height:92vh;max-width:96vw;border-radius:24px;transform:scale(.9);transition:transform .5s var(--spring)}
+.lb.open img{transform:none}
+
+/* playground */
+.play{display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:stretch}
+.panel{background:var(--sl);border-radius:32px;padding:26px;display:flex;flex-direction:column;gap:22px}
+.panel h4{font-size:.85rem;color:var(--osv);margin-bottom:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{height:38px;padding:0 16px;border-radius:12px;border:1px solid var(--ol);font-weight:600;font-size:.9rem;transition:all .4s var(--spring)}
+.chips button:hover{border-radius:99px}
+.chips button[aria-pressed=true]{background:var(--sc);color:var(--osc);border-color:transparent;border-radius:99px}
+.gsw{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.gsw button{aspect-ratio:1;border-radius:50%;transition:all .4s var(--spring)}
+.gsw button:hover{transform:scale(1.14)}
+.gsw button[aria-pressed=true]{border-radius:30%;box-shadow:0 0 0 3px var(--sl),0 0 0 5px var(--p)}
+.pstage{border-radius:36px;display:grid;place-items:center;padding:clamp(24px,5vw,64px);transition:background .6s;min-height:380px}
+.win{width:min(560px,100%);border-radius:16px;overflow:hidden;background:var(--cb);color:var(--cf);box-shadow:0 30px 60px -16px rgb(0 0 0/.55);transition:background .5s,color .5s,transform .6s var(--spring)}
+.pstage:hover .win{transform:scale(1.025) rotate(-.6deg)}
+.wbar{height:38px;display:flex;align-items:center;gap:7px;padding:0 14px;background:var(--cbar);transition:background .5s}
+.wbar i{width:12px;height:12px;border-radius:50%}
+.wbar span{margin-left:auto;margin-right:auto;font-size:.78rem;opacity:.55;transform:translateX(-18px)}
+pre{margin:0;padding:18px 22px 22px;font:.86rem/1.75 var(--mono);overflow:auto;white-space:pre}
+pre .ln{display:inline-block;width:1.6em;margin-right:1.2em;text-align:right;opacity:.35;user-select:none}
+.k{color:var(--ck)}.f{color:var(--cfn)}.s{color:var(--cs)}.n{color:var(--cn)}.c{color:var(--cc);font-style:italic}.t{color:var(--ct)}
+
+/* how */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;counter-reset:st}
+.step{position:relative;padding:34px 28px 30px;border-radius:36px;background:var(--sl);transition:all .5s var(--spring)}
+.step:hover{transform:translateY(-8px);background:var(--pc)}
+.num{display:grid;place-items:center;width:64px;height:64px;margin-bottom:20px;background:var(--p);color:var(--op);font-size:1.6rem;font-weight:800;border-radius:50% 50% 50% 14%;transition:border-radius .6s var(--spring),transform .6s var(--spring)}
+.step:hover .num{border-radius:14% 50% 50% 50%;transform:rotate(12deg)}
+.step h3{font-size:1.3rem;margin-bottom:8px}.step p{color:var(--osv)}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:70px}
+.stat{padding:30px 20px;border-radius:32px;text-align:center;background:var(--sc);color:var(--osc);transition:all .5s var(--spring)}
+.stat:nth-child(2){background:var(--tc);color:var(--otc);border-radius:50px 20px 50px 20px}
+.stat:nth-child(3){background:var(--pc);color:var(--opc)}
+.stat:nth-child(4){background:var(--p);color:var(--op);border-radius:20px 50px 20px 50px}
+.stat:hover{transform:scale(1.05) rotate(-1.5deg)}
+.stat b{display:block;font-size:clamp(2.2rem,4vw,3.4rem);line-height:1;letter-spacing:-.03em;font-weight:800}
+.stat span{display:block;margin-top:8px;font-weight:600;opacity:.85}
+
+/* download */
+.dl{position:relative;overflow:hidden;border-radius:56px;padding:clamp(40px,7vw,88px) clamp(24px,5vw,72px);background:var(--p);color:var(--op);text-align:center;isolation:isolate}
+.dl .blob{opacity:.22;filter:none;background:var(--op)}
+.dl .b1{width:380px;height:380px;top:-140px;right:-100px}.dl .b2{width:300px;height:300px;bottom:-120px;left:-80px;background:var(--tc);opacity:.35}
+.dl h2{margin-inline:auto;color:var(--op)}
+.dl .sub{margin-inline:auto;color:color-mix(in srgb,var(--op) 85%,transparent)}
+.dl .cta{justify-content:center;margin-top:36px}
+.dl .btn.fill{background:var(--op);color:var(--p);box-shadow:0 12px 30px rgb(0 0 0/.25)}
+.dl .btn.fill::after{display:none}
+.dl .btn.tonal{background:color-mix(in srgb,var(--op) 22%,transparent);color:var(--op)}
+.dl .note{justify-content:center;color:color-mix(in srgb,var(--op) 80%,transparent)}
+.dlogo{width:96px;margin:0 auto 24px;animation:fl 5s ease-in-out infinite}
+
+/* footer */
+footer{padding:56px 0 40px}
+.fcard{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;padding:26px 30px;border-radius:36px;background:linear-gradient(120deg,var(--pc),var(--tc));color:var(--opc)}
+.auth{display:flex;align-items:center;gap:16px}
+.av{display:grid;place-items:center;width:56px;height:56px;border-radius:42% 58% 55% 45%/52% 48% 52% 48%;background:var(--p);color:var(--op);font-weight:800;font-size:1.5rem;animation:morph 10s ease-in-out infinite}
+.auth b{font-size:1.3rem;letter-spacing:-.01em}
+.auth small{display:flex;align-items:center;gap:6px;opacity:.85;font-weight:600}
+.fl{display:flex;gap:8px;flex-wrap:wrap}
+.fl a{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:99px;background:color-mix(in srgb,var(--sf) 70%,transparent);font-weight:600;transition:all .4s var(--spring)}
+.fl a:hover{background:var(--p);color:var(--op);border-radius:16px;transform:translateY(-3px)}
+.copy{text-align:center;color:var(--osv);font-size:.9rem;margin-top:26px}
+
+/* FAB */
+#up{position:fixed;right:22px;bottom:22px;z-index:80;width:60px;height:60px;border-radius:20px;background:var(--pc);color:var(--opc);display:grid;place-items:center;box-shadow:0 10px 30px rgb(0 0 0/.25);transform:scale(.4) translateY(40px);opacity:0;pointer-events:none;transition:all .55s var(--spring)}
+#up.show{transform:none;opacity:1;pointer-events:auto}
+#up:hover{border-radius:50%;background:var(--p);color:var(--op)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(36px) scale(.97);transition:opacity .8s var(--ease),transform .9s var(--spring);transition-delay:var(--d,0s)}
 .rv.in{opacity:1;transform:none}
 
-@media(max-width:900px){
-  .hero{grid-template-columns:1fr;padding-top:40px;gap:36px}.hero p.lead{max-width:none}
-  .grid,.steps{grid-template-columns:1fr 1fr}.nav a.l{display:none}
+@media (max-width:980px){
+  .hero{grid-template-columns:1fr}.stage{max-width:640px;margin-inline:auto;width:100%}
+  .bento{grid-template-columns:repeat(2,1fr)}.play{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}
+  .links{position:fixed;inset:var(--hdr) 12px auto 12px;flex-direction:column;background:var(--sh);border-radius:32px;padding:14px;box-shadow:0 20px 50px rgb(0 0 0/.25);transform-origin:top;transform:scaleY(.6) translateY(-14px);opacity:0;pointer-events:none;transition:all .45s var(--spring);margin:0}
+  .links.open{transform:none;opacity:1;pointer-events:auto}
+  .links a{padding:14px 18px;font-size:1.05rem}
+  #burger{display:grid}.ctrl{margin-left:auto}
 }
-@media(max-width:600px){
-  .grid,.steps{grid-template-columns:1fr}section{padding:48px 0}
-  .demo{padding:24px 14px;border-radius:22px}.dl{padding:40px 20px;border-radius:28px}
-  .bar{gap:6px}.seg button{padding:6px 8px}.brand span{display:none}.btn{width:100%;justify-content:center}
+@media (max-width:640px){
+  :root{--hdr:64px}
+  section.sec{padding:72px 0}.bento{grid-template-columns:1fr}.card.w2{grid-column:auto}
+  .seg button{padding:0 9px}.brand span:last-child{display:none}.ib{width:40px;height:40px}
+  .btn{width:100%}.cta{flex-direction:column}.chip{display:none}.dl{border-radius:36px}
+  .gnav{width:42px;height:42px}.stats{gap:12px}.fcard{flex-direction:column;text-align:center}.auth{flex-direction:column}
 }
-@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}.rv{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01ms!important}html{scroll-behavior:auto}.rv{opacity:1;transform:none}}
 </style>
 </head>
-<body>
-<header id="top">
-  <div class="wrap bar">
-    <a class="brand" href="#top" aria-label="Code Image">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#673AB7"/><rect x="10" y="15" width="44" height="35" rx="6" fill="#fff"/><path d="M10 21a6 6 0 0 1 6-6h32a6 6 0 0 1 6 6v3H10Z" fill="#E8DEF8"/><circle cx="17" cy="19.5" r="1.6" fill="#673AB7"/><circle cx="23" cy="19.5" r="1.6" fill="#673AB7"/><circle cx="29" cy="19.5" r="1.6" fill="#673AB7"/><path d="M26 31l-6 6 6 6M38 31l6 6-6 6" fill="none" stroke="#673AB7" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span>Code Image</span>
-    </a>
-    <nav class="nav">
-      <a class="l" href="#features" data-i18n="navFeatures">Features</a>
-      <a class="l" href="#how" data-i18n="navHow">How it works</a>
-      <div class="seg" role="group" aria-label="Language" id="langSeg">
-        <button data-lang="en" aria-pressed="false">EN</button><button data-lang="vi" aria-pressed="false">VI</button>
-      </div>
-      <button class="ib" id="themeBtn" aria-label="Theme"></button>
+<body id="home">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.43-.18-.83-.44-1.12-.29-.29-.44-.65-.44-1.13a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.55-2.5 5.55-5.55C21.97 6.01 17.46 2 12 2z"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+<symbol id="i-ratio" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9v6M7 9h4"/></symbol>
+<symbol id="i-type" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+<symbol id="i-mark" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></symbol>
+<symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-gh" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+<symbol id="i-mon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7M12 19V5"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+<symbol id="i-l" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-r" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M9.94 14.06 8 20l-1.94-5.94L0 12l6.06-2.06L8 4l1.94 5.94L16 12zM19 3l.9 2.1L22 6l-2.1.9L19 9l-.9-2.1L16 6l2.1-.9z"/></symbol>
+<symbol id="i-win" viewBox="0 0 24 24"><path d="M3 5.5 10.5 4.5v7H3zM11.5 4.4 21 3v8.5h-9.5zM3 12.5h7.5v7L3 18.5zM11.5 12.5H21V21l-9.5-1.4z" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+</defs></svg>
+
+<div id="bar" aria-hidden="true"></div>
+<header class="nav" id="hdr">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="Code Image"><span class="logo" aria-hidden="true"></span><span>Code Image</span></a>
+    <nav class="links" id="links" aria-label="Main">
+      <a href="#features" data-i="nav_features">Features</a>
+      <a href="#screenshots" data-i="nav_shots">Screenshots</a>
+      <a href="#playground" data-i="nav_play">Try it</a>
+      <a href="#how" data-i="nav_how">How it works</a>
+      <a href="#download" data-i="nav_dl">Download</a>
     </nav>
+    <div class="ctrl">
+      <div class="rel">
+        <button class="ib" id="palBtn" aria-haspopup="true" aria-expanded="false" data-i-aria="aria_color"><svg class="i"><use href="#i-palette"/></svg></button>
+        <div class="pop" id="pal" role="dialog"><h4 data-i="theme_color">Theme color</h4><div class="sw" id="swatches"></div></div>
+      </div>
+      <button class="ib" id="modeBtn" data-i-aria="aria_mode"><svg class="i"><use href="#i-mon"/></svg></button>
+      <div class="seg" role="radiogroup" aria-label="Language"><button role="radio" data-lang="en">EN</button><button role="radio" data-lang="vi">VI</button></div>
+      <button class="ib" id="burger" aria-expanded="false" data-i-aria="aria_menu"><svg class="i"><use href="#i-menu"/></svg></button>
+    </div>
   </div>
 </header>
 
 <main>
-<div class="wrap hero">
-  <div class="rv">
-    <h1 data-i18n="h1">Turn code into beautiful images</h1>
-    <p class="lead" data-i18n="lead">Paste your code, pick a theme, and export a crisp PNG in one click. Free, open source, and made for developers.</p>
-    <div class="cta">
-      <a class="btn f" href="download/Code%20Image_1.0.0_x64-setup.exe" download>
-        <svg class="i" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14"/></svg><span data-i18n="dl">Download for Windows</span>
-      </a>
-      <a class="btn t" href="#features" data-i18n="explore">Explore features</a>
-    </div>
-    <p class="meta" data-i18n="meta">Version 1.0.0 · Windows 10/11 · MIT License</p>
-  </div>
-  <div class="rv" style="--d:.15s">
-    <div class="demo" id="demo">
-      <div class="win" id="win">
-        <div class="wb"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
-<pre aria-label="Code sample"><span class="ln">1</span><span class="c">// Share your code beautifully</span>
-<span class="ln">2</span><span class="k">const</span> <span class="f">codeImage</span> = {
-<span class="ln">3</span>  themes: <span class="n">14</span>,
-<span class="ln">4</span>  export: <span class="s">"PNG"</span>,
-<span class="ln">5</span>  free: <span class="k">true</span>,
-<span class="ln">6</span>};<span class="caret"></span></pre>
+<section id="top" aria-labelledby="h1">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="wrap hero">
+    <div>
+      <div class="badge rv"><b><svg class="i" style="width:14px;height:14px"><use href="#i-spark"/></svg></b><span data-i="badge">Free &amp; open source · v1.0.0</span></div>
+      <h1 id="h1" class="rv" style="--d:.08s"><span data-i="h1a">Turn your code into</span><br><span class="grad" id="words">beautiful images</span></h1>
+      <p class="lead rv" style="--d:.16s" data-i="lead">Code Image is a fast, private desktop app that turns snippets into polished, social-ready pictures — with 14 themes, gradient backdrops, presets and one-click export.</p>
+      <div class="cta rv" style="--d:.24s">
+        <a class="btn fill big rp-host" href="download/Code%20Image_1.0.0_x64-setup.exe" download><svg class="i"><use href="#i-win"/></svg><span data-i="cta_dl">Download for Windows</span></a>
+        <a class="btn tonal big rp-host" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="i"><use href="#i-gh"/></svg><span data-i="cta_gh">View on GitHub</span></a>
       </div>
-      <div class="chips" id="chips" role="group" aria-label="Theme"></div>
+      <p class="note rv" style="--d:.3s"><svg class="i" style="width:16px"><use href="#i-lock"/></svg><span data-i="note">Windows 10/11 · 64-bit · No account, works offline</span></p>
+    </div>
+    <div class="stage rv" style="--d:.2s" id="stage">
+      <div class="frame" id="heroFrame"><img src="screenshots/image01.png" width="1440" height="900" alt="Code Image main window: code editor, live preview and style panel" fetchpriority="high"></div>
+      <div class="chip c1"><svg class="i"><use href="#i-palette"/></svg><span data-i="chip1">14 themes</span></div>
+      <div class="chip c2"><svg class="i"><use href="#i-down"/></svg><span>PNG · JPG · SVG</span></div>
+      <div class="chip c3"><svg class="i"><use href="#i-shield"/></svg><span data-i="chip3">100% offline</span></div>
     </div>
   </div>
-</div>
+</section>
 
-<section id="features"><div class="wrap">
-  <h2 class="rv" data-i18n="fTitle">Everything you need for a perfect snippet</h2>
-  <p class="sub rv" data-i18n="fSub">Style every detail, then save or copy the result without leaving the app.</p>
-  <div class="grid" id="featureGrid"></div>
-</div></section>
+<div class="marq" aria-hidden="true"><div id="marq"></div></div>
 
-<section id="how"><div class="wrap">
-  <h2 class="rv" data-i18n="hTitle">Three steps to a shareable image</h2>
-  <p class="sub rv" data-i18n="hSub">No sign-up, no upload: everything runs on your computer.</p>
-  <div class="steps" id="stepGrid"></div>
-</div></section>
-
-<section><div class="wrap">
-  <div class="dl rv">
-    <h2 data-i18n="cTitle">Ready to make your code look great?</h2>
-    <p data-i18n="cSub">Download Code Image for Windows. It is free and open source.</p>
-    <a class="btn f" href="download/Code%20Image_1.0.0_x64-setup.exe" download>
-      <svg class="i" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14"/></svg><span data-i18n="dl">Download for Windows</span>
-    </a>
+<section class="sec" id="features">
+  <div class="wrap">
+    <div class="head rv"><span class="eyebrow" data-i="nav_features">Features</span><h2 data-i="feat_t">Everything you need to make code look great</h2><p class="sub" data-i="feat_s">A focused toolbox with the details that matter — from pixel-perfect themes to one-click presets.</p></div>
+    <div class="bento">
+      <article class="card w2 hl rv"><div class="ico"><svg class="i"><use href="#i-palette"/></svg></div><h3 data-i="f1t">14 hand-tuned code themes</h3><p data-i="f1d">Dracula, Tokyo Night, Nord, Catppuccin, GitHub and more — with a live mini-preview right in the picker.</p><div class="swr"><i style="background:#ff79c6"></i><i style="background:#bb9af7"></i><i style="background:#88c0d0"></i><i style="background:#a6e3a1"></i><i style="background:#f9e2af"></i><i style="background:#fab387"></i></div></article>
+      <article class="card rv" style="--d:.06s"><div class="ico"><svg class="i"><use href="#i-drop"/></svg></div><h3 data-i="f2t">Gradient backdrops</h3><p data-i="f2d">Twelve gradients, custom colors and angles — or fully transparent.</p></article>
+      <article class="card rv" style="--d:.12s"><div class="ico"><svg class="i"><use href="#i-ratio"/></svg></div><h3 data-i="f3t">Social-ready ratios</h3><p data-i="f3d">16:9, 4:5, 1:1, 9:16 and more, with auto-fit so code is never cropped.</p></article>
+      <article class="card rv"><div class="ico"><svg class="i"><use href="#i-type"/></svg></div><h3 data-i="f4t">Beautiful coding fonts</h3><p data-i="f4d">JetBrains Mono, Fira Code, Cascadia and 7 more — ligatures on or off.</p></article>
+      <article class="card w2 tt rv" style="--d:.06s"><div class="ico"><svg class="i"><use href="#i-down"/></svg></div><h3 data-i="f5t">Export anywhere</h3><p data-i="f5d">PNG, JPG or SVG at up to 4× resolution. Copy to the clipboard or save to a folder you choose, then reveal it in one click.</p></article>
+      <article class="card rv" style="--d:.12s"><div class="ico"><svg class="i"><use href="#i-mark"/></svg></div><h3 data-i="f6t">Presets</h3><p data-i="f6d">Save your favorite look. Built-ins for X, LinkedIn, Instagram and README.</p></article>
+      <article class="card rv"><div class="ico"><svg class="i"><use href="#i-zap"/></svg></div><h3 data-i="f7t">Diff &amp; focus mode</h3><p data-i="f7d">Highlight lines, dim the rest, or show +/− diffs in green and red.</p></article>
+      <article class="card w2 rv" style="--d:.06s"><div class="ico"><svg class="i"><use href="#i-shield"/></svg></div><h3 data-i="f8t">Private by design</h3><p data-i="f8d">Everything runs locally. Your code never leaves your computer — no account, no tracking, no upload.</p></article>
+    </div>
   </div>
-</div></section>
+</section>
+
+<section class="sec" id="screenshots">
+  <div class="wrap">
+    <div class="head c rv"><span class="eyebrow" data-i="nav_shots">Screenshots</span><h2 data-i="shot_t">See it in action</h2><p class="sub" data-i="shot_s">Light or dark, desktop or narrow window — the interface adapts to you.</p></div>
+    <div class="gal rv">
+      <div class="view" id="view" role="button" tabindex="0" data-i-aria="aria_zoom">
+        <button class="gnav l" id="gPrev" data-i-aria="aria_prev"><svg class="i"><use href="#i-l"/></svg></button>
+        <img id="gImg" src="screenshots/image01.png" width="1440" height="900" alt="" loading="lazy">
+        <button class="gnav r" id="gNext" data-i-aria="aria_next"><svg class="i"><use href="#i-r"/></svg></button>
+      </div>
+      <p class="cap" id="cap" aria-live="polite"></p>
+      <div class="tabs" role="tablist" id="tabs"></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="playground">
+  <div class="wrap">
+    <div class="head rv"><span class="eyebrow" data-i="nav_play">Try it</span><h2 data-i="play_t">Try the look right here</h2><p class="sub" data-i="play_s">Pick a code theme and a backdrop — this is exactly how your image will look.</p></div>
+    <div class="play rv">
+      <div class="panel">
+        <div><h4 data-i="play_theme">Code theme</h4><div class="chips" id="pTheme"></div></div>
+        <div><h4 data-i="play_bg">Backdrop</h4><div class="gsw" id="pGrad"></div></div>
+        <p class="sub" style="font-size:.9rem;margin:0" data-i="play_hint">Tip: the app has 14 themes and 12 backdrops, plus your own colors.</p>
+      </div>
+      <div class="pstage" id="pStage">
+        <div class="win" id="pWin">
+          <div class="wbar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span>greet.ts</span></div>
+<pre><span class="ln">1</span><span class="c">// Greets a user</span>
+<span class="ln">2</span><span class="k">export const</span> <span class="f">greet</span> = (name: <span class="t">string</span>) =&gt; {
+<span class="ln">3</span>  <span class="k">const</span> hour = <span class="k">new</span> <span class="t">Date</span>().<span class="f">getHours</span>();
+<span class="ln">4</span>  <span class="k">return</span> <span class="s">`Good ${hour &lt; <span class="n">12</span> ? "morning" : "evening"}, ${name}!`</span>;
+<span class="ln">5</span>};
+<span class="ln">6</span>
+<span class="ln">7</span>console.<span class="f">log</span>(<span class="f">greet</span>(<span class="s">"world"</span>));</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="how" style="background:var(--sct)">
+  <div class="wrap">
+    <div class="head c rv"><span class="eyebrow" data-i="nav_how">How it works</span><h2 data-i="how_t">Three steps to a perfect picture</h2></div>
+    <div class="steps">
+      <article class="step rv"><div class="num">1</div><h3 data-i="s1t">Paste or open code</h3><p data-i="s1d">Paste a snippet, drop a file or open one — the language is detected automatically.</p></article>
+      <article class="step rv" style="--d:.1s"><div class="num">2</div><h3 data-i="s2t">Style it your way</h3><p data-i="s2d">Pick a theme, backdrop, ratio, font and window style. The preview updates instantly.</p></article>
+      <article class="step rv" style="--d:.2s"><div class="num">3</div><h3 data-i="s3t">Export &amp; share</h3><p data-i="s3d">Download PNG, JPG or SVG — or copy straight to the clipboard and paste anywhere.</p></article>
+    </div>
+    <div class="stats">
+      <div class="stat rv"><b data-n="14">0</b><span data-i="st1">code themes</span></div>
+      <div class="stat rv" style="--d:.08s"><b data-n="10">0</b><span data-i="st2">coding fonts</span></div>
+      <div class="stat rv" style="--d:.16s"><b data-n="35" data-suffix="+">0</b><span data-i="st3">languages</span></div>
+      <div class="stat rv" style="--d:.24s"><b data-n="4" data-suffix="×">0</b><span data-i="st4">max resolution</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="download">
+  <div class="wrap">
+    <div class="dl rv">
+      <div class="blob b1"></div><div class="blob b2"></div>
+      <div class="dlogo logo" aria-hidden="true"></div>
+      <h2 data-i="dl_t">Ready to make your code shine?</h2>
+      <p class="sub" data-i="dl_s">Free forever and MIT licensed. A small Windows installer — set up in about a minute.</p>
+      <div class="cta">
+        <a class="btn fill big rp-host" href="download/Code%20Image_1.0.0_x64-setup.exe" download><svg class="i"><use href="#i-down"/></svg><span data-i="cta_dl2">Download Code Image</span></a>
+        <a class="btn tonal big rp-host" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="i"><use href="#i-gh"/></svg><span data-i="cta_src">Browse the source</span></a>
+      </div>
+      <p class="note"><span data-i="note2">Version 1.0.0 · Windows 10/11 (64-bit)</span></p>
+    </div>
+  </div>
+</section>
 </main>
 
-<footer><div class="wrap">
-  <p><span data-i18n="author">Author</span>: <b>minhtrong67</b> · <span class="ai" data-i18n="ai">Built with the support of Claude AI</span></p>
-  <p style="margin-top:6px">MIT License · © 2026</p>
-</div></footer>
+<footer>
+  <div class="wrap">
+    <div class="fcard rv">
+      <div class="auth"><div class="av">M</div><div><small><svg class="i" style="width:16px"><use href="#i-spark"/></svg><span data-i="built">Built with Claude AI</span></small><b>minhtrong67</b></div></div>
+      <div class="fl"><a href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="i"><use href="#i-gh"/></svg>GitHub</a><a href="https://github.com/minhtrong67/my-tauri-apps/blob/main/LICENSE" target="_blank" rel="noopener"><span data-i="lic">MIT License</span></a></div>
+    </div>
+    <p class="copy">© 2026 minhtrong67 · <span data-i="foot">Made with care for developers who love beautiful code.</span></p>
+  </div>
+</footer>
 
+<button id="up" data-i-aria="aria_top"><svg class="i"><use href="#i-up"/></svg></button>
+<div class="lb" id="lb" role="dialog" aria-modal="true"><img id="lbImg" alt=""></div>
 <script>
-(function(){
-var T={
-en:{navFeatures:"Features",navHow:"How it works",h1:"Turn code into beautiful images",lead:"Paste your code, pick a theme, and export a crisp PNG in one click. Free, open source, and made for developers.",dl:"Download for Windows",explore:"Explore features",meta:"Version 1.0.0 · Windows 10/11 · MIT License",
-fTitle:"Everything you need for a perfect snippet",fSub:"Style every detail, then save or copy the result without leaving the app.",
-hTitle:"Three steps to a shareable image",hSub:"No sign-up, no upload: everything runs on your computer.",
-cTitle:"Ready to make your code look great?",cSub:"Download Code Image for Windows. It is free and open source.",author:"Author",ai:"Built with the support of Claude AI",
-f:[["code","Many languages","JavaScript, TypeScript, Python, HTML, CSS, SQL and more, with automatic detection."],["palette","Developer themes","Dracula, Tokyo Night, One Dark, Nord, Catppuccin and 9 more."],["image","Backgrounds & ratios","Gradients, solid or transparent, in 16:9, 4:3, 1:1, 4:5, 9:16 and more."],["type","Fonts & spacing","Fira Code, JetBrains Mono and 8 more. Tune size, padding and corner radius."],["list","Line numbers & highlight","Show line numbers and spotlight the lines that matter."],["download","PNG, JPG, SVG","Export up to 4× resolution, or copy straight to the clipboard."],["sun","Light, dark, system","Material 3 design with your choice of theme colour."],["lang","English & Tiếng Việt","The interface follows your system language automatically."],["window","Remembers your window","Reopen at your last size, or always start maximized."]],
-s:[["Paste your code","Type, paste, drop a file, or open one from disk."],["Style it","Choose a theme, background, font and window style."],["Save or copy","Download a crisp image or copy it to the clipboard."]]},
-vi:{navFeatures:"Tính năng",navHow:"Cách dùng",h1:"Biến code thành hình ảnh đẹp mắt",lead:"Dán code, chọn theme và xuất ảnh PNG sắc nét chỉ với một cú nhấp. Miễn phí, mã nguồn mở, dành cho lập trình viên.",dl:"Tải về cho Windows",explore:"Khám phá tính năng",meta:"Phiên bản 1.0.0 · Windows 10/11 · Giấy phép MIT",
-fTitle:"Mọi thứ bạn cần cho một đoạn code hoàn hảo",fSub:"Tuỳ chỉnh từng chi tiết, rồi lưu hoặc sao chép ảnh ngay trong ứng dụng.",
-hTitle:"Ba bước để có ảnh chia sẻ",hSub:"Không cần đăng ký, không tải lên: mọi thứ chạy ngay trên máy của bạn.",
-cTitle:"Sẵn sàng làm code của bạn thật đẹp?",cSub:"Tải Code Image cho Windows. Miễn phí và mã nguồn mở.",author:"Tác giả",ai:"Được xây dựng với sự hỗ trợ của Claude AI",
-f:[["code","Đa ngôn ngữ","JavaScript, TypeScript, Python, HTML, CSS, SQL và nhiều hơn nữa, tự động nhận diện."],["palette","Theme cho lập trình viên","Dracula, Tokyo Night, One Dark, Nord, Catppuccin và 9 theme khác."],["image","Nền & tỉ lệ ảnh","Chuyển màu, một màu hoặc trong suốt; tỉ lệ 16:9, 4:3, 1:1, 4:5, 9:16 và hơn thế."],["type","Font chữ & khoảng cách","Fira Code, JetBrains Mono và 8 font khác. Chỉnh cỡ chữ, lề và độ bo góc."],["list","Số dòng & đánh dấu","Bật số dòng và làm nổi bật những dòng quan trọng."],["download","PNG, JPG, SVG","Xuất đến độ phân giải 4×, hoặc sao chép thẳng vào clipboard."],["sun","Sáng, tối, hệ thống","Thiết kế Material 3 với màu chủ đề tuỳ chọn."],["lang","English & Tiếng Việt","Giao diện tự theo ngôn ngữ hệ thống của bạn."],["window","Nhớ cửa sổ của bạn","Mở lại đúng kích thước lần trước, hoặc luôn phóng to tối đa."]],
-s:[["Dán code của bạn","Nhập, dán, thả tệp hoặc mở tệp từ máy."],["Tuỳ chỉnh","Chọn theme, nền, font và kiểu cửa sổ."],["Lưu hoặc sao chép","Tải ảnh sắc nét hoặc sao chép vào clipboard."]]}};
-var ICONS={code:"m16 18 6-6-6-6M8 6l-6 6 6 6",palette:"M12 22a10 10 0 1 1 10-10c0 3-2 4-4 4h-2a2 2 0 0 0-1 3.7c.5.8.2 2.3-3 2.3ZM7.5 11h.01M12 7.5h.01M16.5 11h.01",image:"M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM9 9h.01M21 15l-5-5L5 21",type:"M4 7V4h16v3M9 20h6M12 4v16",list:"M10 6h11M10 12h11M10 18h11M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1",download:"M12 3v12m0 0 5-5m-5 5-5-5M5 21h14",sun:"M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z",lang:"m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6",window:"M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM3 9h18M7 6h.01"};
-var $=function(s,r){return (r||document).querySelector(s)};
-var root=document.documentElement,lang,mode=localStorage.getItem("ci-theme")||"system";
+(()=>{
+"use strict";
+const PAL={"#F44336":{"l":{"p":"#bb1614","op":"#ffffff","pc":"#ffdad5","opc":"#410001","s":"#775652","sc":"#ffdad5","osc":"#2c1512","t":"#705c2e","tc":"#fcdfa6","otc":"#261a00","sf":"#fffbff","os":"#201a19","osv":"#534341","ol":"#857370","olv":"#d8c2be","sl":"#fef1ef","sct":"#f8ebe9","sh":"#f3e5e3","shh":"#ede0de"},"d":{"p":"#ffb4a9","op":"#690002","pc":"#930005","opc":"#ffdad5","s":"#e7bdb7","sc":"#5d3f3b","osc":"#ffdad5","t":"#dfc38c","tc":"#574419","otc":"#fcdfa6","sf":"#201a19","os":"#ede0de","osv":"#d8c2be","ol":"#a08c89","olv":"#534341","sl":"#201a19","sct":"#251e1d","sh":"#2f2827","shh":"#3b3332"},"tone50":"#e0342a","tone60":"#ff5545"},"#E91E63":{"l":{"p":"#bc004b","op":"#ffffff","pc":"#ffd9de","opc":"#400014","s":"#75565b","sc":"#ffd9de","osc":"#2c1519","t":"#795831","tc":"#ffddba","otc":"#2b1700","sf":"#fffbff","os":"#201a1b","osv":"#524345","ol":"#847375","olv":"#d6c2c3","sl":"#fdf1f1","sct":"#f8ebeb","sh":"#f2e5e6","shh":"#ece0e0"},"d":{"p":"#ffb2be","op":"#660025","pc":"#900038","opc":"#ffd9de","s":"#e5bdc2","sc":"#5c3f43","osc":"#ffd9de","t":"#ebbf90","tc":"#5f411c","otc":"#ffddba","sf":"#201a1b","os":"#ece0e0","osv":"#d6c2c3","ol":"#9f8c8e","olv":"#524345","sl":"#201a1b","sct":"#241e1f","sh":"#2f2829","shh":"#3a3334"},"tone50":"#e61a61","tone60":"#ff4e7c"},"#9C27B0":{"l":{"p":"#9a25ae","op":"#ffffff","pc":"#ffd6fe","opc":"#35003f","s":"#6b586b","sc":"#f4dbf1","osc":"#251626","t":"#82524a","tc":"#ffdad4","otc":"#33110c","sf":"#fffbff","os":"#1e1a1d","osv":"#4d444c","ol":"#7f747d","olv":"#d0c3cc","sl":"#faf1f5","sct":"#f4ecf0","sh":"#eee6ea","shh":"#e9e0e4"},"d":{"p":"#f9abff","op":"#570066","pc":"#7b008f","opc":"#ffd6fe","s":"#d7bfd5","sc":"#534153","osc":"#f4dbf1","t":"#f6b8ad","tc":"#673b34","otc":"#ffdad4","sf":"#1e1a1d","os":"#e9e0e4","osv":"#d0c3cc","ol":"#998d96","olv":"#4d444c","sl":"#1e1a1d","sct":"#221e22","sh":"#2d292c","shh":"#383337"},"tone50":"#b744ca","tone60":"#d560e6"},"#673AB7":{"l":{"p":"#6f43c0","op":"#ffffff","pc":"#ebddff","opc":"#250059","s":"#635b70","sc":"#e9def8","osc":"#1f182b","t":"#7e525d","tc":"#ffd9e1","otc":"#31101b","sf":"#fffbff","os":"#1d1b1e","osv":"#49454e","ol":"#7a757f","olv":"#cbc4cf","sl":"#f8f2f7","sct":"#f2ecf1","sh":"#ece6eb","shh":"#e6e1e6"},"d":{"p":"#d3bbff","op":"#3f008d","pc":"#5727a6","opc":"#ebddff","s":"#cdc2db","sc":"#4b4358","osc":"#e9def8","t":"#f0b7c5","tc":"#643b46","otc":"#ffd9e1","sf":"#1d1b1e","os":"#e6e1e6","osv":"#cbc4cf","ol":"#948f99","olv":"#49454e","sl":"#1d1b1e","sct":"#211f22","sh":"#2b292d","shh":"#363438"},"tone50":"#895edb","tone60":"#a478f7"},"#3F51B5":{"l":{"p":"#4355b9","op":"#ffffff","pc":"#dee0ff","opc":"#00105c","s":"#5b5d72","sc":"#e0e1f9","osc":"#181a2c","t":"#77536d","tc":"#ffd7f1","otc":"#2d1228","sf":"#fefbff","os":"#1b1b1f","osv":"#46464f","ol":"#767680","olv":"#c7c5d0","sl":"#f6f2f7","sct":"#f0edf1","sh":"#eae7ec","shh":"#e4e1e6"},"d":{"p":"#bac3ff","op":"#08218a","pc":"#293ca0","opc":"#dee0ff","s":"#c3c5dd","sc":"#434659","osc":"#e0e1f9","t":"#e6bad7","tc":"#5d3c55","otc":"#ffd7f1","sf":"#1b1b1f","os":"#e4e1e6","osv":"#c7c5d0","ol":"#90909a","olv":"#46464f","sl":"#1b1b1f","sct":"#1f1f23","sh":"#2a2a2d","shh":"#353438"},"tone50":"#5d6fd4","tone60":"#7789f0"},"#2196F3":{"l":{"p":"#0061a4","op":"#ffffff","pc":"#d1e4ff","opc":"#001d36","s":"#535f70","sc":"#d7e3f7","osc":"#101c2b","t":"#6b5778","tc":"#f2daff","otc":"#251431","sf":"#fdfcff","os":"#1a1c1e","osv":"#43474e","ol":"#73777f","olv":"#c3c7cf","sl":"#f4f3f7","sct":"#eeedf1","sh":"#e8e8eb","shh":"#e2e2e6"},"d":{"p":"#9ecaff","op":"#003258","pc":"#00497d","opc":"#d1e4ff","s":"#bbc7db","sc":"#3b4858","osc":"#d7e3f7","t":"#d6bee4","tc":"#523f5f","otc":"#f2daff","sf":"#1a1c1e","os":"#e2e2e6","osv":"#c3c7cf","ol":"#8d9199","olv":"#43474e","sl":"#1a1c1e","sct":"#1e2022","sh":"#282a2d","shh":"#333538"},"tone50":"#007bcc","tone60":"#1e95f2"},"#03A9F4":{"l":{"p":"#006493","op":"#ffffff","pc":"#cae6ff","opc":"#001e30","s":"#50606e","sc":"#d3e5f5","osc":"#0c1d29","t":"#65587b","tc":"#ebddff","otc":"#201634","sf":"#fcfcff","os":"#1a1c1e","osv":"#41474d","ol":"#72787e","olv":"#c1c7ce","sl":"#f3f3f6","sct":"#edeef1","sh":"#e8e8eb","shh":"#e2e2e5"},"d":{"p":"#8dcdff","op":"#00344f","pc":"#004b70","opc":"#cae6ff","s":"#b7c9d9","sc":"#384956","osc":"#d3e5f5","t":"#cfc0e8","tc":"#4d4162","otc":"#ebddff","sf":"#1a1c1e","os":"#e2e2e5","osv":"#c1c7ce","ol":"#8b9198","olv":"#41474d","sl":"#1a1c1e","sct":"#1e2022","sh":"#282a2d","shh":"#333537"},"tone50":"#007eb8","tone60":"#0099de"},"#00BCD4":{"l":{"p":"#006876","op":"#ffffff","pc":"#a1efff","opc":"#001f25","s":"#4a6268","sc":"#cde7ed","osc":"#051f23","t":"#545d7e","tc":"#dbe1ff","otc":"#101a37","sf":"#fbfcfd","os":"#191c1d","osv":"#3f484a","ol":"#6f797b","olv":"#bfc8ca","sl":"#f2f4f4","sct":"#eceeef","sh":"#e6e8e9","shh":"#e1e3e3"},"d":{"p":"#44d8f1","op":"#00363e","pc":"#004e59","opc":"#a1efff","s":"#b1cbd1","sc":"#334a50","osc":"#cde7ed","t":"#bcc5eb","tc":"#3c4665","otc":"#dbe1ff","sf":"#191c1d","os":"#e1e3e3","osv":"#bfc8ca","ol":"#899295","olv":"#3f484a","sl":"#191c1d","sct":"#1d2021","sh":"#272b2b","shh":"#323536"},"tone50":"#008394","tone60":"#009fb4"},"#009688":{"l":{"p":"#006a60","op":"#ffffff","pc":"#74f8e5","opc":"#00201c","s":"#4a635f","sc":"#cce8e2","osc":"#05201c","t":"#456179","tc":"#cce5ff","otc":"#001e31","sf":"#fafdfb","os":"#191c1b","osv":"#3f4947","ol":"#6f7977","olv":"#bec9c6","sl":"#f2f4f2","sct":"#eceeec","sh":"#e6e9e7","shh":"#e0e3e1"},"d":{"p":"#53dbc9","op":"#003731","pc":"#005048","opc":"#74f8e5","s":"#b1ccc6","sc":"#334b47","osc":"#cce8e2","t":"#adcae6","tc":"#2d4961","otc":"#cce5ff","sf":"#191c1b","os":"#e0e3e1","osv":"#bec9c6","ol":"#899390","olv":"#3f4947","sl":"#191c1b","sct":"#1d201f","sh":"#272b2a","shh":"#323534"},"tone50":"#008679","tone60":"#00a293"},"#4CAF50":{"l":{"p":"#006e1c","op":"#ffffff","pc":"#94f990","opc":"#002204","s":"#52634f","sc":"#d5e8cf","osc":"#111f0f","t":"#38656a","tc":"#bcebf0","otc":"#002023","sf":"#fcfdf6","os":"#1a1c19","osv":"#424940","ol":"#72796f","olv":"#c2c9bd","sl":"#f3f4ee","sct":"#eeeee8","sh":"#e8e9e2","shh":"#e2e3dd"},"d":{"p":"#78dc77","op":"#00390a","pc":"#005313","opc":"#94f990","s":"#baccb3","sc":"#3b4b38","osc":"#d5e8cf","t":"#a0cfd4","tc":"#1f4d52","otc":"#bcebf0","sf":"#1a1c19","os":"#e2e3dd","osv":"#c2c9bd","ol":"#8c9388","olv":"#424940","sl":"#1a1c19","sct":"#1e201d","sh":"#282b27","shh":"#333531"},"tone50":"#22892f","tone60":"#41a447"},"#8BC34A":{"l":{"p":"#3e6a00","op":"#ffffff","pc":"#b9f474","opc":"#0f2000","s":"#576249","sc":"#dbe7c8","osc":"#151e0b","t":"#386663","tc":"#bbece8","otc":"#00201e","sf":"#fdfcf5","os":"#1b1c18","osv":"#44483d","ol":"#75796c","olv":"#c5c8ba","sl":"#f5f4ec","sct":"#efeee7","sh":"#e9e8e1","shh":"#e3e3db"},"d":{"p":"#9ed75b","op":"#1e3700","pc":"#2e4f00","opc":"#b9f474","s":"#bfcbad","sc":"#404a33","osc":"#dbe7c8","t":"#a0d0cc","tc":"#1f4e4b","otc":"#bbece8","sf":"#1b1c18","os":"#e3e3db","osv":"#c5c8ba","ol":"#8e9285","olv":"#44483d","sl":"#1b1c18","sct":"#1f201c","sh":"#292a26","shh":"#343530"},"tone50":"#52840b","tone60":"#6a9f2a"},"#CDDC39":{"l":{"p":"#5b6300","op":"#ffffff","pc":"#dded49","opc":"#1a1d00","s":"#5e6044","sc":"#e4e5c1","osc":"#1b1d07","t":"#3c665a","tc":"#beecdc","otc":"#002019","sf":"#fefcf8","os":"#1c1c17","osv":"#47483b","ol":"#787869","olv":"#c8c7b7","sl":"#f6f3eb","sct":"#f1eee5","sh":"#ebe8df","shh":"#e5e2da"},"d":{"p":"#c1d02c","op":"#2f3300","pc":"#444b00","opc":"#dded49","s":"#c7c9a6","sc":"#46492e","osc":"#e4e5c1","t":"#a2d0c1","tc":"#234e43","otc":"#beecdc","sf":"#1c1c17","os":"#e5e2da","osv":"#c8c7b7","ol":"#929282","olv":"#47483b","sl":"#1c1c17","sct":"#20201b","sh":"#2a2a25","shh":"#35352f"},"tone50":"#737d00","tone60":"#8c9800"},"#FFEB3B":{"l":{"p":"#695f00","op":"#ffffff","pc":"#f9e534","opc":"#201c00","s":"#645f41","sc":"#ebe3bd","osc":"#1f1c05","t":"#406652","tc":"#c2ecd3","otc":"#002113","sf":"#fffbff","os":"#1d1c16","osv":"#4a473a","ol":"#7b7768","olv":"#cbc6b5","sl":"#f8f3ea","sct":"#f2ede4","sh":"#ece8df","shh":"#e7e2d9"},"d":{"p":"#dbc90a","op":"#363100","pc":"#4f4800","opc":"#f9e534","s":"#cec7a3","sc":"#4b472b","osc":"#ebe3bd","t":"#a7d0b7","tc":"#294e3b","otc":"#c2ecd3","sf":"#1d1c16","os":"#e7e2d9","osv":"#cbc6b5","ol":"#959181","olv":"#4a473a","sl":"#1d1c16","sct":"#21201a","sh":"#2b2a24","shh":"#36352f"},"tone50":"#847800","tone60":"#a09200"},"#FFC107":{"l":{"p":"#785900","op":"#ffffff","pc":"#ffdf9e","opc":"#261a00","s":"#6b5d3f","sc":"#f5e0bb","osc":"#241a04","t":"#4a6547","tc":"#ccebc4","otc":"#072109","sf":"#fffbff","os":"#1e1b16","osv":"#4d4639","ol":"#7f7667","olv":"#d0c5b4","sl":"#faf2e9","sct":"#f5ede4","sh":"#efe7de","shh":"#e9e1d8"},"d":{"p":"#fabd00","op":"#3f2e00","pc":"#5b4300","opc":"#ffdf9e","s":"#d8c4a0","sc":"#52452a","osc":"#f5e0bb","t":"#b0cfaa","tc":"#334d31","otc":"#ccebc4","sf":"#1e1b16","os":"#e9e1d8","osv":"#d0c5b4","ol":"#998f80","olv":"#4d4639","sl":"#1e1b16","sct":"#221f1a","sh":"#2d2924","shh":"#38342e"},"tone50":"#977100","tone60":"#b78a00"},"#FF9800":{"l":{"p":"#8b5000","op":"#ffffff","pc":"#ffdcbe","opc":"#2c1600","s":"#725a42","sc":"#ffdcbe","osc":"#291806","t":"#58633a","tc":"#dce8b4","otc":"#161e01","sf":"#fffbff","os":"#201b16","osv":"#51453a","ol":"#837468","olv":"#d5c3b5","sl":"#fdf2ea","sct":"#f7ece4","sh":"#f1e6df","shh":"#ebe0d9"},"d":{"p":"#ffb870","op":"#4a2800","pc":"#693c00","opc":"#ffdcbe","s":"#e1c1a4","sc":"#59422c","osc":"#ffdcbe","t":"#c0cc9a","tc":"#414b24","otc":"#dce8b4","sf":"#201b16","os":"#ebe0d9","osv":"#d5c3b5","ol":"#9d8e81","olv":"#51453a","sl":"#201b16","sct":"#241f1a","sh":"#2e2924","shh":"#3a342f"},"tone50":"#ae6600","tone60":"#d27c00"},"#FF5722":{"l":{"p":"#b02f00","op":"#ffffff","pc":"#ffdbd1","opc":"#3b0900","s":"#77574e","sc":"#ffdbd1","osc":"#2c150f","t":"#6c5d2f","tc":"#f5e1a7","otc":"#231b00","sf":"#fffbff","os":"#201a18","osv":"#53433f","ol":"#85736e","olv":"#d8c2bc","sl":"#fef1ed","sct":"#f8ebe8","sh":"#f3e5e2","shh":"#ede0dc"},"d":{"p":"#ffb5a0","op":"#5f1500","pc":"#862200","opc":"#ffdbd1","s":"#e7bdb2","sc":"#5d4037","osc":"#ffdbd1","t":"#d8c58d","tc":"#534619","otc":"#f5e1a7","sf":"#201a18","os":"#ede0dc","osv":"#d8c2bc","ol":"#a08c87","olv":"#53433f","sl":"#201a18","sct":"#251e1c","sh":"#2f2827","shh":"#3b3331"},"tone50":"#db3e03","tone60":"#ff5722"},"#795548":{"l":{"p":"#9a4522","op":"#ffffff","pc":"#ffdbcf","opc":"#380d00","s":"#77574c","sc":"#ffdbcf","osc":"#2c160d","t":"#695e2f","tc":"#f2e2a8","otc":"#211b00","sf":"#fffbff","os":"#201a18","osv":"#53433e","ol":"#85736d","olv":"#d8c2bb","sl":"#fef1ed","sct":"#f8ebe7","sh":"#f3e5e2","shh":"#ede0dc"},"d":{"p":"#ffb59a","op":"#5b1b00","pc":"#7b2e0d","opc":"#ffdbcf","s":"#e7beaf","sc":"#5d4035","osc":"#ffdbcf","t":"#d5c68e","tc":"#50471a","otc":"#f2e2a8","sf":"#201a18","os":"#ede0dc","osv":"#d8c2bb","ol":"#a08d86","olv":"#53433e","sl":"#201a18","sct":"#251e1c","sh":"#2f2826","shh":"#3b3331"},"tone50":"#b95d38","tone60":"#d9754f"},"#607D8B":{"l":{"p":"#006783","op":"#ffffff","pc":"#bde9ff","opc":"#001f2a","s":"#4d616c","sc":"#d0e6f2","osc":"#081e27","t":"#5d5b7d","tc":"#e3dfff","otc":"#191836","sf":"#fbfcfe","os":"#191c1e","osv":"#40484c","ol":"#70787d","olv":"#c0c8cd","sl":"#f2f4f6","sct":"#edeef0","sh":"#e7e8ea","shh":"#e1e2e4"},"d":{"p":"#65d3ff","op":"#003546","pc":"#004d64","opc":"#bde9ff","s":"#b4cad6","sc":"#354a53","osc":"#d0e6f2","t":"#c6c2ea","tc":"#454364","otc":"#e3dfff","sf":"#191c1e","os":"#e1e2e4","osv":"#c0c8cd","ol":"#8a9297","olv":"#40484c","sl":"#191c1e","sct":"#1d2022","sh":"#272a2c","shh":"#323537"},"tone50":"#0081a5","tone60":"#069dc7"}};
+const SEEDS=Object.keys(PAL);
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const root=document.documentElement;
+const I18N={
+en:{nav_features:"Features",nav_shots:"Screenshots",nav_play:"Try it",nav_how:"How it works",nav_dl:"Download",theme_color:"Theme color",
+badge:"Free & open source · v1.0.0",h1a:"Turn your code into",lead:"Code Image is a fast, private desktop app that turns snippets into polished, social-ready pictures — with 14 themes, gradient backdrops, presets and one-click export.",
+cta_dl:"Download for Windows",cta_gh:"View on GitHub",note:"Windows 10/11 · 64-bit · No account, works offline",chip1:"14 themes",chip3:"100% offline",
+feat_t:"Everything you need to make code look great",feat_s:"A focused toolbox with the details that matter — from pixel-perfect themes to one-click presets.",
+f1t:"14 hand-tuned code themes",f1d:"Dracula, Tokyo Night, Nord, Catppuccin, GitHub and more — with a live mini-preview right in the picker.",
+f2t:"Gradient backdrops",f2d:"Twelve gradients, custom colors and angles — or fully transparent.",f3t:"Social-ready ratios",f3d:"16:9, 4:5, 1:1, 9:16 and more, with auto-fit so code is never cropped.",
+f4t:"Beautiful coding fonts",f4d:"JetBrains Mono, Fira Code, Cascadia and 7 more — ligatures on or off.",f5t:"Export anywhere",f5d:"PNG, JPG or SVG at up to 4× resolution. Copy to the clipboard or save to a folder you choose, then reveal it in one click.",
+f6t:"Presets",f6d:"Save your favorite look. Built-ins for X, LinkedIn, Instagram and README.",f7t:"Diff & focus mode",f7d:"Highlight lines, dim the rest, or show +/− diffs in green and red.",
+f8t:"Private by design",f8d:"Everything runs locally. Your code never leaves your computer — no account, no tracking, no upload.",
+shot_t:"See it in action",shot_s:"Light or dark, desktop or narrow window — the interface adapts to you.",
+cap1:"Clean editor, live preview and a rich style panel",cap2:"Dark mode with focus lines and a success toast",cap3:"Settings: theme, color, fonts, save folder and more",cap4:"Fully responsive in a narrow window, with presets",
+tab1:"Editor",tab2:"Dark & focus",tab3:"Settings",tab4:"Responsive",
+play_t:"Try the look right here",play_s:"Pick a code theme and a backdrop — this is exactly how your image will look.",play_theme:"Code theme",play_bg:"Backdrop",play_hint:"Tip: the app has 14 themes and 12 backdrops, plus your own colors.",
+how_t:"Three steps to a perfect picture",s1t:"Paste or open code",s1d:"Paste a snippet, drop a file or open one — the language is detected automatically.",s2t:"Style it your way",s2d:"Pick a theme, backdrop, ratio, font and window style. The preview updates instantly.",s3t:"Export & share",s3d:"Download PNG, JPG or SVG — or copy straight to the clipboard and paste anywhere.",
+st1:"code themes",st2:"coding fonts",st3:"languages",st4:"max resolution",
+dl_t:"Ready to make your code shine?",dl_s:"Free forever and MIT licensed. A small Windows installer — set up in about a minute.",cta_dl2:"Download Code Image",cta_src:"Browse the source",note2:"Version 1.0.0 · Windows 10/11 (64-bit)",
+built:"Built with Claude AI",lic:"MIT License",foot:"Made with care for developers who love beautiful code.",
+aria_color:"Theme color",aria_mode:"Switch light / dark / system",aria_menu:"Menu",aria_zoom:"Enlarge screenshot",aria_prev:"Previous",aria_next:"Next",aria_top:"Back to top",
+words:["beautiful images","stunning posts","shareable slides","sharp screenshots"],modes:{light:"Light",dark:"Dark",system:"System"}},
+vi:{nav_features:"Tính năng",nav_shots:"Ảnh chụp",nav_play:"Dùng thử",nav_how:"Cách dùng",nav_dl:"Tải về",theme_color:"Màu chủ đề",
+badge:"Miễn phí & mã nguồn mở · v1.0.0",h1a:"Biến code của bạn thành",lead:"Code Image là ứng dụng desktop nhanh và riêng tư, biến đoạn code thành ảnh đẹp sẵn sàng chia sẻ — với 14 theme, nền gradient, preset và xuất ảnh một chạm.",
+cta_dl:"Tải cho Windows",cta_gh:"Xem trên GitHub",note:"Windows 10/11 · 64-bit · Không cần tài khoản, chạy offline",chip1:"14 theme",chip3:"100% offline",
+feat_t:"Mọi thứ để code của bạn trông thật đẹp",feat_s:"Bộ công cụ gọn gàng với những chi tiết quan trọng — từ theme chuẩn từng pixel đến preset một chạm.",
+f1t:"14 theme code được tinh chỉnh",f1d:"Dracula, Tokyo Night, Nord, Catppuccin, GitHub… kèm xem trước thu nhỏ ngay trong bảng chọn.",
+f2t:"Nền gradient",f2d:"12 gradient, tuỳ chỉnh màu và góc — hoặc nền trong suốt hoàn toàn.",f3t:"Tỉ lệ cho mạng xã hội",f3d:"16:9, 4:5, 1:1, 9:16… cùng tự động vừa khít để code không bị cắt.",
+f4t:"Font code đẹp",f4d:"JetBrains Mono, Fira Code, Cascadia và 7 font khác — bật/tắt ligature.",f5t:"Xuất ảnh mọi nơi",f5d:"PNG, JPG hoặc SVG đến 4× độ phân giải. Sao chép vào clipboard hoặc lưu vào thư mục bạn chọn, rồi mở thư mục chỉ bằng một cú nhấp.",
+f6t:"Preset",f6d:"Lưu phong cách yêu thích. Có sẵn X, LinkedIn, Instagram và README.",f7t:"Diff & chế độ tập trung",f7d:"Đánh dấu dòng, làm mờ phần còn lại hoặc hiển thị diff +/− xanh đỏ.",
+f8t:"Riêng tư từ thiết kế",f8d:"Mọi thứ chạy cục bộ. Code không rời khỏi máy bạn — không tài khoản, không theo dõi, không tải lên.",
+shot_t:"Xem ứng dụng hoạt động",shot_s:"Sáng hay tối, màn hình lớn hay cửa sổ hẹp — giao diện luôn thích ứng.",
+cap1:"Trình soạn thảo gọn gàng, xem trước trực tiếp và bảng tuỳ chỉnh phong phú",cap2:"Chế độ tối với dòng tập trung và thông báo thành công",cap3:"Cài đặt: giao diện, màu, font, thư mục lưu và hơn thế nữa",cap4:"Responsive hoàn chỉnh trong cửa sổ hẹp, kèm preset",
+tab1:"Soạn thảo",tab2:"Tối & tập trung",tab3:"Cài đặt",tab4:"Responsive",
+play_t:"Thử phong cách ngay tại đây",play_s:"Chọn theme code và nền — ảnh của bạn sẽ trông đúng như thế này.",play_theme:"Theme code",play_bg:"Nền",play_hint:"Mẹo: ứng dụng có 14 theme, 12 nền và cả màu tuỳ chỉnh của riêng bạn.",
+how_t:"Ba bước để có bức ảnh hoàn hảo",s1t:"Dán hoặc mở code",s1d:"Dán đoạn code, thả tệp hoặc mở tệp — ngôn ngữ được tự động nhận diện.",s2t:"Tuỳ chỉnh theo ý bạn",s2d:"Chọn theme, nền, tỉ lệ, font và kiểu cửa sổ. Xem trước cập nhật tức thì.",s3t:"Xuất & chia sẻ",s3d:"Tải PNG, JPG hoặc SVG — hoặc sao chép thẳng vào clipboard và dán ở bất cứ đâu.",
+st1:"theme code",st2:"font code",st3:"ngôn ngữ",st4:"độ phân giải tối đa",
+dl_t:"Sẵn sàng làm code của bạn tỏa sáng?",dl_s:"Miễn phí mãi mãi, giấy phép MIT. Bộ cài Windows nhỏ gọn — cài đặt trong khoảng một phút.",cta_dl2:"Tải Code Image",cta_src:"Xem mã nguồn",note2:"Phiên bản 1.0.0 · Windows 10/11 (64-bit)",
+built:"Xây dựng cùng Claude AI",lic:"Giấy phép MIT",foot:"Được làm với sự chăm chút cho những lập trình viên yêu code đẹp.",
+aria_color:"Màu chủ đề",aria_mode:"Chuyển sáng / tối / hệ thống",aria_menu:"Menu",aria_zoom:"Phóng to ảnh",aria_prev:"Trước",aria_next:"Sau",aria_top:"Lên đầu trang",
+words:["hình ảnh đẹp mắt","bài đăng ấn tượng","slide chia sẻ","ảnh chụp sắc nét"],modes:{light:"Sáng",dark:"Tối",system:"Hệ thống"}}};
 
+let st={mode:"system",seed:"#E91E63",lang:(navigator.language||"en").toLowerCase().startsWith("vi")?"vi":"en"};
+try{Object.assign(st,JSON.parse(localStorage.getItem("ci-landing")||"{}"))}catch(e){}
+if(!PAL[st.seed])st.seed="#E91E63";
+const save=()=>{try{localStorage.setItem("ci-landing",JSON.stringify(st))}catch(e){}};
+const mq=matchMedia("(prefers-color-scheme: dark)");
+const isDark=()=>st.mode==="dark"||(st.mode==="system"&&mq.matches);
+
+/* ---- theme ---- */
+const MAP={p:"p",op:"op",pc:"pc",opc:"opc",s:"s",sc:"sc",osc:"osc",t:"t",tc:"tc",otc:"otc",sf:"sf",os:"os",osv:"osv",ol:"ol",olv:"olv",sl:"sl",sct:"sct",sh:"sh",shh:"shh"};
 function applyTheme(){
-  var dark=mode==="dark"||(mode==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);
-  root.dataset.theme=dark?"dark":"light";
-  var paths={light:"M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4",dark:"M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z",system:"M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM8 21h8M12 17v4"};
-  $("#themeBtn").innerHTML='<svg class="i" viewBox="0 0 24 24"><path d="'+paths[mode]+'"/></svg>';
-  $("#themeBtn").title=mode;
+  const d=isDark(), c=PAL[st.seed][d?"d":"l"];
+  for(const k in MAP)root.style.setProperty("--"+k,c[k]);
+  root.style.colorScheme=d?"dark":"light"; root.style.background=c.sf;
+  $('meta[name="theme-color"]').setAttribute("content",c.sf);
+  const ic=st.mode==="light"?"i-sun":st.mode==="dark"?"i-moon":"i-mon";
+  $("#modeBtn use").setAttribute("href","#"+ic);
+  $("#modeBtn").title=I18N[st.lang].modes[st.mode];
+  $$("#swatches button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.c===st.seed));
 }
-$("#themeBtn").onclick=function(){mode={light:"dark",dark:"system",system:"light"}[mode];localStorage.setItem("ci-theme",mode);applyTheme()};
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change",applyTheme);
+const cookie=(c,r,a,n,steps=140)=>{let d="";for(let i=0;i<=steps;i++){const t=i/steps*Math.PI*2,q=r*(1-a+a*Math.cos(n*t));d+=(i?"L":"M")+(c+q*Math.cos(t)).toFixed(1)+" "+(c+q*Math.sin(t)).toFixed(1)}return d+"Z"};
+const LOGO='<svg viewBox="0 0 64 64" width="100%" height="100%"><path d="'+cookie(32,32.6,.045,12)+'" fill="var(--p)"/><g transform="rotate(-7 32 34)"><rect x="14" y="19" width="36" height="28" rx="8" fill="var(--pc)"/><circle cx="21" cy="25" r="1.8" fill="var(--p)"/><circle cx="27" cy="25" r="1.8" fill="var(--p)"/><path d="M26 33l-5 5 5 5M38 33l5 5-5 5M33.6 31.5 30.4 44.5" fill="none" stroke="var(--p)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g><path d="M47 8c.5 4 2 5.5 6 6-4 .5-5.5 2-6 6-.5-4-2-5.5-6-6 4-.5 5.5-2 6-6Z" fill="var(--tc)"/></svg>';
+$$(".logo").forEach(e=>e.innerHTML=LOGO);
 
-function setLang(l){
-  lang=l;localStorage.setItem("ci-lang",l);root.lang=l;var d=T[l];
-  document.querySelectorAll("[data-i18n]").forEach(function(e){var v=d[e.dataset.i18n];if(v)e.textContent=v});
-  document.querySelectorAll("#langSeg button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.lang===l)});
-  $("#featureGrid").innerHTML=d.f.map(function(x,i){return '<article class="card rv in" style="--d:'+(i%3)*.08+'s"><div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="'+ICONS[x[0]]+'"/></svg></div><h3>'+x[1]+'</h3><p>'+x[2]+'</p></article>'}).join("");
-  $("#stepGrid").innerHTML=d.s.map(function(x,i){return '<article class="card rv in" style="--d:'+i*.1+'s"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></article>'}).join("");
-  document.title=l==="vi"?"Code Image – Biến code thành hình ảnh đẹp mắt | Ứng dụng desktop miễn phí":"Code Image – Turn code into beautiful images | Free desktop app";
-  observe();
+/* ---- i18n ---- */
+let wi=0,wt;
+function applyLang(){
+  const D=I18N[st.lang]; root.lang=st.lang;
+  $$("[data-i]").forEach(e=>{const v=D[e.dataset.i];if(v!=null)e.textContent=v});
+  $$("[data-i-aria]").forEach(e=>e.setAttribute("aria-label",D[e.dataset.iAria]));
+  $$(".seg button").forEach(b=>b.setAttribute("aria-checked",b.dataset.lang===st.lang));
+  $("#words").textContent=D.words[wi%D.words.length];
+  document.title=st.lang==="vi"?"Code Image — Biến code thành hình ảnh đẹp mắt | Ứng dụng desktop miễn phí":"Code Image — Turn your code into beautiful images | Free desktop app";
+  setShot(shot,true); $("#modeBtn").title=D.modes[st.mode];
 }
-document.querySelectorAll("#langSeg button").forEach(function(b){b.onclick=function(){setLang(b.dataset.lang)}});
+function rotate(){clearInterval(wt);if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  wt=setInterval(()=>{const el=$("#words");el.classList.add("out");setTimeout(()=>{wi++;el.textContent=I18N[st.lang].words[wi%4];el.classList.remove("out")},350)},2800)}
 
-// demo theme chips
-var TH=[["Tokyo Night","#1a1b26","#c0caf5","#16161e","#565f89","#bb9af7","#9ece6a","#ff9e64","#7aa2f7","linear-gradient(135deg,#4776e6,#8e54e9)"],
-["Dracula","#282a36","#f8f8f2","#21222c","#6272a4","#ff79c6","#f1fa8c","#bd93f9","#50fa7b","linear-gradient(135deg,#ff512f,#dd2476)"],
-["Nord","#2e3440","#d8dee9","#272c36","#616e88","#81a1c1","#a3be8c","#b48ead","#88c0d0","linear-gradient(135deg,#2193b0,#6dd5ed)"],
-["Catppuccin","#eff1f5","#4c4f69","#e6e9ef","#9ca0b0","#8839ef","#40a02b","#fe640b","#1e66f5","linear-gradient(135deg,#f093fb,#f5576c)"],
-["One Dark","#282c34","#abb2bf","#21252b","#5c6370","#c678dd","#98c379","#d19a66","#61afef","linear-gradient(135deg,#11998e,#38ef7d)"]];
-var names=["--c-bg","--c-fg","--c-bar","--c-cm","--c-k","--c-s","--c-n","--c-f"];
-function theme(i){var t=TH[i];names.forEach(function(n,j){$("#win").style.setProperty(n,t[j+1])});$("#demo").style.background=t[9];
-  document.querySelectorAll("#chips button").forEach(function(b,j){b.setAttribute("aria-pressed",j===i)})}
-$("#chips").innerHTML=TH.map(function(t,i){return '<button aria-pressed="false" data-i="'+i+'">'+t[0]+'</button>'}).join("");
-document.querySelectorAll("#chips button").forEach(function(b){b.onclick=function(){theme(+b.dataset.i)}});
-theme(0);var ti=0;var auto=setInterval(function(){ti=(ti+1)%TH.length;theme(ti)},3500);
-$("#chips").addEventListener("pointerdown",function(){clearInterval(auto)});
+/* ---- controls ---- */
+$("#swatches").innerHTML=SEEDS.map(c=>`<button data-c="${c}" style="background:${c}" aria-label="${c}" aria-pressed="false"></button>`).join("");
+$("#swatches").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;st.seed=b.dataset.c;save();applyTheme()});
+$("#modeBtn").onclick=()=>{st.mode={light:"dark",dark:"system",system:"light"}[st.mode];save();applyTheme()};
+$$(".seg button").forEach(b=>b.onclick=()=>{st.lang=b.dataset.lang;save();applyLang()});
+mq.addEventListener("change",()=>st.mode==="system"&&applyTheme());
+const pal=$("#pal"),palBtn=$("#palBtn");
+const setPal=o=>{pal.classList.toggle("open",o);palBtn.setAttribute("aria-expanded",o)};
+palBtn.onclick=e=>{e.stopPropagation();setPal(!pal.classList.contains("open"))};
+document.addEventListener("click",e=>{if(!pal.contains(e.target))setPal(false)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){setPal(false);closeMenu();closeLb()}});
+const links=$("#links"),burger=$("#burger");
+const closeMenu=()=>{links.classList.remove("open");burger.setAttribute("aria-expanded","false");$("use",burger).setAttribute("href","#i-menu")};
+burger.onclick=()=>{const o=links.classList.toggle("open");burger.setAttribute("aria-expanded",o);$("use",burger).setAttribute("href",o?"#i-x":"#i-menu")};
 
-// scroll reveal + header + ripple
-var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}})},{threshold:.15});
-function observe(){document.querySelectorAll(".rv:not(.in)").forEach(function(e){io.observe(e)})}
-addEventListener("scroll",function(){$("header").classList.toggle("scrolled",scrollY>8)},{passive:true});
-document.addEventListener("pointerdown",function(e){var b=e.target.closest(".btn");if(!b)return;var r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,d=document.createElement("span");
-  d.className="ripple";d.style.cssText="width:"+s+"px;height:"+s+"px;left:"+(e.clientX-r.left-s/2)+"px;top:"+(e.clientY-r.top-s/2)+"px";b.appendChild(d);setTimeout(function(){d.remove()},650)});
+/* ---- smooth scroll + spy ---- */
+const hdr=$("#hdr");
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+$$('a[href^="#"]').forEach(a=>a.addEventListener("click",e=>{
+  const id=a.getAttribute("href");if(id.length<2)return;const t=id==="#home"?document.body:$(id);if(!t)return;
+  e.preventDefault();closeMenu();
+  const y=id==="#home"?0:t.getBoundingClientRect().top+scrollY-hdr.offsetHeight+4;
+  scrollTo({top:y,behavior:reduce?"auto":"smooth"});history.replaceState(null,"",id==="#home"?location.pathname:id);
+}));
+const secs=["features","screenshots","playground","how","download"].map(id=>document.getElementById(id));
+const spy=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting)$$(".links a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href")==="#"+en.target.id))}),{rootMargin:"-45% 0px -50% 0px"});
+secs.forEach(s=>spy.observe(s));
+const up=$("#up"),bar=$("#bar");let tick=false;
+function onScroll(){tick=false;const y=scrollY,h=document.documentElement.scrollHeight-innerHeight;
+  hdr.classList.toggle("stuck",y>12);up.classList.toggle("show",y>600);bar.style.transform=`scaleX(${h>0?y/h:0})`;
+  if(y<200)$$(".links a").forEach(a=>a.removeAttribute("aria-current"))}
+addEventListener("scroll",()=>{if(!tick){tick=true;requestAnimationFrame(onScroll)}},{passive:true});
+up.onclick=()=>scrollTo({top:0,behavior:reduce?"auto":"smooth"});
 
-applyTheme();
-setLang(localStorage.getItem("ci-lang")||((navigator.language||"en").toLowerCase().indexOf("vi")===0?"vi":"en"));
+/* ---- reveal, counters ---- */
+const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);const n=$("[data-n]",en.target);if(n)count(n)}}),{threshold:.12});
+$$(".rv").forEach(e=>io.observe(e));
+function count(el){const to=+el.dataset.n,suf=el.dataset.suffix||"";if(reduce){el.textContent=to+suf;return}const t0=performance.now();
+  (function f(t){const p=Math.min(1,(t-t0)/1400),v=Math.round(to*(1-Math.pow(1-p,3)));el.textContent=v+suf;if(p<1)requestAnimationFrame(f)})(t0)}
+
+/* ---- tilt, spotlight, ripple ---- */
+const stage=$("#stage"),fr=$("#heroFrame");
+if(matchMedia("(hover:hover)").matches&&!reduce){
+  stage.addEventListener("pointermove",e=>{const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;fr.style.setProperty("--ry",(x*12).toFixed(2)+"deg");fr.style.setProperty("--rx",(-y*10).toFixed(2)+"deg")});
+  stage.addEventListener("pointerleave",()=>{fr.style.removeProperty("--ry");fr.style.removeProperty("--rx")});
+  addEventListener("pointermove",e=>{const x=(e.clientX/innerWidth-.5),y=(e.clientY/innerHeight-.5);$$("#top .blob").forEach((b,i)=>b.style.translate=`${x*(i+1)*-22}px ${y*(i+1)*-22}px`)},{passive:true});
+}
+document.addEventListener("pointermove",e=>{const c=e.target.closest&&e.target.closest(".card");if(c){const r=c.getBoundingClientRect();c.style.setProperty("--mx",e.clientX-r.left+"px");c.style.setProperty("--my",e.clientY-r.top+"px")}},{passive:true});
+document.addEventListener("pointerdown",e=>{const el=e.target.closest(".btn,.ib");if(!el)return;const r=el.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,d=document.createElement("span");
+  d.className="rp";d.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;el.appendChild(d);d.addEventListener("animationend",()=>d.remove())});
+
+/* ---- marquee ---- */
+const LANGS=["JavaScript","TypeScript","Python","Rust","Go","Java","Kotlin","Swift","C++","C#","PHP","Ruby","Dart","SQL","Bash","PowerShell","YAML","JSON","Markdown","HTML","CSS","SCSS","Lua","Scala","Elixir","Haskell","Diff","Dockerfile","GraphQL","LaTeX"];
+$("#marq").innerHTML=[...LANGS,...LANGS].map(l=>`<span>${l}</span>`).join("");
+
+/* ---- gallery ---- */
+const SHOTS=[{src:"screenshots/image01.png",w:1440,h:900},{src:"screenshots/image02.png",w:1440,h:900},{src:"screenshots/image03.png",w:1440,h:900},{src:"screenshots/image04.png",w:840,h:1720,m:1}];
+let shot=0;
+$("#tabs").innerHTML=SHOTS.map((s,i)=>`<button role="tab" data-k="${i}"><span data-i="tab${i+1}"></span></button>`).join("");
+function setShot(i,quiet){
+  shot=(i+SHOTS.length)%SHOTS.length;const s=SHOTS[shot],img=$("#gImg"),v=$("#view"),D=I18N[st.lang];
+  const apply=()=>{img.src=s.src;img.width=s.w;img.height=s.h;img.alt=D["cap"+(shot+1)];v.classList.toggle("m",!!s.m);img.classList.remove("swp")};
+  if(quiet)apply();else{img.classList.add("swp");setTimeout(apply,260)}
+  $("#cap").textContent=D["cap"+(shot+1)];
+  $$("#tabs button").forEach((b,k)=>{b.setAttribute("aria-selected",k===shot);const sp=$("span",b);sp.textContent=D["tab"+(k+1)]});
+}
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b)setShot(+b.dataset.k)});
+$("#gPrev").onclick=e=>{e.stopPropagation();setShot(shot-1)};$("#gNext").onclick=e=>{e.stopPropagation();setShot(shot+1)};
+const lb=$("#lb");function closeLb(){lb.classList.remove("open")}
+$("#view").addEventListener("click",()=>{$("#lbImg").src=SHOTS[shot].src;$("#lbImg").alt=$("#cap").textContent;lb.classList.add("open")});
+$("#view").addEventListener("keydown",e=>{if(e.key==="Enter")$("#view").click();if(e.key==="ArrowLeft")setShot(shot-1);if(e.key==="ArrowRight")setShot(shot+1)});
+lb.onclick=closeLb;
+
+/* ---- playground ---- */
+const TH={
+"Tokyo Night":{b:"#1a1b26",f:"#c0caf5",bar:"#16161e",k:"#bb9af7",fn:"#7aa2f7",s:"#9ece6a",n:"#ff9e64",c:"#565f89",t:"#2ac3de"},
+"Dracula":{b:"#282a36",f:"#f8f8f2",bar:"#21222c",k:"#ff79c6",fn:"#50fa7b",s:"#f1fa8c",n:"#bd93f9",c:"#6272a4",t:"#8be9fd"},
+"Nord":{b:"#2e3440",f:"#d8dee9",bar:"#272c36",k:"#81a1c1",fn:"#88c0d0",s:"#a3be8c",n:"#b48ead",c:"#616e88",t:"#8fbcbb"},
+"Catppuccin Latte":{b:"#eff1f5",f:"#4c4f69",bar:"#e6e9ef",k:"#8839ef",fn:"#1e66f5",s:"#40a02b",n:"#fe640b",c:"#9ca0b0",t:"#df8e1d"},
+"Monokai":{b:"#272822",f:"#f8f8f2",bar:"#1e1f1c",k:"#f92672",fn:"#a6e22e",s:"#e6db74",n:"#ae81ff",c:"#75715e",t:"#66d9ef"},
+"GitHub Dark":{b:"#0d1117",f:"#c9d1d9",bar:"#161b22",k:"#ff7b72",fn:"#d2a8ff",s:"#a5d6ff",n:"#79c0ff",c:"#8b949e",t:"#ffa657"}};
+const GR=[["#4776e6","#8e54e9"],["#ff512f","#dd2476"],["#00c9ff","#92fe9d"],["#f093fb","#f5576c"],["#11998e","#38ef7d"],["#232526","#414345"]];
+let pt="Tokyo Night",pg=0;
+$("#pTheme").innerHTML=Object.keys(TH).map(k=>`<button data-k="${k}">${k}</button>`).join("");
+$("#pGrad").innerHTML=GR.map((g,i)=>`<button data-k="${i}" aria-label="Gradient ${i+1}" style="background:linear-gradient(135deg,${g[0]},${g[1]})"></button>`).join("");
+function play(){const t=TH[pt],w=$("#pWin");
+  const set=(k,v)=>w.style.setProperty(k,v);set("--cb",t.b);set("--cf",t.f);set("--cbar",t.bar);set("--ck",t.k);set("--cfn",t.fn);set("--cs",t.s);set("--cn",t.n);set("--cc",t.c);set("--ct",t.t);
+  $("#pStage").style.background=`linear-gradient(135deg,${GR[pg][0]},${GR[pg][1]})`;
+  $$("#pTheme button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===pt));$$("#pGrad button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.k===pg))}
+$("#pTheme").onclick=e=>{const b=e.target.closest("button");if(b){pt=b.dataset.k;play()}};
+$("#pGrad").onclick=e=>{const b=e.target.closest("button");if(b){pg=+b.dataset.k;play()}};
+
+/* ---- init ---- */
+applyTheme();applyLang();rotate();play();onScroll();
 })();
 </script>
 </body>

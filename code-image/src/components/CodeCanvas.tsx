@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Minus, Square, X } from "lucide-react";
 import { useApp } from "../lib/store";
 import { CODE_THEMES, FONTS, MONO_FALLBACK, RATIOS } from "../lib/constants";
@@ -9,6 +9,12 @@ const lum = (hex: string) => {
   return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
 };
 
+export const themeVars = (theme: (typeof CODE_THEMES)[number]) => ({
+  "--c-fg": theme.fg, "--c-comment": theme.comment, "--c-kw": theme.keyword, "--c-str": theme.string,
+  "--c-num": theme.number, "--c-fn": theme.fn, "--c-type": theme.type, "--c-var": theme.variable,
+  "--c-attr": theme.attr, "--c-tag": theme.tag, "--c-builtin": theme.builtin, "--c-punct": theme.punct,
+}) as React.CSSProperties;
+
 export const CodeCanvas = forwardRef<HTMLDivElement, { onCut?: (cut: boolean) => void }>(function CodeCanvas({ onCut }, ref) {
   const d = useApp((s) => s.design);
   const theme = CODE_THEMES.find((t) => t.id === d.themeId) ?? CODE_THEMES[0];
@@ -18,7 +24,9 @@ export const CodeCanvas = forwardRef<HTMLDivElement, { onCut?: (cut: boolean) =>
   const availW = ratio.w - 2 * d.padding;
   const availH = ratio.h - 2 * d.padding;
 
-  const hl = useMemo(() => highlightCode(d.code, d.language), [d.code, d.language]);
+  const code = useDeferredValue(d.code);
+  const hl = useMemo(() => highlightCode(code, d.language), [code, d.language]);
+  const isDiff = hl.language === "diff";
   const marked = useMemo(() => parseLines(d.highlight), [d.highlight]);
 
   const winRef = useRef<HTMLDivElement>(null);
@@ -99,15 +107,21 @@ export const CodeCanvas = forwardRef<HTMLDivElement, { onCut?: (cut: boolean) =>
         )}
         <div
           ref={bodyRef} className="ci-code"
-          style={{ fontFamily: `${font.family}, ${MONO_FALLBACK}`, fontSize: d.fontSize, lineHeight: 1.65, padding: "18px 22px 20px", width: "max-content", minWidth: "100%", boxSizing: "border-box" }}
+          style={{ fontFamily: `${font.family}, ${MONO_FALLBACK}`, fontSize: d.fontSize, lineHeight: 1.65, fontVariantLigatures: d.ligatures ? "normal" : "none", padding: "18px 22px 20px", width: "max-content", minWidth: "100%", boxSizing: "border-box" }}
         >
-          {hl.lines.map((html, i) => (
+          {hl.lines.map((html, i) => {
+            const raw = hl.raw[i] ?? "";
+            const on = marked.has(i + 1);
+            const add = isDiff && raw.startsWith("+") && !raw.startsWith("+++");
+            const del = isDiff && raw.startsWith("-") && !raw.startsWith("---");
+            const dim = d.focus && marked.size > 0 && !on;
+            return (
             <div
               key={i}
               style={{
-                display: "flex", margin: "0 -22px", padding: "0 22px",
-                background: marked.has(i + 1) ? `${theme.fg}1f` : undefined,
-                boxShadow: marked.has(i + 1) ? `inset 3px 0 0 ${theme.keyword}` : undefined,
+                display: "flex", margin: "0 -22px", padding: "0 22px", opacity: dim ? 0.32 : 1,
+                background: on ? `${theme.fg}1f` : add ? "rgba(63,185,80,.17)" : del ? "rgba(248,81,73,.17)" : undefined,
+                boxShadow: on ? `inset 3px 0 0 ${theme.keyword}` : add ? "inset 3px 0 0 #3fb950" : del ? "inset 3px 0 0 #f85149" : undefined,
               }}
             >
               {d.lineNumbers && (
@@ -115,7 +129,8 @@ export const CodeCanvas = forwardRef<HTMLDivElement, { onCut?: (cut: boolean) =>
               )}
               <span style={{ whiteSpace: "pre" }} dangerouslySetInnerHTML={{ __html: html || " " }} />
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       {d.watermarkOn && d.watermarkText.trim() && (

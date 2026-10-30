@@ -2,10 +2,14 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Permissions for the main window",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "core:window:allow-show",
+    "core:window:allow-close",
+    "core:window:allow-destroy",
     "core:window:allow-set-focus",
     "core:window:allow-set-size",
     "core:window:allow-center",
@@ -19,7 +23,15 @@
     "dialog:allow-save",
     "fs:allow-write-file",
     "fs:allow-read-text-file",
-    { "identifier": "fs:scope", "allow": [{ "path": "$DOWNLOAD" }, { "path": "$DOWNLOAD/**" }] },
-    "opener:default"
+    "opener:default",
+    "opener:allow-reveal-item-in-dir",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        {
+          "path": "**"
+        }
+      ]
+    }
   ]
 }

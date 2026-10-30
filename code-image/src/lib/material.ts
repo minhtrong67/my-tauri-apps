@@ -16,7 +16,7 @@ export function applyMaterial(seed: string, dark: boolean) {
     secondary: s.secondary, "on-secondary": s.onSecondary,
     "secondary-container": s.secondaryContainer, "on-secondary-container": s.onSecondaryContainer,
     tertiary: s.tertiary, "tertiary-container": s.tertiaryContainer, "on-tertiary-container": s.onTertiaryContainer,
-    error: s.error, "error-container": s.errorContainer, "on-error-container": s.onErrorContainer,
+    error: s.error, "on-error": s.onError, "error-container": s.errorContainer, "on-error-container": s.onErrorContainer,
     surface: s.surface, "on-surface": s.onSurface, "on-surface-variant": s.onSurfaceVariant,
     outline: s.outline, "outline-variant": s.outlineVariant,
     "inverse-surface": s.inverseSurface, "inverse-on-surface": s.inverseOnSurface,
