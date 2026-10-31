@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-app: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --emph: cubic-bezier(0.2, 0, 0, 1);
+  --c-shadow: 0 0 0;
+}
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body {
+    @apply bg-surface text-on-surface font-sans antialiased;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  input, textarea { user-select: text; -webkit-user-select: text; }
+  ::selection { background: rgb(var(--c-primary) / .28); }
+  * { scrollbar-width: thin; scrollbar-color: rgb(var(--c-outline) / .55) transparent; }
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb { background: rgb(var(--c-outline) / .45); border-radius: 99px; border: 3px solid transparent; background-clip: content-box; }
+  *::-webkit-scrollbar-thumb:hover { background: rgb(var(--c-outline) / .75); background-clip: content-box; border: 3px solid transparent; }
+  :focus-visible { outline: 2px solid rgb(var(--c-primary)); outline-offset: 2px; }
+  button { cursor: default; }
+}
+
+@layer components {
+  /* state layer (hover / press) */
+  .sl { position: relative; overflow: hidden; isolation: isolate; }
+  .sl::after { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity .18s var(--emph); pointer-events: none; z-index: -1; }
+  .sl:hover::after { opacity: .08; }
+  .sl:active::after { opacity: .13; }
+  .ripple-dot { position: absolute; border-radius: 9999px; background: currentColor; opacity: .22; transform: scale(0); animation: ripple .6s var(--emph) forwards; pointer-events: none; z-index: -1; }
+  .press { transition: border-radius .35s var(--spring), transform .35s var(--spring), background-color .2s, box-shadow .2s; }
+  .press:active { transform: scale(.97); }
+  .card { @apply rounded-3xl bg-surface-container-low; }
+  .field {
+    @apply w-full rounded-2xl border border-outline-variant bg-surface-container-lowest/60 px-4 py-3 text-[0.95rem] text-on-surface outline-none transition placeholder:text-on-surface-variant/60;
+  }
+  .field:hover { @apply border-outline; }
+  .field:focus { @apply border-primary; box-shadow: 0 0 0 1px rgb(var(--c-primary)); }
+}
+
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+@keyframes pop-in { from { opacity: 0; transform: scale(.88) translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes pop-out { to { opacity: 0; transform: scale(.94) translateY(6px); } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes slide-up { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes sheet-in { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes sheet-out { to { transform: translateX(40px); opacity: 0; } }
+@keyframes toast-in { from { opacity: 0; transform: translateX(36px) scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes toast-out { to { opacity: 0; transform: translateX(36px) scale(.94); } }
+@keyframes tip-in { from { opacity: 0; transform: translateX(-50%) scale(.9); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes shrink { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes ping-soft { 0% { box-shadow: 0 0 0 0 rgb(var(--c-primary) / .5); } 100% { box-shadow: 0 0 0 14px rgb(var(--c-primary) / 0); } }
+@keyframes morph {
+  0%, 100% { border-radius: 60% 40% 55% 45% / 55% 45% 60% 40%; transform: rotate(0deg) scale(1); }
+  33% { border-radius: 40% 60% 45% 55% / 60% 40% 45% 55%; transform: rotate(40deg) scale(1.06); }
+  66% { border-radius: 55% 45% 60% 40% / 40% 60% 55% 45%; transform: rotate(-30deg) scale(.96); }
+}
+@keyframes float-y { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+.anim-pop { animation: pop-in .38s var(--spring) both; }
+.anim-pop-out { animation: pop-out .16s var(--emph) both; }
+.anim-fade { animation: fade-in .22s var(--emph) both; }
+.anim-fade-out { animation: fade-out .16s var(--emph) both; }
+.anim-sheet { animation: sheet-in .42s var(--spring) both; }
+.anim-sheet-out { animation: sheet-out .18s var(--emph) both; }
+.anim-page { animation: slide-up .5s var(--spring) both; }
+.stagger > * { animation: slide-up .55s var(--spring) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.blob { animation: morph 14s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

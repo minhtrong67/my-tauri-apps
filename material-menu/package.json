@@ -1,0 +1,40 @@
+{
+  "name": "material-menu",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@fontsource-variable/google-sans-flex": "^5.3.2",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/roboto-flex": "^5.3.0",
+    "@fontsource/be-vietnam-pro": "^5.3.0",
+    "@fontsource/roboto": "^5.3.0",
+    "@material/material-color-utilities": "^0.4.0",
+    "@tauri-apps/api": "^2.12.4",
+    "@tauri-apps/plugin-dialog": "^2.8.4",
+    "lucide-react": "^1.64.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "autoprefixer": "^10.6.2",
+    "postcss": "^8.5.32",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  },
+  "description": "Customize the Windows 11 right-click context menu",
+  "author": "minhtrong67",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "web:dev": "vite",
+    "web:build": "tsc && vite build",
+    "typecheck": "tsc"
+  }
+}

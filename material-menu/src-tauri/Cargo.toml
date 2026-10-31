@@ -1,0 +1,20 @@
+[package]
+name = "material-menu"
+version = "1.0.0"
+description = "Customize the Windows 11 right-click context menu"
+authors = ["minhtrong67"]
+license = "MIT"
+repository = "https://github.com/minhtrong67/my-tauri-apps"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[target.'cfg(windows)'.dependencies]
+winreg = "0.55"
