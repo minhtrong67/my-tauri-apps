@@ -21,6 +21,8 @@ const MAP = {
   // settings dialog
   palette: 'palette', globe: 'languages', font: 'a-large-small', window: 'app-window', folder: 'folder', gauge: 'gauge', chip: 'cpu',
   heart: 'heart', reset: 'rotate-ccw', layout: 'panels-top-left', sparkles: 'sparkles',
+  // v1.1: toasts, command palette, dropdowns
+  alert: 'triangle-alert', error: 'circle-alert', command: 'command', chev: 'chevron-down', enter: 'corner-down-left', up: 'arrow-up',
 };
 const FILLED = new Set(['play', 'play-fill']);
 

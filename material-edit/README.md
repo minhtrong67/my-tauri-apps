@@ -4,8 +4,8 @@
 
 # Material Edit
 
-**A simple, CapCut-inspired video editor with a Material Design 3 look.**
-*Trình chỉnh sửa video đơn giản, lấy cảm hứng từ CapCut, thiết kế theo Material Design 3.*
+**A simple, CapCut-inspired video editor in Material 3 Expressive.**
+*Trình chỉnh sửa video đơn giản, lấy cảm hứng từ CapCut, thiết kế theo Material 3 Expressive.*
 
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB)](https://tauri.app) [![License: MIT](https://img.shields.io/badge/license-MIT-6750A4)](LICENSE) [![EN / VI](https://img.shields.io/badge/UI-EN%20%7C%20VI-B58392)](#features--tính-năng)
 
@@ -20,10 +20,8 @@ Created by **minhtrong67** · with AI assistance from **Claude** (Anthropic)
 | Project library | Editor |
 |---|---|
 | ![Project library](screenshots/image01.png) | ![Editor](screenshots/image02.png) |
-| **Context menu** | **Export** |
-| ![Context menu](screenshots/image03.png) | ![Export](screenshots/image04.png) |
-| **Settings** | |
-| ![Settings](screenshots/image05.png) | |
+| **Export (dark theme)** | **Settings** |
+| ![Export](screenshots/image03.png) | ![Settings](screenshots/image04.png) |
 
 ## Features / Tính năng
 
@@ -39,7 +37,8 @@ Created by **minhtrong67** · with AI assistance from **Claude** (Anthropic)
 - **Screenshot** – save the frame under the playhead as a PNG (camera button next to Snapping, or right-click menu).
 - **Multi-select editing** – marquee-select several clips and edit transform, fades, volume and filters for all of them at once.
 - **Window memory** – size, position and maximised state are restored; optional "always start full screen".
-- **Material Design 3** – dynamic colour from any seed (the full Material palette + custom colour), light / dark / system, **10 selectable UI fonts**, [Lucide](https://lucide.dev) icons, smooth motion (respects *reduced motion*).
+- **Material 3 Expressive** – shape language that morphs on press and selection, spring motion, vibrant tonal containers, wavy export progress, custom tooltips / dropdowns / toasts (info · success · warning · error) and scroll-to-top buttons. Dynamic colour – dynamic colour from any seed (the full Material palette + custom colour), light / dark / system, **10 selectable UI fonts**, [Lucide](https://lucide.dev) icons, smooth motion (respects *reduced motion*).
+- **Command palette** – `Ctrl+Shift+P` (or `F1`) searches every action and runs it from the keyboard.
 - **Tidy settings** – a two-pane settings window (Appearance · General · Editor · About).
 - **Landing page** – `index.html` in the project root (responsive, SEO + social meta); put the installer in `download/`.
 - **English & Tiếng Việt** UI.
@@ -60,10 +59,11 @@ Press `Ctrl+/` (or `?`) in the app for the full list.
 | = / - , \ | Zoom in / out, fit | N | Toggle snapping |
 | Ctrl+N / O / S | New / open / save | Ctrl+I / Ctrl+E | Import / export |
 | Ctrl+Shift+H | Project library | Ctrl+, | Settings |
+| Ctrl+Shift+P, F1 | Command palette | Ctrl+/ | Shortcuts |
 
 ## Download
 
-Installers are produced by `npm run build` (see below) and appear in `target/release/bundle/` of your Cargo workspace (e.g. NSIS `.exe` on Windows). Copy the installer to `download/Material-Edit_1.0.0_x64-setup.exe` — the landing page (`index.html`) links to it.
+Installers are produced by `npm run build` (see below) and appear in `target/release/bundle/` of your Cargo workspace (e.g. NSIS `.exe` on Windows). Copy the installer to `download/Material-Edit_1.1.0_x64-setup.exe` — the landing page (`index.html`) links to it.
 
 ## Install
 
@@ -97,7 +97,8 @@ The project is a member of a Cargo workspace (`members = ["*/src-tauri"]`) and s
 
 ```bash
 npm run build    # installers (NSIS on Windows)
-npm run icons    # regenerate app / installer / uninstaller icons, brand colour #673AB7 (Python + Pillow)
+npm run icons    # regenerate app / installer / uninstaller icons, Material Expressive icons, brand colour #E91E63 (Python + Pillow)
+python tools/build-landing.py   # rebuild index.html from tools/landing.tpl.html
 ```
 
 ## Notes / Lưu ý
@@ -114,10 +115,10 @@ npm run icons    # regenerate app / installer / uninstaller icons, brand colour 
 src/            UI (ES modules): store, engine, timeline, inspector, home, exporter, export-fast, mp4demux…
 src/vendor/     mp4-muxer, webm-muxer (MIT)
 src-tauri/      Rust backend (media server, project library), config, icons
-index.html      Landing page (single file)
+index.html      Landing page (single file, built from tools/landing.tpl.html)
 download/       Place the installer here (linked from the landing page)
 screenshots/    README images
-tools/          Icon generator, Lucide sprite builder
+tools/          Icon generator, Lucide sprite builder, landing-page builder
 ```
 
 ## License

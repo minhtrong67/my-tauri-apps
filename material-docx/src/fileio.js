@@ -8,6 +8,7 @@ import { t, lang } from './i18n.js';
 import { toast, askConfirm } from './popup.js';
 import { paginate, unpaginate, layout } from './paginate.js';
 import { headingList } from './cmds.js';
+import { OPEN_TYPES, OPEN_EXT, kindOf, readText, readDelimited, readMarkdown, readRtf, readOdt } from './readers.js';
 
 const T = window.__TAURI__ || null;
 export const inTauri = !!T;
@@ -43,6 +44,9 @@ export async function pruneRecent() {
   } catch { /* ignore */ }
 }
 
+/* ------------------------------ tabs hooks (filled in by tabs.js) ------------------------------ */
+export const tabHooks = { prepare: null, closeAll: null, dirtyRecords: null, cleanup: null };
+
 /* ------------------------------ drafts ------------------------------ */
 let draftTimer = 0;
 function scheduleDraft() {
@@ -50,9 +54,16 @@ function scheduleDraft() {
   clearTimeout(draftTimer);
   draftTimer = setTimeout(writeDraft, 2500);
 }
+const liveRecord = () => ({ html: cleanHtml(), meta: { page: doc.page, header: doc.header, footer: doc.footer, diffFirst: doc.diffFirst, keep: doc.keep }, name: nameInput.value, path: doc.path });
+/** The draft holds every unsaved document: the first one in the usual fields, the rest in `others`. */
+function buildDraft() {
+  const list = tabHooks.dirtyRecords ? tabHooks.dirtyRecords() : (doc.dirty ? [liveRecord()] : []);
+  if (!list.length) return null;
+  return JSON.stringify({ ...list[0], others: list.slice(1), time: Date.now() });
+}
 async function writeDraft() {
-  if (!doc.dirty) return;
-  const data = JSON.stringify({ html: cleanHtml(), meta: { page: doc.page, header: doc.header, footer: doc.footer, diffFirst: doc.diffFirst }, name: nameInput.value, path: doc.path, time: Date.now() });
+  const data = buildDraft();
+  if (!data) return;
   try {
     if (T) await invoke('draft_write', { data });
     else localStorage.setItem('material-docx.draft.v2', data);
@@ -61,6 +72,7 @@ async function writeDraft() {
 export async function clearDraft() {
   clearTimeout(draftTimer);
   try {
+    if (buildDraft()) { await writeDraft(); return; } // other tabs still have unsaved work
     if (T) await invoke('draft_clear');
     else localStorage.removeItem('material-docx.draft.v2');
   } catch { /* ignore */ }
@@ -71,11 +83,20 @@ export async function readDraft() {
     return raw ? JSON.parse(raw) : null;
   } catch { return null; }
 }
-window.addEventListener('beforeunload', () => { if (doc.dirty && settings.autosave) { try { if (!T) localStorage.setItem('material-docx.draft.v2', JSON.stringify({ html: cleanHtml(), meta: { page: doc.page, header: doc.header, footer: doc.footer, diffFirst: doc.diffFirst }, name: nameInput.value, path: doc.path })); } catch { /* ignore */ } } });
+window.addEventListener('beforeunload', () => { if (settings.autosave && !T) { try { const d = buildDraft(); if (d) localStorage.setItem('material-docx.draft.v2', d); } catch { /* ignore */ } } });
 
 /* ------------------------------ dialogs / IO ------------------------------ */
 const filters = {
-  open: () => [{ name: t('filter.docs'), extensions: ['docx', 'html', 'htm', 'txt', 'md'] }],
+  open: () => [
+    { name: t('filter.docs'), extensions: OPEN_EXT },
+    { name: t('filter.word'), extensions: OPEN_TYPES.word },
+    { name: t('filter.odf'), extensions: OPEN_TYPES.odf },
+    { name: t('filter.rtf'), extensions: OPEN_TYPES.rtf },
+    { name: t('filter.web'), extensions: OPEN_TYPES.web },
+    { name: t('filter.md'), extensions: OPEN_TYPES.md },
+    { name: t('filter.data'), extensions: OPEN_TYPES.data },
+    { name: t('filter.txt'), extensions: OPEN_TYPES.text },
+  ],
   save: () => [{ name: t('filter.docx'), extensions: ['docx'] }, { name: t('filter.html'), extensions: ['html'] }, { name: t('filter.txt'), extensions: ['txt'] }],
   one: (ext) => [{ name: { docx: t('filter.docx'), html: t('filter.html'), txt: t('filter.txt') }[ext], extensions: [ext] }],
 };
@@ -112,15 +133,26 @@ export function resetDocModel() {
   doc.header = { text: '', align: 'left' };
   doc.footer = { text: '', align: 'center' };
   doc.diffFirst = false;
+  doc.keep = null;
 }
 
-export async function confirmDiscard() {
+/** Asks what to do with the unsaved changes of the document that is currently shown. */
+export async function confirmDiscardCurrent() {
   if (!doc.dirty) return true;
-  const r = await askConfirm({ title: t('confirm.title'), msg: t('confirm.msg', { name: docName() }), yes: t('confirm.save'), no: t('confirm.discard') });
+  const r = await askConfirm({ title: t('confirm.title'), msg: t('confirm.msg', { name: docName() }), yes: t('confirm.save'), no: t('confirm.discard'), yesIcon: 'save', noIcon: 'trash', badge: 'warn' });
   if (r === 'cancel') return false;
   if (r === 'yes') return saveDoc(false);
   await clearDraft();
   return true;
+}
+
+/** Called before a document replaces the current one: opens a new tab (or reuses an empty one). false = do not load. */
+export async function confirmDiscard(path) {
+  return tabHooks.prepare ? tabHooks.prepare(path) : confirmDiscardCurrent();
+}
+/** Called when the window or app is closing: every tab with unsaved changes gets asked. */
+export async function confirmExit() {
+  return tabHooks.closeAll ? tabHooks.closeAll() : confirmDiscardCurrent();
 }
 
 function afterLoad(path, name) {
@@ -152,30 +184,40 @@ export async function loadBytes(path, bytes) {
   resetDocModel();
   let html;
   let meta = null;
-  if (ext === 'docx') {
+  let lostParts = [];
+  let keptParts = [];
+  const kind = kindOf(ext);
+  if (kind === 'word') {
     const r = await importDocx(bytes);
     html = sanitizeHtml(r.html);
     meta = r.meta;
-  } else if (ext === 'html' || ext === 'htm') {
-    html = sanitizeHtml(dec.decode(bytes)) || '<p><br></p>';
-  } else if (['txt', 'md', 'markdown', 'log', 'csv'].includes(ext)) {
-    const lines = dec.decode(bytes).replace(/^﻿/, '').split(/\r?\n/);
-    html = lines.map((l) => (l ? `<p>${esc(l)}</p>` : '<p><br></p>')).join('');
-  } else { toast(t('toast.unsupported')); return false; }
+    lostParts = r.lost || [];
+    keptParts = r.kept || [];
+  } else if (kind === 'odf') html = sanitizeHtml(await readOdt(bytes));
+  else if (kind === 'rtf') html = sanitizeHtml(readRtf(bytes));
+  else if (kind === 'web') html = sanitizeHtml(dec.decode(bytes)) || '<p><br></p>';
+  else if (kind === 'md') html = sanitizeHtml(readMarkdown(bytes));
+  else if (kind === 'data') html = sanitizeHtml(readDelimited(bytes, ext));
+  else if (kind === 'text') html = readText(bytes);
+  else { toast.warning(t('toast.unsupported')); if (tabHooks.cleanup) tabHooks.cleanup(); return false; }
   setContent(html, { meta });
   afterLoad(path, stripExt(baseName(path)));
   addRecent(path);
   settle({ record: false });
-  toast(t('toast.opened', { name: baseName(path) }));
+  const names = (list) => list.map((k) => t('lost.' + k)).join(', ');
+  if (lostParts.length) toast.warning(t('toast.lost', { items: names(lostParts) }) + (keptParts.length ? ' ' + t('toast.keptShort', { items: names(keptParts) }) : ''), 10000);
+  else if (keptParts.length) toast.info(t('toast.kept', { items: names(keptParts) }), 8000);
+  else toast.success(t('toast.opened', { name: baseName(path) }));
   return true;
 }
 
 export async function openDoc(pathArg) {
-  if (!(await confirmDiscard())) return;
   try {
     const res = pathArg ? { path: pathArg, bytes: b64ToBytes(await invoke('read_file_b64', { path: pathArg })) } : await pickOpen();
-    if (res) await loadBytes(res.path, res.bytes);
-  } catch (err) { toast(t('toast.error', { msg: errMsg(err) }), 6000); }
+    if (!res) return;
+    if (!(await confirmDiscard(res.path))) return;
+    try { await loadBytes(res.path, res.bytes); } catch (err) { if (tabHooks.cleanup) tabHooks.cleanup(); throw err; }
+  } catch (err) { toast.error(t('toast.error', { msg: errMsg(err) }), 6000); }
 }
 
 /* ------------------------------ export / save ------------------------------ */
@@ -185,7 +227,7 @@ table{border-collapse:collapse;width:100%}td,th{border:1px solid #bbb;padding:4p
 hr.pb{border:0;page-break-after:always}[data-st=title]{font-family:'Calibri Light',Calibri,sans-serif;font-size:28pt;margin:0}[data-st=subtitle]{color:#5a5a5a;letter-spacing:.75pt}`;
 
 function buildBytes(ext) {
-  if (ext === 'docx') { bus.emit('before-output'); const root = document.createElement('div'); root.innerHTML = cleanHtml(); paginate(); return exportDocx(root, { page: doc.page, header: doc.header, footer: doc.footer, diffFirst: doc.diffFirst, title: nameInput.value.trim(), author: settings.author || doc.author, font: settings.font, fontSize: settings.fontSize }); }
+  if (ext === 'docx') { bus.emit('before-output'); const root = document.createElement('div'); root.innerHTML = cleanHtml(); paginate(); return exportDocx(root, { page: doc.page, header: doc.header, footer: doc.footer, diffFirst: doc.diffFirst, keep: doc.keep, title: nameInput.value.trim(), author: settings.author || doc.author, font: settings.font, fontSize: settings.fontSize }); }
   if (ext === 'html' || ext === 'htm') {
     const html = `<!doctype html>\n<html lang="${lang()}"><head><meta charset="utf-8"><title>${esc(docName())}</title><style>${EXPORT_CSS}</style></head>\n<body>${cleanHtml()}</body></html>`;
     return Promise.resolve(new TextEncoder().encode(html));
@@ -222,10 +264,10 @@ export async function saveDoc(forceAs = false, forceExt) {
       updateTitle();
       bus.emit('saved');
     }
-    toast(t('toast.saved', { name: baseName(path) }));
+    toast.success(t('toast.saved', { name: baseName(path) }));
     return true;
   } catch (err) {
-    toast(t('toast.error', { msg: errMsg(err) }), 6000);
+    toast.error(t('toast.error', { msg: errMsg(err) }), 6000);
     return false;
   }
 }
@@ -258,7 +300,7 @@ ${doc.diffFirst ? '@page :first { @top-left{content:none} @top-center{content:no
 ${pageBg}`;
 }
 export async function printDoc() {
-  toast(t('toast.printHint'), 4200);
+  toast.info(t('toast.printHint'), 4200);
   unpaginate();
   $('#print-style').textContent = printCss();
   document.body.classList.add('printing');
@@ -276,7 +318,7 @@ export async function printDoc() {
 }
 
 export async function exitApp() {
-  if (!(await confirmDiscard())) return;
+  if (!(await confirmExit())) return;
   if (T) await T.window.getCurrentWindow().destroy();
   else window.close();
 }

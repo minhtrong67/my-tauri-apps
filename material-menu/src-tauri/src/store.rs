@@ -103,3 +103,15 @@ pub fn remember_window(app: &AppHandle, win: &WebviewWindow) {
     }
     let _ = write_settings(app, &s);
 }
+
+/// Used by the uninstaller: `material-menu.exe --reset` restores the default Windows menu without opening a window.
+pub fn reset_cli() {
+    let base = std::env::var("APPDATA").unwrap_or_default();
+    let path = PathBuf::from(base).join("com.minhtrong67.materialmenu").join("state.json");
+    let st: State = fs::read_to_string(&path)
+        .ok()
+        .and_then(|s| serde_json::from_str(&s).ok())
+        .unwrap_or_default();
+    let _ = crate::registry::reset(&st);
+    let _ = fs::write(&path, "{}");
+}

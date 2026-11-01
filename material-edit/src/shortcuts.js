@@ -48,6 +48,7 @@ export const GROUPS = [
     [['Ctrl+E'], 'export', 'sc.export'],
     [['Ctrl+/', '?'], 'shortcuts', 'sc.shortcuts'],
     [['Ctrl+,'], 'settings', 'sc.settings'],
+    [['Ctrl+Shift+P', 'F1'], 'palette', 'sc.palette'],
   ] },
 ];
 
@@ -74,7 +75,7 @@ export function comboOf(e) {
 }
 
 const NATIVE_WHEN_TYPING = new Set(['Ctrl+Z', 'Ctrl+Y', 'Ctrl+Shift+Z', 'Ctrl+C', 'Ctrl+X', 'Ctrl+V', 'Ctrl+A', 'Ctrl+D', 'Ctrl+B', 'Ctrl+K', 'Delete', 'Backspace', 'Ctrl+A']);
-const HOME_CMDS = new Set(['new', 'openFile', 'shortcuts', 'settings']);
+const HOME_CMDS = new Set(['new', 'openFile', 'shortcuts', 'settings', 'palette']);
 
 /**
  * @param {Record<string, () => void>} cmds   command implementations

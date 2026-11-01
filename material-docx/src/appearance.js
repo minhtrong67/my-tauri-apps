@@ -9,8 +9,15 @@ export function applyUiFont() {
   const f = settings.uiFont;
   document.documentElement.style.setProperty('--font', !f || f === 'system' ? SYS_FONT : `'${String(f).replace(/['"\\]/g, '')}', ${SYS_FONT}`);
 }
+const UI_SCALE = { small: 0.92, medium: 1, large: 1.12 };
+/** Interface text size: CSS multiplies every UI font-size by --fs (document text is not affected). */
+export function applyUiSize() {
+  document.documentElement.style.setProperty('--fs', String(UI_SCALE[settings.uiSize] || 1));
+  document.documentElement.dataset.uisize = settings.uiSize;
+}
 export function refreshTheme() {
   applyUiFont();
+  applyUiSize();
   applyTheme(settings.theme, settings.seed);
   document.documentElement.classList.toggle('dark-page', !!settings.darkPage && resolveDark(settings.theme));
   document.documentElement.style.setProperty('--doc-font', settings.font ? `'${settings.font}'` : 'Calibri');

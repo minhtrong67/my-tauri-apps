@@ -12,6 +12,7 @@ import * as IM from './images.js';
 import * as V from './view.js';
 import { openFind, findOpen, closeFind, go as findGo } from './find.js';
 import { newDoc, openDoc, saveDoc, printDoc, loadBytes, confirmDiscard, T, invoke } from './fileio.js';
+import { isOpenable } from './readers.js';
 import { openBackstage, isBackstageOpen } from './backstage.js';
 
 const modalOpen = () => !!document.querySelector('dialog[open]');
@@ -22,7 +23,7 @@ const isCtrl = (e) => (mac ? e.metaKey : e.ctrlKey);
 /* ------------------------------ images from disk / clipboard ------------------------------ */
 async function insertImages(files) {
   for (const f of files) {
-    try { await IM.insertImageBlob(f); } catch { toast(t('toast.badImage')); }
+    try { await IM.insertImageBlob(f); } catch { toast.error(t('toast.badImage')); }
   }
 }
 
@@ -251,15 +252,15 @@ export function initClipboard() {
   const show = (on) => { hint.hidden = !on; hint.classList.toggle('show', on); hint.textContent = t('drop.hint'); };
   const handlePath = async (path) => {
     const ext = extOf(path);
-    if (['docx', 'html', 'htm', 'txt', 'md'].includes(ext)) {
-      if (await confirmDiscard()) { try { await loadBytes(path, b64ToBytes(await invoke('read_file_b64', { path }))); } catch (err) { toast(t('toast.error', { msg: String(err) }), 6000); } }
+    if (isOpenable(ext)) {
+      if (await confirmDiscard(path)) { try { await loadBytes(path, b64ToBytes(await invoke('read_file_b64', { path }))); } catch (err) { toast.error(t('toast.error', { msg: String(err) }), 6000); } }
     } else if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'].includes(ext)) {
       try {
         const bytes = b64ToBytes(await invoke('read_file_b64', { path }));
         const f = new File([bytes], baseName(path), { type: 'image/' + (ext === 'jpg' ? 'jpeg' : ext) });
         await insertImages([f]);
-      } catch (err) { toast(t('toast.error', { msg: String(err) }), 6000); }
-    } else toast(t('toast.unsupported'));
+      } catch (err) { toast.error(t('toast.error', { msg: String(err) }), 6000); }
+    } else toast.warning(t('toast.unsupported'));
   };
   if (T && T.event) {
     T.event.listen('tauri://drag-enter', () => show(true));
@@ -274,7 +275,7 @@ export function initClipboard() {
       if (!f) return;
       e.preventDefault();
       if (f.type.startsWith('image/')) { insertImages([f]); return; }
-      if (['docx', 'html', 'htm', 'txt', 'md'].includes(extOf(f.name)) && (await confirmDiscard())) await loadBytes(f.name, new Uint8Array(await f.arrayBuffer()));
+      if (isOpenable(extOf(f.name)) && (await confirmDiscard(f.name))) await loadBytes(f.name, new Uint8Array(await f.arrayBuffer()));
     });
   }
 }
@@ -299,8 +300,8 @@ export function initContextMenu() {
     const items = [
       { label: t('rb.cut'), icon: 'cut', kbd: 'Ctrl+X', disabled: !sel, run: () => C.copySel(true) },
       { label: t('rb.copy'), icon: 'copy', kbd: 'Ctrl+C', disabled: !sel, run: () => C.copySel(false) },
-      { label: t('rb.paste'), icon: 'paste', kbd: 'Ctrl+V', run: async () => { if (!(await C.pasteFromClipboard(false))) toast(t('toast.pasteHint')); } },
-      { label: t('rb.pasteText'), icon: 'pastetext', kbd: 'Ctrl+Shift+V', run: async () => { if (!(await C.pasteFromClipboard(true))) toast(t('toast.pasteHint')); } },
+      { label: t('rb.paste'), icon: 'paste', kbd: 'Ctrl+V', run: async () => { if (!(await C.pasteFromClipboard(false))) toast.info(t('toast.pasteHint')); } },
+      { label: t('rb.pasteText'), icon: 'pastetext', kbd: 'Ctrl+Shift+V', run: async () => { if (!(await C.pasteFromClipboard(true))) toast.info(t('toast.pasteHint')); } },
       { sep: true },
       { label: t('ctx.font'), icon: 'textcolor', run: () => D.openFontDialog() },
       { label: t('ctx.paragraph'), icon: 'linesp', run: () => D.openParagraph() },

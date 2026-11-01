@@ -251,7 +251,7 @@ function effectsTab() {
       class: 'preset' + (tgt.length && tgt.every((c) => c.filters.preset === k) ? ' on' : ''),
       onclick() {
         const list = targetClips();
-        if (!list.length) { handlers.toast(t('effects.select')); return; }
+        if (!list.length) { handlers.toast(t('effects.select'), 3400, 'warning'); return; }
         for (const c of list) c.filters = { ...defaultFilters(), ...FILTER_PRESETS[k], preset: k };
         commit(); emit('change'); emit('inspect'); render();
       },
@@ -274,7 +274,7 @@ function transitionsTab() {
       class: 'preset' + (ok && first.trans.type === k ? ' on' : ''),
       onclick() {
         const list = picks();
-        if (!list.length) { handlers.toast(t('trans.select')); return; }
+        if (!list.length) { handlers.toast(t('trans.select'), 3400, 'warning'); return; }
         for (const cur of list) cur.trans.type = k;
         layout(); commit(); emit('change'); emit('inspect'); render();
       },

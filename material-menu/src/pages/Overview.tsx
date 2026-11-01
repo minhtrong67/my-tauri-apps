@@ -46,11 +46,11 @@ export default function Overview() {
       <div className="grid gap-4 sm:grid-cols-3" style={{ '--i': 2 } as React.CSSProperties}>
         <button onClick={() => go('commands')} className="sl press card flex items-center gap-4 p-5 text-left">
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-container text-on-primary-container"><ListPlus size={24} /></span>
-          <span><span className="block text-[2rem] font-semibold leading-none">{active}</span><span className="text-[0.85rem] text-on-surface-variant">{t('statCommands')}</span></span>
+          <span><span className="block text-[2.4rem] font-extrabold leading-none tracking-tight">{active}</span><span className="text-[0.85rem] text-on-surface-variant">{t('statCommands')}</span></span>
         </button>
         <button onClick={() => go('system')} className="sl press card flex items-center gap-4 p-5 text-left">
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary-container text-on-secondary-container"><EyeOff size={24} /></span>
-          <span><span className="block text-[2rem] font-semibold leading-none">{hidden}</span><span className="text-[0.85rem] text-on-surface-variant">{t('statHidden')}</span></span>
+          <span><span className="block text-[2.4rem] font-extrabold leading-none tracking-tight">{hidden}</span><span className="text-[0.85rem] text-on-surface-variant">{t('statHidden')}</span></span>
         </button>
         <div className="card flex items-center gap-4 p-5">
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-container-highest text-on-surface-variant"><MonitorCog size={24} /></span>

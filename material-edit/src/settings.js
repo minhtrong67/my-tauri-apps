@@ -2,7 +2,7 @@
 const KEY = 'mve.settings.v1';
 
 export const DEFAULTS = {
-  theme: 'system', seed: '#6750A4', font: 'system', lang: 'auto', vol: 1,
+  theme: 'system', seed: '#E91E63', font: 'system', lang: 'auto', vol: 1,
   start: 'remember', // window on launch: remember | maximized
   layout: { left: 340, right: 320, tl: 296 },
   home: { view: 'grid', sort: 'recent' },

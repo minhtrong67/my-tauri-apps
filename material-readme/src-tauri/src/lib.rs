@@ -114,7 +114,8 @@ fn file_mtime(path: String) -> u64 {
     mtime(&path)
 }
 
-/// Loads a local image referenced by a relative path in the Markdown file. Images only.
+/// Loads a local image referenced by a relative path in the Markdown file. Images only, and only from
+/// the document folder or up to three folders above it (so `../screenshots/a.png` keeps working).
 #[tauri::command]
 fn read_asset(base: String, rel: String) -> Result<(String, String), String> {
     let rel = percent_decode(rel.split(|c: char| c == '?' || c == '#').next().unwrap_or(""));
@@ -131,11 +132,52 @@ fn read_asset(base: String, rel: String) -> Result<(String, String), String> {
         "ico" => "image/x-icon",
         _ => return Err("unsupported".into()),
     };
-    let bytes = std::fs::read(&p).map_err(|e| e.to_string())?;
+    let real = std::fs::canonicalize(&p).map_err(|e| e.to_string())?;
+    let root = std::fs::canonicalize(dir).map_err(|e| e.to_string())?;
+    let limit = root.ancestors().nth(3).unwrap_or(root.as_path()).to_path_buf();
+    if !real.starts_with(&limit) {
+        return Err("outside of the document folder".into());
+    }
+    let bytes = std::fs::read(&real).map_err(|e| e.to_string())?;
     if bytes.len() > 20_000_000 {
         return Err("too large".into());
     }
     Ok((mime.into(), STANDARD.encode(bytes)))
+}
+
+/// Saves a pasted or dropped image into an `assets` folder next to the document.
+/// Returns the relative path to put in the Markdown (for example `assets/image-1.png`).
+#[tauri::command]
+fn save_image(base: String, name: String, data: String) -> Result<String, String> {
+    let dir = Path::new(&base).parent().ok_or("no parent")?.join("assets");
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    let clean: String = name
+        .chars()
+        .map(|c| if c.is_ascii_alphanumeric() || c == '-' || c == '_' || c == '.' { c } else { '-' })
+        .collect();
+    let (stem, ext) = match clean.rsplit_once('.') {
+        Some((s, e)) if !s.is_empty() && e.len() <= 5 => (s.to_string(), e.to_lowercase()),
+        _ => (clean.clone(), "png".to_string()),
+    };
+    if !["png", "jpg", "jpeg", "gif", "webp", "bmp"].contains(&ext.as_str()) {
+        return Err("unsupported".into());
+    }
+    let bytes = STANDARD.decode(data).map_err(|e| e.to_string())?;
+    if bytes.len() > 20_000_000 {
+        return Err("too large".into());
+    }
+    let mut n = 0;
+    let target = loop {
+        let file = if n == 0 { format!("{stem}.{ext}") } else { format!("{stem}-{n}.{ext}") };
+        let t = dir.join(&file);
+        if !t.exists() {
+            break t;
+        }
+        n += 1;
+    };
+    std::fs::write(&target, bytes).map_err(|e| e.to_string())?;
+    let file = target.file_name().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default();
+    Ok(format!("assets/{file}"))
 }
 
 // ------------------------------------------------------------ window state
@@ -319,6 +361,7 @@ pub fn run() {
             startup_docs,
             file_mtime,
             read_asset,
+            save_image,
             get_window_mode,
             set_window_mode,
             set_dirty,

@@ -191,6 +191,8 @@ export async function exportDocx(root, o = {}) {
   };
 
   /* ---- inline ---- */
+  const usedNotes = { fn: new Set(), en: new Set(), cm: new Set() };
+  const keepIn = o.keep || {};
   const fieldRun = (instr, shown, st) =>
     `<w:fldSimple w:instr=" ${instr} "><w:r>${rPr(st)}<w:t>${esc(shown)}</w:t></w:r></w:fldSimple>`;
   const inline = (node, st) => {
@@ -206,6 +208,18 @@ export async function exportDocx(root, o = {}) {
     }
     if (node.nodeType !== 1) return '';
     const tag = node.tagName;
+    if (tag === 'SUP' && node.classList.contains('mdx-fn')) {
+      const k = node.dataset.k === 'en' ? 'en' : 'fn', id = node.dataset.fn;
+      if (!keepIn[k === 'fn' ? 'footnotes' : 'endnotes'] || id == null || usedNotes[k].has(id)) return '';
+      usedNotes[k].add(id);
+      return `<w:r><w:rPr><w:vertAlign w:val="superscript"/></w:rPr><w:${k === 'fn' ? 'footnoteReference' : 'endnoteReference'} w:id="${esc(id)}"/></w:r>`;
+    }
+    if (tag === 'SPAN' && node.classList.contains('mdx-cm')) {
+      const id = node.dataset.cm;
+      if (!keepIn.comments || id == null || usedNotes.cm.has(id)) return '';
+      usedNotes.cm.add(id);
+      return `<w:commentRangeStart w:id="${esc(id)}"/><w:commentRangeEnd w:id="${esc(id)}"/><w:r><w:commentReference w:id="${esc(id)}"/></w:r>`;
+    }
     if (tag === 'BR') return '<w:r><w:br/></w:r>';
     if (tag === 'IMG') return imageRun(node);
     if (tag === 'A' && node.getAttribute('href')) {
@@ -410,6 +424,16 @@ export async function exportDocx(root, o = {}) {
     if (hasH) { extra.push({ name: 'word/header2.xml', data: empty('hdr'), ct: 'header' }); hfRefs += `<w:headerReference w:type="first" r:id="${addRel('header', 'header2.xml')}"/>`; }
     if (hasF) { extra.push({ name: 'word/footer2.xml', data: empty('ftr'), ct: 'footer' }); hfRefs += `<w:footerReference w:type="first" r:id="${addRel('footer', 'footer2.xml')}"/>`; }
   }
+  // kept parts (comments / footnotes / endnotes) go back into the package
+  let notePr = '';
+  const sepIds = (xml, tag) => [...new DOMParser().parseFromString(xml, 'application/xml').getElementsByTagNameNS(W, tag)].filter((n) => /separator/i.test(n.getAttributeNS(W, 'type') || n.getAttribute('w:type') || '')).map((n) => n.getAttributeNS(W, 'id') || n.getAttribute('w:id'));
+  for (const [key, file, tag, relType, used, ct] of [['footnotes', 'footnotes.xml', 'footnote', 'footnotes', usedNotes.fn, 'footnotes'], ['endnotes', 'endnotes.xml', 'endnote', 'endnotes', usedNotes.en, 'endnotes'], ['comments', 'comments.xml', '', 'comments', usedNotes.cm, 'comments']]) {
+    if (!keepIn[key] || !used.size) continue;
+    extra.push({ name: 'word/' + file, data: keepIn[key], ct });
+    addRel(relType, file);
+    if (keepIn[key + 'Rels']) extra.push({ name: 'word/_rels/' + file + '.rels', data: keepIn[key + 'Rels'], ct: null });
+    if (tag) { const ids = sepIds(keepIn[key], tag); if (ids.length) notePr += `<w:${tag}Pr>${ids.map((i) => `<w:${tag} w:id="${i}"/>`).join('')}</w:${tag}Pr>`; }
+  }
   const sect = `<w:sectPr>${hfRefs}<w:pgSz w:w="${pw}" w:h="${ph}"${land ? ' w:orient="landscape"' : ''}/>` +
     `<w:pgMar w:top="${tw(mg.top)}" w:right="${tw(mg.right)}" w:bottom="${tw(mg.bottom)}" w:left="${tw(mg.left)}" w:header="${tw(page.headerDist ?? 48)}" w:footer="${tw(page.footerDist ?? 48)}" w:gutter="0"/>${o.diffFirst && (hasH || hasF) ? '<w:titlePg/>' : ''}</w:sectPr>`;
   const pageBg = hexOf(page.color);
@@ -423,7 +447,7 @@ export async function exportDocx(root, o = {}) {
     '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>' +
     '<Default Extension="png" ContentType="image/png"/><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="gif" ContentType="image/gif"/>' +
     ctOv('/word/document.xml', 'document.main') + ctOv('/word/styles.xml', 'styles') + ctOv('/word/numbering.xml', 'numbering') + ctOv('/word/settings.xml', 'settings') +
-    extra.map((e) => ctOv('/' + e.name, e.ct)).join('') +
+    extra.filter((e) => e.ct).map((e) => ctOv('/' + e.name, e.ct)).join('') +
     '<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>';
   const rootRels = `${XML}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${R}/officeDocument" Target="word/document.xml"/>` +
     '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>' +
@@ -432,7 +456,7 @@ export async function exportDocx(root, o = {}) {
   const core = `${XML}<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">` +
     `<dc:title>${esc(o.title || '')}</dc:title><dc:creator>${esc(o.author || 'Material Docx')}</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${iso}</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">${iso}</dcterms:modified></cp:coreProperties>`;
   const app = `${XML}<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>Material Docx</Application></Properties>`;
-  const settings = `${XML}<w:settings xmlns:w="${W}">${pageBg ? '<w:displayBackgroundShape/>' : ''}<w:defaultTabStop w:val="720"/><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>`;
+  const settings = `${XML}<w:settings xmlns:w="${W}">${pageBg ? '<w:displayBackgroundShape/>' : ''}<w:defaultTabStop w:val="720"/>${notePr}<w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>`;
 
   return createZip([
     { name: '[Content_Types].xml', data: contentTypes }, { name: '_rels/.rels', data: rootRels },
@@ -667,6 +691,35 @@ export async function importDocx(bytes) {
     return inner;
   };
 
+  /* comments / footnotes / endnotes: not editable here, but kept verbatim and written back on save */
+  const keep = {};
+  const noteText = { fn: {}, en: {}, cm: {} };
+  const keptKinds = [];
+  for (const [kind, part, tag, key] of [['fn', 'word/footnotes.xml', 'footnote', 'footnotes'], ['en', 'word/endnotes.xml', 'endnote', 'endnotes'], ['cm', 'word/comments.xml', 'comment', 'comments']]) {
+    const x = await read(part);
+    if (!x) continue;
+    const nd = parse(x);
+    const items = [...nd.getElementsByTagNameNS(W, tag)].filter((n) => kind === 'cm' || !attr(n, 'type'));
+    if (!items.length) continue;
+    const rx = await read(part.replace('word/', 'word/_rels/') + '.rels');
+    if (rx && /<Relationship\b(?![^>]*TargetMode="External")/i.test(rx)) continue; // notes with pictures etc. cannot be kept safely
+    for (const n of items) {
+      const id = attr(n, 'id');
+      const txt = [...n.getElementsByTagNameNS(W, 't')].map((q) => q.textContent).join('').replace(/\s+/g, ' ').trim();
+      noteText[kind][id] = (kind === 'cm' && attr(n, 'author') ? attr(n, 'author') + ': ' : '') + txt;
+    }
+    keep[key] = x;
+    if (rx) keep[key + 'Rels'] = rx;
+    keptKinds.push(key);
+  }
+  let noteNo = { fn: 0, en: 0 };
+  const noteRef = (kind, id) => {
+    if (!keep[kind === 'fn' ? 'footnotes' : 'endnotes'] || id == null) return '';
+    const n = ++noteNo[kind];
+    return `<sup class="mdx-${kind === 'cm' ? 'cm' : 'fn'}" data-k="${kind}" data-fn="${hEsc(id)}" data-n="${n}" data-tip="${hEsc(noteText[kind][id] || '')}">${n}</sup>`;
+  };
+  const cmRef = (id) => (keep.comments && id != null ? `<span class="mdx-cm" data-cm="${hEsc(id)}" data-tip="${hEsc(noteText.cm[id] || '')}">\u200b</span>` : '');
+
   // returns html; page breaks become the marker \u0001PB\u0001 so the paragraph can be split
   const PB = '\u0001PB\u0001';
   const runHtml = async (r, base, tokens) => {
@@ -674,9 +727,12 @@ export async function importDocx(bytes) {
     const rs = attr(kid(kid(r, 'rPr'), 'rStyle'), 'val');
     if (rs && styles[rs]) for (const s of chain(rs).reverse()) rprCss(s.rPr, f);
     rprCss(kid(r, 'rPr'), f);
-    let inner = '';
+    let inner = '', special = '';
     for (const c of r.children) {
       switch (c.localName) {
+        case 'footnoteReference': special = noteRef('fn', attr(c, 'id')); break;
+        case 'endnoteReference': special = noteRef('en', attr(c, 'id')); break;
+        case 'commentReference': special = cmRef(attr(c, 'id')); break;
         case 't': inner += hEsc(c.textContent); break;
         case 'tab': inner += '&emsp;'; break;
         case 'br': if (attr(c, 'type') === 'page') inner += PB; else inner += '<br>'; break;
@@ -691,6 +747,7 @@ export async function importDocx(bytes) {
         default: break;
       }
     }
+    if (special) return tokens && tokens.skipping() ? '' : special;
     if (!inner) return '';
     if (tokens && tokens.skipping()) return '';
     return inner.includes(PB) ? inner.split(PB).map((x) => (x ? wrapRun(f, x) : '')).join(PB) : wrapRun(f, inner);
@@ -952,7 +1009,18 @@ export async function importDocx(bytes) {
   }
   const core = await read('docProps/core.xml');
   if (core) { const m = /<dc:creator>([^<]*)<\/dc:creator>/.exec(core); if (m) meta.author = m[1].replace(/&amp;/g, '&'); }
-  return { html: html || '<p><br></p>', meta };
+  // what could not be kept: reported to the user
+  const lost = [];
+  const wanted = [['word/comments.xml', 'comment', 'comments'], ['word/footnotes.xml', 'footnote', 'footnotes'], ['word/endnotes.xml', 'endnote', 'endnotes']];
+  for (const [part, tag, key] of wanted) {
+    if (keep[key]) continue;
+    const x = await read(part);
+    if (x && [...parse(x).getElementsByTagNameNS(W, tag)].some((e) => key === 'comments' || !attr(e, 'type'))) lost.push(key);
+  }
+  if (dom.getElementsByTagNameNS(W, 'del').length) lost.push('changes');
+  if (dom.getElementsByTagNameNS('http://schemas.openxmlformats.org/officeDocument/2006/math', 'oMath').length) lost.push('equations');
+  if (keptKinds.length) meta.keep = keep;
+  return { html: html || '<p><br></p>', meta, lost, kept: keptKinds };
 }
 
 export { encodeText };

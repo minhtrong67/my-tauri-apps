@@ -183,3 +183,23 @@ pub fn restore_state(app: AppHandle, incoming: FullState) -> R<FullState> {
     store::write_state(&app, &st)?;
     Ok(full(&app))
 }
+
+#[tauri::command]
+pub fn get_icons(paths: Vec<String>) -> std::collections::HashMap<String, String> {
+    sys::get_icons(&paths)
+}
+
+#[tauri::command]
+pub fn check_command(command: String) -> bool {
+    sys::command_exists(&command)
+}
+
+#[tauri::command]
+pub fn test_command(command: String) -> R<()> {
+    sys::test_command(&command)
+}
+
+#[tauri::command]
+pub fn get_accent() -> String {
+    registry::accent_color()
+}

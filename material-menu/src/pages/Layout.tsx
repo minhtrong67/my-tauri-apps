@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from 'react'
-import { ChevronRight, Lock, Puzzle, RefreshCw, SquareTerminal, Zap } from 'lucide-react'
-import { api, errMsg, type Entry, type SystemItem } from '../lib/api'
+import { Check, ChevronRight, Lock, Puzzle, RefreshCw, Sparkles, SquareTerminal, Zap } from 'lucide-react'
+import { api, errMsg, iconFile, type Entry, type SystemItem } from '../lib/api'
 import { useApp } from '../lib/app'
 import { useSettings } from '../lib/settings'
 import type { Key } from '../lib/i18n'
-import { Chip, cx, IconButton, PageHeader, Segmented, Switch, Tooltip, useToast } from '../components/ui'
+import { Button, Chip, cx, IconButton, Loader, PageHeader, Segmented, Switch, Tooltip, useToast } from '../components/ui'
+import { IconTile } from '../components/IconTile'
 import { itemName } from './System'
 
 type Loc = 'desktop' | 'background' | 'folders' | 'files' | 'drives'
@@ -30,14 +31,16 @@ interface Row {
   item?: SystemItem; entry?: Entry
 }
 
-function Glyph({ kind, hidden }: { kind: Row['kind']; hidden?: boolean }) {
+function Glyph({ row }: { row: Row }) {
+  const kind = row.kind
   const c = { builtin: 'bg-surface-container-highest text-on-surface-variant', verb: 'bg-secondary-container text-on-secondary-container', handler: 'bg-tertiary-container text-on-tertiary-container', custom: 'bg-primary-container text-on-primary-container' }[kind]
   const I = kind === 'handler' ? Puzzle : kind === 'custom' ? Zap : kind === 'verb' ? SquareTerminal : Lock
-  return <span className={cx('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-opacity', c, hidden && 'opacity-40')}><I size={kind === 'builtin' ? 14 : 16} /></span>
+  const file = row.entry ? iconFile(row.entry.icon, row.entry.command) : row.item?.kind === 'verb' ? iconFile(row.item.icon, row.item.command) : ''
+  return <IconTile file={file} dim={row.hidden} className={cx('h-9 w-9 rounded-xl', c)} fallback={<I size={kind === 'builtin' ? 15 : 17} />} />
 }
 
 export default function Layout() {
-  const { t, lang } = useSettings()
+  const { t, lang, settings, set } = useSettings()
   const toast = useToast()
   const { state, saveEntries, markPending, reload } = useApp()
   const [loc, setLoc] = useState<Loc>('desktop')
@@ -51,6 +54,13 @@ export default function Layout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   useEffect(() => { scan() }, [scan])
+
+  const allIds = useMemo(() => [...new Set(items.map((i) => i.id))], [items])
+  useEffect(() => {
+    if (loading || allIds.length === 0) return
+    if (!settings.seenItems) set({ seenItems: allIds })
+  }, [loading, allIds, settings.seenItems, set])
+  const newIds = useMemo(() => (settings.seenItems ? new Set(allIds.filter((i) => !settings.seenItems!.includes(i))) : new Set<string>()), [allIds, settings.seenItems])
 
   const rows = useMemo<Row[]>(() => {
     const L = LOCS.find((l) => l.id === loc)!
@@ -88,22 +98,32 @@ export default function Layout() {
         <Segmented value={loc} onChange={setLoc} className="min-w-max" options={LOCS.map((l) => ({ value: l.id, label: t(l.label) }))} />
       </div>
 
+      {newIds.size > 0 && (
+        <div className="anim-pop mb-5 flex flex-wrap items-center gap-3 rounded-[24px] bg-success-container p-4 text-on-success-container">
+          <Sparkles size={22} className="shrink-0" />
+          <p className="min-w-[200px] flex-1 text-[0.9rem] font-medium">{t('newItemsTitle', { n: newIds.size })}</p>
+          <Button label={t('newItemsGot')} icon={<Check size={18} />} size="sm" onClick={() => set({ seenItems: allIds })} />
+        </div>
+      )}
+
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <section className="card p-2.5">
+        <section className="rounded-[32px] bg-surface-container-low p-2.5">
           <div className="flex items-center justify-between px-3 pb-2 pt-1.5">
             <span className="text-[0.85rem] font-medium text-on-surface-variant">{t('lyCount', { n: shown, m: switchable.length })}</span>
             <Tooltip label={t('lyLocked')}><span className="inline-flex items-center gap-1.5 text-[0.78rem] text-on-surface-variant"><Lock size={13} />{t('lyLocked').split('.')[0]}</span></Tooltip>
           </div>
           {loading && items.length === 0 ? (
-            <div className="space-y-1.5 p-1">{[0, 1, 2, 3, 4, 5].map((i) => <div key={i} className="h-12 animate-pulse rounded-2xl bg-surface-container" style={{ animationDelay: `${i * 70}ms` }} />)}</div>
+            <div className="flex justify-center py-16 text-primary"><Loader size={56} /></div>
           ) : (
-            <ul key={loc} className="stagger">
+            <ul key={loc} className="stagger glist">
               {rows.map((r, n) => (
-                <li key={r.key} style={{ '--i': Math.min(n, 14) } as CSSProperties}>
-                  <div className={cx('flex h-[52px] items-center gap-3 rounded-2xl px-3 transition-colors', r.kind !== 'builtin' && 'hover:bg-on-surface/[.05]')}>
-                    <Glyph kind={r.kind} hidden={r.hidden} />
+                <li key={r.key} style={{ '--i': Math.min(n, 14) } as CSSProperties} className={r.sep ? 'mb-3' : ''}>
+                  <div className={cx('gi flex h-[60px] items-center gap-3 px-3.5', r.kind === 'builtin' ? 'bg-surface-container-low' : 'bg-surface-container')}>
+                    <Glyph row={r} />
                     <span className={cx('min-w-0 flex-1 truncate text-[0.95rem] transition-all', r.hidden && 'text-on-surface-variant line-through decoration-on-surface-variant/40', r.kind === 'builtin' && 'text-on-surface-variant')}>{r.label}</span>
                     {r.sub && <ChevronRight size={16} className="text-on-surface-variant" />}
+                    {r.item && newIds.has(r.item.id) && <Chip tone="success" icon={<Sparkles size={11} />}>{t('newChip')}</Chip>}
+                    {r.item?.thirdParty && <Tooltip label={t('thirdPartyHint')}><span><Chip tone="warning">{t('thirdParty')}</Chip></span></Tooltip>}
                     {r.kind === 'custom' && <Chip tone="primary">{t('lyYours')}</Chip>}
                     {r.kind === 'builtin' ? (
                       <Tooltip label={t('lyLocked')}><span className="flex h-8 w-[52px] items-center justify-center text-on-surface-variant/60"><Lock size={16} /></span></Tooltip>
@@ -111,7 +131,6 @@ export default function Layout() {
                       <Switch checked={!r.hidden} onChange={(v) => toggle(r, v)} label={r.label} />
                     )}
                   </div>
-                  {r.sep && <div className="mx-3 my-1 h-px bg-outline-variant/60" />}
                 </li>
               ))}
             </ul>

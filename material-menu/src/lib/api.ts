@@ -11,13 +11,15 @@ export interface HiddenVerb { base: string; name: string }
 export interface AppState { entries: Entry[]; hiddenVerbs: HiddenVerb[]; blockedClsids: string[]; classic: boolean }
 export interface SystemItem {
   id: string; kind: 'verb' | 'handler'; base: string; name: string; display: string
-  command: string; clsid: string; hidden: boolean; scopes: string[]
+  command: string; clsid: string; hidden: boolean; scopes: string[]; icon: string; module: string; thirdParty: boolean
 }
 export interface OsInfo { name: string; build: number; ubr: number; displayVersion: string; isWin11: boolean }
 export interface BackupFile { name: string; path: string; size: number; modified: number }
+export interface Profile { id: string; name: string; state: AppState }
 export interface Settings {
   theme: 'system' | 'light' | 'dark'; seed: string; fontSize: 'sm' | 'md' | 'lg'; font: string
   language: 'en' | 'vi'; savePath: string | null; windowMode: 'remember' | 'maximized'
+  profiles: Profile[]; seenItems?: string[]; railExpanded: boolean; onboarded: boolean
 }
 
 export const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
@@ -60,7 +62,7 @@ const mock = {
     { id: 'h|{596AB062-B4D2-4215-9F74-E9109B0A8153}', kind: 'handler', base: 'Directory\\Background', name: 'PreviousVersions', display: 'Previous Versions', command: '', clsid: '{596AB062-B4D2-4215-9F74-E9109B0A8153}', hidden: false, scopes: ['allobjects'] },
     { id: 'h|{09A47860-11B0-4DA5-AFA5-26D86198A780}', kind: 'handler', base: 'Directory\\Background', name: 'Windows Defender', display: 'Microsoft Defender scan', command: '', clsid: '{09A47860-11B0-4DA5-AFA5-26D86198A780}', hidden: true, scopes: ['files', 'folders'] },
     { id: 'v|Drive|format', kind: 'verb', base: 'Drive', name: 'format', display: 'Format…', command: '', clsid: '', hidden: false, scopes: ['drives'] },
-  ] as SystemItem[],
+  ].map((i: any) => ({ icon: '', module: '', thirdParty: ['Git Context Menu', 'TortoiseSVN', '7-Zip'].includes(i.name), ...i })) as SystemItem[],
   backups: [] as BackupFile[],
   files: {} as Record<string, string>,
 }
@@ -83,6 +85,18 @@ async function mockInvoke(cmd: string, a: Record<string, any> = {}): Promise<any
       if (it) it.hidden = a.hidden
       return
     }
+    case 'get_icons': {
+      const out: Record<string, string> = {}
+      for (const p of a.paths as string[]) {
+        const name = (p.split(/[\\/]/).pop() || '?').replace(/\.\w+$/, '')
+        const hue = [...name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7)
+        out[p] = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="hsl(${hue} 60% 52%)"/><text x="16" y="22" font-size="17" font-family="Segoe UI,Arial" font-weight="700" text-anchor="middle" fill="white">${(name[0] || '?').toUpperCase()}</text></svg>`)
+      }
+      return delay(out, 60)
+    }
+    case 'check_command': return !/missing/i.test(a.command)
+    case 'test_command': return
+    case 'get_accent': return '#0078D4'
     case 'restart_explorer': return delay(undefined, 900)
     case 'open_uri': case 'open_path': return
     case 'write_backup': {
@@ -122,10 +136,25 @@ export const api = {
   readText: (path: string) => call<string>('read_text', { path }),
   listBackups: (dir: string) => call<BackupFile[]>('list_backups', { dir }),
   deleteBackup: (path: string) => call<void>('delete_backup', { path }),
+  getIcons: (paths: string[]) => call<Record<string, string>>('get_icons', { paths }),
+  checkCommand: (command: string) => call<boolean>('check_command', { command }),
+  testCommand: (command: string) => call<void>('test_command', { command }),
+  accent: () => call<string>('get_accent'),
   restore: (incoming: AppState) => call<AppState>('restore_state', { incoming }),
   resetAll: () => call<AppState>('reset_all'),
 }
 
+export function exeOf(cmd: string) {
+  const c = cmd.trim()
+  if (c.startsWith('"')) { const e = c.indexOf('"', 1); return c.slice(1, e > 0 ? e : undefined) }
+  return c.split(/\s+/)[0] ?? ''
+}
+/** Registry icon value -> a file path usable for icon extraction. */
+export function iconFile(value: string, command = '') {
+  let v = (value || '').trim().replace(/^"|"$/g, '').replace(/,\s*-?\d+$/, '')
+  if (!v) v = exeOf(command)
+  return v
+}
 export const uid = () => Math.random().toString(36).slice(2, 10).padEnd(8, '0')
 export const errMsg = (e: unknown) => (typeof e === 'string' ? e : e instanceof Error ? e.message : JSON.stringify(e))
 

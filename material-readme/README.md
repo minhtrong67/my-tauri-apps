@@ -1,177 +1,145 @@
 <div align="center">
 
-<img src="src-tauri/icons/128x128@2x.png" alt="Material Readme" width="128" height="128">
+<img src="assets/app-icon.svg" width="120" alt="Material Readme icon">
 
 # Material Readme
 
-**A Material Design 3 Markdown editor and viewer for the desktop.**
+**Write, preview and polish Markdown in Material 3 Expressive.**
 
-Write, preview and polish `README.md` files with a calm, modern interface, live split preview and themes in every Material colour.
+A fast, friendly desktop editor and viewer for Markdown, built with Tauri 2, React and TypeScript.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-6750A4.svg)](LICENSE)
-[![Built with Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB.svg)](https://tauri.app)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-415F91.svg)](#installation)
-[![Languages](https://img.shields.io/badge/UI-English%20%7C%20Ti%E1%BA%BFng%20Vi%E1%BB%87t-2E7D32.svg)](#features)
+[![Version](https://img.shields.io/badge/version-3.0.0-D81B60)](package.json)
+[![Platform](https://img.shields.io/badge/platform-Windows-0078D4)](#installation)
+[![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB)](https://tauri.app)
+[![License: MIT](https://img.shields.io/badge/license-MIT-2E7D32)](LICENSE)
 
-[English](README.md) · [Tiếng Việt](README.vi.md)
+[English](README.md) · [Tiếng Việt](README.vi.md) · [Landing page](index.html)
 
 </div>
 
----
-
 ## Introduction
 
-Material Readme started as a read-only Markdown viewer and is now a complete editor. It opens `.md` files instantly, lets you edit them with a formatting toolbar and keyboard shortcuts, and renders the result live next to your text. The whole interface follows **Material Design 3** and is coloured from the Material Theme Builder exports in `src/theme/`, so you can switch to any Material colour without losing visual consistency.
+Material Readme is a desktop app to read, write and live-preview Markdown files. It pairs a CodeMirror 6 editor with a block-by-block live preview, so long documents stay smooth while you type. The whole interface follows **Material 3 Expressive**: bold shapes, spring motion, rounded containers and a full colour system generated from any colour you pick.
 
-The app is built with [Tauri 2](https://tauri.app), which keeps it small, fast and light on memory. Everything works offline.
+It is part of the [my-tauri-apps](https://github.com/minhtrong67/my-tauri-apps) collection and works fully offline: your files never leave your computer.
 
 ## Screenshots
 
 | | |
 | :---: | :---: |
-| ![Split view, light theme](screenshots/image01.png) | ![Split view, dark purple theme](screenshots/image02.png) |
-| Split view with live preview | Dark theme from the purple theme file |
-| ![Reading mode](screenshots/image03.png) | ![Settings in Vietnamese](screenshots/image04.png) |
-| Reading mode with a teal theme colour | Settings side sheet (Vietnamese UI) |
-| ![Find and replace](screenshots/image05.png) | ![Narrow window](screenshots/image06.png) |
-| Find and replace | Responsive layout in a narrow window |
+| ![Split view with outline, toolbar and live preview](screenshots/image01.png) | ![Dark theme with the find bar](screenshots/image02.png) |
+| **Split view** · editor, outline and live preview | **Dark theme** · deep purple with find and highlight |
+| ![Settings sheet with theme colours, fonts and text size](screenshots/image03.png) | ![Vietnamese interface with the README template](screenshots/image04.png) |
+| **Settings** · modes, 18 colours, fonts and sizes | **Tiếng Việt** · fully translated, with templates |
 
 ## Features
 
-**Editing**
-- CodeMirror 6 editor with Markdown and fenced code syntax colours, undo history per file and list continuation on Enter.
-- Formatting toolbar: bold, italic, strikethrough, headings, quote, inline code, code block, link, image, bulleted / numbered / task lists, table and horizontal rule, plus `Ctrl+B`, `Ctrl+I`, `Ctrl+K` and friends.
-- Find and replace with match case and regular expressions, in the editor or in the rendered preview.
-- Multiple documents in tabs, unsaved-change indicators and a prompt before anything is lost.
-- Autosave (optional), atomic file writes, CRLF / LF preserved, and live reload when a file changes on disk.
+**Writing**
+- Three layouts: Edit, Split and Preview, with synchronized scrolling in split view.
+- Formatting toolbar and shortcuts for headings, bold, italic, strikethrough, code, links, images, lists, task lists, quotes, tables and rules.
+- Paste or drop an image: it is saved to an `assets` folder beside your file and linked for you.
+- Templates (README, API reference, changelog, meeting notes), shields.io badges and a generated table of contents.
+- Find and replace with case, regular expression and match counter, in both the editor and the preview.
+- Command palette (`Ctrl+Shift+P`) and a full set of keyboard shortcuts (`F1`).
 
 **Reading**
-- Three layouts: **Edit**, **Split** (synchronised scrolling) and **Preview**.
-- GitHub Flavoured Markdown: tables, task lists, strikethrough, alerts (`> [!NOTE]`), front matter, syntax-highlighted code blocks with a copy button.
-- Local images with relative paths, relative links to other `.md` files, in-page anchors and external links that open in your browser.
-- Outline panel with the active heading highlighted while you scroll.
-- Zoom from 60% to 220% (`Ctrl+Wheel`, `Ctrl+=`, `Ctrl+-`).
+- GitHub-style rendering: tables, task lists, front matter, alerts (`> [!NOTE]`), syntax-highlighted code with a copy button.
+- Outline drawer that follows your position, local images, relative links to other `.md` files.
+- Export to a standalone HTML file, or print to PDF.
 
-**Personalisation**
-- Light, dark or system mode with a circular reveal animation.
-- Three ready-made themes exported from Material Theme Builder (`material-theme-sky.json` is the default, plus `blue` and `purple`), 17 Material palette colours and a custom hex colour. Three contrast levels (standard, medium, high).
-- English and Vietnamese. The app detects your system language on first launch and you can override it in **Settings**.
-- Window behaviour on startup: **remember the last window size** or **always open maximized**.
+**Safety and workflow**
+- Multiple tabs, drag and drop to open files, `.md` file association and single-instance handling.
+- Autosave, session restore (tabs and unsaved drafts), and a prompt when a file changes on disk.
+- Atomic saves, line-ending detection (LF or CRLF) and a warning for files that are not valid UTF-8.
 
-**Everything else**
-- Open files by double click (file association), drag and drop, `Ctrl+O`, or the recent files list. A second launch hands its files to the running window.
-- Export to a standalone HTML page, print or save as PDF.
-- Smooth Material motion: ripples, state layers, animated tabs, dialogs, menus and sheets. Respects *reduce motion*.
-- Custom title bar, installer and uninstaller icons in the same Material style.
+**Personalization** (Settings, `Ctrl+,`)
+- Mode: system, light or dark, with a circular reveal when you switch.
+- 18 Material theme colours or any custom hex colour, with three contrast levels.
+- Fonts: System, Google Sans Flex, Roboto Flex, Roboto, Arial, Inter and Be Vietnam Pro.
+- Text size: small, medium or large, plus editor zoom.
+- Language: English or Tiếng Việt (or automatic).
+- Window on startup: remember the last size, or always open maximized.
+- Default save folder, autosave, restore session, word wrap, line numbers.
 
 ## Installation
 
-### Download the installer
+### Windows installer
 
-1. Download `Material Readme_2.0.0_x64-setup.exe` from the [`downloads`](downloads) folder (or from your release page).
-2. Run it. The installer installs for the current user, no administrator rights required.
-3. Start **Material Readme** from the Start menu. To open Markdown files with it, choose *Open with → Material Readme*.
+1. Download `Material Readme_3.0.0_x64-setup.exe` from the [`downloads`](downloads) folder (or from the landing page).
+2. Run the installer. It installs for the current user and does not need administrator rights.
+3. Open any `.md` file with Material Readme, or launch it from the Start menu.
 
-> Windows 10 and 11 (64-bit). The Microsoft Edge WebView2 runtime is required; it is already part of Windows 11 and recent Windows 10 updates.
+Requires Windows 10 or 11 (64-bit) with Microsoft Edge WebView2, which is already present on current Windows versions.
 
-### Landing page
+### Build from source
 
-`index.html` in the project root is a standalone landing page for the app. Open it in a browser or publish the repository with GitHub Pages. Before publishing, replace `https://minhtrong67.github.io/material-readme/` in its `<head>` (canonical URL, Open Graph and Twitter tags) with your real address.
+See [Development](#development) and [Build](#build).
 
 ## Tech stack
 
-| Layer | Technology |
+| Area | Technology |
 | --- | --- |
-| Shell | [Tauri 2](https://tauri.app) (Rust), plugins: dialog, opener, single-instance |
-| Editor | [CodeMirror 6](https://codemirror.net) |
-| Markdown | [marked](https://marked.js.org), [DOMPurify](https://github.com/cure53/DOMPurify), [highlight.js](https://highlightjs.org) |
-| Design | Material Design 3, [material-color-utilities](https://github.com/material-foundation/material-color-utilities), Material Symbols (Outlined) |
-| Fonts | Roboto and Roboto Mono (bundled, with Vietnamese support) |
-| Frontend | Plain HTML, CSS and ES modules. No bundler, no framework |
+| Shell | [Tauri 2](https://tauri.app) (Rust) |
+| UI | React 19, TypeScript, Vite, Tailwind CSS 4 |
+| Design | Material 3 Expressive, colours from `@material/material-color-utilities` |
+| Icons | [Lucide](https://lucide.dev) |
+| Editor | CodeMirror 6 |
+| Markdown | marked, DOMPurify, highlight.js |
+| State | Zustand |
+| Fonts | Bundled (latin, latin-ext, vietnamese subsets): Google Sans Flex, Roboto Flex, Roboto, Inter, Be Vietnam Pro |
 
 ## Development
 
-### Requirements
-
-- [Node.js](https://nodejs.org) 18 or newer
-- [Rust](https://rustup.rs) (stable) with the MSVC toolchain
-- Microsoft C++ Build Tools and WebView2 (see the [Tauri prerequisites](https://tauri.app/start/prerequisites/))
-
-### Workspace
-
-This project is meant to live inside a Cargo workspace folder that contains the shared `Cargo.toml`:
-
-```text
-tauri-apps/
-├─ Cargo.toml            # workspace: members = ["*/src-tauri"], one shared ./target
-└─ material-readme/      # this project
-```
-
-Every sub folder that has a `src-tauri/Cargo.toml` is picked up automatically, and all projects reuse the same build cache.
-
-### Run
+Requirements: [Node.js](https://nodejs.org) 20 or newer, [Rust](https://rustup.rs) (stable) and the [Tauri prerequisites](https://tauri.app/start/prerequisites/) for your system.
 
 ```bash
-npm install
-npm run dev
+npm install     # install dependencies
+npm run dev     # start the desktop app with hot reload
 ```
 
-`npm run dev` starts the app with live reload for everything inside `src/`.
+You can also work on the interface alone in a browser with `npm run web:dev` (file dialogs fall back to the browser).
 
 ## Build
 
 ```bash
-npm run build
+npm run build   # type-check, bundle the UI and create the installer
 ```
 
-The Windows installer is created at `target/release/bundle/nsis/Material Readme_2.0.0_x64-setup.exe` (inside the workspace folder). Copy it to [`downloads`](downloads) so the landing page can serve it.
+The installer is written to `target/release/bundle/nsis/` in the Cargo workspace root (or `src-tauri/target/...` when used on its own). Copy it into [`downloads`](downloads) so the landing page link works.
 
-### Optional tools
+Handy scripts:
 
-The bundled libraries and icons are committed, so you never need these to run or build the app.
-
-- **Rebuild CodeMirror and the colour engine:** `cd tools/vendor && npm install && npm run build`
-- **Regenerate app icons:** edit `tools/icons/app-icon.svg`, export a 1024 px PNG and run `npx tauri icon <png>`. The uninstaller icon source is `tools/icons/uninstall-icon.svg`.
+| Command | What it does |
+| --- | --- |
+| `npm run web:build` | Type-check and build only the UI into `dist/` |
+| `node tools/fonts/make-fonts.mjs` | Rebuild the trimmed font subsets |
+| `node tools/icons/make-icons.mjs` | Regenerate the app icon, uninstall icon, installer images and social image |
+| `npx tsx tools/landing/build-landing.mjs` | Rebuild `index.html` from `tools/landing/landing.template.html` |
 
 ## Project structure
 
 ```text
 material-readme/
-├─ index.html                  # landing page (single file, SEO + social meta)
-├─ downloads/                  # put the installer here
-├─ screenshots/                # image01.png … image06.png used by this README
-├─ package.json                # npm run dev / npm run build
-├─ src/                        # frontend
-│  ├─ index.html
-│  ├─ css/                     # theme tokens, app shell, markdown, editor
-│  ├─ js/
-│  │  ├─ main.js               # documents, tabs, find, scroll sync, shortcuts
-│  │  ├─ editor.js             # CodeMirror wrapper + formatting commands
-│  │  ├─ preview.js            # block-by-block Markdown rendering
-│  │  ├─ theme.js              # Material colour schemes
-│  │  ├─ settings.js           # settings side sheet
-│  │  ├─ ui.js                 # ripple, menus, dialogs, tooltips, snackbar
-│  │  ├─ i18n.js               # English and Vietnamese
-│  │  └─ bridge.js             # Tauri API wrapper
-│  ├─ theme/                   # Material Theme Builder exports (sky = default, blue, purple)
-│  ├─ fonts/                   # Roboto, Roboto Mono
-│  └─ vendor/                  # marked, DOMPurify, highlight.js, CodeMirror, MCU
-├─ src-tauri/
-│  ├─ src/lib.rs               # file commands, window size memory, single instance
-│  ├─ tauri.conf.json          # window, bundle, NSIS installer
-│  ├─ capabilities/
-│  └─ icons/                   # app, installer, uninstaller and installer art
-└─ tools/                      # optional: vendor bundle and icon sources
+├── index.html              Landing page (single file)
+├── app/                    Desktop UI (Vite root)
+│   ├── index.html
+│   ├── public/             Favicon
+│   └── src/
+│       ├── main.tsx, App.tsx
+│       ├── components/     Chrome, Workspace, Sheets, Hosts (toast, menu, tooltip), base widgets
+│       ├── lib/            controller, editor, markdown, theme, i18n, settings, tauri bridge
+│       ├── styles/         app.css (Tailwind + tokens), markdown.css, fonts.css
+│       └── assets/fonts/   Bundled font subsets
+├── src-tauri/              Rust backend, tauri.conf.json, capabilities, icons
+├── screenshots/            image01 to image04
+├── downloads/              Put the setup file here
+├── assets/                 App icon sources, favicon, social image
+├── tools/                  Generators for fonts, icons and the landing page
+├── package.json
+└── LICENSE
 ```
 
 ## License
 
-Material Readme is public and open source, released under the [MIT License](LICENSE).
-
----
-
-<div align="center">
-
-Designed and developed by **minhtrong67** with the assistance of AI **Claude** (Anthropic).
-
-</div>
+Material Readme is public and open source under the [MIT License](LICENSE).
+Project home: <https://github.com/minhtrong67/my-tauri-apps>

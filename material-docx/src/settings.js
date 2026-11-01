@@ -17,7 +17,8 @@ export const DEFAULTS = {
   ribbonCollapsed: false,
   darkPage: false,
   author: '',
-  uiFont: 'system',       // interface font: system | any installed family
+  uiFont: 'system',       // interface font: system | Roboto | Inter | Open Sans | Lexend | Noto Sans
+  uiSize: 'medium',       // interface text size: small | medium | large
   font: 'Calibri',
   fontSize: 11,
   autosave: true,
@@ -29,6 +30,8 @@ export const DEFAULTS = {
 export const settings = JSON.parse(JSON.stringify(DEFAULTS));
 try { Object.assign(settings, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch { /* ignore */ }
 if (settings.start !== 'maximized') settings.start = 'remember';
+if (!['system', 'Roboto', 'Inter', 'Open Sans', 'Lexend', 'Noto Sans'].includes(settings.uiFont)) settings.uiFont = 'system';
+if (!['small', 'medium', 'large'].includes(settings.uiSize)) settings.uiSize = 'medium';
 if (!settings.migrated2) { settings.spell = false; settings.migrated2 = 1; } // squiggles on non-English text were noisy
 
 export function saveSettings() {

@@ -130,7 +130,7 @@ const withTable = (fn) => { const tb = TB.currentTable(); if (tb) fn(tb); };
 let speaking = false;
 export function toggleSpeak() {
   const synth = window.speechSynthesis;
-  if (!synth) { toast(t('toast.noSpeech')); return; }
+  if (!synth) { toast.warning(t('toast.noSpeech')); return; }
   if (speaking) { synth.cancel(); speaking = false; bus.emit('selection'); return; }
   const sel = String(getSelection());
   const text = (sel && sel.trim()) || editor.innerText;
@@ -153,10 +153,10 @@ export function ribbonDef({ openBackstage, toggleFullscreen, cycleTheme }) {
       {
         l: 'g.clipboard', cls: 'g-clip',
         items: [
-          { k: 'split', size: 'lg', ic: 'paste', l: 'rb.paste', tip: 'tip.paste', kbd: 'Ctrl+V', run: async () => { if (!(await C.pasteFromClipboard(false))) toast(t('toast.pasteHint')); },
+          { k: 'split', size: 'lg', ic: 'paste', l: 'rb.paste', tip: 'tip.paste', kbd: 'Ctrl+V', run: async () => { if (!(await C.pasteFromClipboard(false))) toast.info(t('toast.pasteHint')); },
             menu: () => [
-              { label: t('rb.paste'), icon: 'paste', kbd: 'Ctrl+V', run: async () => { if (!(await C.pasteFromClipboard(false))) toast(t('toast.pasteHint')); } },
-              { label: t('rb.pasteText'), icon: 'pastetext', kbd: 'Ctrl+Shift+V', run: async () => { if (!(await C.pasteFromClipboard(true))) toast(t('toast.pasteHint')); } },
+              { label: t('rb.paste'), icon: 'paste', kbd: 'Ctrl+V', run: async () => { if (!(await C.pasteFromClipboard(false))) toast.info(t('toast.pasteHint')); } },
+              { label: t('rb.pasteText'), icon: 'pastetext', kbd: 'Ctrl+Shift+V', run: async () => { if (!(await C.pasteFromClipboard(true))) toast.info(t('toast.pasteHint')); } },
             ] },
           { k: 'stack', rows: [
             [B({ ic: 'cut', l: 'rb.cut', tip: 'tip.cut', kbd: 'Ctrl+X', showLabel: true, run: () => C.copySel(true), enabled: (s) => s.hasSel && !s.collapsed })],
@@ -342,7 +342,7 @@ export function ribbonDef({ openBackstage, toggleFullscreen, cycleTheme }) {
           { label: t('toc.update'), icon: 'recent', run: () => C.updateToc(), disabled: !editor.querySelector('[data-toc]') },
           { label: t('toc.remove'), icon: 'trash', run: () => C.removeToc(), disabled: !editor.querySelector('[data-toc]') },
         ] }),
-        B({ size: 'lg', ic: 'recent', l: 'rb.updateToc', tip: 'tip.updateToc', run: () => { if (!editor.querySelector('[data-toc]')) { toast(t('toc.none')); return; } C.updateToc(); }, enabled: () => true }),
+        B({ size: 'lg', ic: 'recent', l: 'rb.updateToc', tip: 'tip.updateToc', run: () => { if (!editor.querySelector('[data-toc]')) { toast.info(t('toc.none')); return; } C.updateToc(); }, enabled: () => true }),
       ] },
       { l: 'g.captions', items: [
         B({ size: 'lg', ic: 'quote', l: 'rb.caption', tip: 'tip.caption', run: () => C.applyStyle('caption') }),
@@ -355,7 +355,7 @@ export function ribbonDef({ openBackstage, toggleFullscreen, cycleTheme }) {
     id: 'review', l: 'tab.review',
     groups: [
       { l: 'g.proofing', items: [
-        B({ size: 'lg', ic: 'spell', l: 'rb.spelling', tip: 'tip.spelling', active: () => settings.spell, run: () => { settings.spell = !settings.spell; saveSettings(); editor.spellcheck = settings.spell; bus.emit('selection'); toast(t(settings.spell ? 'toast.spellOn' : 'toast.spellOff')); } }),
+        B({ size: 'lg', ic: 'spell', l: 'rb.spelling', tip: 'tip.spelling', active: () => settings.spell, run: () => { settings.spell = !settings.spell; saveSettings(); editor.spellcheck = settings.spell; bus.emit('selection'); toast.info(t(settings.spell ? 'toast.spellOn' : 'toast.spellOff')); } }),
         B({ size: 'lg', ic: 'wordcount', l: 'rb.wordCount', tip: 'tip.wordCount', run: () => D.openWordCount() }),
       ] },
       { l: 'g.speech', items: [

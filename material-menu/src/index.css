@@ -37,6 +37,15 @@
   .press { transition: border-radius .35s var(--spring), transform .35s var(--spring), background-color .2s, box-shadow .2s; }
   .press:active { transform: scale(.97); }
   .card { @apply rounded-3xl bg-surface-container-low; }
+  /* M3 Expressive grouped list: large outer corners, small inner corners, morph on hover */
+  .glist { display: flex; flex-direction: column; gap: 3px; }
+  .gi { border-radius: 8px; transition: border-radius .45s var(--spring), background-color .2s, opacity .3s, transform .35s var(--spring); }
+  .glist > li:first-child > .gi { border-top-left-radius: 28px; border-top-right-radius: 28px; }
+  .glist > li:last-child > .gi { border-bottom-left-radius: 28px; border-bottom-right-radius: 28px; }
+  .glist > li:only-child > .gi { border-radius: 28px; }
+  .glist > li > .gi:hover { border-radius: 20px; }
+  .glist > li.drag-over > .gi { outline: 2px dashed rgb(var(--c-primary)); outline-offset: -2px; }
+  .glist > li.dragging > .gi { opacity: .45; transform: scale(.98); }
   .field {
     @apply w-full rounded-2xl border border-outline-variant bg-surface-container-lowest/60 px-4 py-3 text-[0.95rem] text-on-surface outline-none transition placeholder:text-on-surface-variant/60;
   }
@@ -44,6 +53,8 @@
   .field:focus { @apply border-primary; box-shadow: 0 0 0 1px rgb(var(--c-primary)); }
 }
 
+@keyframes loader-spin { to { transform: rotate(360deg); } }
+@keyframes fab-in { from { opacity: 0; transform: translateY(24px) scale(.8); } to { opacity: 1; transform: none; } }
 @keyframes ripple { to { transform: scale(1); opacity: 0; } }
 @keyframes pop-in { from { opacity: 0; transform: scale(.88) translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes pop-out { to { opacity: 0; transform: scale(.94) translateY(6px); } }
@@ -57,23 +68,20 @@
 @keyframes tip-in { from { opacity: 0; transform: translateX(-50%) scale(.9); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes shrink { from { transform: scaleX(1); } to { transform: scaleX(0); } }
-@keyframes ping-soft { 0% { box-shadow: 0 0 0 0 rgb(var(--c-primary) / .5); } 100% { box-shadow: 0 0 0 14px rgb(var(--c-primary) / 0); } }
-@keyframes morph {
-  0%, 100% { border-radius: 60% 40% 55% 45% / 55% 45% 60% 40%; transform: rotate(0deg) scale(1); }
-  33% { border-radius: 40% 60% 45% 55% / 60% 40% 45% 55%; transform: rotate(40deg) scale(1.06); }
-  66% { border-radius: 55% 45% 60% 40% / 40% 60% 55% 45%; transform: rotate(-30deg) scale(.96); }
-}
+@keyframes ping-ring { 0% { transform: scale(1); opacity: .45; } 100% { transform: scale(1.28, 1.5); opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes float-y { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
-.anim-pop { animation: pop-in .38s var(--spring) both; }
+.anim-pop { animation: pop-in .32s var(--spring) both; will-change: transform, opacity; }
 .anim-pop-out { animation: pop-out .16s var(--emph) both; }
 .anim-fade { animation: fade-in .22s var(--emph) both; }
 .anim-fade-out { animation: fade-out .16s var(--emph) both; }
-.anim-sheet { animation: sheet-in .42s var(--spring) both; }
+.anim-sheet { animation: sheet-in .36s var(--emph) both; will-change: transform, opacity; }
 .anim-sheet-out { animation: sheet-out .18s var(--emph) both; }
-.anim-page { animation: slide-up .5s var(--spring) both; }
-.stagger > * { animation: slide-up .55s var(--spring) both; animation-delay: calc(var(--i, 0) * 45ms); }
-.blob { animation: morph 14s ease-in-out infinite; }
+.anim-page { animation: rise .28s var(--emph) both; }
+.stagger > * { animation: rise .36s var(--emph) backwards; animation-delay: calc(var(--i, 0) * 32ms); }
+.stagger > *:nth-child(n+12) { animation: none; }
+.blob { border-radius: 60% 40% 55% 45% / 55% 45% 60% 40%; animation: morph 18s ease-in-out infinite; will-change: transform; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

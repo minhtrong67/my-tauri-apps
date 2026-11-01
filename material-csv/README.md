@@ -1,101 +1,85 @@
 <div align="center">
 
-<img src="src-tauri/icons/128x128@2x.png" alt="Material CSV" width="112">
+<img src="brand/logo-512.png" alt="Material CSV" width="128" />
 
 # Material CSV
 
-**A fast, full-featured CSV editor with a Material Design 3 interface.**
+**A fast, free desktop editor for CSV, TSV and Excel files, with a Material 3 Expressive interface.**
 
-Edit cells like a spreadsheet, sort, filter, find and replace, undo everything, and export to CSV, TSV, JSON, Excel, Markdown or HTML.
-
-![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)
-![Rust](https://img.shields.io/badge/Rust-stable-DEA584?logo=rust&logoColor=white)
-![Platform](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-green)
-
-Crafted by **[minhtrong67](https://github.com/minhtrong67)** with the help of AI: **Claude** (Anthropic)
+[![License: MIT](https://img.shields.io/badge/license-MIT-6750A4.svg)](LICENSE)
+[![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8D8.svg)](https://tauri.app)
+[![React 19](https://img.shields.io/badge/React-19-61DAFB.svg)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg)](https://www.typescriptlang.org)
+[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind-4-38BDF8.svg)](https://tailwindcss.com)
 
 </div>
 
----
-
 ## Introduction
 
-Material CSV started as a CSV *viewer* and is now a complete CSV *editor*. It opens large files instantly (virtualised rendering, 300,000 rows open in under a second), lets you edit any cell, restructure rows and columns, clean data with one click and save back with the encoding, delimiter and line endings you choose. The interface follows **Material Design 3**: dynamic color generated from a seed color (the default palette is the project's Material Theme Builder export), tonal surfaces, state layers, ripples and Material motion, inside a tabbed title bar.
+Material CSV opens your delimited and spreadsheet files in a smooth, spreadsheet-style grid. Edit cells, find and replace with regular expressions, filter, sort, undo and redo, then export to the format you need. The interface follows Material 3 Expressive: dynamic color from any seed, shape morphing, spring motion and large, friendly controls. It runs natively on Windows through Tauri, so the installer is small and startup is fast.
 
 ## Screenshots
 
-| | |
-|---|---|
-| ![Welcome](screenshots/image01.png) | ![Table](screenshots/image02.png) |
-| ![Dark theme](screenshots/image03.png) | ![Find and replace](screenshots/image04.png) |
-| ![Settings](screenshots/image05.png) | ![Window options](screenshots/image07.png) |
-| ![Vietnamese list view](screenshots/image06.png) | |
+| Table view | Dark theme |
+| :---: | :---: |
+| ![Table view](screenshots/image01.png) | ![Dark theme](screenshots/image02.png) |
+| **Find & replace** | **Settings** |
+| ![Find and replace](screenshots/image03.png) | ![Settings](screenshots/image04.png) |
 
 ## Features
 
-**Editing**
-- Spreadsheet-style grid: click, drag, `Shift`+click selection, `F2` / double-click / just start typing to edit, `Enter` / `Tab` navigation, formula bar for long values
-- Undo / redo for every action (200 steps), unsaved-change tracking per tab
-- Cut, copy, paste (Excel-compatible TSV), fill down / right, clear cells
-- Insert, delete, duplicate and move rows and columns; rename, hide and auto-fit columns; resize by dragging
-- Editable **row details** side panel (form view of the selected row)
-
-**Data tools**
-- Find & replace with match case, whole cell, **regular expressions**, "in selection" and "show only matching rows"
-- Quick filter row, advanced multi-condition filter, view sorting and permanent sorting
-- Trim spaces, UPPER / lower / Title Case, remove duplicate rows, remove empty rows, header row toggle
-- Column statistics (unique values, min / max / avg / sum, most frequent values) and live selection sum / average
-
-**Files**
-- Open CSV, TSV, TXT and Excel (`.xlsx`, `.xls`, `.ods`) files, drag & drop, multiple files in **tabs**, recent files
-- Automatic delimiter, encoding (UTF-8, UTF-16, Windows-125x, GBK, Shift_JIS, ...) and line ending detection; change them from the status bar
-- Save, Save as, export to **CSV, TSV, JSON, Excel, Markdown and HTML**
-- Register as the default app for `.csv` / `.tsv` files; single instance (new files open as tabs)
-
-**Experience**
-- Light, dark or system theme, Material 3 **dynamic color** from 12 seed colors or any custom color, three contrast levels (standard / medium / high)
-- English and Vietnamese (follows the system or choose manually)
-- Command palette (`Ctrl`+`Shift`+`P`), context menus, full keyboard shortcuts (`F1`)
-- Zoom (`Ctrl` + mouse wheel), three row densities, table / cards / list views
-- Window option: **remember the window size and position** or **always open maximized** (`F11` toggles full screen)
-- Animations and effects (ripples, state layers, shared-axis menus, theme cross-fade) that can be switched off
-
-## Download
-
-Grab the latest installer (`Material CSV_x.y.z_x64-setup.exe`) from the **Releases** page or from the [landing page](index.html) (it links to the `download/` folder), or [build it yourself](#build).
-
-> **Landing page:** open `index.html` in the project root (single file, Material Design 3, responsive, English / Vietnamese). Put the installer in `download/` using the file name described in `download/README.md`.
+- **Spreadsheet-style grid**: virtualized rendering for large files, tabs, frozen first column, drag selection, column resize, row details panel and a formula bar.
+- **Open and save**: CSV, TSV, TXT, XLSX, XLS and ODS; encoding detection (UTF-8, UTF-16, Windows-1252 and more), BOM and line-ending control.
+- **Editing tools**: undo and redo, copy, cut and paste, insert, delete and move rows and columns, remove duplicates and empty rows, conditional highlights.
+- **Find and replace**: case, whole-word and regular-expression modes, match navigation and a "show only matching rows" filter.
+- **Filter and sort**: per-column filters, view-only sorting or sorting applied to the data.
+- **Export**: CSV, TSV, JSON, Excel, Markdown and HTML.
+- **Draft recovery**: unsaved work is restored after a crash or an unexpected close.
+- **Material 3 Expressive theming**: light, dark or system mode, 12 seed colors plus a custom color picker, Tonal, Vibrant and Expressive palettes, and three contrast levels.
+- **Personalization**: 7 fonts (System, Google Sans Flex, Roboto Flex, Roboto, Arial, Inter, Be Vietnam Pro), three text sizes, English and Vietnamese, and a window option to remember the last size or always start maximized.
+- **Polished details**: custom tooltips, custom dropdowns, light and dark toasts (info, success, error, warning), scroll-to-top buttons and reduced-motion support.
 
 ## Installation
 
-1. Download and run the setup `.exe` (installs for the current user, no administrator rights needed).
-2. Launch **Material CSV** from the Start menu or double-click any `.csv` file.
-3. Uninstall from *Settings → Apps* like any other app.
+### Windows installer
 
-Requires Windows 10 / 11 with the Microsoft WebView2 runtime (preinstalled on Windows 11; the installer downloads it when missing).
+1. Download `Material CSV_3.0.0_x64-setup.exe` from the [`download`](download) folder or the landing page.
+2. Run the installer. It installs for the current user and does not need administrator rights.
+3. Open a `.csv` or `.tsv` file with Material CSV, or launch it from the Start menu.
+
+### Build from source
+
+See [Development](#development) and [Build](#build).
 
 ## Tech stack
 
 | Layer | Technology |
-|---|---|
-| Shell | [Tauri 2](https://tauri.app) (Rust) with `dialog`, `single-instance` and `window-state` plugins |
-| UI | Vanilla HTML, CSS and ES modules, no framework, no bundler |
-| Design | Material Design 3 (tokens, tonal surfaces, Material Symbols icons), system UI font (`system-ui`) |
-| Color | `@material/material-color-utilities` (bundled to `src/vendor/material-color.js`) |
-| File IO | Rust commands with `encoding_rs` for legacy encodings |
-| Excel | SheetJS (mini build, loaded on demand) |
+| --- | --- |
+| Desktop shell | [Tauri 2](https://tauri.app) (Rust) |
+| UI | [React 19](https://react.dev) + [TypeScript](https://www.typescriptlang.org) |
+| Bundler | [Vite 7](https://vite.dev) |
+| Styling | [Tailwind CSS 4](https://tailwindcss.com) with Material 3 color roles as CSS variables |
+| Color | [`@material/material-color-utilities`](https://github.com/material-foundation/material-color-utilities) |
+| Icons | [Lucide](https://lucide.dev) |
+| Fonts | [Fontsource](https://fontsource.org) (Google Sans Flex, Roboto Flex, Roboto, Inter, Be Vietnam Pro) |
 
 ## Development
 
-Prerequisites: [Node.js](https://nodejs.org) 18+, [Rust](https://rustup.rs) and the [Tauri prerequisites](https://tauri.app/start/prerequisites/) for Windows (WebView2 + MSVC build tools).
+Prerequisites: [Node.js](https://nodejs.org) 20+, the [Rust toolchain](https://rustup.rs) and the [Tauri prerequisites](https://tauri.app/start/prerequisites/) for your platform (WebView2 and the MSVC build tools on Windows).
+
+This project is a member of a Cargo workspace (`members = ["*/src-tauri"]`), so keep it in the workspace root next to the shared `Cargo.toml`.
 
 ```bash
-npm install
-npm run dev
+npm install     # install dependencies
+npm run dev     # start the desktop app in development mode (hot reload)
 ```
 
-This project is a member of the shared Cargo workspace (`*/src-tauri`), so every Tauri app in the folder reuses one `target` cache.
+Useful extras:
+
+```bash
+npm run web:dev       # run only the web UI in a browser (http://127.0.0.1:1420)
+npm run web:build     # type-check and build the web UI into ./dist
+```
 
 ## Build
 
@@ -103,41 +87,31 @@ This project is a member of the shared Cargo workspace (`*/src-tauri`), so every
 npm run build
 ```
 
-The installer is produced in `target/release/bundle/nsis/` (workspace root) and the portable executable in `target/release/`.
+The NSIS installer is written to `target/release/bundle/nsis/` in the workspace. Copy it to `download/` so the landing page download button works.
 
 ## Project structure
 
-```
+```text
 material-csv/
-├─ index.html              landing page (single file) with the download button
-├─ download/               put the setup .exe here (the landing page links to it)
-├─ package.json            npm scripts: dev, build
-├─ screenshots/             README images (image01.png ...)
-├─ src/                    frontend (no build step)
+├─ index.html            # landing page (single file, no build step)
+├─ app/                  # desktop app UI (Vite root)
 │  ├─ index.html
-│  ├─ css/                 tokens, layout, grid, components
-│  ├─ js/
-│  │  ├─ main.js           bootstrap, tabs, window chrome
-│  │  ├─ state.js          documents, undo history, filters, view
-│  │  ├─ grid.js           virtualised grid, selection, inline editing
-│  │  ├─ ops.js            row / column / data operations
-│  │  ├─ io.js             open, save, export, recent files
-│  │  ├─ csv.js            parser, serializer, delimiter detection
-│  │  ├─ find.js  panels.js  menus.js  dialogs.js  commands.js
-│  │  └─ i18n.js  icons.js  theme.js  ui.js   (theme.js builds the Material 3 scheme)
-│  ├─ assets/              logo (full and small-size variant)
-│  └─ vendor/              SheetJS mini, Material color utilities
-└─ src-tauri/
-   ├─ src/lib.rs           commands: open_file, write_text, write_bytes, reveal
-   ├─ tauri.conf.json      window, NSIS installer, file associations
-   ├─ capabilities/        permissions
-   └─ icons/               app icons, installer / uninstaller icon, installer images
+│  └─ src/
+│     ├─ components/     # Titlebar, CommandBar, Grid, Settings, Dialogs, UI kit
+│     ├─ lib/            # store, ops, io, find, theme, i18n, commands
+│     ├─ index.css       # Material 3 tokens and component styles
+│     └─ main.tsx
+├─ src-tauri/            # Rust backend, config, capabilities and icons
+├─ public/               # static assets (favicon, vendor/xlsx parser)
+├─ brand/                # logo sources and social image
+├─ screenshots/          # image01.png ... image04.png
+├─ download/             # put the Windows installer here
+├─ package.json
+└─ vite.config.ts
 ```
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Material CSV is open source and released under the [MIT License](LICENSE). The source lives at [github.com/minhtrong67/my-tauri-apps](https://github.com/minhtrong67/my-tauri-apps).
 
----
-
-<div align="center">Made with care by <b>minhtrong67</b> · built with AI assistance from <b>Claude</b></div>
+Created by **minhtrong67** with the help of AI, **Claude** (Anthropic).

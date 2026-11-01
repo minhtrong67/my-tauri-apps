@@ -72,6 +72,9 @@ pub struct SystemItem {
     pub clsid: String,
     pub hidden: bool,
     pub scopes: Vec<String>,
+    pub icon: String,
+    pub module: String,
+    pub third_party: bool,
 }
 
 #[derive(Serialize, Clone, Debug, Default)]

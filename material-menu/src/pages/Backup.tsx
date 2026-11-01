@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Download, FileJson, FolderOpen, RotateCcw, Trash2, Upload, X, ShieldAlert, HardDriveDownload } from 'lucide-react'
+import { Bookmark, Check, Download, FileCode2, FileJson, FolderOpen, RefreshCw, RotateCcw, Save, Trash2, Upload, X, ShieldAlert, HardDriveDownload } from 'lucide-react'
 import { open } from '@tauri-apps/plugin-dialog'
-import { api, errMsg, isTauri, type AppState, type BackupFile, type Entry } from '../lib/api'
+import { api, errMsg, isTauri, uid, type AppState, type BackupFile, type Entry, type Profile } from '../lib/api'
+import { buildReg } from '../lib/reg'
 import { useApp } from '../lib/app'
 import { useSettings } from '../lib/settings'
-import { Button, ConfirmDialog, EmptyState, IconButton, PageHeader, useToast } from '../components/ui'
+import { Button, Chip, ConfirmDialog, Dialog, EmptyState, IconButton, PageHeader, useToast } from '../components/ui'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const stamp = (d = new Date()) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`
@@ -29,7 +30,7 @@ function parse(text: string): AppState | null {
 }
 
 export default function Backup() {
-  const { t, saveDir } = useSettings()
+  const { t, saveDir, settings, set } = useSettings()
   const toast = useToast()
   const { state, applyState, markPending } = useApp()
   const [files, setFiles] = useState<BackupFile[]>([])
@@ -37,6 +38,12 @@ export default function Backup() {
   const [delFile, setDelFile] = useState<BackupFile | null>(null)
   const [resetOpen, setResetOpen] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [profOpen, setProfOpen] = useState(false)
+  const [profName, setProfName] = useState('')
+  const [applyP, setApplyP] = useState<Profile | null>(null)
+  const [delP, setDelP] = useState<Profile | null>(null)
+  const profiles = settings.profiles ?? []
+  const snap = (): AppState => JSON.parse(JSON.stringify(state))
 
   const refresh = useCallback(() => { if (saveDir) api.listBackups(saveDir).then(setFiles).catch(() => setFiles([])) }, [saveDir])
   useEffect(refresh, [refresh])
@@ -50,6 +57,22 @@ export default function Backup() {
       toast.success(t('bkExported'), { label: t('openFolder'), onClick: () => api.openPath(saveDir) })
       refresh()
     } catch (e) { fail(e) }
+  }
+  const exportReg = async () => {
+    try {
+      await api.writeBackup(saveDir, `material-menu-${stamp()}.reg`, buildReg(state))
+      toast.success(t('bkExported'), { label: t('openFolder'), onClick: () => api.openPath(saveDir) })
+    } catch (e) { fail(e) }
+  }
+  const saveProfile = () => {
+    const name = profName.trim(); if (!name) return
+    set({ profiles: [...profiles, { id: uid(), name, state: snap() }] }); setProfOpen(false); setProfName('')
+  }
+  const applyProfile = async () => {
+    if (!applyP) return
+    setBusy(true)
+    try { applyState(await api.restore(applyP.state)); markPending(); toast.success(t('profApplied', { name: applyP.name })); setApplyP(null) } catch (e) { fail(e) }
+    setBusy(false)
   }
   const load = async (path: string) => {
     try {
@@ -86,7 +109,8 @@ export default function Backup() {
           <p className="truncate rounded-xl bg-surface-container px-3 py-2 font-mono text-[0.75rem] text-on-surface-variant" title={saveDir}>{saveDir}</p>
           <div className="mt-auto flex flex-wrap gap-2">
             <Button label={t('bkExport')} icon={<HardDriveDownload size={18} />} onClick={exportNow} />
-            <Button label={t('openFolder')} icon={<FolderOpen size={18} />} variant="tonal" onClick={() => api.openPath(saveDir)} />
+            <Button label={t('regExport')} icon={<FileCode2 size={18} />} variant="tonal" onClick={exportReg} />
+            <Button label={t('openFolder')} icon={<FolderOpen size={18} />} variant="text" onClick={() => api.openPath(saveDir)} />
           </div>
         </section>
         <section className="card flex flex-col gap-4 p-6" style={{ '--i': 1 } as React.CSSProperties}>
@@ -96,13 +120,38 @@ export default function Backup() {
         </section>
       </div>
 
+      <div className="mb-3 mt-8 flex flex-wrap items-end justify-between gap-3 px-1">
+        <div><h2 className="text-[1.05rem] font-semibold">{t('profilesTitle')}</h2><p className="text-[0.84rem] text-on-surface-variant">{t('profilesSub')}</p></div>
+        <Button label={t('profSave')} icon={<Bookmark size={18} />} onClick={() => { setProfName(''); setProfOpen(true) }} />
+      </div>
+      {profiles.length === 0 ? (
+        <div className="card"><EmptyState icon={<Bookmark size={40} />} title={t('profNone')} /></div>
+      ) : (
+        <ul className="stagger glist">
+          {profiles.map((p, n) => (
+            <li key={p.id} style={{ '--i': Math.min(n, 8) } as React.CSSProperties}>
+              <div className="gi flex flex-wrap items-center gap-3 bg-surface-container-low p-3.5">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-tertiary-container text-on-tertiary-container"><Bookmark size={21} /></span>
+                <div className="min-w-0 flex-1 basis-48">
+                  <p className="truncate text-[0.97rem] font-semibold">{p.name}</p>
+                  <p className="text-[0.78rem] text-on-surface-variant">{t('profSummary', { cmds: p.state.entries.length, hidden: p.state.hiddenVerbs.length + p.state.blockedClsids.length, classic: p.state.classic ? t('on') : t('off') })}</p>
+                </div>
+                <IconButton label={t('profUpdate')} onClick={() => set({ profiles: profiles.map((x) => (x.id === p.id ? { ...x, state: snap() } : x)) })}><RefreshCw size={18} /></IconButton>
+                <IconButton label={t('delete')} variant="error" onClick={() => setDelP(p)}><Trash2 size={18} /></IconButton>
+                <Button label={t('profApply')} icon={<Check size={18} />} size="sm" onClick={() => setApplyP(p)} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
       <h2 className="mb-3 mt-8 px-1 text-[1.05rem] font-semibold">{t('bkList')}</h2>
       {files.length === 0 ? (
         <div className="card"><EmptyState icon={<FileJson size={40} />} title={t('bkNone')} /></div>
       ) : (
-        <ul className="stagger space-y-2">
+        <ul className="stagger glist">
           {files.map((f, n) => (
-            <li key={f.path} style={{ '--i': Math.min(n, 8) } as React.CSSProperties} className="card flex items-center gap-3 p-3.5">
+            <li key={f.path} style={{ '--i': Math.min(n, 8) } as React.CSSProperties}><div className="gi flex items-center gap-3 bg-surface-container-low p-3.5">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-secondary-container text-on-secondary-container"><FileJson size={21} /></span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[0.93rem] font-medium">{f.name}</p>
@@ -110,7 +159,7 @@ export default function Backup() {
               </div>
               <IconButton label={t('restore')} variant="tonal" onClick={() => load(f.path)}><RotateCcw size={18} /></IconButton>
               <IconButton label={t('delete')} variant="error" onClick={() => setDelFile(f)}><Trash2 size={18} /></IconButton>
-            </li>
+            </div></li>
           ))}
         </ul>
       )}
@@ -121,6 +170,14 @@ export default function Backup() {
         <Button label={t('resetAction')} icon={<RotateCcw size={18} />} variant="error" onClick={() => setResetOpen(true)} />
       </section>
 
+      <Dialog open={profOpen} onClose={() => setProfOpen(false)} title={t('profSave')} icon={<Bookmark size={24} />}
+        actions={<><Button label={t('cancel')} icon={<X size={18} />} variant="tonal" onClick={() => setProfOpen(false)} /><Button label={t('save')} icon={<Save size={18} />} disabled={!profName.trim()} onClick={saveProfile} /></>}>
+        <input className="field" autoFocus value={profName} maxLength={40} placeholder={t('profName')} onChange={(e) => setProfName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && saveProfile()} />
+        <div className="mt-3 flex gap-2"><Chip tone="primary">{state.entries.length} {t('statCommands')}</Chip><Chip>{state.hiddenVerbs.length + state.blockedClsids.length} {t('statHidden')}</Chip></div>
+      </Dialog>
+      <ConfirmDialog open={!!applyP} onClose={() => setApplyP(null)} onConfirm={applyProfile} loading={busy} title={t('profApplyTitle')} confirmLabel={t('profApply')} confirmIcon={<Check size={18} />} body={t('profApplyBody', { name: applyP?.name ?? '' })} />
+      <ConfirmDialog open={!!delP} onClose={() => setDelP(null)} danger title={t('profDelTitle')} confirmLabel={t('delete')} confirmIcon={<Trash2 size={18} />} body={t('profDelBody', { name: delP?.name ?? '' })}
+        onConfirm={() => { if (delP) set({ profiles: profiles.filter((x) => x.id !== delP.id) }); setDelP(null) }} />
       <ConfirmDialog open={!!pending} onClose={() => setPending(null)} onConfirm={doRestore} loading={busy} title={t('bkRestoreTitle')}
         confirmLabel={t('restore')} confirmIcon={<RotateCcw size={18} />}
         body={pending && t('bkRestoreBody', { cmds: pending.entries.length, hidden: pending.hiddenVerbs.length + pending.blockedClsids.length, classic: pending.classic ? t('on') : t('off') })} />

@@ -310,6 +310,9 @@ pub fn scan(state: &State) -> Vec<SystemItem> {
                 clsid: String::new(),
                 hidden: ours,
                 scopes: vec![scope.to_string()],
+                icon: vk.get_value::<String, _>("Icon").unwrap_or_default(),
+                module: String::new(),
+                third_party: false,
             });
         }
     }
@@ -354,6 +357,13 @@ pub fn scan(state: &State) -> Vec<SystemItem> {
             } else {
                 String::new()
             };
+            let module: String = hkcr
+                .open_subkey(format!(r"CLSID\{}\InprocServer32", clsid))
+                .and_then(|k| k.get_value::<String, _>(""))
+                .unwrap_or_default();
+            let m = module.to_lowercase();
+            let third_party = !m.is_empty()
+                && !(m.contains("\\windows\\") || m.starts_with("%systemroot%") || m.starts_with("%windir%") || m.contains("\\windowsapps\\"));
             by_clsid.insert(clsid.clone(), out.len());
             out.push(SystemItem {
                 id: format!("h|{}", clsid),
@@ -365,6 +375,9 @@ pub fn scan(state: &State) -> Vec<SystemItem> {
                 hidden: blocked_user.contains(&clsid),
                 clsid,
                 scopes: vec![scope.to_string()],
+                icon: String::new(),
+                module,
+                third_party,
             });
         }
     }
@@ -418,4 +431,17 @@ pub fn reset(state: &State) -> Result<(), String> {
 
 pub fn hidden_verb(base: &str, name: &str) -> HiddenVerb {
     HiddenVerb { base: base.into(), name: name.into() }
+}
+
+pub fn accent_color() -> String {
+    let k = RegKey::predef(HKEY_CURRENT_USER);
+    if let Ok(d) = k.open_subkey(r"Software\Microsoft\Windows\DWM") {
+        if let Ok(v) = d.get_value::<u32, _>("AccentColor") {
+            return format!("#{:02X}{:02X}{:02X}", v & 0xFF, (v >> 8) & 0xFF, (v >> 16) & 0xFF);
+        }
+        if let Ok(v) = d.get_value::<u32, _>("ColorizationColor") {
+            return format!("#{:02X}{:02X}{:02X}", (v >> 16) & 0xFF, (v >> 8) & 0xFF, v & 0xFF);
+        }
+    }
+    "#0078D4".to_string()
 }

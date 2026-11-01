@@ -1,126 +1,145 @@
 <div align="center">
 
-<img src="src-tauri/icons/128x128@2x.png" alt="Material Readme" width="128" height="128">
+<img src="assets/app-icon.svg" width="120" alt="Biểu tượng Material Readme">
 
 # Material Readme
 
-**Trình soạn thảo và xem Markdown theo phong cách Material Design 3 cho máy tính.**
+**Viết, xem trước và hoàn thiện Markdown theo phong cách Material 3 Expressive.**
 
-Viết, xem trước và hoàn thiện file `README.md` với giao diện hiện đại, xem trước trực tiếp và giao diện đủ mọi màu Material.
+Trình soạn thảo và xem Markdown nhanh, thân thiện cho máy tính, xây dựng bằng Tauri 2, React và TypeScript.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-6750A4.svg)](LICENSE)
-[![Built with Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB.svg)](https://tauri.app)
+[![Phiên bản](https://img.shields.io/badge/version-3.0.0-D81B60)](package.json)
+[![Nền tảng](https://img.shields.io/badge/platform-Windows-0078D4)](#cài-đặt)
+[![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB)](https://tauri.app)
+[![Giấy phép: MIT](https://img.shields.io/badge/license-MIT-2E7D32)](LICENSE)
 
-[English](README.md) · [Tiếng Việt](README.vi.md)
+[English](README.md) · [Tiếng Việt](README.vi.md) · [Trang giới thiệu](index.html)
 
 </div>
 
----
-
 ## Giới thiệu
 
-Material Readme ban đầu chỉ là trình xem Markdown, nay đã trở thành một trình soạn thảo đầy đủ. Ứng dụng mở file `.md` tức thì, cho phép chỉnh sửa bằng thanh định dạng và phím tắt, đồng thời hiển thị kết quả ngay bên cạnh. Toàn bộ giao diện theo **Material Design 3**, lấy màu từ các file xuất của Material Theme Builder trong `src/theme/`.
+Material Readme là ứng dụng máy tính để đọc, viết và xem trước Markdown trực tiếp. Ứng dụng kết hợp trình soạn thảo CodeMirror 6 với bản xem trước cập nhật từng khối, nên tài liệu dài vẫn mượt khi bạn gõ. Toàn bộ giao diện theo **Material 3 Expressive**: hình khối đậm, chuyển động kiểu lò xo, khung bo tròn lớn và hệ màu đầy đủ sinh ra từ bất kỳ màu nào bạn chọn.
 
-Ứng dụng xây dựng bằng [Tauri 2](https://tauri.app) nên nhẹ, nhanh và tiết kiệm bộ nhớ. Mọi thứ hoạt động ngoại tuyến.
+Ứng dụng thuộc bộ [my-tauri-apps](https://github.com/minhtrong67/my-tauri-apps), hoạt động hoàn toàn ngoại tuyến: tệp của bạn không bao giờ rời khỏi máy.
 
 ## Ảnh chụp màn hình
 
 | | |
 | :---: | :---: |
-| ![Chia đôi, giao diện sáng](screenshots/image01.png) | ![Chia đôi, giao diện tối màu tím](screenshots/image02.png) |
-| Chia đôi với xem trước trực tiếp | Giao diện tối từ file theme màu tím |
-| ![Chế độ đọc](screenshots/image03.png) | ![Cài đặt tiếng Việt](screenshots/image04.png) |
-| Chế độ đọc với màu chủ đề xanh mòng két | Bảng cài đặt (giao diện tiếng Việt) |
-| ![Tìm và thay thế](screenshots/image05.png) | ![Cửa sổ hẹp](screenshots/image06.png) |
-| Tìm và thay thế | Bố cục responsive khi cửa sổ hẹp |
+| ![Chế độ chia đôi với mục lục, thanh công cụ và bản xem trước](screenshots/image01.png) | ![Giao diện tối với thanh tìm kiếm](screenshots/image02.png) |
+| **Chia đôi** · trình soạn thảo, mục lục và xem trước | **Giao diện tối** · tím than, có tìm kiếm và tô sáng |
+| ![Bảng cài đặt với màu chủ đề, font và cỡ chữ](screenshots/image03.png) | ![Giao diện tiếng Việt với mẫu README](screenshots/image04.png) |
+| **Cài đặt** · chế độ, 18 màu, font và cỡ chữ | **Tiếng Việt** · dịch đầy đủ, có mẫu tài liệu |
 
 ## Tính năng
 
 **Soạn thảo**
-- Trình soạn thảo CodeMirror 6, tô màu cú pháp Markdown và khối mã, lịch sử hoàn tác riêng cho từng tệp, tự nối danh sách khi nhấn Enter.
-- Thanh định dạng: đậm, nghiêng, gạch ngang, tiêu đề, trích dẫn, mã dòng, khối mã, liên kết, hình ảnh, danh sách chấm / số / việc cần làm, bảng, đường kẻ ngang cùng các phím tắt `Ctrl+B`, `Ctrl+I`, `Ctrl+K`.
-- Tìm và thay thế, phân biệt hoa thường, biểu thức chính quy, ngay trong trình soạn thảo hoặc bản xem trước.
-- Nhiều tài liệu trong các thẻ, báo hiệu chưa lưu và hỏi lại trước khi mất dữ liệu.
-- Tự động lưu (tùy chọn), ghi tệp an toàn, giữ nguyên CRLF / LF, tự tải lại khi tệp thay đổi trên đĩa.
+- Ba bố cục: Soạn, Chia đôi và Xem, cuộn đồng bộ ở chế độ chia đôi.
+- Thanh định dạng và phím tắt cho tiêu đề, in đậm, in nghiêng, gạch ngang, mã, liên kết, hình ảnh, danh sách, danh sách việc cần làm, trích dẫn, bảng và đường kẻ.
+- Dán hoặc kéo thả ảnh: ảnh được lưu vào thư mục `assets` cạnh tệp và tự chèn liên kết.
+- Mẫu có sẵn (README, tài liệu API, nhật ký thay đổi, biên bản họp), huy hiệu shields.io và mục lục tài liệu tự tạo.
+- Tìm và thay thế có phân biệt hoa thường, biểu thức chính quy và bộ đếm kết quả, dùng được cả ở khung soạn lẫn khung xem.
+- Bảng lệnh (`Ctrl+Shift+P`) và bộ phím tắt đầy đủ (`F1`).
 
 **Đọc**
-- Ba bố cục: **Soạn**, **Chia đôi** (cuộn đồng bộ) và **Xem**.
-- GitHub Flavoured Markdown: bảng, danh sách việc cần làm, gạch ngang, hộp cảnh báo (`> [!NOTE]`), front matter, khối mã tô màu có nút sao chép.
-- Ảnh cục bộ theo đường dẫn tương đối, liên kết tới các file `.md` khác, neo trong trang và liên kết ngoài mở bằng trình duyệt.
-- Mục lục với tiêu đề hiện tại được làm nổi bật khi cuộn.
-- Thu phóng từ 60% đến 220%.
+- Hiển thị kiểu GitHub: bảng, danh sách việc cần làm, front matter, cảnh báo (`> [!NOTE]`), mã có tô màu cú pháp và nút sao chép.
+- Mục lục bám theo vị trí đọc, ảnh cục bộ, liên kết tương đối tới các tệp `.md` khác.
+- Xuất ra tệp HTML độc lập hoặc in ra PDF.
 
-**Cá nhân hóa**
-- Chế độ sáng, tối hoặc theo hệ thống, kèm hiệu ứng lan tròn.
-- Ba theme dựng sẵn từ Material Theme Builder (xanh da trời là mặc định, cùng xanh dương và tím), 17 màu Material, màu hex tùy chỉnh và ba mức tương phản.
-- Tiếng Anh và tiếng Việt, tự nhận diện ngôn ngữ hệ thống khi mở lần đầu, có thể đổi trong **Cài đặt**.
-- Cửa sổ khi mở app: **ghi nhớ kích thước lần trước** hoặc **luôn phóng to tối đa**.
+**An toàn và quy trình**
+- Nhiều thẻ, kéo thả để mở tệp, liên kết tệp `.md` và chỉ chạy một cửa sổ.
+- Tự động lưu, khôi phục phiên (các thẻ và bản nháp chưa lưu), nhắc khi tệp thay đổi trên đĩa.
+- Lưu an toàn qua tệp tạm, nhận diện kiểu xuống dòng (LF hoặc CRLF) và cảnh báo tệp không phải UTF-8 hợp lệ.
 
-**Khác**
-- Mở file bằng cách nhấp đúp (liên kết loại tệp), kéo thả, `Ctrl+O` hoặc danh sách tệp gần đây.
-- Xuất HTML độc lập, in hoặc lưu PDF.
-- Hiệu ứng Material mượt mà: ripple, thẻ, hộp thoại, menu, side sheet; tôn trọng chế độ giảm chuyển động.
-- Icon ứng dụng, trình cài đặt và gỡ cài đặt cùng phong cách Material.
+**Cá nhân hóa** (Cài đặt, `Ctrl+,`)
+- Chế độ: theo hệ thống, sáng hoặc tối, có hiệu ứng lan tròn khi đổi.
+- 18 màu chủ đề Material hoặc màu hex tùy chọn, ba mức tương phản.
+- Font: System, Google Sans Flex, Roboto Flex, Roboto, Arial, Inter và Be Vietnam Pro.
+- Cỡ chữ: nhỏ, vừa hoặc lớn, cùng thu phóng trình soạn thảo.
+- Ngôn ngữ: English hoặc Tiếng Việt (hoặc tự động).
+- Cửa sổ khi mở app: ghi nhớ kích thước lần trước, hoặc luôn phóng to tối đa.
+- Thư mục lưu mặc định, tự động lưu, khôi phục phiên, tự xuống dòng, số dòng.
 
 ## Cài đặt
 
-1. Tải `Material Readme_2.0.0_x64-setup.exe` trong thư mục [`downloads`](downloads).
-2. Chạy file cài đặt (cài cho người dùng hiện tại, không cần quyền quản trị).
-3. Mở **Material Readme** từ Start menu. Để mở file Markdown bằng app, chọn *Open with → Material Readme*.
+### Bộ cài Windows
 
-> Windows 10 và 11 (64-bit), cần Microsoft Edge WebView2 (đã có sẵn trên Windows 11 và Windows 10 cập nhật gần đây).
+1. Tải `Material Readme_3.0.0_x64-setup.exe` trong thư mục [`downloads`](downloads) (hoặc từ trang giới thiệu).
+2. Chạy bộ cài. Ứng dụng cài cho người dùng hiện tại và không cần quyền quản trị.
+3. Mở bất kỳ tệp `.md` nào bằng Material Readme, hoặc chạy từ menu Start.
 
-`index.html` ở thư mục gốc là landing page giới thiệu app. Trước khi đăng lên GitHub Pages, hãy thay `https://minhtrong67.github.io/material-readme/` trong thẻ `<head>` bằng địa chỉ thật của bạn.
+Yêu cầu Windows 10 hoặc 11 (64-bit) có Microsoft Edge WebView2, vốn đã có sẵn trên các bản Windows hiện nay.
+
+### Tự build từ mã nguồn
+
+Xem [Phát triển](#phát-triển) và [Build](#build).
 
 ## Công nghệ
 
-Tauri 2 (Rust), CodeMirror 6, marked, DOMPurify, highlight.js, Material Design 3 (material-color-utilities, Material Symbols), Roboto và Roboto Mono. Giao diện viết bằng HTML, CSS và ES modules thuần, không cần bundler.
+| Lĩnh vực | Công nghệ |
+| --- | --- |
+| Khung ứng dụng | [Tauri 2](https://tauri.app) (Rust) |
+| Giao diện | React 19, TypeScript, Vite, Tailwind CSS 4 |
+| Thiết kế | Material 3 Expressive, màu sinh bằng `@material/material-color-utilities` |
+| Biểu tượng | [Lucide](https://lucide.dev) |
+| Trình soạn thảo | CodeMirror 6 |
+| Markdown | marked, DOMPurify, highlight.js |
+| Quản lý trạng thái | Zustand |
+| Font | Đóng gói sẵn (bộ latin, latin-ext, vietnamese): Google Sans Flex, Roboto Flex, Roboto, Inter, Be Vietnam Pro |
 
 ## Phát triển
 
-Yêu cầu: Node.js 18+, Rust stable (MSVC), Microsoft C++ Build Tools và WebView2.
-
-Dự án nằm trong thư mục Cargo workspace chung chứa file `Cargo.toml`:
-
-```text
-tauri-apps/
-├─ Cargo.toml            # members = ["*/src-tauri"], dùng chung ./target
-└─ material-readme/      # dự án này
-```
+Yêu cầu: [Node.js](https://nodejs.org) 20 trở lên, [Rust](https://rustup.rs) (stable) và [điều kiện cần của Tauri](https://tauri.app/start/prerequisites/) cho hệ điều hành của bạn.
 
 ```bash
-npm install
-npm run dev
+npm install     # cài đặt thư viện
+npm run dev     # chạy ứng dụng desktop với hot reload
 ```
+
+Bạn cũng có thể chỉ làm việc với giao diện trong trình duyệt bằng `npm run web:dev` (hộp thoại tệp sẽ dùng bản của trình duyệt).
 
 ## Build
 
 ```bash
-npm run build
+npm run build   # kiểm tra kiểu, đóng gói giao diện và tạo bộ cài
 ```
 
-File cài đặt nằm ở `target/release/bundle/nsis/Material Readme_2.0.0_x64-setup.exe` (trong thư mục workspace). Hãy chép vào [`downloads`](downloads) để landing page tải được.
+Bộ cài nằm ở `target/release/bundle/nsis/` trong thư mục gốc của Cargo workspace (hoặc `src-tauri/target/...` khi chạy riêng lẻ). Hãy chép vào thư mục [`downloads`](downloads) để nút tải ở trang giới thiệu hoạt động.
+
+Một số lệnh hữu ích:
+
+| Lệnh | Chức năng |
+| --- | --- |
+| `npm run web:build` | Kiểm tra kiểu và chỉ build giao diện vào `dist/` |
+| `node tools/fonts/make-fonts.mjs` | Tạo lại các bộ font đã lược gọn |
+| `node tools/icons/make-icons.mjs` | Tạo lại icon app, icon gỡ cài đặt, ảnh bộ cài và ảnh chia sẻ |
+| `npx tsx tools/landing/build-landing.mjs` | Tạo lại `index.html` từ `tools/landing/landing.template.html` |
 
 ## Cấu trúc dự án
 
 ```text
 material-readme/
-├─ index.html        # landing page
-├─ downloads/        # đặt file setup vào đây
-├─ screenshots/      # image01.png … image06.png
-├─ src/              # giao diện (css, js, theme, fonts, vendor)
-├─ src-tauri/        # Rust, cấu hình Tauri, icon
-└─ tools/            # công cụ tùy chọn (build vendor, nguồn icon)
+├── index.html              Trang giới thiệu (một tệp)
+├── app/                    Giao diện desktop (gốc của Vite)
+│   ├── index.html
+│   ├── public/             Favicon
+│   └── src/
+│       ├── main.tsx, App.tsx
+│       ├── components/     Chrome, Workspace, Sheets, Hosts (toast, menu, tooltip), thành phần nền
+│       ├── lib/            controller, editor, markdown, theme, i18n, settings, cầu nối tauri
+│       ├── styles/         app.css (Tailwind + token), markdown.css, fonts.css
+│       └── assets/fonts/   Bộ font đóng gói sẵn
+├── src-tauri/              Backend Rust, tauri.conf.json, quyền, icon
+├── screenshots/            image01 đến image04
+├── downloads/              Đặt tệp cài đặt vào đây
+├── assets/                 Nguồn icon app, favicon, ảnh chia sẻ
+├── tools/                  Công cụ tạo font, icon và trang giới thiệu
+├── package.json
+└── LICENSE
 ```
 
 ## Giấy phép
 
-Dự án công khai và mã nguồn mở, phát hành theo [giấy phép MIT](LICENSE).
-
----
-
-<div align="center">
-
-Thiết kế và phát triển bởi **minhtrong67** với sự hỗ trợ của AI **Claude** (Anthropic).
-
-</div>
+Material Readme là dự án công khai và mã nguồn mở theo [Giấy phép MIT](LICENSE).
+Trang chủ dự án: <https://github.com/minhtrong67/my-tauri-apps>

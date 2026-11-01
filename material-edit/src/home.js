@@ -54,7 +54,7 @@ async function rename(p) {
     data.name = v.trim();
     await libWrite(p.id, JSON.stringify(data));
     await refreshHome();
-  } catch (e) { api.toast(t('toast.error', { msg: e.message || e })); }
+  } catch (e) { api.toast(t('toast.error', { msg: e.message || e }), 6000, 'error'); }
 }
 
 async function duplicate(p) {
@@ -65,20 +65,20 @@ async function duplicate(p) {
     data.updated = Date.now();
     await libWrite(data.id, JSON.stringify(data));
     await refreshHome();
-    api.toast(t('home.duplicated'));
-  } catch (e) { api.toast(t('toast.error', { msg: e.message || e })); }
+    api.toast(t('home.duplicated'), 3000, 'success');
+  } catch (e) { api.toast(t('toast.error', { msg: e.message || e }), 6000, 'error'); }
 }
 
 async function remove(p) {
-  const r = await api.confirm({ title: t('home.deleteTitle'), msg: t('home.deleteMsg', { name: displayName(p) }), yes: t('home.delete'), no: t('btn.cancel'), cancel: false });
+  const r = await api.confirm({ title: t('home.deleteTitle'), msg: t('home.deleteMsg', { name: displayName(p) }), yes: t('home.delete'), no: t('btn.cancel'), cancel: false, danger: true, yesIcon: 'trash' });
   if (r !== 'yes') return;
   try {
     await libDelete(p.id);
     const el = listEl.querySelector(`[data-id="${p.id}"]`);
     if (el) { el.style.transition = 'opacity .2s, transform .2s'; el.style.opacity = '0'; el.style.transform = 'scale(.92)'; await new Promise((r2) => setTimeout(r2, 180)); }
     await refreshHome();
-    api.toast(t('home.deleted'));
-  } catch (e) { api.toast(t('toast.error', { msg: e.message || e })); }
+    api.toast(t('home.deleted'), 3000, 'success');
+  } catch (e) { api.toast(t('toast.error', { msg: e.message || e }), 6000, 'error'); }
 }
 
 function card(p, i) {

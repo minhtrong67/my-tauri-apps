@@ -18,8 +18,11 @@ import { ribbonDef, isSpeaking } from './ribbon-def.js';
 import { buildFind, openFind } from './find.js';
 import { openBackstage, closeBackstage } from './backstage.js';
 import { initKeyboard, initAutoFormat, initClipboard, initContextMenu, initLinks } from './input.js';
-import { T, invoke, docName, setDocName, updateTitle, readDraft, clearDraft, loadBytes, pruneRecent, confirmDiscard, newDoc } from './fileio.js';
+import { T, invoke, docName, setDocName, updateTitle, readDraft, clearDraft, loadBytes, pruneRecent, confirmDiscard, confirmExit, newDoc } from './fileio.js';
 import './ripple.js';
+import { initFloatBar } from './floatbar.js';
+import { initRibbonScroll } from './ribbonscroll.js';
+import { initTabs, addRecovered } from './tabs.js';
 
 /* ------------------------------ desktop window ------------------------------ */
 const win = T ? T.window.getCurrentWindow() : null;
@@ -92,7 +95,7 @@ function cycleTheme(to) {
   const next = to || order[(order.indexOf(settings.theme) + 1) % order.length];
   setTheme(next);
   $('#btn-theme').innerHTML = icon(THEME_ICON[next]);
-  toast(t('toast.theme', { name: t('theme.' + next) }), 1600);
+  toast.info(t('toast.theme', { name: t('theme.' + next) }), 1600);
   refreshRibbon();
 }
 function syncQuick() {
@@ -143,7 +146,7 @@ async function recoverDraft() {
   const probe = document.createElement('div');
   probe.innerHTML = d.html;
   if (!probe.textContent.trim() && !probe.querySelector('img, table, hr')) { clearDraft(); return false; }
-  const r = await askConfirm({ title: t('recover.title'), msg: t('recover.msg', { name: d.name || t('doc.untitled') }), yes: t('recover.yes'), no: t('recover.no'), cancel: false });
+  const r = await askConfirm({ title: t('recover.title'), msg: t('recover.msg', { name: d.name || t('doc.untitled') }), yes: t('recover.yes'), no: t('recover.no'), cancel: false, yesIcon: 'recent', noIcon: 'trash', badge: 'cloudok' });
   if (r === 'yes') {
     setContent(d.html, { meta: d.meta });
     setDocName(d.name || '');
@@ -152,6 +155,7 @@ async function recoverDraft() {
     markDirty();
     bus.emit('dirty');
     updateTitle();
+    for (const o of d.others || []) await addRecovered(o);
     return true;
   }
   clearDraft();
@@ -173,6 +177,9 @@ function wireTocClicks() {
 async function init() {
   installIcons();
   initTooltips();
+  initFloatBar();
+  initRibbonScroll();
+  initTabs();
   wireDialogs();
   refreshLanguage();
   refreshTheme();
@@ -253,7 +260,7 @@ async function init() {
 
   // close request → ask to save
   if (win) {
-    try { await win.onCloseRequested(async (ev) => { if (!(await confirmDiscard())) ev.preventDefault(); }); } catch { /* ignore */ }
+    try { await win.onCloseRequested(async (ev) => { if (!(await confirmExit())) ev.preventDefault(); }); } catch { /* ignore */ }
   } else {
     window.addEventListener('beforeunload', (e) => { if (doc.dirty) { e.preventDefault(); e.returnValue = ''; } });
   }
@@ -277,7 +284,7 @@ async function recoverDraftLater() {
   return recoverDraft();
 }
 
-init().catch((e) => { console.error(e); try { toast(String(e && e.message ? e.message : e), 8000); } catch { /* ignore */ } if (win) win.show().catch(() => {}); });
+init().catch((e) => { console.error(e); try { toast.error(String(e && e.message ? e.message : e), 8000); } catch { /* ignore */ } if (win) win.show().catch(() => {}); });
 
 // exposed for debugging / tests
 window.__mdx = { doc, bus, settings, C, D, V, IM, newDoc, undo, redo, showTab, currentTab, closeBackstage, TABLE_STYLES, sheet, isSpeaking };

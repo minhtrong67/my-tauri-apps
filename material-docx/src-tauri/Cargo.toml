@@ -1,6 +1,6 @@
 [package]
 name = "material-docx"
-version = "2.0.0"
+version = "2.3.0"
 description = "A simple, Material Design 3 word processor with .docx support."
 authors = ["minhtrong67"]
 edition = "2021"

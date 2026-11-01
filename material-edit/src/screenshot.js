@@ -7,14 +7,14 @@ import { stripExt } from './util.js';
 import { t } from './i18n.js';
 
 export async function takeScreenshot(toast = () => {}) {
-  if (totalDuration() <= 0) { toast(t('shot.empty')); return false; }
+  if (totalDuration() <= 0) { toast(t('shot.empty'), 3400, 'warning'); return false; }
   const [W, H] = dims(1080);
   const cv = document.createElement('canvas');
   cv.width = W; cv.height = H;
   const g = cv.getContext('2d', { alpha: false });
   drawFrame(g, W, H, Math.min(state.t, Math.max(0, totalDuration() - 0.001)), null);
   const blob = await new Promise((r) => cv.toBlob(r, 'image/png'));
-  if (!blob) { toast(t('shot.fail')); return false; }
+  if (!blob) { toast(t('shot.fail'), 5000, 'error'); return false; }
   const tt = state.t, ms = Math.floor((tt % 1) * 1000);
   const stamp = [Math.floor(tt / 3600), Math.floor(tt / 60) % 60, Math.floor(tt) % 60].map((n) => String(n).padStart(2, '0')).join('-') + '-' + String(ms).padStart(3, '0');
   const base = ((stripExt(state.name) || t('project.untitled')).replace(/[\\/:*?"<>|]/g, '_')) + ' ' + stamp;
@@ -34,7 +34,7 @@ export async function takeScreenshot(toast = () => {}) {
       }
     }
     await writeBlob(target, blob);
-    toast(t('shot.done', { name: String(target).split(/[\\/]/).pop() }));
+    toast(t('shot.done', { name: String(target).split(/[\\/]/).pop() }), 3600, 'success');
     return true;
-  } catch (e) { toast(t('toast.error', { msg: e.message || e })); return false; }
+  } catch (e) { toast(t('toast.error', { msg: e.message || e }), 6000, 'error'); return false; }
 }

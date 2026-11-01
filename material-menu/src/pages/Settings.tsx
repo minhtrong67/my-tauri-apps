@@ -118,6 +118,10 @@ export default function Settings() {
                       </Tooltip>
                     )
                   })}
+                  {isTauri && <Tooltip label={t('winColor')}>
+                    <button type="button" aria-label={t('winColor')} onPointerDown={ripple} onClick={async () => set({ seed: (await api.accent()).toUpperCase() })}
+                      className="press flex h-11 w-11 items-center justify-center rounded-full bg-surface-container-highest text-on-surface-variant ring-offset-2 ring-offset-surface-container-low hover:scale-110"><Monitor size={19} /></button>
+                  </Tooltip>}
                   <Tooltip label={t('customColor')}>
                     <label className={cx('press relative flex h-11 w-11 cursor-pointer items-center justify-center overflow-hidden rounded-full ring-offset-2 ring-offset-surface-container-low transition-all duration-300', !isPreset && 'rounded-2xl ring-2 ring-primary')}
                       style={{ background: isPreset ? 'conic-gradient(#f44336,#ff9800,#ffeb3b,#4caf50,#00bcd4,#2196f3,#9c27b0,#f44336)' : settings.seed }}>

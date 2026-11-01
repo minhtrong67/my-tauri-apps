@@ -151,7 +151,7 @@ function replaceAll() {
   hits = compute();
   cur = -1;
   paint();
-  toast(t('toast.replaced', { n }));
+  toast.success(t('toast.replaced', { n }));
 }
 
 export function buildFind(host) {
@@ -171,8 +171,8 @@ export function buildFind(host) {
   const row1 = el('div', { class: 'f-row' }, exp, qIn, cnt, prev, next, close);
   rrow = el('div', { class: 'f-row f-rep', hidden: true },
     el('span', { class: 'f-pad' }), rIn,
-    el('button', { class: 'btn tonal sm', type: 'button', text: t('find.replace'), onclick: replaceCurrent }),
-    el('button', { class: 'btn tonal sm', type: 'button', text: t('find.replaceAll'), onclick: replaceAll }));
+    el('button', { class: 'btn tonal sm', type: 'button', html: icon('replace') + `<span>${esc(t('find.replace'))}</span>`, onclick: replaceCurrent }),
+    el('button', { class: 'btn filled sm', type: 'button', html: icon('selectall') + `<span>${esc(t('find.replaceAll'))}</span>`, onclick: replaceAll }));
   const row3 = el('div', { class: 'f-row f-opts' }, el('span', { class: 'f-pad' }), mkOpt(optCase, t('find.matchCase')), mkOpt(optWord, t('find.wholeWord')));
   bar.append(row1, rrow, row3);
   qIn.addEventListener('input', () => { hits = compute(); cur = -1; if (hits.length) go(1, true); else paint(); });

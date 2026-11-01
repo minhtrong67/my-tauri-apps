@@ -1,305 +1,1177 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Material Edit — A simple Material Design 3 video editor</title>
-  <meta name="description" content="Material Edit is a free, open-source desktop video editor with a Material Design 3 look: multi-track timeline, trim & split, filters, transitions, text, music and fast MP4 export. English & Tiếng Việt." />
-  <meta name="keywords" content="video editor, Material Design 3, Tauri, desktop app, open source, timeline, MP4 export, trình chỉnh sửa video, dựng video" />
-  <meta name="author" content="minhtrong67" />
-  <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#673AB7" />
-  <link rel="canonical" href="https://minhtrong67.github.io/material-edit/" />
-  <link rel="icon" type="image/png" href="src/assets/logo.png" />
-  <link rel="apple-touch-icon" href="src-tauri/icons/256x256.png" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Material Edit — Free video editor for Windows · Material 3 Expressive</title>
+<meta name="description" content="Material Edit is a free, open-source desktop video editor with a Material 3 Expressive design: multi-track timeline, transitions, filters, text, fast MP4 export up to 4K, English & Tiếng Việt." />
+<meta name="keywords" content="video editor, free video editor, Windows video editor, Tauri, Material Design 3, Material 3 Expressive, open source, MP4 export, timeline, trình chỉnh sửa video, dựng video" />
+<meta name="author" content="minhtrong67" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#fff8f8" />
+<meta name="color-scheme" content="light dark" />
+<link rel="canonical" href="https://minhtrong67.github.io/my-tauri-apps/material-edit/" />
+<link rel="icon" type="image/png" sizes="32x32" href="src-tauri/icons/32x32.png" />
+<link rel="apple-touch-icon" href="src-tauri/icons/256x256.png" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Material Edit" />
+<meta property="og:title" content="Material Edit — a joyful, free video editor" />
+<meta property="og:description" content="Cut, layer, style and export videos with a Material 3 Expressive interface. Free, open source, fast." />
+<meta property="og:url" content="https://minhtrong67.github.io/my-tauri-apps/material-edit/" />
+<meta property="og:image" content="https://minhtrong67.github.io/my-tauri-apps/material-edit/screenshots/image02.png" />
+<meta property="og:image:width" content="1440" />
+<meta property="og:image:height" content="900" />
+<meta property="og:image:alt" content="Material Edit timeline editor" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="vi_VN" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Material Edit — a joyful, free video editor" />
+<meta name="twitter:description" content="Material 3 Expressive video editor for the desktop. Free & open source." />
+<meta name="twitter:image" content="https://minhtrong67.github.io/my-tauri-apps/material-edit/screenshots/image02.png" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material Edit","applicationCategory":"MultimediaApplication","operatingSystem":"Windows 10, Windows 11","softwareVersion":"1.1.0","description":"Free open-source desktop video editor with a Material 3 Expressive interface.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"minhtrong67","url":"https://github.com/minhtrong67"},"image":"https://minhtrong67.github.io/my-tauri-apps/material-edit/screenshots/image02.png","downloadUrl":"https://minhtrong67.github.io/my-tauri-apps/material-edit/download/Material-Edit_1.1.0_x64-setup.exe"}
+</script>
+<style>
+:root {
+  --md-primary:#b4004e; --md-on-primary:#fff; --md-primary-container:#ffd9e2; --md-on-primary-container:#3e001d;
+  --md-secondary:#74565f; --md-secondary-container:#ffd9e2; --md-on-secondary-container:#2b151c;
+  --md-tertiary:#7c5635; --md-tertiary-container:#ffdcc2; --md-on-tertiary-container:#2e1500;
+  --md-error:#b3261e; --md-on-error:#fff; --md-error-container:#f9dedc;
+  --md-surface:#fff8f8; --md-on-surface:#201a1b; --md-on-surface-variant:#514347; --md-outline:#847377; --md-outline-variant:#d6c2c6;
+  --md-surface-container-lowest:#fff; --md-surface-container-low:#fff0f2; --md-surface-container:#fbeaed; --md-surface-container-high:#f5e4e7; --md-surface-container-highest:#efdee1;
+  --md-inverse-surface:#352f30; --md-inverse-on-surface:#fbeeef; --md-inverse-primary:#ffb1c8;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --spring-fast: linear(0, 0.368, 0.84, 1.056, 1.078, 1.037, 1.004, 0.993, 0.995, 0.998, 1, 1.001, 1, 1, 1, 1, 1, 1, 1);
+  --spring-slow: linear(0, 0.157, 0.473, 0.778, 0.992, 1.101, 1.126, 1.103, 1.063, 1.025, 0.999, 0.987, 0.984, 0.987, 0.993, 0.997, 1, 1.002, 1.002, 1.002, 1.001, 1, 1);
+  --spring-soft: linear(0, 0.238, 0.571, 0.798, 0.919, 0.973, 0.994, 1, 1.002, 1.001, 1.001, 1, 1, 1, 1, 1, 1);
+  --nav-h: 76px; --wrap: min(1200px, 100% - 40px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{overflow-x:clip;scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 16px);-webkit-text-size-adjust:100%}
+body{margin:0;overflow-x:clip;font:400 16px/1.6 var(--font);background:var(--md-surface);color:var(--md-on-surface);-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background-color .4s ease,color .4s ease}
+img{max-width:100%;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit}
+::selection{background:color-mix(in srgb,var(--md-primary) 30%,transparent)}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--md-primary) 70%,transparent);outline-offset:3px;border-radius:12px}
+.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.wrap{width:var(--wrap);margin-inline:auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:fixed;left:16px;top:-60px;z-index:200;padding:10px 18px;border-radius:99px;background:var(--md-primary);color:var(--md-on-primary);text-decoration:none;transition:top .3s var(--spring-fast)}
+.skip:focus{top:12px}
+#progress{position:fixed;inset:0 0 auto 0;height:4px;z-index:120;background:transparent;pointer-events:none}
+#progress i{display:block;height:100%;width:100%;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,var(--md-primary),var(--md-tertiary));border-radius:0 4px 4px 0}
 
-  <!-- Open Graph / social sharing -->
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Material Edit" />
-  <meta property="og:title" content="Material Edit — A simple Material Design 3 video editor" />
-  <meta property="og:description" content="Free & open-source desktop video editor. Multi-track timeline, filters, transitions, text, music, fast MP4 export." />
-  <meta property="og:url" content="https://minhtrong67.github.io/material-edit/" />
-  <meta property="og:image" content="https://minhtrong67.github.io/material-edit/screenshots/image02.png" />
-  <meta property="og:image:width" content="1280" />
-  <meta property="og:image:height" content="760" />
-  <meta property="og:locale" content="en_US" />
-  <meta property="og:locale:alternate" content="vi_VN" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Material Edit — A simple Material Design 3 video editor" />
-  <meta name="twitter:description" content="Free & open-source desktop video editor with a Material Design 3 look." />
-  <meta name="twitter:image" content="https://minhtrong67.github.io/material-edit/screenshots/image02.png" />
+/* ---------- buttons ---------- */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 26px;border:0;border-radius:99px;font-weight:700;font-size:15px;letter-spacing:.01em;text-decoration:none;cursor:pointer;white-space:nowrap;
+  transition:background-color .3s var(--spring-soft),border-radius .45s var(--spring-soft),transform .5s var(--spring-fast),box-shadow .3s ease,color .2s}
+.btn .i{width:20px;height:20px}
+.btn:hover{border-radius:18px}
+.btn:active{border-radius:12px;transform:scale(.95)}
+.btn.lg{height:60px;padding:0 36px;font-size:17px}
+.btn.lg .i{width:24px;height:24px}
+.btn.filled{background:var(--md-primary);color:var(--md-on-primary);box-shadow:0 14px 30px -12px color-mix(in srgb,var(--md-primary) 80%,transparent)}
+.btn.filled:hover{box-shadow:0 18px 36px -12px color-mix(in srgb,var(--md-primary) 90%,transparent)}
+.btn.tonal{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+.btn.outline{background:transparent;color:var(--md-primary);box-shadow:inset 0 0 0 2px var(--md-outline-variant)}
+.btn.outline:hover{background:color-mix(in srgb,var(--md-primary) 8%,transparent)}
+.rip{position:absolute;border-radius:50%;pointer-events:none;background:currentColor;opacity:.22;transform:scale(0);animation:rip .6s ease-out forwards}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+.ib{position:relative;overflow:hidden;display:inline-grid;place-items:center;width:44px;height:44px;border:0;border-radius:99px;background:transparent;color:var(--md-on-surface-variant);cursor:pointer;
+  transition:background-color .25s,border-radius .4s var(--spring-soft),transform .45s var(--spring-fast),color .2s}
+.ib:hover{background:color-mix(in srgb,var(--md-on-surface) 9%,transparent);border-radius:15px}
+.ib:active{transform:scale(.9);border-radius:11px}
+.ib[aria-pressed=true],.ib.on{background:var(--md-primary);color:var(--md-on-primary);border-radius:15px}
 
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material Edit","applicationCategory":"MultimediaApplication","operatingSystem":"Windows","softwareVersion":"1.0.0","license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"minhtrong67"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A simple, open-source Material Design 3 video editor."}
-  </script>
+/* ---------- nav ---------- */
+header.nav{position:fixed;inset:14px 0 auto 0;z-index:100;display:flex;justify-content:center;pointer-events:none}
+.nav-bar{pointer-events:auto;display:flex;align-items:center;gap:6px;width:min(1200px,100% - 24px);height:calc(var(--nav-h) - 14px);padding:0 12px 0 16px;border-radius:99px;
+  background:color-mix(in srgb,var(--md-surface-container) 78%,transparent);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
+  box-shadow:0 10px 30px -14px rgb(0 0 0/.3),inset 0 0 0 1px color-mix(in srgb,var(--md-outline-variant) 55%,transparent);transition:background-color .4s,transform .6s var(--spring-soft)}
+.nav.hide .nav-bar{transform:translateY(-120%)}
+.brand{white-space:nowrap;display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-size:19px;letter-spacing:-.02em;margin-right:10px}
+.brand img{width:38px;height:38px;filter:drop-shadow(0 4px 8px color-mix(in srgb,var(--md-primary) 45%,transparent));transition:transform .6s var(--spring-fast)}
+.brand:hover img{transform:rotate(-12deg) scale(1.1)}
+.links{display:flex;gap:2px;margin-inline:auto}
+.links a{position:relative;white-space:nowrap;padding:9px 13px;border-radius:99px;text-decoration:none;font-weight:600;font-size:14.5px;color:var(--md-on-surface-variant);transition:background-color .25s,color .25s,border-radius .4s var(--spring-soft)}
+.links a:hover{background:color-mix(in srgb,var(--md-on-surface) 8%,transparent);border-radius:14px}
+.links a.on{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+.tools{display:flex;align-items:center;gap:4px}
+.seg{display:inline-flex;gap:2px}
+.seg button{height:38px;min-width:38px;padding:0 12px;border:0;border-radius:6px;background:var(--md-surface-container-high);color:var(--md-on-surface-variant);font-weight:700;font-size:13px;cursor:pointer;display:inline-grid;place-items:center;
+  transition:background-color .25s,border-radius .45s var(--spring-soft),color .2s}
+.seg button:first-child{border-radius:19px 6px 6px 19px}.seg button:last-child{border-radius:6px 19px 19px 6px}
+.seg button .i{width:18px;height:18px}
+.seg button[aria-pressed=true]{background:var(--md-primary);color:var(--md-on-primary);border-radius:19px}
+.seg button:hover:not([aria-pressed=true]){background:color-mix(in srgb,var(--md-on-surface) 12%,var(--md-surface-container-high))}
+.burger{display:none}
+.nav-dl{height:42px;padding:0 20px;font-size:14px}
 
-  <style>
-    :root {
-      --primary: #673ab7; --on-primary: #fff; --primary-container: #ede7f6; --on-primary-container: #2a1060;
-      --secondary-container: #e6defa; --surface: #fdf8ff; --surface-1: #f6f0fb; --surface-2: #efe8f7; --on-surface: #1d1a22;
-      --on-surface-variant: #4a4453; --outline: #7b7485; --outline-variant: #cfc7d9; --tertiary: #8e4585;
-      --e1: 0 1px 3px rgb(0 0 0 / .14), 0 1px 2px rgb(0 0 0 / .2); --e3: 0 8px 24px rgb(40 20 90 / .18);
-      --ease: cubic-bezier(.2, 0, 0, 1); --ease-out: cubic-bezier(.05, .7, .1, 1);
-      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --primary: #cfbcff; --on-primary: #381e72; --primary-container: #4f378b; --on-primary-container: #eaddff;
-        --secondary-container: #4a4458; --surface: #141218; --surface-1: #1d1b20; --surface-2: #26232b; --on-surface: #e6e0e9;
-        --on-surface-variant: #cac4d0; --outline: #948f99; --outline-variant: #49454f; --tertiary: #efb8c8;
-        --e1: 0 1px 3px rgb(0 0 0 / .5); --e3: 0 8px 28px rgb(0 0 0 / .5);
-      }
-    }
-    *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 76px; }
-    body { margin: 0; font: 400 16px/24px var(--font); background: var(--surface); color: var(--on-surface); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-    img { max-width: 100%; height: auto; display: block; }
-    a { color: inherit; text-decoration: none; }
-    .i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-    .wrap { width: min(1120px, 100% - 40px); margin-inline: auto; }
+/* popover (accent colours) */
+.pop{position:absolute;right:0;top:calc(100% + 12px);width:min(340px,92vw);padding:18px;border-radius:28px;background:var(--md-surface-container-high);box-shadow:0 24px 60px -16px rgb(0 0 0/.5);
+  opacity:0;transform:translateY(-10px) scale(.9);transform-origin:top right;pointer-events:none;transition:opacity .2s,transform .5s var(--spring-fast);z-index:5}
+.pop.open{opacity:1;transform:none;pointer-events:auto}
+.pop h3{margin:0 0 12px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--md-primary)}
+.tools .rel{position:relative}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:10px}
+.sw{width:38px;height:38px;padding:0;border:0;border-radius:50%;background:var(--c);cursor:pointer;display:grid;place-items:center;color:#fff;transition:transform .45s var(--spring-fast),border-radius .4s var(--spring-soft),box-shadow .25s}
+.sw .i{width:18px;height:18px;stroke-width:3.2;opacity:0;transform:scale(.3);transition:opacity .2s,transform .4s var(--spring-fast)}
+.sw:hover{transform:scale(1.14) rotate(8deg);border-radius:13px}
+.sw[aria-pressed=true]{border-radius:13px;box-shadow:0 0 0 3px var(--md-surface-container-high),0 0 0 5.5px var(--md-on-surface);transform:scale(1.06)}
+.sw[aria-pressed=true] .i{opacity:1;transform:none}
+.custom{display:flex;align-items:center;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--md-outline-variant);font-weight:600;font-size:14px;cursor:pointer}
+.custom input{width:46px;height:34px;padding:2px;border:1.5px solid var(--md-outline-variant);border-radius:11px;background:transparent;cursor:pointer}
+.custom code{color:var(--md-on-surface-variant);font-weight:500}
 
-    /* top bar */
-    .bar { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(14px); background: color-mix(in srgb, var(--surface) 82%, transparent); border-bottom: 1px solid transparent; transition: border-color .3s, box-shadow .3s; }
-    .bar.scrolled { border-color: var(--outline-variant); }
-    .bar .wrap { display: flex; align-items: center; gap: 8px; height: 64px; }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; margin-right: auto; }
-    .brand img { width: 34px; height: 34px; border-radius: 9px; }
-    .nav a { padding: 8px 14px; border-radius: 20px; font-weight: 500; font-size: 14px; color: var(--on-surface-variant); transition: background .2s; }
-    .nav a:hover { background: color-mix(in srgb, var(--on-surface) 8%, transparent); }
-    .lang { display: flex; border: 1px solid var(--outline); border-radius: 18px; overflow: hidden; }
-    .lang button { border: 0; background: transparent; color: var(--on-surface); font: 500 12px var(--font); padding: 6px 11px; cursor: pointer; }
-    .lang button.on { background: var(--secondary-container); }
+/* ---------- sections ---------- */
+section{position:relative;padding:clamp(70px,10vw,130px) 0}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:99px;background:var(--md-primary-container);color:var(--md-on-primary-container);font-weight:800;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.eyebrow .i{width:16px;height:16px}
+h1,h2,h3{margin:0;letter-spacing:-.03em;line-height:1.05}
+h2.title{font-size:clamp(34px,5.4vw,60px);font-weight:800;margin:18px 0 14px;max-width:18ch}
+p.lead{margin:0;font-size:clamp(17px,2vw,20px);line-height:1.6;color:var(--md-on-surface-variant);max-width:60ch}
+.center{text-align:center}.center h2.title,.center p.lead{margin-inline:auto}
 
-    /* buttons */
-    .btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 48px; padding: 0 28px; border-radius: 24px; border: 0; font: 500 15px var(--font); cursor: pointer; transition: transform .2s var(--ease), box-shadow .2s var(--ease), background .2s; }
-    .btn:hover { transform: translateY(-2px); }
-    .btn:active { transform: scale(.97); }
-    .btn.filled { background: var(--primary); color: var(--on-primary); box-shadow: var(--e1); }
-    .btn.filled:hover { box-shadow: var(--e3); }
-    .btn.tonal { background: var(--secondary-container); color: var(--on-primary-container); }
-    .btn.lg { height: 56px; padding: 0 34px; font-size: 16px; border-radius: 28px; }
-    .btn .i { width: 20px; height: 20px; }
+/* ---------- hero ---------- */
+.hero{padding-top:calc(var(--nav-h) + clamp(40px,7vw,90px));padding-bottom:clamp(50px,7vw,90px);overflow:hidden}
+.blobs{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.blobs svg{position:absolute;will-change:transform}
+.b1{width:min(620px,80vw);right:-14%;top:-8%;color:color-mix(in srgb,var(--md-primary) 15%,transparent)}
+.b2{width:min(380px,56vw);left:-9%;top:38%;color:color-mix(in srgb,var(--md-tertiary) 24%,transparent)}
+.b3{width:130px;right:14%;top:52%;color:color-mix(in srgb,var(--md-primary) 32%,transparent);animation:bob 6s ease-in-out infinite}
+.b4{width:70px;left:46%;top:14%;color:color-mix(in srgb,var(--md-tertiary) 45%,transparent);animation:bob 5s -2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(22px) rotate(18deg)}}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:clamp(30px,5vw,70px);align-items:center}
+.hero h1{font-size:clamp(44px,7.2vw,92px);font-weight:900;letter-spacing:-.05em;line-height:.96;margin:22px 0 22px}
+.hero h1 .hl{position:relative;display:inline-block;color:var(--md-primary);white-space:nowrap}
+.hero h1 .hl::after{content:"";position:absolute;left:-2%;right:-2%;bottom:.06em;height:.26em;border-radius:99px;background:color-mix(in srgb,var(--md-primary) 24%,transparent);z-index:-1;transform:scaleX(0);transform-origin:left;animation:underline 1s .6s var(--spring-soft) forwards}
+@keyframes underline{to{transform:scaleX(1)}}
+.cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:14px;background:var(--md-surface-container-high);font-weight:600;font-size:13.5px;color:var(--md-on-surface-variant);transition:border-radius .4s var(--spring-soft),transform .5s var(--spring-fast)}
+.chip:hover{border-radius:99px;transform:translateY(-3px)}
+.chip .i{width:18px;height:18px;color:var(--md-primary)}
+.shot-stack{position:relative;perspective:1400px}
+.window{position:relative;border-radius:30px;padding:10px;background:var(--md-surface-container-high);box-shadow:0 50px 90px -30px color-mix(in srgb,var(--md-primary) 55%,rgb(0 0 0/.6)),0 0 0 1px color-mix(in srgb,var(--md-outline-variant) 70%,transparent);
+  transform:rotateY(-9deg) rotateX(4deg);transition:transform .8s var(--spring-soft);transform-style:preserve-3d}
+.window::before{content:"";display:block;height:22px;margin:-2px 0 6px;background:radial-gradient(circle at 12px 11px,#ff5f57 5px,transparent 5.5px),radial-gradient(circle at 32px 11px,#febc2e 5px,transparent 5.5px),radial-gradient(circle at 52px 11px,#28c840 5px,transparent 5.5px)}
+.window img{border-radius:20px;width:100%;height:auto}
+.float-chip{position:absolute;display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:20px;background:var(--md-surface-container-lowest);box-shadow:0 18px 40px -14px rgb(0 0 0/.4);font-weight:700;font-size:14px;animation:bob2 5s ease-in-out infinite}
+.float-chip .i{color:var(--md-primary)}
+.fc1{left:-26px;bottom:14%;animation-delay:-1s}.fc2{right:-14px;top:9%;animation-delay:-3s}
+@keyframes bob2{50%{transform:translateY(-12px)}}
+.scroll-hint{display:flex;justify-content:center;margin-top:54px}
+.scroll-hint a{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--md-surface-container-high);color:var(--md-primary);text-decoration:none;animation:bob2 2.4s ease-in-out infinite}
 
-    /* hero */
-    .hero { position: relative; padding: 72px 0 40px; overflow: hidden; }
-    .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; z-index: -1; animation: float 14s ease-in-out infinite; }
-    .hero::before { width: 420px; height: 420px; background: color-mix(in srgb, var(--primary) 45%, transparent); top: -120px; left: -100px; }
-    .hero::after { width: 380px; height: 380px; background: color-mix(in srgb, var(--tertiary) 40%, transparent); right: -80px; top: 120px; animation-delay: -6s; }
-    @keyframes float { 50% { transform: translate(30px, 24px) scale(1.08); } }
-    .hero-grid { display: grid; gap: 48px; align-items: center; text-align: center; justify-items: center; }
-    .chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 16px; background: var(--primary-container); color: var(--on-primary-container); font: 500 13px var(--font); }
-    .chip .i { width: 16px; height: 16px; }
-    h1 { margin: 18px 0 16px; font: 700 clamp(34px, 6vw, 60px)/1.08 var(--font); letter-spacing: -1px; }
-    h1 em { font-style: normal; color: var(--primary); }
-    .lead { margin: 0 auto 28px; max-width: 56ch; color: var(--on-surface-variant); font-size: clamp(16px, 2vw, 19px); line-height: 1.55; }
-    .cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
-    .meta { margin-top: 14px; color: var(--on-surface-variant); font-size: 13px; }
-    .shot { width: min(980px, 100%); border-radius: 20px; border: 1px solid var(--outline-variant); box-shadow: var(--e3); background: var(--surface-1); overflow: hidden; transform: perspective(1400px) rotateX(4deg); transition: transform .6s var(--ease-out); }
-    .shot:hover { transform: perspective(1400px) rotateX(0); }
+/* ---------- marquee ---------- */
+.marq{padding:0;overflow:hidden;background:var(--md-primary);color:var(--md-on-primary);transform:rotate(-1.2deg);margin:10px -20px;box-shadow:0 20px 40px -20px color-mix(in srgb,var(--md-primary) 70%,transparent)}
+.marq-track{display:flex;gap:44px;width:max-content;padding:18px 0;animation:marq 40s linear infinite;font-weight:800;font-size:clamp(20px,3vw,30px);letter-spacing:-.02em}
+.marq-track span{display:inline-flex;align-items:center;gap:44px;white-space:nowrap}
+.marq-track svg{width:30px;height:30px;color:var(--md-primary-container)}
+@keyframes marq{to{transform:translateX(-50%)}}
 
-    /* sections */
-    section { padding: 72px 0; }
-    .eyebrow { color: var(--primary); font: 600 13px var(--font); letter-spacing: 1.2px; text-transform: uppercase; }
-    h2 { margin: 8px 0 12px; font: 700 clamp(26px, 4vw, 38px)/1.15 var(--font); letter-spacing: -.5px; }
-    .sub { color: var(--on-surface-variant); max-width: 60ch; margin: 0 0 40px; }
-    .features { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-    .card { padding: 24px; border-radius: 24px; background: var(--surface-1); border: 1px solid transparent; transition: transform .3s var(--ease-out), border-color .3s, box-shadow .3s; }
-    .card:hover { transform: translateY(-6px); border-color: var(--outline-variant); box-shadow: var(--e3); }
-    .card .ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 16px; background: var(--primary-container); color: var(--on-primary-container); margin-bottom: 16px; transition: transform .3s var(--ease-out); }
-    .card:hover .ico { transform: rotate(-8deg) scale(1.1); }
-    .card h3 { margin: 0 0 6px; font: 600 18px/24px var(--font); }
-    .card p { margin: 0; color: var(--on-surface-variant); font-size: 14px; line-height: 21px; }
+/* ---------- bento ---------- */
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:54px}
+.card{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:12px;padding:28px;border-radius:32px;background:var(--md-surface-container-low);isolation:isolate;
+  transition:transform .7s var(--spring-fast),border-radius .6s var(--spring-soft),background-color .3s}
+.card::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--md-primary) 16%,transparent),transparent 60%);opacity:0;transition:opacity .4s}
+.card:hover{transform:translateY(-8px);border-radius:44px}
+.card:hover::before{opacity:1}
+.card .ic{display:grid;place-items:center;width:56px;height:56px;border-radius:20px;background:var(--md-primary-container);color:var(--md-on-primary-container);transition:border-radius .6s var(--spring-soft),transform .7s var(--spring-fast)}
+.card:hover .ic{border-radius:50%;transform:rotate(-10deg) scale(1.08)}
+.card .ic .i{width:28px;height:28px}
+.card h3{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.card p{margin:0;color:var(--md-on-surface-variant);font-size:15.5px}
+.c-a{grid-column:span 7;background:var(--md-primary);color:var(--md-on-primary)}
+.c-a p{color:color-mix(in srgb,var(--md-on-primary) 85%,transparent)}
+.c-a .ic{background:var(--md-on-primary);color:var(--md-primary)}
+.c-a h3{font-size:clamp(26px,3.4vw,40px)}
+.c-b{grid-column:span 5;background:var(--md-tertiary-container);color:var(--md-on-tertiary-container)}
+.c-b p{color:inherit;opacity:.8}.c-b .ic{background:var(--md-tertiary);color:var(--md-tertiary-container)}
+.c-c,.c-d,.c-e{grid-column:span 4}
+.c-f{grid-column:span 5;background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+.c-f p{color:inherit;opacity:.8}.c-f .ic{background:var(--md-secondary);color:var(--md-secondary-container)}
+.c-g{grid-column:span 7;background:var(--md-surface-container-high)}
+.timeline-art{display:grid;gap:8px;margin-top:10px}
+.tl{display:flex;gap:6px;height:34px}
+.tl i{border-radius:12px;flex:var(--w,1);background:var(--md-on-primary);opacity:.9;transition:flex .8s var(--spring-soft),border-radius .5s var(--spring-soft)}
+.tl i:nth-child(2n){opacity:.55}.tl i:nth-child(3n){opacity:.32}
+.card:hover .tl i{border-radius:17px}
+.card:hover .tl:nth-child(odd) i:nth-child(2){--w:2.4}.card:hover .tl:nth-child(even) i:nth-child(1){--w:2}
+.mini-swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.mini-swatches i{width:30px;height:30px;border-radius:50%;background:var(--c);transition:border-radius .5s var(--spring-soft),transform .6s var(--spring-fast)}
+.card:hover .mini-swatches i{border-radius:10px;transform:rotate(12deg)}
+.card:hover .mini-swatches i:nth-child(even){transform:rotate(-12deg) translateY(-4px)}
+.big-num{font-size:clamp(54px,8vw,92px);font-weight:900;letter-spacing:-.05em;line-height:.9}
+.kbds{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+kbd{display:inline-block;min-width:34px;padding:5px 11px;border-radius:10px;background:var(--md-surface-container-lowest);box-shadow:inset 0 -3px 0 var(--md-outline-variant);font:700 13px/18px var(--font);text-align:center;color:var(--md-on-surface)}
 
-    .gallery { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
-    .gallery figure { margin: 0; border-radius: 20px; overflow: hidden; background: var(--surface-1); border: 1px solid var(--outline-variant); transition: transform .4s var(--ease-out), box-shadow .4s; }
-    .gallery figure:hover { transform: translateY(-6px) scale(1.01); box-shadow: var(--e3); }
-    .gallery figcaption { padding: 12px 18px; font-size: 14px; color: var(--on-surface-variant); }
-    .gallery img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+/* ---------- showcase ---------- */
+.show{background:var(--md-surface-container-low);border-radius:56px;margin:0 12px;overflow:hidden}
+.show-tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:44px 0 30px}
+.show-tabs button{height:46px;padding:0 22px;border:0;border-radius:8px;background:var(--md-surface-container-high);font-weight:700;font-size:14.5px;color:var(--md-on-surface-variant);cursor:pointer;transition:background-color .25s,border-radius .5s var(--spring-soft),color .2s}
+.show-tabs button:first-child{border-radius:23px 8px 8px 23px}.show-tabs button:last-child{border-radius:8px 23px 23px 8px}
+.show-tabs button[aria-selected=true]{background:var(--md-primary);color:var(--md-on-primary);border-radius:23px}
+.stage{position:relative;max-width:1060px;margin:0 auto}
+.slide{display:none}
+.slide.on{display:block;animation:slide-in .8s var(--spring-soft) both}
+@keyframes slide-in{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:none}}
+.slide .window{transform:none}
+.slide .window:hover{transform:translateY(-6px)}
+.slide img{cursor:zoom-in}
+.cap{margin:26px auto 0;max-width:62ch;text-align:center;color:var(--md-on-surface-variant);font-size:17px}
+.cap b{display:block;color:var(--md-on-surface);font-size:22px;letter-spacing:-.02em;margin-bottom:4px}
+.dots{display:flex;justify-content:center;gap:8px;margin-top:22px}
+.dots i{width:10px;height:10px;border-radius:99px;background:var(--md-outline-variant);transition:width .5s var(--spring-fast),background-color .3s}
+.dots i.on{width:34px;background:var(--md-primary)}
+.arrow{position:absolute;top:50%;z-index:3;transform:translateY(-50%);width:56px;height:56px;border:0;border-radius:20px;background:var(--md-primary-container);color:var(--md-on-primary-container);cursor:pointer;display:grid;place-items:center;box-shadow:0 12px 24px -10px rgb(0 0 0/.4);transition:border-radius .5s var(--spring-soft),transform .5s var(--spring-fast)}
+.arrow:hover{border-radius:28px}.arrow:active{transform:translateY(-50%) scale(.9)}
+.arrow.l{left:-18px}.arrow.r{right:-18px}
+.lightbox{position:fixed;inset:0;z-index:300;display:none;place-items:center;padding:24px;background:rgb(8 4 10/.82);backdrop-filter:blur(10px);cursor:zoom-out}
+.lightbox.on{display:grid;animation:fade .3s both}
+.lightbox img{max-width:min(1500px,96vw);max-height:90vh;border-radius:22px;box-shadow:0 40px 100px rgb(0 0 0/.6);animation:pop .6s var(--spring-slow) both}
+@keyframes fade{from{opacity:0}}@keyframes pop{from{opacity:0;transform:scale(.85)}}
 
-    .dl { border-radius: 32px; padding: clamp(28px, 5vw, 56px); text-align: center; background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 55%, #000)); color: var(--on-primary); position: relative; overflow: hidden; }
-    @media (prefers-color-scheme: dark) { .dl { background: linear-gradient(135deg, #4f378b, #2a1a52); color: #eaddff; } }
-    .dl h2 { margin-top: 0; }
-    .dl p { margin: 0 auto 28px; max-width: 52ch; opacity: .9; }
-    .dl .btn.filled { background: #fff; color: #4527a0; }
-    .dl .btn.ghost { background: transparent; color: inherit; border: 1px solid rgb(255 255 255 / .5); }
-    .dl .row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-    .dl small { display: block; margin-top: 18px; opacity: .75; }
+/* ---------- steps ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:54px;counter-reset:s}
+.step{position:relative;padding:34px 30px 30px;border-radius:36px;background:var(--md-surface-container);transition:transform .7s var(--spring-fast),border-radius .6s var(--spring-soft)}
+.step:hover{transform:translateY(-8px) rotate(-.6deg);border-radius:52px}
+.step::before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:64px;height:64px;margin-bottom:20px;font-weight:900;font-size:28px;color:var(--md-on-primary);background:var(--md-primary);clip-path:polygon(50% 0,63% 8%,79% 6%,86% 20%,100% 28%,94% 43%,100% 57%,92% 70%,94% 86%,79% 90%,67% 100%,50% 94%,33% 100%,21% 90%,6% 86%,8% 70%,0 57%,6% 43%,0 28%,14% 20%,21% 6%,37% 8%);transition:transform .8s var(--spring-fast)}
+.step:hover::before{transform:rotate(30deg) scale(1.1)}
+.step h3{font-size:24px;font-weight:800;margin-bottom:8px}
+.step p{margin:0;color:var(--md-on-surface-variant)}
 
-    footer { padding: 36px 0 48px; color: var(--on-surface-variant); font-size: 14px; border-top: 1px solid var(--outline-variant); }
-    footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; }
-    footer a { text-decoration: underline; text-underline-offset: 3px; }
+/* ---------- customise ---------- */
+.theme-lab{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,60px);align-items:center}
+.lab-card{padding:30px;border-radius:40px;background:var(--md-surface-container-high)}
+.lab-card .swatches{margin:6px 0 4px}
+.lab-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:22px}
+.fake-ui{display:grid;gap:12px;padding:20px;border-radius:36px;background:var(--md-surface-container-lowest);box-shadow:0 30px 60px -30px rgb(0 0 0/.4)}
+.fake-ui .row{display:flex;gap:10px;align-items:center}
+.fake-ui .bar{height:14px;border-radius:99px;background:var(--md-surface-container-highest);flex:1}
+.fake-ui .bar.p{background:var(--md-primary);flex:.45}
+.fake-ui .pill{height:42px;padding:0 20px;border-radius:99px;display:inline-flex;align-items:center;font-weight:700;font-size:14px}
+.fake-ui .a{background:var(--md-primary);color:var(--md-on-primary)}.fake-ui .b{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}.fake-ui .c{background:var(--md-tertiary-container);color:var(--md-on-tertiary-container)}
+.fake-ui .clips{display:flex;gap:6px;height:46px}
+.fake-ui .clips i{border-radius:14px;flex:var(--w);background:var(--c)}
+.fake-ui .ph{position:relative;height:5px;margin:0 0 -6px;background:var(--md-error);border-radius:3px;width:38%}
 
-    /* reveal on scroll */
-    .rv { opacity: 0; transform: translateY(28px); transition: opacity .7s var(--ease-out), transform .7s var(--ease-out); transition-delay: var(--d, 0s); }
-    .rv.in { opacity: 1; transform: none; }
-    .hero .rv { animation: up .8s var(--ease-out) both; animation-delay: var(--d, 0s); opacity: 1; transform: none; transition: none; }
-    @keyframes up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+/* ---------- shortcuts ---------- */
+.sc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:44px}
+.sc{padding:22px;border-radius:28px;background:var(--md-surface-container-low);display:grid;gap:12px;align-content:space-between;transition:transform .6s var(--spring-fast),border-radius .5s var(--spring-soft),background-color .25s}
+.sc:hover{transform:translateY(-6px) rotate(1deg);border-radius:40px;background:var(--md-surface-container-high)}
+.sc kbd{justify-self:start}
+.sc span{font-weight:600;color:var(--md-on-surface-variant);font-size:14.5px}
 
-    @media (max-width: 720px) {
-      .nav { display: none; }
-      .hero { padding-top: 40px; }
-      section { padding: 52px 0; }
-      .shot { transform: none; border-radius: 14px; }
-      .btn.lg { width: 100%; }
-      .cta { width: 100%; }
-    }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .rv { opacity: 1; transform: none; } html { scroll-behavior: auto; } }
-  </style>
+/* ---------- download ---------- */
+.dl{padding-bottom:clamp(70px,9vw,120px)}
+.dl-card{position:relative;overflow:hidden;display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;padding:clamp(30px,6vw,72px);border-radius:56px;background:var(--md-primary);color:var(--md-on-primary)}
+.dl-card h2{font-size:clamp(36px,6vw,68px);font-weight:900;letter-spacing:-.045em;max-width:12ch}
+.dl-card p{margin:16px 0 0;font-size:18px;color:color-mix(in srgb,var(--md-on-primary) 86%,transparent);max-width:46ch}
+.dl-card .btn.filled{background:var(--md-on-primary);color:var(--md-primary);box-shadow:0 18px 40px -14px rgb(0 0 0/.5)}
+.dl-card .btn.outline{color:var(--md-on-primary);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--md-on-primary) 55%,transparent)}
+.dl-card .btn.outline:hover{background:color-mix(in srgb,var(--md-on-primary) 12%,transparent)}
+.dl-blob{position:absolute;pointer-events:none;color:color-mix(in srgb,var(--md-on-primary) 11%,transparent)}
+.dl-blob.x{width:520px;right:-120px;top:-150px}.dl-blob.y{width:300px;left:34%;bottom:-170px}
+.dl-card>*{position:relative}.dl-card>.dl-blob{position:absolute}
+.specs{display:grid;gap:8px}
+.spec{display:flex;justify-content:space-between;gap:14px;padding:14px 20px;border-radius:20px;background:color-mix(in srgb,var(--md-on-primary) 13%,transparent);font-size:15px;transition:border-radius .5s var(--spring-soft),transform .5s var(--spring-fast)}
+.spec:hover{border-radius:99px;transform:translateX(6px)}
+.spec b{font-weight:700}
+.code{position:relative;margin-top:20px;padding:20px 64px 20px 22px;border-radius:24px;background:color-mix(in srgb,var(--md-on-primary) 14%,transparent);font:600 14px/1.8 ui-monospace,"Cascadia Mono",Consolas,monospace;white-space:pre;overflow:auto;color:var(--md-on-primary)}
+.code .ib{position:absolute;right:10px;top:10px;color:var(--md-on-primary)}
+.code .ib:hover{background:color-mix(in srgb,var(--md-on-primary) 16%,transparent)}
+.dl-note{margin-top:14px;font-size:13.5px;opacity:.8}
+
+/* ---------- faq ---------- */
+.faq{max-width:820px;margin:44px auto 0;display:grid;gap:10px}
+details{border-radius:28px;background:var(--md-surface-container-low);transition:background-color .3s,border-radius .5s var(--spring-soft)}
+details[open]{background:var(--md-surface-container-high);border-radius:36px}
+summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;cursor:pointer;list-style:none;font-weight:700;font-size:18px;letter-spacing:-.01em}
+summary::-webkit-details-marker{display:none}
+summary .i{transition:transform .6s var(--spring-fast);color:var(--md-primary)}
+details[open] summary .i{transform:rotate(180deg)}
+details .ans{padding:0 26px 24px;color:var(--md-on-surface-variant);animation:slide-in .6s var(--spring-soft) both}
+
+/* ---------- footer ---------- */
+footer{padding:50px 0 60px;margin-top:20px;background:var(--md-surface-container);border-radius:56px 56px 0 0}
+.foot{display:grid;grid-template-columns:1.2fr 1fr;gap:34px;align-items:center}
+.credit{display:inline-flex;align-items:center;gap:14px;padding:14px 22px 14px 14px;border-radius:99px;background:linear-gradient(120deg,var(--md-primary),color-mix(in srgb,var(--md-primary) 60%,var(--md-tertiary)));color:var(--md-on-primary);box-shadow:0 20px 40px -16px color-mix(in srgb,var(--md-primary) 80%,transparent);font-weight:600;transition:border-radius .5s var(--spring-soft),transform .5s var(--spring-fast)}
+.credit:hover{border-radius:24px;transform:translateY(-3px)}
+.credit img{width:46px;height:46px}
+.credit b{font-weight:900;font-size:17px}
+.foot-links{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.foot-links a{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:99px;text-decoration:none;font-weight:700;font-size:14.5px;background:var(--md-surface-container-highest);transition:border-radius .5s var(--spring-soft),background-color .25s}
+.foot-links a:hover{border-radius:14px;background:var(--md-secondary-container)}
+.copy{margin-top:30px;padding-top:24px;border-top:1px solid var(--md-outline-variant);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--md-on-surface-variant);font-size:14px}
+
+/* ---------- fab ---------- */
+#top{position:fixed;right:22px;bottom:22px;z-index:110;width:60px;height:60px;border:0;border-radius:22px;display:grid;place-items:center;background:var(--md-primary-container);color:var(--md-on-primary-container);cursor:pointer;box-shadow:0 16px 30px -10px rgb(0 0 0/.5);
+  opacity:0;transform:translateY(40px) scale(.5);pointer-events:none;transition:opacity .25s,transform .6s var(--spring-fast),border-radius .5s var(--spring-soft)}
+#top.on{opacity:1;transform:none;pointer-events:auto}
+#top:hover{border-radius:30px}#top:active{transform:scale(.9)}
+#top svg{width:26px;height:26px;stroke-width:2.8}
+
+/* ---------- reveal ---------- */
+.rv{opacity:0;transform:translateY(40px) scale(.97);transition:opacity .7s ease,transform 1s var(--spring-soft);transition-delay:calc(var(--d,0)*70ms)}
+.rv.in{opacity:1;transform:none}
+.no-js .rv{opacity:1;transform:none}
+
+/* ---------- responsive ---------- */
+@media (max-width:1020px){
+  .links{display:none}.burger{display:inline-grid}
+  .hero-grid,.theme-lab,.dl-card,.foot{grid-template-columns:1fr}
+  .window{transform:none}
+  .bento{grid-template-columns:repeat(6,1fr)}
+  .c-a,.c-b,.c-c,.c-d,.c-e,.c-f,.c-g{grid-column:span 6}
+  .c-c,.c-d,.c-e{grid-column:span 3}.c-e{grid-column:span 6}
+  .steps{grid-template-columns:1fr}
+  .sc-grid{grid-template-columns:repeat(2,1fr)}
+  .foot-links{justify-content:flex-start}
+  .arrow.l{left:6px}.arrow.r{right:6px}
+  .fc1{left:6px}.fc2{right:6px}
+  .nav-dl{display:none}
+}
+@media (max-width:620px){
+  :root{--nav-h:68px}
+  .tools .lang-seg,.bt{display:none}
+  .seg button{min-width:34px;height:36px;padding:0 8px}
+  .nav-bar{padding:0 8px 0 12px}.brand{margin-right:0}
+  .tools{margin-left:auto}
+  .c-c,.c-d{grid-column:span 6}
+  .card{padding:24px;border-radius:28px}
+  .show{border-radius:36px;margin:0 6px}
+  .dl-card{border-radius:36px}
+  .sc-grid{grid-template-columns:1fr}
+  footer{border-radius:36px 36px 0 0}
+  .btn.lg{height:56px;padding:0 28px;width:100%}
+  .cta .btn{width:100%}
+  .arrow{display:none}
+}
+/* mobile sheet */
+.sheet{position:fixed;inset:0;z-index:150;display:none}
+.sheet.on{display:block}
+.sheet::before{content:"";position:absolute;inset:0;background:rgb(8 4 10/.5);backdrop-filter:blur(6px);animation:fade .3s both}
+.sheet nav{position:absolute;left:12px;right:12px;top:12px;padding:20px;border-radius:36px;background:var(--md-surface-container-high);animation:sheet .6s var(--spring-fast) both;display:grid;gap:6px}
+@keyframes sheet{from{opacity:0;transform:translateY(-30px) scale(.92)}}
+.sheet nav a{padding:16px 20px;border-radius:20px;text-decoration:none;font-weight:700;font-size:18px;transition:background-color .2s,border-radius .4s var(--spring-soft)}
+.sheet nav a:hover{background:var(--md-secondary-container);border-radius:99px}
+.sheet .row{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:10px;padding:8px 6px 0}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.rv{opacity:1;transform:none}.marq-track{animation:none}}
+</style>
 </head>
-<body>
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <symbol id="dl" viewBox="0 0 24 24"><path d="M12 15V3M7 10l5 5 5-5M5 21h14"/></symbol>
-    <symbol id="gh" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4M9 18c-4.51 2-5-2-7-2"/></symbol>
-    <symbol id="scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></symbol>
-    <symbol id="layers" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65M22 12.65l-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></symbol>
-    <symbol id="wand" viewBox="0 0 24 24"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72ZM14 7l3 3M5 6v4M19 14v4M10 2v2M7 8H3M21 16h-4M11 3H9"/></symbol>
-    <symbol id="type" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></symbol>
-    <symbol id="zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
-    <symbol id="palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></symbol>
-    <symbol id="globe" viewBox="0 0 24 24"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></symbol>
-    <symbol id="folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
-    <symbol id="music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
-  </svg>
+<body class="no-js">
+<a class="skip" href="#home" data-i18n="skip">Skip to content</a>
+<div id="progress" aria-hidden="true"><i></i></div>
 
-  <header class="bar" id="bar">
-    <div class="wrap">
-      <a class="brand" href="#top"><img src="src/assets/logo.png" alt="" width="34" height="34" />Material Edit</a>
-      <nav class="nav" aria-label="Main">
-        <a href="#features" data-t="nav_features">Features</a>
-        <a href="#screens" data-t="nav_screens">Screenshots</a>
-        <a href="#download" data-t="nav_download">Download</a>
-      </nav>
-      <div class="lang" role="group" aria-label="Language"><button data-l="en">EN</button><button data-l="vi">VI</button></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/> <path d="M12 2v2"/> <path d="M12 20v2"/> <path d="m4.93 4.93 1.41 1.41"/> <path d="m17.66 17.66 1.41 1.41"/> <path d="M2 12h2"/> <path d="M20 12h2"/> <path d="m6.34 17.66-1.41 1.41"/> <path d="m19.07 4.93-1.41 1.41"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol>
+  <symbol id="i-auto" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/> <line x1="8" x2="16" y1="21" y2="21"/> <line x1="12" x2="12" y1="17" y2="21"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/> <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/> <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/> <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/> <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+  <symbol id="i-export" viewBox="0 0 24 24"><path d="M12 3v12"/> <path d="m17 8-5-5-5 5"/> <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 5h16"/> <path d="M4 12h16"/> <path d="M4 19h16"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18"/> <path d="m6 6 12 12"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/> <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><path d="m5 8 6 6"/> <path d="m4 14 6-6 2-3"/> <path d="M2 5h12"/> <path d="M7 2h1"/> <path d="m22 22-5-10-5 10"/> <path d="M14 18h6"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/> <path d="M20 2v4"/> <path d="M22 4h-4"/> <circle cx="4" cy="20" r="2"/></symbol>
+  <symbol id="i-film" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/> <path d="M7 3v18"/> <path d="M3 7.5h4"/> <path d="M3 12h18"/> <path d="M3 16.5h4"/> <path d="M17 3v18"/> <path d="M17 7.5h4"/> <path d="M17 16.5h4"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/> <path d="M4 7h16"/> <path d="m16 21 4-4-4-4"/> <path d="M20 17H4"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/> <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/> <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></symbol>
+  <symbol id="i-wand" viewBox="0 0 24 24"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/> <path d="m14 7 3 3"/> <path d="M5 6v4"/> <path d="M19 14v4"/> <path d="M10 2v2"/> <path d="M7 8H3"/> <path d="M21 16h-4"/> <path d="M11 3H9"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M12 4v16"/> <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"/> <path d="M9 20h6"/></symbol>
+  <symbol id="i-keyboard" viewBox="0 0 24 24"><path d="M10 8h.01"/> <path d="M12 12h.01"/> <path d="M14 8h.01"/> <path d="M16 12h.01"/> <path d="M18 8h.01"/> <path d="M6 8h.01"/> <path d="M7 16h10"/> <path d="M8 12h.01"/> <rect width="20" height="16" x="2" y="4" rx="2"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/> <circle cx="9" cy="9" r="2"/> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
+  <symbol id="i-play-fill" viewBox="0 0 24 24"><path fill="currentColor" d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/> <path d="M12 16v-4"/> <path d="M12 8h.01"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/> <path d="M12 19V5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-fwd" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="nav-bar">
+    <a class="brand" href="#home" aria-label="Material Edit"><img src="src-tauri/icons/128x128.png" width="38" height="38" alt="" /><span class="bt">Material Edit</span></a>
+    <nav class="links" aria-label="Primary">
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#showcase" data-i18n="nav.showcase">Screenshots</a>
+      <a href="#how" data-i18n="nav.how">How it works</a>
+      <a href="#themes" data-i18n="nav.themes">Colors</a>
+      <a href="#download" data-i18n="nav.download">Download</a>
+      <a href="#faq" data-i18n="nav.faq">FAQ</a>
+    </nav>
+    <div class="tools">
+      <div class="seg" role="group" aria-label="Theme" id="seg-theme">
+        <button data-mode="light" aria-pressed="false" title="Light" aria-label="Light"><svg class="i"><use href="#i-sun"/></svg></button>
+        <button data-mode="dark" aria-pressed="false" title="Dark" aria-label="Dark"><svg class="i"><use href="#i-moon"/></svg></button>
+        <button data-mode="system" aria-pressed="false" title="System" aria-label="System"><svg class="i"><use href="#i-auto"/></svg></button>
+      </div>
+      <div class="seg lang-seg" role="group" aria-label="Language" id="seg-lang">
+        <button data-lang="en" aria-pressed="false">EN</button>
+        <button data-lang="vi" aria-pressed="false">VI</button>
+      </div>
+      <div class="rel">
+        <button class="ib" id="btn-colors" aria-haspopup="true" aria-expanded="false" title="Accent color" aria-label="Accent color"><svg class="i"><use href="#i-palette"/></svg></button>
+        <div class="pop" id="pop" role="dialog" aria-label="Accent color">
+          <h3 data-i18n="pop.title">Accent color</h3>
+          <div class="swatches" data-swatches></div>
+          <label class="custom"><input type="color" data-custom value="#e91e63" /><span data-i18n="pop.custom">Custom color</span><code data-seedhex>#E91E63</code></label>
+        </div>
+      </div>
+      <a class="btn filled nav-dl" href="#download"><svg class="i"><use href="#i-export"/></svg><span data-i18n="nav.get">Get it</span></a>
+      <button class="ib burger" id="btn-burger" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main id="top">
-    <div class="hero">
-      <div class="wrap hero-grid">
-        <div>
-          <span class="chip rv" style="--d:.05s"><svg class="i"><use href="#zap"/></svg><span data-t="chip">Free · Open source · Tauri 2</span></span>
-          <h1 class="rv" style="--d:.12s"><span data-t="h1a">A simple video editor,</span><br /><em data-t="h1b">designed with Material 3</em></h1>
-          <p class="lead rv" style="--d:.2s" data-t="lead">Cut, arrange, add text, filters and music on a multi-track timeline, then export a crisp MP4 — fast, light and beautiful on your desktop.</p>
-          <div class="cta rv" style="--d:.28s">
-            <a class="btn filled lg" id="dl-main" href="download/Material-Edit_1.0.0_x64-setup.exe" download><svg class="i"><use href="#dl"/></svg><span data-t="dl">Download for Windows</span></a>
-            <a class="btn tonal lg" href="#features"><span data-t="learn">Explore features</span></a>
-          </div>
-          <div class="meta rv" style="--d:.34s" data-t="meta">Version 1.0.0 · Windows 10/11 · MIT license</div>
-        </div>
-        <img class="shot rv" style="--d:.4s" src="screenshots/image02.png" alt="Material Edit editor with a multi-track timeline" width="1280" height="760" />
+<div class="sheet" id="sheet" aria-hidden="true">
+  <nav>
+    <a href="#features" data-i18n="nav.features">Features</a>
+    <a href="#showcase" data-i18n="nav.showcase">Screenshots</a>
+    <a href="#how" data-i18n="nav.how">How it works</a>
+    <a href="#themes" data-i18n="nav.themes">Colors</a>
+    <a href="#download" data-i18n="nav.download">Download</a>
+    <a href="#faq" data-i18n="nav.faq">FAQ</a>
+    <div class="row">
+      <div class="seg lang-seg2" id="seg-lang2"><button data-lang="en" aria-pressed="false">EN</button><button data-lang="vi" aria-pressed="false">VI</button></div>
+      <button class="ib on" id="sheet-close" aria-label="Close"><svg class="i"><use href="#i-close"/></svg></button>
+    </div>
+  </nav>
+</div>
+
+<main id="main">
+<section class="hero" id="home">
+  <div class="blobs" aria-hidden="true">
+    <svg class="b1" viewBox="0 0 100 100" data-shape="cookie9,sunny,cookie6,clover,squircle" data-spin="5"><path fill="currentColor"/></svg>
+    <svg class="b2" viewBox="0 0 100 100" data-shape="flower,cookie4,circle,burst" data-spin="-7"><path fill="currentColor"/></svg>
+    <svg class="b3" viewBox="0 0 100 100" data-shape="circle,cookie6,squircle"><path fill="currentColor"/></svg>
+    <svg class="b4" viewBox="0 0 100 100" data-shape="sunny,circle,cookie9"><path fill="currentColor"/></svg>
+  </div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow rv"><svg class="i"><use href="#i-sparkles"/></svg><span data-i18n="hero.eyebrow">Free · Open source · Windows</span></span>
+      <h1 class="rv" style="--d:1"><span data-i18n-html="hero.h1">Edit videos <span class="hl">with joy.</span></span></h1>
+      <p class="lead rv" style="--d:2" data-i18n="hero.lead">A fast, friendly desktop video editor wrapped in Material 3 Expressive. Cut, layer, style and export in minutes — no sign-up, no watermark.</p>
+      <div class="cta rv" style="--d:3">
+        <a class="btn filled lg" href="#download"><svg class="i"><use href="#i-export"/></svg><span data-i18n="hero.cta">Download for Windows</span></a>
+        <a class="btn outline lg" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="i"><use href="#i-link"/></svg><span data-i18n="hero.src">View source</span></a>
+      </div>
+      <div class="meta rv" style="--d:4">
+        <span class="chip"><svg class="i"><use href="#i-bolt"/></svg><span data-i18n="chip.fast">Faster-than-real-time export</span></span>
+        <span class="chip"><svg class="i"><use href="#i-heart"/></svg><span data-i18n="chip.free">100% free · MIT</span></span>
+        <span class="chip"><svg class="i"><use href="#i-globe"/></svg>EN · VI</span>
       </div>
     </div>
-
-    <section id="features">
-      <div class="wrap">
-        <div class="eyebrow" data-t="f_eyebrow">Features</div>
-        <h2 data-t="f_title">Everything you need to tell your story</h2>
-        <p class="sub" data-t="f_sub">A focused toolset with smooth motion and a clean, responsive interface.</p>
-        <div class="features">
-          <article class="card rv"><div class="ico"><svg class="i"><use href="#layers"/></svg></div><h3 data-t="c1t">Multi-track timeline</h3><p data-t="c1d">Text, overlay, main and audio tracks with snapping, zoom, rubber-band selection and ripple editing.</p></article>
-          <article class="card rv" style="--d:.06s"><div class="ico"><svg class="i"><use href="#scissors"/></svg></div><h3 data-t="c2t">Trim &amp; split</h3><p data-t="c2d">Cut at the playhead, trim either side, change speed and match clip length to your music.</p></article>
-          <article class="card rv" style="--d:.12s"><div class="ico"><svg class="i"><use href="#wand"/></svg></div><h3 data-t="c3t">Filters &amp; transitions</h3><p data-t="c3d">Ready-made looks, fades, slides, wipes and zooms — adjust brightness, contrast, blur and more.</p></article>
-          <article class="card rv" style="--d:.18s"><div class="ico"><svg class="i"><use href="#type"/></svg></div><h3 data-t="c4t">Text &amp; overlays</h3><p data-t="c4d">Animated titles and captions, picture-in-picture overlays, fades and transforms on the preview.</p></article>
-          <article class="card rv" style="--d:.24s"><div class="ico"><svg class="i"><use href="#zap"/></svg></div><h3 data-t="c5t">Fast, light export</h3><p data-t="c5d">Hardware-accelerated MP4 up to 4K 60 fps, streamed to disk so memory stays flat on long videos.</p></article>
-          <article class="card rv" style="--d:.3s"><div class="ico"><svg class="i"><use href="#palette"/></svg></div><h3 data-t="c6t">Your look</h3><p data-t="c6d">Light, dark or system theme, Material colors, 10 UI fonts and window-size memory.</p></article>
-          <article class="card rv" style="--d:.36s"><div class="ico"><svg class="i"><use href="#globe"/></svg></div><h3 data-t="c7t">English &amp; Tiếng Việt</h3><p data-t="c7d">The language of your device is detected automatically — switch any time in Settings.</p></article>
-          <article class="card rv" style="--d:.42s"><div class="ico"><svg class="i"><use href="#folder"/></svg></div><h3 data-t="c8t">Project library</h3><p data-t="c8d">Autosave, search, sort, rename and duplicate projects right from the home screen.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section id="screens" style="background:var(--surface-1)">
-      <div class="wrap">
-        <div class="eyebrow" data-t="s_eyebrow">Screenshots</div>
-        <h2 data-t="s_title">A closer look</h2>
-        <p class="sub" data-t="s_sub">Material Design 3 everywhere — from the project library to export.</p>
-        <div class="gallery">
-          <figure class="rv"><img src="screenshots/image01.png" alt="Project library" width="1280" height="760" /><figcaption data-t="g1">Project library</figcaption></figure>
-          <figure class="rv" style="--d:.08s"><img src="screenshots/image03.png" alt="Context menu" width="1440" height="900" /><figcaption data-t="g2">Context menu &amp; shortcuts</figcaption></figure>
-          <figure class="rv" style="--d:.16s"><img src="screenshots/image04.png" alt="Export dialog" width="1440" height="900" /><figcaption data-t="g3">Export</figcaption></figure>
-          <figure class="rv" style="--d:.24s"><img src="screenshots/image05.png" alt="Settings" width="1440" height="900" /><figcaption data-t="g4">Settings</figcaption></figure>
-        </div>
-      </div>
-    </section>
-
-    <section id="download">
-      <div class="wrap">
-        <div class="dl rv">
-          <h2 data-t="d_title">Get Material Edit</h2>
-          <p data-t="d_sub">Free forever and open source. Download the installer and start editing in a minute.</p>
-          <div class="row">
-            <a class="btn filled lg" href="download/Material-Edit_1.0.0_x64-setup.exe" download><svg class="i"><use href="#dl"/></svg><span data-t="dl">Download for Windows</span></a>
-            <a class="btn ghost lg" href="https://github.com/minhtrong67/material-edit" target="_blank" rel="noopener"><svg class="i"><use href="#gh"/></svg><span>GitHub</span></a>
-          </div>
-          <small data-t="d_note">Installer: download/Material-Edit_1.0.0_x64-setup.exe · Windows 10/11 (64-bit)</small>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="wrap">
-      <span>© 2026 <b>minhtrong67</b> · <span data-t="credit">Built with the help of Claude (Anthropic)</span></span>
-      <span><a href="LICENSE" data-t="lic">MIT License</a></span>
+    <div class="shot-stack rv" style="--d:2" id="tilt">
+      <div class="window"><img src="screenshots/image02.png" width="1440" height="900" alt="Material Edit editor with multi-track timeline" fetchpriority="high" /></div>
+      <div class="float-chip fc1"><svg class="i"><use href="#i-film"/></svg><span data-i18n="fc.1">4K · 60 fps</span></div>
+      <div class="float-chip fc2"><svg class="i"><use href="#i-swap"/></svg><span data-i18n="fc.2">Smooth transitions</span></div>
     </div>
-  </footer>
+  </div>
+  <div class="scroll-hint"><a href="#features" aria-label="Scroll"><svg class="i"><use href="#i-chev"/></svg></a></div>
+</section>
 
-  <script>
-    const T = {
-      en: { nav_features: 'Features', nav_screens: 'Screenshots', nav_download: 'Download', chip: 'Free · Open source · Tauri 2', h1a: 'A simple video editor,', h1b: 'designed with Material 3',
-        lead: 'Cut, arrange, add text, filters and music on a multi-track timeline, then export a crisp MP4 — fast, light and beautiful on your desktop.',
-        dl: 'Download for Windows', learn: 'Explore features', meta: 'Version 1.0.0 · Windows 10/11 · MIT license',
-        f_eyebrow: 'Features', f_title: 'Everything you need to tell your story', f_sub: 'A focused toolset with smooth motion and a clean, responsive interface.',
-        c1t: 'Multi-track timeline', c1d: 'Text, overlay, main and audio tracks with snapping, zoom, rubber-band selection and ripple editing.',
-        c2t: 'Trim & split', c2d: 'Cut at the playhead, trim either side, change speed and match clip length to your music.',
-        c3t: 'Filters & transitions', c3d: 'Ready-made looks, fades, slides, wipes and zooms — adjust brightness, contrast, blur and more.',
-        c4t: 'Text & overlays', c4d: 'Animated titles and captions, picture-in-picture overlays, fades and transforms on the preview.',
-        c5t: 'Fast, light export', c5d: 'Hardware-accelerated MP4 up to 4K 60 fps, streamed to disk so memory stays flat on long videos.',
-        c6t: 'Your look', c6d: 'Light, dark or system theme, Material colors, 10 UI fonts and window-size memory.',
-        c7t: 'English & Tiếng Việt', c7d: 'The language of your device is detected automatically — switch any time in Settings.',
-        c8t: 'Project library', c8d: 'Autosave, search, sort, rename and duplicate projects right from the home screen.',
-        s_eyebrow: 'Screenshots', s_title: 'A closer look', s_sub: 'Material Design 3 everywhere — from the project library to export.',
-        g1: 'Project library', g2: 'Context menu & shortcuts', g3: 'Export', g4: 'Settings',
-        d_title: 'Get Material Edit', d_sub: 'Free forever and open source. Download the installer and start editing in a minute.',
-        d_note: 'Installer: download/Material-Edit_1.0.0_x64-setup.exe · Windows 10/11 (64-bit)', credit: 'Built with the help of Claude (Anthropic)', lic: 'MIT License' },
-      vi: { nav_features: 'Tính năng', nav_screens: 'Ảnh chụp', nav_download: 'Tải về', chip: 'Miễn phí · Mã nguồn mở · Tauri 2', h1a: 'Trình dựng video đơn giản,', h1b: 'thiết kế theo Material 3',
-        lead: 'Cắt, sắp xếp, thêm chữ, bộ lọc và nhạc trên timeline nhiều lớp rồi xuất MP4 sắc nét — nhanh, nhẹ và đẹp ngay trên máy tính.',
-        dl: 'Tải cho Windows', learn: 'Xem tính năng', meta: 'Phiên bản 1.0.0 · Windows 10/11 · Giấy phép MIT',
-        f_eyebrow: 'Tính năng', f_title: 'Mọi thứ bạn cần để kể câu chuyện của mình', f_sub: 'Bộ công cụ gọn gàng với chuyển động mượt mà và giao diện sạch, đáp ứng mọi kích thước.',
-        c1t: 'Timeline nhiều lớp', c1d: 'Các track chữ, lớp phủ, chính và âm thanh với hút dính, thu phóng, chọn vùng và chỉnh sửa liền mạch.',
-        c2t: 'Cắt & tỉa', c2d: 'Cắt tại đầu phát, tỉa hai đầu, đổi tốc độ và khớp độ dài clip với nhạc nền.',
-        c3t: 'Bộ lọc & chuyển cảnh', c3d: 'Kiểu màu dựng sẵn, mờ dần, trượt, quét, phóng — chỉnh độ sáng, tương phản, làm mờ và hơn nữa.',
-        c4t: 'Văn bản & lớp phủ', c4d: 'Tiêu đề, chú thích có hoạt ảnh, lớp phủ hình trong hình, hiện/tắt dần và biến đổi trực tiếp trên khung xem.',
-        c5t: 'Xuất nhanh, nhẹ', c5d: 'MP4 tăng tốc phần cứng đến 4K 60 fps, ghi thẳng ra ổ đĩa nên bộ nhớ luôn ổn định với video dài.',
-        c6t: 'Phong cách của bạn', c6d: 'Giao diện sáng, tối hoặc theo hệ thống, màu Material, 10 phông chữ và ghi nhớ kích thước cửa sổ.',
-        c7t: 'English & Tiếng Việt', c7d: 'Tự nhận diện ngôn ngữ của thiết bị — đổi bất cứ lúc nào trong Cài đặt.',
-        c8t: 'Thư viện dự án', c8d: 'Tự động lưu, tìm kiếm, sắp xếp, đổi tên và nhân đôi dự án ngay tại màn hình chính.',
-        s_eyebrow: 'Ảnh chụp màn hình', s_title: 'Nhìn kỹ hơn', s_sub: 'Material Design 3 ở mọi nơi — từ thư viện dự án đến xuất video.',
-        g1: 'Thư viện dự án', g2: 'Menu chuột phải & phím tắt', g3: 'Xuất video', g4: 'Cài đặt',
-        d_title: 'Tải Material Edit', d_sub: 'Miễn phí mãi mãi và mã nguồn mở. Tải bộ cài và bắt đầu dựng video chỉ trong một phút.',
-        d_note: 'Bộ cài: download/Material-Edit_1.0.0_x64-setup.exe · Windows 10/11 (64-bit)', credit: 'Xây dựng với sự hỗ trợ của Claude (Anthropic)', lic: 'Giấy phép MIT' },
-    };
-    const meta = {
-      en: { title: 'Material Edit — A simple Material Design 3 video editor', desc: 'Material Edit is a free, open-source desktop video editor with a Material Design 3 look: multi-track timeline, trim & split, filters, transitions, text, music and fast MP4 export.' },
-      vi: { title: 'Material Edit — Trình dựng video đơn giản theo Material Design 3', desc: 'Material Edit là trình dựng video desktop miễn phí, mã nguồn mở, giao diện Material Design 3: timeline nhiều lớp, cắt, bộ lọc, chuyển cảnh, chữ, nhạc và xuất MP4 nhanh.' },
-    };
-    function setLang(l) {
-      if (!T[l]) l = 'en';
-      document.documentElement.lang = l;
-      document.querySelectorAll('[data-t]').forEach((el) => { const v = T[l][el.dataset.t]; if (v != null) el.textContent = v; });
-      document.querySelectorAll('.lang button').forEach((b) => b.classList.toggle('on', b.dataset.l === l));
-      document.title = meta[l].title;
-      document.querySelector('meta[name=description]').content = meta[l].desc;
-      try { localStorage.setItem('me.lang', l); } catch (e) { /* ignore */ }
+<div class="marq" aria-hidden="true"><div class="marq-track" id="marq"></div></div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow rv"><svg class="i"><use href="#i-layers"/></svg><span data-i18n="feat.eyebrow">Features</span></span>
+      <h2 class="title rv" style="--d:1" data-i18n="feat.title">Everything you need to tell your story</h2>
+      <p class="lead rv" style="--d:2" data-i18n="feat.lead">A focused toolset that stays out of your way — powerful when you need it, calm when you don’t.</p>
+    </div>
+    <div class="bento">
+      <article class="card c-a rv">
+        <span class="ic"><svg class="i"><use href="#i-layers"/></svg></span>
+        <h3 data-i18n="f.timeline.t">Multi-track timeline</h3>
+        <p data-i18n="f.timeline.p">Text, overlay, main and audio tracks with snapping, ripple edits, rubber-band selection, zoom and a one-tap Fit button.</p>
+        <div class="timeline-art" aria-hidden="true">
+          <div class="tl"><i style="--w:2"></i><i style="--w:3"></i><i style="--w:1.4"></i></div>
+          <div class="tl"><i style="--w:1"></i><i style="--w:2.4"></i><i style="--w:2"></i></div>
+          <div class="tl"><i style="--w:3"></i><i style="--w:1.2"></i><i style="--w:2"></i></div>
+        </div>
+      </article>
+      <article class="card c-b rv" style="--d:1">
+        <span class="ic"><svg class="i"><use href="#i-bolt"/></svg></span>
+        <div class="big-num">4K</div>
+        <h3 data-i18n="f.export.t">Fast, RAM-safe export</h3>
+        <p data-i18n="f.export.p">MP4 up to 4K at 60 fps, written straight to disk. Memory stays flat on long videos.</p>
+      </article>
+      <article class="card c-c rv"><span class="ic"><svg class="i"><use href="#i-wand"/></svg></span><h3 data-i18n="f.fx.t">Filters & effects</h3><p data-i18n="f.fx.p">Tune brightness, contrast, blur and more — or apply a look in one click.</p></article>
+      <article class="card c-d rv" style="--d:1"><span class="ic"><svg class="i"><use href="#i-swap"/></svg></span><h3 data-i18n="f.tr.t">Transitions</h3><p data-i18n="f.tr.p">Fade, slide, wipe, zoom and dip — previewed live and exported exactly.</p></article>
+      <article class="card c-e rv" style="--d:2"><span class="ic"><svg class="i"><use href="#i-text"/></svg></span><h3 data-i18n="f.text.t">Text that pops</h3><p data-i18n="f.text.p">Presets, strokes, backgrounds and animated entrances.</p></article>
+      <article class="card c-f rv">
+        <span class="ic"><svg class="i"><use href="#i-palette"/></svg></span>
+        <h3 data-i18n="f.theme.t">Your colors, your fonts</h3>
+        <p data-i18n="f.theme.p">Light, dark or system, any accent from the Material palette, 10 UI fonts and three text sizes.</p>
+        <div class="mini-swatches" data-mini aria-hidden="true"></div>
+      </article>
+      <article class="card c-g rv" style="--d:1">
+        <span class="ic"><svg class="i"><use href="#i-keyboard"/></svg></span>
+        <h3 data-i18n="f.keys.t">Keyboard-first</h3>
+        <p data-i18n="f.keys.p">Every action has a shortcut — and a command palette finds the rest.</p>
+        <div class="kbds"><kbd>Space</kbd><kbd>S</kbd><kbd>Ctrl</kbd><kbd>Z</kbd><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>P</kbd></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="showcase" class="show">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow rv"><svg class="i"><use href="#i-image"/></svg><span data-i18n="show.eyebrow">Screenshots</span></span>
+      <h2 class="title rv" style="--d:1" data-i18n="show.title">A tour in four screens</h2>
+    </div>
+    <div class="show-tabs rv" role="tablist" id="tabs">
+      <button role="tab" aria-selected="true" data-i18n="tab.1">Projects</button>
+      <button role="tab" aria-selected="false" data-i18n="tab.2">Editor</button>
+      <button role="tab" aria-selected="false" data-i18n="tab.3">Export</button>
+      <button role="tab" aria-selected="false" data-i18n="tab.4">Settings</button>
+    </div>
+    <div class="stage rv" id="stage">
+      <button class="arrow l" id="prev" aria-label="Previous"><svg class="i"><use href="#i-back"/></svg></button>
+      <button class="arrow r" id="next" aria-label="Next"><svg class="i"><use href="#i-fwd"/></svg></button>
+      <figure class="slide on" style="margin:0"><div class="window"><img src="screenshots/image01.png" width="1440" height="900" alt="Project library" loading="lazy" /></div><figcaption class="cap"><b data-i18n="cap.1.t">Your projects, always at hand</b><span data-i18n="cap.1.p">Grid or list, search, sort — autosave keeps everything safe.</span></figcaption></figure>
+      <figure class="slide" style="margin:0"><div class="window"><img src="screenshots/image02.png" width="1440" height="900" alt="Editor" loading="lazy" /></div><figcaption class="cap"><b data-i18n="cap.2.t">A timeline that feels natural</b><span data-i18n="cap.2.p">Drag, trim, snap and preview in real time.</span></figcaption></figure>
+      <figure class="slide" style="margin:0"><div class="window"><img src="screenshots/image03.png" width="1440" height="900" alt="Export dialog in dark theme" loading="lazy" /></div><figcaption class="cap"><b data-i18n="cap.3.t">Export without waiting</b><span data-i18n="cap.3.p">Pick format, size and quality — MP4 1080p 60 fps by default.</span></figcaption></figure>
+      <figure class="slide" style="margin:0"><div class="window"><img src="screenshots/image04.png" width="1440" height="900" alt="Settings: theme and accent colour" loading="lazy" /></div><figcaption class="cap"><b data-i18n="cap.4.t">Make it yours</b><span data-i18n="cap.4.p">Theme, accent color, font, language and window behavior.</span></figcaption></figure>
+    </div>
+    <div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow rv"><svg class="i"><use href="#i-play-fill"/></svg><span data-i18n="how.eyebrow">How it works</span></span>
+      <h2 class="title rv" style="--d:1" data-i18n="how.title">From clips to finished video in three steps</h2>
+    </div>
+    <div class="steps">
+      <div class="step rv"><h3 data-i18n="s1.t">Import</h3><p data-i18n="s1.p">Drop videos, photos and music into the window. Files stay where they are — nothing is copied.</p></div>
+      <div class="step rv" style="--d:1"><h3 data-i18n="s2.t">Edit</h3><p data-i18n="s2.p">Arrange on the timeline, split, trim, add text, transitions and filters with instant preview.</p></div>
+      <div class="step rv" style="--d:2"><h3 data-i18n="s3.t">Export</h3><p data-i18n="s3.p">Press Export and share an MP4 that is ready for YouTube, TikTok or anywhere else.</p></div>
+    </div>
+    <div class="sc-grid">
+      <div class="sc rv"><kbd>Space</kbd><span data-i18n="k.play">Play / pause</span></div>
+      <div class="sc rv" style="--d:1"><kbd>S</kbd><span data-i18n="k.split">Split at playhead</span></div>
+      <div class="sc rv" style="--d:2"><div class="kbds"><kbd>Ctrl</kbd><kbd>E</kbd></div><span data-i18n="k.export">Export video</span></div>
+      <div class="sc rv" style="--d:3"><div class="kbds"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>P</kbd></div><span data-i18n="k.palette">Command palette</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="themes">
+  <div class="wrap theme-lab">
+    <div>
+      <span class="eyebrow rv"><svg class="i"><use href="#i-palette"/></svg><span data-i18n="theme.eyebrow">Personalize</span></span>
+      <h2 class="title rv" style="--d:1" data-i18n="theme.title">Pick a color. The whole page follows.</h2>
+      <p class="lead rv" style="--d:2" data-i18n="theme.lead">Material Edit builds a full tonal palette from a single seed color — exactly like this page does right now. Try it.</p>
+      <div class="lab-card rv" style="margin-top:28px;--d:3">
+        <div class="swatches" data-swatches></div>
+        <div class="lab-row">
+          <div class="seg" id="seg-theme2" role="group"><button data-mode="light" aria-pressed="false"><svg class="i"><use href="#i-sun"/></svg><span style="margin-left:6px" data-i18n="m.light">Light</span></button><button data-mode="dark" aria-pressed="false"><svg class="i"><use href="#i-moon"/></svg><span style="margin-left:6px" data-i18n="m.dark">Dark</span></button><button data-mode="system" aria-pressed="false"><svg class="i"><use href="#i-auto"/></svg><span style="margin-left:6px" data-i18n="m.system">System</span></button></div>
+          <label class="custom" style="border:0;margin:0;padding:0"><input type="color" data-custom value="#e91e63" /><code data-seedhex>#E91E63</code></label>
+        </div>
+      </div>
+    </div>
+    <div class="fake-ui rv" style="--d:2" aria-hidden="true">
+      <div class="row"><span class="pill a">Export</span><span class="pill b">Import media</span><span class="pill c">Text</span></div>
+      <div class="row"><div class="bar p"></div><div class="bar"></div></div>
+      <div class="ph"></div>
+      <div class="clips"><i style="--w:3;--c:var(--md-primary)"></i><i style="--w:2;--c:var(--md-tertiary)"></i><i style="--w:3.4;--c:var(--md-primary)"></i><i style="--w:1.6;--c:var(--md-secondary)"></i></div>
+      <div class="clips" style="height:34px"><i style="--w:5;--c:var(--md-tertiary-container)"></i><i style="--w:3;--c:var(--md-primary-container)"></i></div>
+    </div>
+  </div>
+</section>
+
+<section id="download" class="dl">
+  <div class="wrap">
+    <div class="dl-card rv">
+      <svg class="dl-blob x" viewBox="0 0 100 100" data-shape="cookie9,sunny,cookie6" data-spin="4"><path fill="currentColor"/></svg>
+      <svg class="dl-blob y" viewBox="0 0 100 100" data-shape="flower,circle,cookie4" data-spin="-6"><path fill="currentColor"/></svg>
+      <div>
+        <h2 data-i18n="dl.title">Ready to create?</h2>
+        <p data-i18n="dl.lead">Download the installer, run it, and start editing. It’s free forever and open source.</p>
+        <div class="cta">
+          <a class="btn filled lg" id="dl-btn" href="download/Material-Edit_1.1.0_x64-setup.exe" download><svg class="i"><use href="#i-export"/></svg><span data-i18n="dl.btn">Download v1.1.0</span></a>
+          <a class="btn outline lg" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="i"><use href="#i-link"/></svg>GitHub</a>
+        </div>
+        <p class="dl-note" data-i18n="dl.note">Windows installer (.exe) · about 2 MB</p>
+      </div>
+      <div>
+        <div class="specs">
+          <div class="spec"><span data-i18n="sp.os">System</span><b>Windows 10 / 11 · x64</b></div>
+          <div class="spec"><span data-i18n="sp.ver">Version</span><b>1.1.0</b></div>
+          <div class="spec"><span data-i18n="sp.lic">License</span><b>MIT</b></div>
+          <div class="spec"><span data-i18n="sp.eng">Engine</span><b>Tauri 2 · WebView2</b></div>
+        </div>
+        <div class="code" id="code"><button class="ib" id="copy" aria-label="Copy"><svg class="i"><use href="#i-copy"/></svg></button><span>npm install
+npm run dev
+npm run build</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:20px">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow rv"><svg class="i"><use href="#i-info"/></svg><span data-i18n="faq.eyebrow">FAQ</span></span>
+      <h2 class="title rv" style="--d:1" data-i18n="faq.title">Good to know</h2>
+    </div>
+    <div class="faq">
+      <details class="rv"><summary><span data-i18n="q1">Is Material Edit really free?</span><svg class="i"><use href="#i-chev"/></svg></summary><div class="ans" data-i18n="a1">Yes. It is open source under the MIT license — no watermark, no account, no subscription.</div></details>
+      <details class="rv" style="--d:1"><summary><span data-i18n="q2">Which formats can I export?</span><svg class="i"><use href="#i-chev"/></svg></summary><div class="ans" data-i18n="a2">MP4 (H.264 + AAC) is the default at up to 4K / 60 fps. WebM is available too, and MP4 via FFmpeg if you install it.</div></details>
+      <details class="rv" style="--d:2"><summary><span data-i18n="q3">Are my media files copied or uploaded?</span><svg class="i"><use href="#i-chev"/></svg></summary><div class="ans" data-i18n="a3">Never. Projects only remember the path to your files, and everything runs locally on your computer.</div></details>
+      <details class="rv" style="--d:3"><summary><span data-i18n="q4">Does it work on macOS or Linux?</span><svg class="i"><use href="#i-chev"/></svg></summary><div class="ans" data-i18n="a4">The project is built with Tauri and can be compiled for other systems with <b>npm run build</b>, but the official installer targets Windows.</div></details>
+      <details class="rv" style="--d:4"><summary><span data-i18n="q5">How do I build it myself?</span><svg class="i"><use href="#i-chev"/></svg></summary><div class="ans" data-i18n="a5">Install Node.js and Rust, then run <b>npm install</b>, <b>npm run dev</b> and <b>npm run build</b> inside the project folder.</div></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div class="credit"><img src="src-tauri/icons/128x128.png" alt="" width="46" height="46" /><span><span data-i18n="foot.made">Crafted by</span> <b>minhtrong67</b><br /><span data-i18n="foot.ai">with the support of</span> <b>Claude</b> · Anthropic</span></div>
+      </div>
+      <div class="foot-links">
+        <a href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener"><svg class="i"><use href="#i-link"/></svg>GitHub</a>
+        <a href="#download"><svg class="i"><use href="#i-export"/></svg><span data-i18n="nav.download">Download</span></a>
+        <a href="#faq"><svg class="i"><use href="#i-info"/></svg>FAQ</a>
+      </div>
+    </div>
+    <div class="copy"><span>© 2026 minhtrong67 · MIT License</span><span data-i18n="foot.note">Material 3 Expressive · Tauri · Lucide icons</span></div>
+  </div>
+</footer>
+
+<button id="top" aria-label="Back to top" title="Back to top"><svg class="i"><use href="#i-up"/></svg></button>
+<div class="lightbox" id="lb" role="dialog" aria-label="Screenshot"><img alt="" /></div>
+
+<script>
+document.body.classList.remove('no-js');
+// Material Design 3 dynamic color (approximation).
+// Builds tonal palettes from a seed color in CIE LCH(ab) space and maps them to
+// the MD3 color roles for light and dark schemes.
+
+const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+function hexToRgb(hex) {
+  let h = String(hex || '').trim().replace('#', '');
+  if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) return null;
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+}
+
+function rgbToHex([r, g, b]) {
+  return '#' + [r, g, b].map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+}
+
+const toLinear = (c) => {
+  c /= 255;
+  return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+};
+const fromLinear = (c) => {
+  c = clamp01(c);
+  return 255 * (c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055);
+};
+
+const WHITE = [0.95047, 1.0, 1.08883];
+const fLab = (t) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116);
+const fInv = (t) => (t * t * t > 0.008856 ? t * t * t : (t - 16 / 116) / 7.787);
+
+function rgbToLch(rgb) {
+  const [r, g, b] = rgb.map(toLinear);
+  const x = (0.4124564 * r + 0.3575761 * g + 0.1804375 * b) / WHITE[0];
+  const y = 0.2126729 * r + 0.7151522 * g + 0.072175 * b;
+  const z = (0.0193339 * r + 0.119192 * g + 0.9503041 * b) / WHITE[2];
+  const fx = fLab(x), fy = fLab(y), fz = fLab(z);
+  const L = 116 * fy - 16;
+  const a = 500 * (fx - fy);
+  const bb = 200 * (fy - fz);
+  const C = Math.hypot(a, bb);
+  let h = (Math.atan2(bb, a) * 180) / Math.PI;
+  if (h < 0) h += 360;
+  return { L, C, h };
+}
+
+function lchToLinear(L, C, h) {
+  const a = C * Math.cos((h * Math.PI) / 180);
+  const b = C * Math.sin((h * Math.PI) / 180);
+  const fy = (L + 16) / 116;
+  const fx = fy + a / 500;
+  const fz = fy - b / 200;
+  const X = fInv(fx) * WHITE[0];
+  const Y = L > 8 ? Math.pow(fy, 3) : L / 903.3;
+  const Z = fInv(fz) * WHITE[2];
+  return [
+    3.2404542 * X - 1.5371385 * Y - 0.4985314 * Z,
+    -0.969266 * X + 1.8760108 * Y + 0.041556 * Z,
+    0.0556434 * X - 0.2040259 * Y + 1.0572252 * Z,
+  ];
+}
+
+const inGamut = (v) => v.every((c) => c >= -0.0005 && c <= 1.0005);
+
+/** Color at lightness `tone` (0-100) with the highest chroma ≤ `chroma` that fits sRGB. */
+function tone(hue, chroma, t) {
+  if (t <= 0) return '#000000';
+  if (t >= 100) return '#ffffff';
+  let lo = 0, hi = chroma;
+  let lin = lchToLinear(t, hi, hue);
+  if (!inGamut(lin)) {
+    for (let i = 0; i < 24; i++) {
+      const mid = (lo + hi) / 2;
+      if (inGamut(lchToLinear(t, mid, hue))) lo = mid;
+      else hi = mid;
     }
-    document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.l)));
-    let saved = null; try { saved = localStorage.getItem('me.lang'); } catch (e) { /* ignore */ }
-    setLang(saved || ((navigator.language || 'en').toLowerCase().startsWith('vi') ? 'vi' : 'en'));
+    lin = lchToLinear(t, lo, hue);
+  }
+  return rgbToHex(lin.map(fromLinear));
+}
 
-    const bar = document.getElementById('bar');
-    addEventListener('scroll', () => bar.classList.toggle('scrolled', scrollY > 8), { passive: true });
-    const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 }) : null;
-    document.querySelectorAll('.rv').forEach((el) => (io ? io.observe(el) : el.classList.add('in')));
-  </script>
+/** Material Design color palette (the "500" tones) + the app's baseline seeds. `vi` is the Vietnamese name. */
+const SWATCHES = [
+  { name: 'Baseline', vi: 'Mặc định', hex: '#6750A4' },
+  { name: 'Red', vi: 'Đỏ', hex: '#F44336' },
+  { name: 'Pink', vi: 'Hồng', hex: '#E91E63' },
+  { name: 'Purple', vi: 'Tím', hex: '#9C27B0' },
+  { name: 'Deep purple', vi: 'Tím đậm', hex: '#673AB7' },
+  { name: 'Indigo', vi: 'Chàm', hex: '#3F51B5' },
+  { name: 'Blue', vi: 'Xanh dương', hex: '#2196F3' },
+  { name: 'Soft blue', vi: 'Xanh nhạt', hex: '#769CDF' },
+  { name: 'Light blue', vi: 'Xanh da trời', hex: '#03A9F4' },
+  { name: 'Cyan', vi: 'Lục lam', hex: '#00BCD4' },
+  { name: 'Teal', vi: 'Xanh mòng két', hex: '#009688' },
+  { name: 'Green', vi: 'Xanh lá', hex: '#4CAF50' },
+  { name: 'Light green', vi: 'Xanh lá nhạt', hex: '#8BC34A' },
+  { name: 'Lime', vi: 'Chanh', hex: '#CDDC39' },
+  { name: 'Yellow', vi: 'Vàng', hex: '#FFEB3B' },
+  { name: 'Amber', vi: 'Hổ phách', hex: '#FFC107' },
+  { name: 'Orange', vi: 'Cam', hex: '#FF9800' },
+  { name: 'Deep orange', vi: 'Cam đậm', hex: '#FF5722' },
+  { name: 'Brown', vi: 'Nâu', hex: '#795548' },
+  { name: 'Blue grey', vi: 'Xám xanh', hex: '#607D8B' },
+];
+
+const SYS = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
+/** 10 common UI fonts. Fonts that are not installed fall back to the system font. */
+const FONTS = [
+  { id: 'system', name: 'System', vi: 'Mặc định hệ thống', stack: SYS },
+  { id: 'segoe', name: 'Segoe UI', stack: `"Segoe UI", ${SYS}` },
+  { id: 'roboto', name: 'Roboto', stack: `Roboto, ${SYS}` },
+  { id: 'arial', name: 'Arial', stack: `Arial, ${SYS}` },
+  { id: 'helvetica', name: 'Helvetica Neue', stack: `"Helvetica Neue", Helvetica, ${SYS}` },
+  { id: 'verdana', name: 'Verdana', stack: `Verdana, ${SYS}` },
+  { id: 'tahoma', name: 'Tahoma', stack: `Tahoma, ${SYS}` },
+  { id: 'trebuchet', name: 'Trebuchet MS', stack: `"Trebuchet MS", ${SYS}` },
+  { id: 'calibri', name: 'Calibri', stack: `Calibri, Carlito, ${SYS}` },
+  { id: 'georgia', name: 'Georgia', stack: `Georgia, "Times New Roman", serif` },
+];
+
+/** Applies the chosen UI font (id from FONTS) to the whole app. */
+function applyFont(id) {
+  const f = FONTS.find((x) => x.id === id) || FONTS[0];
+  document.documentElement.style.setProperty('--font', f.stack);
+}
+
+/** Returns a { cssVar: color } map for the given seed and scheme. */
+function buildScheme(seedHex, dark) {
+  const rgb = hexToRgb(seedHex) || hexToRgb('#6750A4');
+  const { h: hue, C } = rgbToLch(rgb);
+  const pc = Math.min(48, Math.max(C, 14)); // muted seeds (brown, grey…) stay muted
+  const vib = Math.min(88, Math.max(C, 14)); // Expressive: primary keeps far more chroma (more vibrant containers)
+  const P = (t) => tone(hue, vib, t);
+  const S = (t) => tone(hue, pc / 3, t);
+  const T = (t) => tone((hue + 60) % 360, Math.max(pc / 2, vib / 2.4), t);
+  const N = (t) => tone(hue, pc / 12, t);
+  const NV = (t) => tone(hue, pc / 6, t);
+
+  const m = dark
+    ? {
+        primary: P(80), 'on-primary': P(20), 'primary-container': P(30), 'on-primary-container': P(90),
+        secondary: S(80), 'on-secondary': S(20), 'secondary-container': S(30), 'on-secondary-container': S(90),
+        tertiary: T(80), 'on-tertiary': T(20), 'tertiary-container': T(30), 'on-tertiary-container': T(90),
+        error: '#F2B8B5', 'on-error': '#601410', 'error-container': '#8C1D18', 'on-error-container': '#F9DEDC',
+        background: N(6), 'on-background': N(90),
+        surface: N(6), 'on-surface': N(90), 'surface-variant': NV(30), 'on-surface-variant': NV(80),
+        outline: NV(60), 'outline-variant': NV(30),
+        'surface-container-lowest': N(4), 'surface-container-low': N(10), 'surface-container': N(12),
+        'surface-container-high': N(17), 'surface-container-highest': N(22),
+        'inverse-surface': N(90), 'inverse-on-surface': N(20), 'inverse-primary': P(40),
+      }
+    : {
+        primary: P(40), 'on-primary': '#ffffff', 'primary-container': P(90), 'on-primary-container': P(10),
+        secondary: S(40), 'on-secondary': '#ffffff', 'secondary-container': S(90), 'on-secondary-container': S(10),
+        tertiary: T(40), 'on-tertiary': '#ffffff', 'tertiary-container': T(90), 'on-tertiary-container': T(10),
+        error: '#B3261E', 'on-error': '#ffffff', 'error-container': '#F9DEDC', 'on-error-container': '#410E0B',
+        background: N(98), 'on-background': N(10),
+        surface: N(98), 'on-surface': N(10), 'surface-variant': NV(90), 'on-surface-variant': NV(30),
+        outline: NV(50), 'outline-variant': NV(80),
+        'surface-container-lowest': '#ffffff', 'surface-container-low': N(96), 'surface-container': N(94),
+        'surface-container-high': N(92), 'surface-container-highest': N(90),
+        'inverse-surface': N(20), 'inverse-on-surface': N(95), 'inverse-primary': P(80),
+      };
+  return m;
+}
+
+const mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+function resolveDark(mode) {
+  if (mode === 'dark') return true;
+  if (mode === 'light') return false;
+  return !!(mq && mq.matches);
+}
+
+/** Applies mode ('light' | 'dark' | 'system') and seed color to the document. */
+function applyTheme(mode, seed) {
+  const dark = resolveDark(mode);
+  const root = document.documentElement;
+  const scheme = buildScheme(seed, dark);
+  for (const [k, v] of Object.entries(scheme)) root.style.setProperty('--md-' + k, v);
+  root.dataset.theme = dark ? 'dark' : 'light';
+  root.style.colorScheme = dark ? 'dark' : 'light';
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = scheme.surface;
+}
+
+/** Re-applies the theme when the OS scheme changes (only matters in 'system' mode). */
+function watchSystemTheme(cb) {
+  if (!mq) return;
+  const h = () => cb();
+  if (mq.addEventListener) mq.addEventListener('change', h);
+  else if (mq.addListener) mq.addListener(h);
+}
+
+// Material 3 Expressive shape library (polar approximations) + a tiny morph helper.
+// Every shape is sampled at N points so any two shapes can be interpolated smoothly.
+const N = 96;
+const TAU = Math.PI * 2;
+
+const poly = (k, a) => (th) => 1 + a * Math.cos(k * th); // scalloped "cookie" / "burst" family
+const squircle = (n) => (th) => Math.pow(Math.pow(Math.abs(Math.cos(th)), n) + Math.pow(Math.abs(Math.sin(th)), n), -1 / n);
+
+const SHAPES = {
+  circle: () => 1,
+  squircle: squircle(4.2),
+  cookie9: poly(9, 0.075),
+  cookie6: poly(6, 0.105),
+  cookie4: (th) => 0.9 + 0.14 * Math.pow(Math.abs(Math.cos(2 * th)), 0.8),
+  sunny: poly(8, 0.11),
+  burst: poly(12, 0.06),
+  clover: (th) => 0.78 + 0.22 * Math.abs(Math.cos(2 * th)),
+  flower: poly(5, 0.13),
+  pentagon: (th) => Math.cos(Math.PI / 5) / Math.cos(((th + Math.PI / 2) % (TAU / 5)) - Math.PI / 5) * 1.0,
+};
+
+const cache = new Map();
+/** Radii (0..~1.2) for a named shape, N samples. */
+function radii(name) {
+  if (!cache.has(name)) {
+    const f = SHAPES[name] || SHAPES.circle;
+    const r = [];
+    for (let i = 0; i < N; i++) r.push(f((i / N) * TAU - Math.PI / 2));
+    const m = Math.max(...r);
+    cache.set(name, r.map((v) => v / m));
+  }
+  return cache.get(name);
+}
+
+/** SVG path data for radii `r`, centred at (c,c) with outer radius `rad`. Uses a smooth closed curve. */
+function pathFor(r, c = 50, rad = 48) {
+  const pts = r.map((v, i) => {
+    const th = (i / N) * TAU - Math.PI / 2;
+    return [c + Math.cos(th) * v * rad, c + Math.sin(th) * v * rad];
+  });
+  // Catmull-Rom → cubic Bézier for a smooth outline
+  const n = pts.length;
+  let d = `M${pts[0][0].toFixed(2)} ${pts[0][1].toFixed(2)}`;
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += `C${c1[0].toFixed(2)} ${c1[1].toFixed(2)} ${c2[0].toFixed(2)} ${c2[1].toFixed(2)} ${p2[0].toFixed(2)} ${p2[1].toFixed(2)}`;
+  }
+  return d + 'Z';
+}
+
+const lerpR = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+/**
+ * Continuously morphs `path` (an SVG <path>) through `names`. Returns a stop() function.
+ * Pass { hold, morph } in ms. With reduced motion the shape just stays still.
+ */
+function morphLoop(path, names, { hold = 1400, morph = 900, spin = 0, svg = null } = {}) {
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let i = 0, raf = 0, stopped = false;
+  path.setAttribute('d', pathFor(radii(names[0])));
+  if (reduce || names.length < 2) return () => {};
+  let t0 = performance.now();
+  const step = (now) => {
+    if (stopped) return;
+    const from = radii(names[i % names.length]);
+    const to = radii(names[(i + 1) % names.length]);
+    const el = now - t0;
+    if (el < hold) { /* resting */ } else if (el < hold + morph) {
+      path.setAttribute('d', pathFor(lerpR(from, to, ease((el - hold) / morph))));
+    } else { i++; t0 = now; path.setAttribute('d', pathFor(to)); }
+    if (spin && svg) svg.style.transform = `rotate(${(now / 1000) * spin}deg)`;
+    raf = requestAnimationFrame(step);
+  };
+  raf = requestAnimationFrame(step);
+  const vis = () => { if (document.hidden) cancelAnimationFrame(raf); else if (!stopped) { t0 = performance.now(); raf = requestAnimationFrame(step); } };
+  document.addEventListener('visibilitychange', vis);
+  return () => { stopped = true; cancelAnimationFrame(raf); document.removeEventListener('visibilitychange', vis); };
+}
+
+/** A ready-made <svg> element showing a (morphing) shape filled with currentColor. */
+function shapeSvg(names, opts = {}) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('aria-hidden', 'true');
+  const p = document.createElementNS(ns, 'path');
+  p.setAttribute('fill', 'currentColor');
+  svg.append(p);
+  const stop = morphLoop(p, names, { ...opts, svg: opts.spin ? svg : null });
+  return { svg, stop };
+}
+
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LS = { get: (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+
+/* ---------- i18n ---------- */
+const T = {
+en: {
+skip:'Skip to content','nav.features':'Features','nav.showcase':'Screenshots','nav.how':'How it works','nav.themes':'Colors','nav.download':'Download','nav.faq':'FAQ','nav.get':'Get it',
+'pop.title':'Accent color','pop.custom':'Custom color',
+'hero.eyebrow':'Free · Open source · Windows','hero.h1':'Edit videos <span class="hl">with joy.</span>','hero.lead':'A fast, friendly desktop video editor wrapped in Material 3 Expressive. Cut, layer, style and export in minutes — no sign-up, no watermark.','hero.cta':'Download for Windows','hero.src':'View source',
+'chip.fast':'Faster-than-real-time export','chip.free':'100% free · MIT','fc.1':'4K · 60 fps','fc.2':'Smooth transitions',
+'feat.eyebrow':'Features','feat.title':'Everything you need to tell your story','feat.lead':'A focused toolset that stays out of your way — powerful when you need it, calm when you don’t.',
+'f.timeline.t':'Multi-track timeline','f.timeline.p':'Text, overlay, main and audio tracks with snapping, ripple edits, rubber-band selection, zoom and a one-tap Fit button.',
+'f.export.t':'Fast, RAM-safe export','f.export.p':'MP4 up to 4K at 60 fps, written straight to disk. Memory stays flat on long videos.',
+'f.fx.t':'Filters & effects','f.fx.p':'Tune brightness, contrast, blur and more — or apply a look in one click.',
+'f.tr.t':'Transitions','f.tr.p':'Fade, slide, wipe, zoom and dip — previewed live and exported exactly.',
+'f.text.t':'Text that pops','f.text.p':'Presets, strokes, backgrounds and animated entrances.',
+'f.theme.t':'Your colors, your fonts','f.theme.p':'Light, dark or system, any accent from the Material palette, 10 UI fonts and three text sizes.',
+'f.keys.t':'Keyboard-first','f.keys.p':'Every action has a shortcut — and a command palette finds the rest.',
+'show.eyebrow':'Screenshots','show.title':'A tour in four screens','tab.1':'Projects','tab.2':'Editor','tab.3':'Export','tab.4':'Settings',
+'cap.1.t':'Your projects, always at hand','cap.1.p':'Grid or list, search, sort — autosave keeps everything safe.',
+'cap.2.t':'A timeline that feels natural','cap.2.p':'Drag, trim, snap and preview in real time.',
+'cap.3.t':'Export without waiting','cap.3.p':'Pick format, size and quality — MP4 1080p 60 fps by default.',
+'cap.4.t':'Make it yours','cap.4.p':'Theme, accent color, font, language and window behavior.',
+'how.eyebrow':'How it works','how.title':'From clips to finished video in three steps',
+'s1.t':'Import','s1.p':'Drop videos, photos and music into the window. Files stay where they are — nothing is copied.',
+'s2.t':'Edit','s2.p':'Arrange on the timeline, split, trim, add text, transitions and filters with instant preview.',
+'s3.t':'Export','s3.p':'Press Export and share an MP4 that is ready for YouTube, TikTok or anywhere else.',
+'k.play':'Play / pause','k.split':'Split at playhead','k.export':'Export video','k.palette':'Command palette',
+'theme.eyebrow':'Personalize','theme.title':'Pick a color. The whole page follows.','theme.lead':'Material Edit builds a full tonal palette from a single seed color — exactly like this page does right now. Try it.',
+'m.light':'Light','m.dark':'Dark','m.system':'System',
+'dl.title':'Ready to create?','dl.lead':'Download the installer, run it, and start editing. It’s free forever and open source.','dl.btn':'Download v1.1.0','dl.note':'Windows installer (.exe) · about 2 MB',
+'sp.os':'System','sp.ver':'Version','sp.lic':'License','sp.eng':'Engine',
+'faq.eyebrow':'FAQ','faq.title':'Good to know',
+q1:'Is Material Edit really free?',a1:'Yes. It is open source under the MIT license — no watermark, no account, no subscription.',
+q2:'Which formats can I export?',a2:'MP4 (H.264 + AAC) is the default at up to 4K / 60 fps. WebM is available too, and MP4 via FFmpeg if you install it.',
+q3:'Are my media files copied or uploaded?',a3:'Never. Projects only remember the path to your files, and everything runs locally on your computer.',
+q4:'Does it work on macOS or Linux?',a4:'The project is built with Tauri and can be compiled for other systems with <b>npm run build</b>, but the official installer targets Windows.',
+q5:'How do I build it myself?',a5:'Install Node.js and Rust, then run <b>npm install</b>, <b>npm run dev</b> and <b>npm run build</b> inside the project folder.',
+'foot.made':'Crafted by','foot.ai':'with the support of','foot.note':'Material 3 Expressive · Tauri · Lucide icons',
+'title':'Material Edit — Free video editor for Windows · Material 3 Expressive','copied':'Copied!','top':'Back to top'
+},
+vi: {
+skip:'Bỏ qua đến nội dung','nav.features':'Tính năng','nav.showcase':'Hình ảnh','nav.how':'Cách dùng','nav.themes':'Màu sắc','nav.download':'Tải về','nav.faq':'Hỏi đáp','nav.get':'Tải ngay',
+'pop.title':'Màu chủ đề','pop.custom':'Màu tùy chọn',
+'hero.eyebrow':'Miễn phí · Mã nguồn mở · Windows','hero.h1':'Dựng video <span class="hl">thật vui.</span>','hero.lead':'Trình dựng video máy tính nhanh, thân thiện trong giao diện Material 3 Expressive. Cắt, ghép, trang trí và xuất video chỉ trong vài phút — không cần đăng ký, không watermark.','hero.cta':'Tải cho Windows','hero.src':'Xem mã nguồn',
+'chip.fast':'Xuất nhanh hơn thời gian thực','chip.free':'Miễn phí 100% · MIT','fc.1':'4K · 60 fps','fc.2':'Chuyển cảnh mượt',
+'feat.eyebrow':'Tính năng','feat.title':'Mọi thứ bạn cần để kể câu chuyện của mình','feat.lead':'Bộ công cụ gọn gàng, không vướng víu — mạnh khi cần, nhẹ nhàng khi không.',
+'f.timeline.t':'Timeline nhiều track','f.timeline.p':'Track văn bản, lớp phủ, chính và âm thanh với hít dính, chỉnh ripple, quét chọn, thu phóng và nút Vừa khít một chạm.',
+'f.export.t':'Xuất nhanh, tiết kiệm RAM','f.export.p':'MP4 đến 4K 60 fps, ghi thẳng xuống ổ đĩa. Bộ nhớ luôn ổn định dù video dài.',
+'f.fx.t':'Bộ lọc & hiệu ứng','f.fx.p':'Chỉnh độ sáng, tương phản, làm mờ… hoặc áp dụng một phong cách chỉ bằng một cú nhấp.',
+'f.tr.t':'Chuyển cảnh','f.tr.p':'Mờ dần, trượt, quét, thu phóng, chìm — xem trước trực tiếp và xuất đúng như vậy.',
+'f.text.t':'Văn bản nổi bật','f.text.p':'Mẫu dựng sẵn, viền chữ, nền và hiệu ứng xuất hiện.',
+'f.theme.t':'Màu của bạn, phông của bạn','f.theme.p':'Sáng, tối hoặc theo hệ thống, mọi màu trong bảng Material, 10 phông giao diện và ba cỡ chữ.',
+'f.keys.t':'Ưu tiên bàn phím','f.keys.p':'Mỗi thao tác đều có phím tắt — còn bảng lệnh sẽ tìm giúp phần còn lại.',
+'show.eyebrow':'Hình ảnh','show.title':'Tham quan qua bốn màn hình','tab.1':'Dự án','tab.2':'Trình chỉnh sửa','tab.3':'Xuất video','tab.4':'Cài đặt',
+'cap.1.t':'Dự án luôn trong tầm tay','cap.1.p':'Dạng lưới hoặc danh sách, tìm kiếm, sắp xếp — tự động lưu để không mất gì.',
+'cap.2.t':'Timeline tự nhiên','cap.2.p':'Kéo, cắt, hít dính và xem trước theo thời gian thực.',
+'cap.3.t':'Xuất không cần chờ','cap.3.p':'Chọn định dạng, kích thước, chất lượng — mặc định MP4 1080p 60 fps.',
+'cap.4.t':'Cá nhân hóa theo ý bạn','cap.4.p':'Giao diện, màu chủ đề, phông chữ, ngôn ngữ và cách mở cửa sổ.',
+'how.eyebrow':'Cách dùng','how.title':'Từ các đoạn clip đến video hoàn chỉnh trong ba bước',
+'s1.t':'Nhập','s1.p':'Kéo thả video, ảnh và nhạc vào cửa sổ. Tệp giữ nguyên vị trí — không bị sao chép.',
+'s2.t':'Chỉnh sửa','s2.p':'Sắp xếp trên timeline, cắt, tỉa, thêm chữ, chuyển cảnh và bộ lọc với xem trước tức thì.',
+'s3.t':'Xuất','s3.p':'Nhấn Xuất và chia sẻ video MP4 sẵn sàng cho YouTube, TikTok hay bất cứ đâu.',
+'k.play':'Phát / tạm dừng','k.split':'Cắt tại đầu phát','k.export':'Xuất video','k.palette':'Bảng lệnh',
+'theme.eyebrow':'Cá nhân hóa','theme.title':'Chọn một màu. Cả trang sẽ đổi theo.','theme.lead':'Material Edit tạo cả bảng màu từ một màu gốc — giống hệt cách trang này đang làm. Thử ngay nhé.',
+'m.light':'Sáng','m.dark':'Tối','m.system':'Hệ thống',
+'dl.title':'Sẵn sàng sáng tạo?','dl.lead':'Tải bộ cài, chạy và bắt đầu dựng video. Miễn phí mãi mãi và mã nguồn mở.','dl.btn':'Tải v1.1.0','dl.note':'Bộ cài Windows (.exe) · khoảng 2 MB',
+'sp.os':'Hệ điều hành','sp.ver':'Phiên bản','sp.lic':'Giấy phép','sp.eng':'Nền tảng',
+'faq.eyebrow':'Hỏi đáp','faq.title':'Những điều nên biết',
+q1:'Material Edit có thực sự miễn phí?',a1:'Có. Ứng dụng mã nguồn mở theo giấy phép MIT — không watermark, không tài khoản, không đăng ký trả phí.',
+q2:'Tôi có thể xuất những định dạng nào?',a2:'Mặc định MP4 (H.264 + AAC) đến 4K / 60 fps. Có cả WebM, và MP4 qua FFmpeg nếu bạn cài thêm.',
+q3:'Tệp của tôi có bị sao chép hay tải lên không?',a3:'Không bao giờ. Dự án chỉ nhớ đường dẫn tới tệp và mọi thứ chạy ngay trên máy của bạn.',
+q4:'Có chạy trên macOS hoặc Linux không?',a4:'Dự án xây bằng Tauri nên có thể biên dịch cho hệ khác bằng <b>npm run build</b>, nhưng bộ cài chính thức dành cho Windows.',
+q5:'Làm sao để tự build?',a5:'Cài Node.js và Rust, rồi chạy <b>npm install</b>, <b>npm run dev</b> và <b>npm run build</b> trong thư mục dự án.',
+'foot.made':'Thực hiện bởi','foot.ai':'với sự hỗ trợ của','foot.note':'Material 3 Expressive · Tauri · Lucide icons',
+'title':'Material Edit — Trình dựng video miễn phí cho Windows · Material 3 Expressive','copied':'Đã sao chép!','top':'Lên đầu trang'
+}};
+let lang = LS.get('me.lang', '') || (navigator.language || 'en').toLowerCase().startsWith('vi') ? 'vi' : 'en';
+if (LS.get('me.lang', '')) lang = LS.get('me.lang');
+function setLang(l) {
+  lang = l; LS.set('me.lang', l);
+  const d = T[l];
+  document.documentElement.lang = l;
+  $$('[data-i18n]').forEach((e) => { const v = d[e.dataset.i18n]; if (v != null) e.innerHTML = v; });
+  $$('[data-i18n-html]').forEach((e) => { const v = d[e.dataset.i18nHtml]; if (v != null) e.innerHTML = v; });
+  document.title = d.title;
+  $('#top').title = d.top; $('#top').setAttribute('aria-label', d.top);
+  const desc = l === 'vi' ? 'Material Edit là trình dựng video máy tính miễn phí, mã nguồn mở, giao diện Material 3 Expressive: timeline nhiều track, chuyển cảnh, bộ lọc, văn bản, xuất MP4 nhanh đến 4K, hỗ trợ tiếng Việt và tiếng Anh.' : 'Material Edit is a free, open-source desktop video editor with a Material 3 Expressive design: multi-track timeline, transitions, filters, text, fast MP4 export up to 4K, English & Tiếng Việt.';
+  $('meta[name=description]').content = desc; $('meta[property="og:description"]').content = desc;
+  $$('[data-lang]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === l));
+}
+
+/* ---------- theme ---------- */
+let mode = LS.get('me.mode', 'system'), seed = LS.get('me.seed', '#E91E63');
+const mq = matchMedia('(prefers-color-scheme: dark)');
+function applyAll(animate) {
+  const root = document.documentElement;
+  if (animate && !reduce) { root.style.setProperty('transition', 'none'); }
+  applyTheme(mode, seed);
+  $$('[data-mode]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.mode === mode));
+  $$('[data-swatches] .sw').forEach((b) => b.setAttribute('aria-pressed', b.dataset.hex.toLowerCase() === seed.toLowerCase()));
+  $$('[data-custom]').forEach((i) => (i.value = seed.toLowerCase()));
+  $$('[data-seedhex]').forEach((c) => (c.textContent = seed.toUpperCase()));
+}
+function buildSwatches() {
+  $$('[data-swatches]').forEach((box) => {
+    box.replaceChildren(...SWATCHES.map((s) => {
+      const b = document.createElement('button'); b.className = 'sw'; b.type = 'button'; b.dataset.hex = s.hex; b.style.setProperty('--c', s.hex);
+      b.title = s.name; b.setAttribute('aria-label', s.name); b.setAttribute('aria-pressed', 'false');
+      b.innerHTML = '<svg class="i"><use href="#i-check"/></svg>'; b.onclick = () => { seed = s.hex; LS.set('me.seed', seed); applyAll(); }; return b;
+    }));
+  });
+  const mini = $('[data-mini]');
+  if (mini) mini.replaceChildren(...SWATCHES.slice(0, 10).map((s) => { const i = document.createElement('i'); i.style.setProperty('--c', s.hex); return i; }));
+}
+$$('[data-mode]').forEach((b) => b.addEventListener('click', () => { mode = b.dataset.mode; LS.set('me.mode', mode); applyAll(); }));
+$$('[data-lang]').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)));
+$$('[data-custom]').forEach((i) => i.addEventListener('input', () => { seed = i.value; LS.set('me.seed', seed); applyAll(); }));
+mq.addEventListener && mq.addEventListener('change', () => mode === 'system' && applyAll());
+
+/* popover */
+const pop = $('#pop'), pbtn = $('#btn-colors');
+const togglePop = (v) => { const o = v ?? !pop.classList.contains('open'); pop.classList.toggle('open', o); pbtn.setAttribute('aria-expanded', o); pbtn.classList.toggle('on', o); };
+pbtn.onclick = (e) => { e.stopPropagation(); togglePop(); };
+document.addEventListener('click', (e) => { if (!pop.contains(e.target)) togglePop(false); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { togglePop(false); closeSheet(); lb.classList.remove('on'); } });
+
+/* ---------- mobile sheet ---------- */
+const sheet = $('#sheet');
+const openSheet = () => { sheet.classList.add('on'); sheet.setAttribute('aria-hidden', 'false'); };
+function closeSheet() { sheet.classList.remove('on'); sheet.setAttribute('aria-hidden', 'true'); }
+$('#btn-burger').onclick = openSheet; $('#sheet-close').onclick = closeSheet;
+sheet.addEventListener('click', (e) => { if (e.target === sheet || e.target.closest('a')) closeSheet(); });
+
+/* ---------- smooth scroll + active link ---------- */
+$$('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
+  const id = a.getAttribute('href'); if (id.length < 2) return;
+  const t = document.querySelector(id); if (!t) return;
+  e.preventDefault();
+  t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  history.replaceState(null, '', id);
+}));
+const secs = ['features', 'showcase', 'how', 'themes', 'download', 'faq'].map((id) => document.getElementById(id));
+const links = $$('.links a');
+const spy = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) links.forEach((l) => l.classList.toggle('on', l.getAttribute('href') === '#' + en.target.id)); }), { rootMargin: '-45% 0px -50% 0px' });
+secs.forEach((s) => s && spy.observe(s));
+
+/* ---------- scroll: progress, top button, hide nav ---------- */
+const bar = $('#progress i'), topBtn = $('#top'), nav = $('#nav');
+let lastY = 0, ticking = false;
+function onScroll() {
+  const y = scrollY, h = document.documentElement.scrollHeight - innerHeight;
+  bar.style.transform = `scaleX(${h > 0 ? y / h : 0})`;
+  topBtn.classList.toggle('on', y > 700);
+  nav.classList.toggle('hide', y > lastY + 6 && y > 400 && !pop.classList.contains('open'));
+  if (y < lastY - 6 || y < 400) nav.classList.remove('hide');
+  lastY = y; ticking = false;
+}
+addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+topBtn.onclick = () => scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+
+/* ---------- reveal ---------- */
+const rv = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { en.target.classList.add('in'); rv.unobserve(en.target); } }), { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+$$('.rv').forEach((e) => rv.observe(e));
+
+/* ---------- ripple + spotlight + tilt ---------- */
+document.addEventListener('pointerdown', (e) => {
+  const h = e.target.closest('.btn, .ib'); if (!h || reduce) return;
+  const r = h.getBoundingClientRect(), s = Math.max(r.width, r.height) * 2, d = document.createElement('span');
+  d.className = 'rip'; d.style.cssText = `width:${s}px;height:${s}px;left:${e.clientX - r.left - s / 2}px;top:${e.clientY - r.top - s / 2}px`;
+  h.append(d); setTimeout(() => d.remove(), 650);
+});
+$$('.card').forEach((c) => c.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); }));
+const tilt = $('#tilt');
+if (tilt && !reduce && matchMedia('(hover:hover) and (min-width:1021px)').matches) {
+  const w = $('.window', tilt);
+  tilt.addEventListener('pointermove', (e) => { const r = tilt.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; w.style.transform = `rotateY(${-9 + x * 10}deg) rotateX(${4 - y * 8}deg)`; });
+  tilt.addEventListener('pointerleave', () => (w.style.transform = ''));
+}
+addEventListener('scroll', () => { if (reduce) return; const y = scrollY; $$('.blobs svg').forEach((s, i) => { s.style.translate = `0 ${y * (.05 + i * .035)}px`; }); }, { passive: true });
+
+/* ---------- showcase ---------- */
+const tabs = $$('#tabs button'), slides = $$('.slide'), dots = $$('#dots i');
+let cur = 0, timer;
+function go(i) {
+  cur = (i + slides.length) % slides.length;
+  slides.forEach((s, k) => s.classList.toggle('on', k === cur));
+  tabs.forEach((t, k) => t.setAttribute('aria-selected', k === cur));
+  dots.forEach((d, k) => d.classList.toggle('on', k === cur));
+}
+tabs.forEach((t, k) => t.onclick = () => { go(k); auto(); });
+$('#prev').onclick = () => { go(cur - 1); auto(); }; $('#next').onclick = () => { go(cur + 1); auto(); };
+dots.forEach((d, k) => (d.onclick = () => { go(k); auto(); }));
+function auto() { clearInterval(timer); if (!reduce) timer = setInterval(() => { if (!document.hidden && !lb.classList.contains('on')) go(cur + 1); }, 6500); }
+const lb = $('#lb');
+$$('.slide img').forEach((im) => im.addEventListener('click', () => { $('img', lb).src = im.src; $('img', lb).alt = im.alt; lb.classList.add('on'); }));
+lb.onclick = () => lb.classList.remove('on');
+$('#stage').addEventListener('mouseenter', () => clearInterval(timer)); $('#stage').addEventListener('mouseleave', auto);
+let sx = null; $('#stage').addEventListener('touchstart', (e) => (sx = e.touches[0].clientX), { passive: true });
+$('#stage').addEventListener('touchend', (e) => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) { go(cur + (dx < 0 ? 1 : -1)); auto(); } sx = null; });
+const showObs = new IntersectionObserver((es) => es.forEach((en) => en.isIntersecting ? auto() : clearInterval(timer)), { threshold: .2 });
+showObs.observe($('#showcase'));
+
+/* ---------- marquee ---------- */
+const words = ['Timeline', 'Transitions', 'Filters', 'Text', '4K export', 'Dark mode', 'EN · VI', 'Open source', 'Material 3 Expressive'];
+const mk = () => words.map((w) => `<span>${w}<svg class="i" viewBox="0 0 24 24"><use href="#i-sparkles"/></svg></span>`).join('');
+$('#marq').innerHTML = mk() + mk();
+
+/* ---------- copy ---------- */
+$('#copy').onclick = async () => {
+  try { await navigator.clipboard.writeText('npm install\nnpm run dev\nnpm run build'); const b = $('#copy'); b.innerHTML = '<svg class="i"><use href="#i-check"/></svg>'; b.title = T[lang].copied; setTimeout(() => (b.innerHTML = '<svg class="i"><use href="#i-copy"/></svg>'), 1600); } catch {}
+};
+
+/* ---------- morphing shapes ---------- */
+$$('svg[data-shape]').forEach((svg) => {
+  const p = $('path', svg), names = svg.dataset.shape.split(',');
+  const stop = morphLoop(p, names, { hold: 2400, morph: 1200, spin: +svg.dataset.spin || 0, svg });
+  const io = new IntersectionObserver(([en]) => { svg.dataset.vis = en.isIntersecting; }); io.observe(svg);
+});
+
+buildSwatches();
+setLang(lang);
+applyAll();
+onScroll();
+})();
+</script>
 </body>
 </html>

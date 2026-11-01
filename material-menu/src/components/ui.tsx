@@ -56,7 +56,7 @@ export function Button({ label, icon, variant = 'filled', size = 'md', onClick, 
       type={type} disabled={disabled || loading} onClick={onClick} onPointerDown={ripple}
       className={cx('sl press inline-flex shrink-0 items-center justify-center font-medium tracking-[.01em] disabled:pointer-events-none disabled:opacity-40', h, VARIANT[variant], className)}
     >
-      {loading ? <span className="h-[1.1em] w-[1.1em] rounded-full border-2 border-current border-t-transparent" style={{ animation: 'spin .7s linear infinite' }} /> : icon}
+      {loading ? <Loader size={18} /> : icon}
       <span>{label}</span>
     </button>
   )
@@ -125,13 +125,13 @@ export function Switch({ checked, onChange, label, disabled }: { checked: boolea
   return (
     <button
       type="button" role="switch" aria-checked={checked} aria-label={label} disabled={disabled} onClick={() => onChange(!checked)}
-      className={cx('group relative h-8 w-[52px] shrink-0 rounded-full border-2 transition-colors duration-300 disabled:opacity-40', checked ? 'border-primary bg-primary' : 'border-outline bg-surface-container-highest')}
+      className={cx('group relative h-8 w-[52px] shrink-0 rounded-full border-2 transition-colors duration-200 disabled:opacity-40', checked ? 'border-primary bg-primary' : 'border-outline bg-surface-container-highest')}
     >
       <span
-        className={cx('absolute top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full transition-all duration-300 ease-spring group-active:h-7 group-active:w-7',
-          checked ? 'left-[22px] h-6 w-6 bg-on-primary group-active:left-[18px]' : 'left-[4px] h-4 w-4 bg-outline group-active:left-[3px]')}
+        className={cx('absolute left-0 top-1/2 -mt-3 flex h-6 w-6 items-center justify-center rounded-full transition-transform duration-300 ease-spring will-change-transform',
+          checked ? 'translate-x-[20px] scale-100 bg-on-primary group-active:scale-[1.15]' : 'translate-x-0 scale-[.67] bg-outline group-active:scale-[.85]')}
       >
-        <Check size={14} strokeWidth={3} className={cx('text-primary transition-all duration-300', checked ? 'scale-100 opacity-100' : 'scale-0 opacity-0')} />
+        <Check size={14} strokeWidth={3} className={cx('text-primary transition-opacity duration-200', checked ? 'opacity-100' : 'opacity-0')} />
       </span>
     </button>
   )
@@ -265,7 +265,7 @@ export function Dialog({ open, onClose, icon, title, children, actions, tone = '
   useEsc(open, onClose)
   if (!mounted) return null
   return createPortal(
-    <div className={cx('fixed inset-x-0 bottom-0 top-10 z-[150] flex items-center justify-center p-5', open ? 'anim-fade' : 'anim-fade-out')} style={{ background: 'rgb(var(--c-scrim) / .42)', backdropFilter: 'blur(2px)' }}
+    <div className={cx('fixed inset-x-0 bottom-0 top-10 z-[150] flex items-center justify-center p-5', open ? 'anim-fade' : 'anim-fade-out')} style={{ background: 'rgb(var(--c-scrim) / .42)' }}
       onPointerDown={(e) => { if (e.target === e.currentTarget) onClose() }}>
       <div role="dialog" aria-modal="true" aria-label={title}
         className={cx('flex max-h-full w-full flex-col rounded-[28px] bg-surface-container-high p-6 shadow-e3', wide ? 'max-w-xl' : 'max-w-md', open ? 'anim-pop' : 'anim-pop-out')}>
@@ -382,7 +382,7 @@ export function PageHeader({ title, sub, actions }: { title: string; sub?: strin
 
 /* ---------- toast ---------- */
 type ToastVariant = 'info' | 'success' | 'error' | 'warning'
-interface ToastItem { id: number; variant: ToastVariant; message: string; action?: { label: string; onClick: () => void }; out?: boolean }
+interface ToastItem { id: number; variant: ToastVariant; message: string; action?: { label: string; onClick: () => void }; out?: boolean; ms: number }
 const ToastCtx = createContext<{ push: (v: ToastVariant, m: string, a?: ToastItem['action']) => void }>({ push: () => {} })
 export const useToast = () => {
   const { push } = useContext(ToastCtx)
@@ -408,8 +408,9 @@ export function ToastProvider({ children, icons }: { children: ReactNode; icons:
   }, [])
   const push = useCallback((variant: ToastVariant, message: string, action?: ToastItem['action']) => {
     const id = ++n.current
-    setItems((a) => [...a.slice(-2), { id, variant, message, action }])
-    window.setTimeout(() => dismiss(id), variant === 'error' ? 6500 : 4200)
+    const ms = action ? 8000 : variant === 'error' ? 6500 : 4200
+    setItems((a) => [...a.slice(-2), { id, variant, message, action, ms }])
+    window.setTimeout(() => dismiss(id), ms)
   }, [dismiss])
   return (
     <ToastCtx.Provider value={{ push }}>
@@ -424,10 +425,56 @@ export function ToastProvider({ children, icons }: { children: ReactNode; icons:
               {x.action && <button onClick={() => { x.action!.onClick(); dismiss(x.id) }} className="sl rounded-full px-3 py-1.5 text-[0.82rem] font-semibold">{x.action.label}</button>}
               <IconButton label={t('close')} size="sm" onClick={() => dismiss(x.id)}><X size={16} /></IconButton>
             </div>
-            {!x.out && <span className="absolute bottom-0 left-0 h-[3px] w-full origin-left bg-current opacity-30" style={{ animation: `shrink ${x.variant === 'error' ? 6.5 : 4.2}s linear forwards` }} />}
+            {!x.out && <span className="absolute bottom-0 left-0 h-[3px] w-full origin-left bg-current opacity-30" style={{ animation: `shrink ${x.ms / 1000}s linear forwards` }} />}
           </div>
         ))}
       </div>
     </ToastCtx.Provider>
+  )
+}
+
+/* ---------- expressive loading indicator (morphing shape) ---------- */
+export function Loader({ size = 48, className }: { size?: number; className?: string }) {
+  return (
+    <span role="progressbar" aria-busy="true" className={cx('inline-flex items-center justify-center', className)} style={{ width: size, height: size }}>
+      <span className="block bg-current" style={{ width: size * 0.78, height: size * 0.78, borderRadius: '60% 40% 55% 45% / 55% 45% 60% 40%', animation: 'morph 2.6s ease-in-out infinite, loader-spin 3.2s linear infinite', willChange: 'transform' }} />
+    </span>
+  )
+}
+
+/* ---------- checkbox (M3 round selection) ---------- */
+export function Checkbox({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
+  return (
+    <Tooltip label={label}>
+      <button type="button" role="checkbox" aria-checked={checked} aria-label={label} onClick={() => onChange(!checked)}
+        className={cx('flex h-6 w-6 shrink-0 items-center justify-center border-2 transition-all duration-300 ease-spring', checked ? 'rounded-lg border-primary bg-primary text-on-primary' : 'rounded-full border-outline text-transparent hover:border-primary')}>
+        <Check size={15} strokeWidth={3.2} className={cx('transition-transform duration-300 ease-spring', checked ? 'scale-100' : 'scale-0')} />
+      </button>
+    </Tooltip>
+  )
+}
+
+/* ---------- split button ---------- */
+export function SplitButton({ label, icon, onClick, menuLabel, children }: { label: string; icon?: ReactNode; onClick: () => void; menuLabel: string; children: (close: () => void) => ReactNode }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const fn = (e: PointerEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false) }
+    document.addEventListener('pointerdown', fn)
+    return () => document.removeEventListener('pointerdown', fn)
+  }, [open])
+  return (
+    <div ref={ref} className="relative inline-flex gap-0.5">
+      <button type="button" onClick={onClick} onPointerDown={ripple}
+        className="sl press inline-flex h-11 items-center gap-2 rounded-l-[22px] rounded-r-[6px] bg-primary pl-5 pr-4 text-[0.92rem] font-medium text-on-primary shadow-e1 active:rounded-[10px]">{icon}<span>{label}</span></button>
+      <Tooltip label={menuLabel}>
+        <button type="button" aria-label={menuLabel} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((o) => !o)} onPointerDown={ripple}
+          className={cx('sl press inline-flex h-11 w-11 items-center justify-center bg-primary text-on-primary shadow-e1 transition-[border-radius] duration-300', open ? 'rounded-[22px]' : 'rounded-l-[6px] rounded-r-[22px]')}>
+          <ChevronDown size={18} className={cx('transition-transform duration-300 ease-spring', open && 'rotate-180')} />
+        </button>
+      </Tooltip>
+      {open && <div role="menu" className="anim-pop absolute right-0 top-[calc(100%+6px)] z-50 w-72 origin-top-right rounded-2xl bg-surface-container-high p-1.5 shadow-e3">{children(() => setOpen(false))}</div>}
+    </div>
   )
 }

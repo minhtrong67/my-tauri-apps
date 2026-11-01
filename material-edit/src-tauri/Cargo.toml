@@ -1,6 +1,6 @@
 [package]
 name = "material-edit"
-version = "1.0.0"
+version = "1.1.0"
 description = "A simple, Material Design 3 video editor."
 authors = ["minhtrong67"]
 edition = "2021"

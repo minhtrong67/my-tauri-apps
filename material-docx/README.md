@@ -1,17 +1,15 @@
 <div align="center">
 
-<img src="src-tauri/icons/128x128@2x.png" width="128" alt="Material Docx logo" />
+<img src="src/logo.svg" alt="Material Docx" width="120" />
 
 # Material Docx
 
-**A Word-style word processor with real `.docx` support — built with Tauri 2 and Material Design 3.**
+**A Word-style desktop word processor designed in Material 3 Expressive.**
+Ribbon, paged print layout, tables, pictures and real `.docx` support — free and open source.
 
-[![Tauri 2](https://img.shields.io/badge/Tauri-2-24C8DB?logo=tauri&logoColor=white)](https://tauri.app)
-[![Material Design 3](https://img.shields.io/badge/Material%20Design-3-2B579A)](https://m3.material.io)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-![Platforms](https://img.shields.io/badge/Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+![Version](https://img.shields.io/badge/version-2.3.0-185ABD) ![License](https://img.shields.io/badge/license-MIT-2B7CD3) ![Tauri](https://img.shields.io/badge/Tauri-2-41A5EE) ![Platform](https://img.shields.io/badge/Windows-10%20%7C%2011-103F91)
 
-English · [Tiếng Việt](#tiếng-việt)
+[Landing page](https://minhtrong67.github.io/material-docx/) · [Download](download/) · [Report an issue](https://github.com/minhtrong67/material-docx/issues)
 
 **Author: [`minhtrong67`](https://github.com/minhtrong67) · Built with the help of AI: [`Claude`](https://www.anthropic.com/claude) (Anthropic)**
 
@@ -21,123 +19,95 @@ English · [Tiếng Việt](#tiếng-việt)
 
 ## Introduction
 
-Material Docx is a fast, lightweight desktop word processor that feels like Microsoft Word — ribbon, paged "print layout", styles, tables, headers & footers, table of contents — but looks and moves like a modern Material Design 3 app. It opens and saves real `.docx` files, follows the system light/dark setting, and recolors the whole interface from a single accent color (Word blue by default). The UI is available in **English** and **Vietnamese**.
+Material Docx brings the familiar Word ribbon to a lightweight, fast desktop app. It paginates like a real document, reads and writes genuine `.docx` files, opens a long list of other formats, and wraps everything in **Material 3 Expressive** — big rounded shapes, tonal colour, shape-morphing buttons and spring motion — in light, dark or system themes with any accent colour you like.
 
 ## Screenshots
 
 | | |
-| --- | --- |
+|---|---|
 | ![Editor](screenshots/image01.png) | ![Table tools](screenshots/image02.png) |
-| ![Settings](screenshots/image03.png) | ![Dark theme, Vietnamese](screenshots/image04.png) |
-| ![File menu](screenshots/image05.png) | |
+| ![Settings](screenshots/image03.png) | ![Document tabs in the dark theme](screenshots/image04.png) |
 
 ## Features
 
-* **Word-style ribbon** – File, Home, Insert, Design, Layout, References, Review, View, plus contextual **Table** and **Picture** tabs; collapsible, with tooltips and keyboard shortcuts.
-* **Real pages** – paginated print layout with page breaks, header & footer (page number, page count, date, title), different first page, page color, 7 paper sizes, portrait/landscape, margin presets and custom margins, ruler, read / print / web views, zoom, navigation pane.
-* **Text & paragraphs** – fonts, sizes, bold/italic/underline/strike, sub/superscript, text & highlight colors, change case, format painter, styles gallery (Normal, Headings, Title, Subtitle, Quote, Caption, Code…), alignment, indents, line & paragraph spacing, borders & shading, bullet/numbered lists (multi-level, several styles), sort, formatting marks.
-* **Tables** – insert, merge/split cells, add/delete rows and columns, 8 table styles, header/banded rows, cell shading, vertical alignment, AutoFit, distribute columns.
-* **Pictures** – insert, paste or drag in; resize with handles, rotate, flip, text wrapping, alt text.
-* **References** – automatic table of contents, captions, headings navigation.
-* **Review** – spell check, word count, read aloud, find & replace (match case, whole word).
-* **.docx round-trip** – headers/footers, styles, lists, tables, pictures, table of contents, page setup and page color are written to and read from Word files (also opens/saves `.html` and `.txt`).
-* **Window options** – in *Settings → Window*: **remember window size** after you resize it, or **always open maximized**.
-* **Theme** – Material Design 3, Light / Dark / System, 16 Material accent colors plus a custom color picker with a generated tonal palette (default Word blue), dark page option, smooth animations (respects *reduce motion*).
-* **Fonts** – system UI font by default, with an interface-font option and a default document font / size (with live preview).
-* **Settings** – a tidy two-pane dialog (Appearance, Window, Language, Editing, About) with a *reset to defaults* button; adapts to narrow windows.
-* **Safe** – auto-recover copy of unsaved work, unsaved-changes prompts, templates (letter, report, minutes…).
-* **Languages** – English and Vietnamese, switchable at runtime.
-
-## Download
-
-Get the installer for your platform from the **Releases** page of the repository, from the landing page (`index.html` → `download/Material-Docx-Setup.exe`), or build it yourself (see [Build](#build)).
-
-| Platform | Package |
-| --- | --- |
-| Windows | NSIS setup `.exe` (custom installer & uninstaller icons, English/Vietnamese) |
-| macOS | `.dmg` / `.app` |
-| Linux | `.deb`, `.rpm`, `.AppImage` |
+- **Word-style ribbon** — Home, Insert, Design, Layout, References, Review, View, plus contextual Table / Picture tabs.
+- **Paged layout** — real page breaks, margins, orientation, paper sizes, ruler, headers & footers (different first page), page numbers, table of contents.
+- **Multiple documents** — document tabs with their own undo history, drag to reorder, `Ctrl+Tab` / `Ctrl+W`; closing asks about every unsaved tab and crash recovery restores them all.
+- **Comments & footnotes kept** — comments, footnotes and endnotes in `.docx` files are preserved and written back on save (shown as markers, not editable yet).
+- **Floating format toolbar** — select text and a pill toolbar (bold, italic, underline, strike, highlight) appears right above it.
+- **Rich editing** — styles, fonts, colours, highlights, lists, indents, line spacing, format painter, find & replace, spell check, auto-correct, symbols, hyperlinks.
+- **Tables & pictures** — table styles, merge/split, shading, borders, row/column tools; resizable pictures with text wrapping, rotate/flip, alt text.
+- **Open many file types** — `.docx` `.docm` `.dotx` `.dotm` · `.odt` `.ott` · `.rtf` · `.html` `.htm` `.xhtml` · `.md` `.markdown` · `.csv` `.tsv` · `.txt` `.text` `.log` (drag & drop or File → Open).
+- **Save as** `.docx`, `.html`, `.txt`; export **PDF** from the print dialog (*Save as PDF*).
+- **Material 3 Expressive UI** — shape-morphing buttons, pill tabs, tonal ribbon cards, spring animations, custom dropdowns, typed toasts (info / success / warning / error) and custom tooltips; every dialog action has a label, an icon and its own colour.
+- **Settings** — light / dark / system theme, any accent colour (14 Material swatches + custom), interface text size (small / medium / large), interface font (system default or one of 5 bundled fonts: Roboto, Inter, Open Sans, Lexend, Noto Sans), English / Tiếng Việt, window behaviour (remember size or always maximized).
+- **Comfortable at any size** — on narrow windows the ribbon scrolls with the mouse wheel and shows edge buttons for hidden groups.
+- **Safety net** — autosave and crash recovery, recent documents, unsaved-changes prompts.
+- **Open source, offline, private** — no account, no cloud, no telemetry.
 
 ## Installation
 
-* **Windows** – run the setup `.exe` and follow the wizard. Uninstall from *Settings → Apps* or the Start-menu shortcut.
-* **macOS** – open the `.dmg` and drag *Material Docx* to *Applications*.
-* **Linux** – `sudo dpkg -i material-docx_*.deb`, `sudo rpm -i material-docx-*.rpm`, or make the `.AppImage` executable and run it.
+1. Download the installer from the [`download/`](download/) folder (or the releases page).
+2. Run `Material-Docx-Setup.exe` (per-user install, no admin rights needed) and choose English or Tiếng Việt.
+3. Requires **Windows 10 / 11 (64-bit)** with Microsoft Edge WebView2 (already included in Windows 11).
 
 ## Tech stack
 
-* [Tauri 2](https://tauri.app) (Rust) with WebView2 / WebKitGTK / WKWebView
-* Vanilla JavaScript (ES modules, no bundler) + CSS custom properties
-* Material Design 3 dynamic color (generated tonal palettes)
-* Custom ZIP + WordprocessingML reader/writer (`docx.js`, `zip.js`)
-* NSIS installer with custom icons, sidebar and header artwork
-* Plugins: `tauri-plugin-dialog`, `tauri-plugin-window-state`
+| Area | Technology |
+|---|---|
+| Desktop shell | [Tauri 2](https://tauri.app) (Rust) |
+| UI | Vanilla JavaScript (ES modules), HTML, CSS — no bundler required |
+| Design | Material 3 Expressive, dynamic colour generated from an accent colour |
+| Icons | Built-in stroked icon sprite (Material-style) |
+| Fonts | System font by default; Roboto, Inter, Open Sans, Lexend, Noto Sans bundled (variable woff2, OFL) |
+| Documents | Own ZIP + OOXML reader/writer, ODT / RTF / Markdown / CSV readers |
 
 ## Development
 
-Requirements: [Rust](https://rustup.rs) (stable), [Node.js](https://nodejs.org) 18+ and the [Tauri 2 prerequisites](https://tauri.app/start/prerequisites/) for your OS.
+Prerequisites: [Node.js](https://nodejs.org) 18+, [Rust](https://rustup.rs) and the [Tauri prerequisites](https://tauri.app/start/prerequisites/) for your OS.
 
 ```bash
-cd material-docx
-npm install      # install the Tauri CLI
-npm run dev      # run the app in development mode
+npm install     # install the Tauri CLI
+npm run dev     # run the app in development mode
 ```
 
-This project lives in a Cargo **workspace** (`*/src-tauri`), so all apps share one build cache in `../target`.
+The front-end lives in `src/` and is served as-is, so edits to `src/*.js` / `src/style.css` show up after a reload.
 
-Regenerate every icon (app, installer, uninstaller, NSIS bitmaps) with `npm run icons` (needs `pip install pillow`).
+Regenerate every app icon (needs `pip install pillow`):
+
+```bash
+npm run icons
+```
 
 ## Build
 
 ```bash
-npm run build    # installers are written to ../target/release/bundle
+npm run build
 ```
+
+The installer is written to `target/release/bundle/nsis/` (workspace root) — copy it to `download/` and rename it to `Material-Docx-Setup.exe` for the landing page.
 
 ## Project structure
 
-```
+```text
 material-docx/
-├── index.html              # Landing page (single file, Material Design 3, EN/VI, SEO + social meta)
-├── download/               # Put the Windows setup here: Material-Docx-Setup.exe
-├── screenshots/            # image01.png … image05.png
-├── src/                    # Front-end (ES modules, no bundler)
-│   ├── index.html  style.css
-│   ├── app.js              # bootstrap, title bar, window handling
-│   ├── ribbon.js  ribbon-def.js   # ribbon engine + definition
-│   ├── editor.js  cmds.js  paginate.js  input.js
-│   ├── tables.js  images.js  find.js  view.js  dialogs.js  backstage.js
-│   ├── docx.js  zip.js  fileio.js  templates.js
-│   ├── theme.js  appearance.js  settings.js  i18n.js  ripple.js
-├── src-tauri/              # Rust shell, tauri.conf.json, capabilities, icons, NSIS hooks
-└── tools/make-icons.py     # icon generator
+├─ index.html              # landing page (single file, SEO + social meta)
+├─ download/               # put the setup file here
+├─ screenshots/            # image01 … image04 used by this README
+├─ tools/make-icons.py     # generates app / installer / uninstaller icons and logos
+├─ src/                    # front-end
+│  ├─ index.html           # app shell
+│  ├─ app.js               # start-up and wiring
+│  ├─ style.css            # Material 3 Expressive styling
+│  ├─ fonts/, fonts.css    # bundled UI fonts
+│  ├─ editor.js, paginate.js, view.js, tables.js, images.js
+│  ├─ ribbon.js, ribbon-def.js, backstage.js, dialogs.js, popup.js
+│  ├─ docx.js, zip.js, readers.js, fileio.js     # file formats
+│  ├─ settings.js, appearance.js, theme.js, i18n.js
+│  └─ logo*.svg
+└─ src-tauri/              # Rust shell, tauri.conf.json, icons, NSIS hooks
 ```
 
 ## License
 
-Released under the [MIT License](LICENSE). Created by **minhtrong67** with the help of **Claude**.
-
----
-
-<a id="tiếng-việt"></a>
-
-## Tiếng Việt
-
-**Tác giả: `minhtrong67` · Với sự hỗ trợ của AI: `Claude` (Anthropic)**
-
-**Material Docx** là trình soạn thảo văn bản cho máy tính, có giao diện ruy-băng và trang in giống Microsoft Word nhưng theo phong cách Material Design 3. Ứng dụng mở/lưu tệp `.docx` thật, hỗ trợ giao diện sáng/tối/hệ thống, màu chủ đề tùy chỉnh (mặc định xanh Word) và 2 ngôn ngữ Anh/Việt.
-
-**Tính năng chính:** ruy-băng đầy đủ (Trang đầu, Chèn, Thiết kế, Bố cục, Tham chiếu, Xem lại, Xem), phân trang thật, đầu/chân trang, mục lục tự động, bảng (gộp/tách ô, 8 kiểu), hình ảnh (xoay, lật, bao quanh chữ), tìm & thay thế, kiểm tra chính tả, đếm từ, đọc to, thước kẻ, thu phóng, ngăn điều hướng, khôi phục tài liệu chưa lưu.
-
-**Tùy chọn cửa sổ** (*Cài đặt → Cửa sổ*): **ghi nhớ kích thước** khi bạn thay đổi, hoặc **luôn mở phóng to tối đa**.
-
-**Chạy & build:**
-
-```bash
-npm install
-npm run dev
-npm run build
-```
-
-Yêu cầu: Rust (stable), Node.js 18+ và [các thành phần của Tauri 2](https://tauri.app/start/prerequisites/). Dự án nằm trong Cargo workspace (`*/src-tauri`). Chạy `npm run icons` để tạo lại icon.
-
-Phát hành theo [Giấy phép MIT](LICENSE).
+Released under the [MIT License](LICENSE) — free to use, modify and distribute. © 2026 [minhtrong67](https://github.com/minhtrong67).

@@ -7,7 +7,7 @@ const BOOT = 'mm-boot'
 const defaults: Settings = {
   theme: 'system', seed: '#769CDF', fontSize: 'md', font: 'system',
   language: typeof navigator !== 'undefined' && navigator.language.toLowerCase().startsWith('vi') ? 'vi' : 'en',
-  savePath: null, windowMode: 'remember',
+  savePath: null, windowMode: 'remember', profiles: [], railExpanded: false, onboarded: false,
 }
 
 export function bootSettings(): Settings {
@@ -31,6 +31,7 @@ interface Ctx {
   dark: boolean
   defaultDir: string
   saveDir: string
+  ready: boolean
 }
 const SettingsCtx = createContext<Ctx>(null as unknown as Ctx)
 export const useSettings = () => useContext(SettingsCtx)
@@ -39,6 +40,7 @@ export function SettingsProvider({ children, onLoaded }: { children: ReactNode; 
   const [settings, setSettings] = useState<Settings>(bootSettings)
   const [dark, setDark] = useState(() => applyAll(settings))
   const [defaultDir, setDefaultDir] = useState('')
+  const [ready, setReady] = useState(false)
   const loaded = useRef(false)
   const timer = useRef<number>(0)
 
@@ -49,6 +51,7 @@ export function SettingsProvider({ children, onLoaded }: { children: ReactNode; 
       setDefaultDir(dir)
       setSettings((cur) => ({ ...cur, ...(s as Partial<Settings>) }))
       loaded.current = true
+      setReady(true)
       onLoaded()
     })
     return () => { alive = false }
@@ -74,11 +77,11 @@ export function SettingsProvider({ children, onLoaded }: { children: ReactNode; 
   const lang = settings.language
   const value = useMemo<Ctx>(
     () => ({
-      settings, set, lang, dark, defaultDir,
+      settings, set, lang, dark, defaultDir, ready,
       saveDir: settings.savePath || defaultDir,
       t: (key, vars) => translate(lang, key, vars),
     }),
-    [settings, set, lang, dark, defaultDir],
+    [settings, set, lang, dark, defaultDir, ready],
   )
   return <SettingsCtx.Provider value={value}>{children}</SettingsCtx.Provider>
 }

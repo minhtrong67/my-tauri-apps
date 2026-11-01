@@ -128,9 +128,10 @@ export function buildScheme(seedHex, dark) {
   const rgb = hexToRgb(seedHex) || hexToRgb('#6750A4');
   const { h: hue, C } = rgbToLch(rgb);
   const pc = Math.min(48, Math.max(C, 14)); // muted seeds (brown, grey…) stay muted
-  const P = (t) => tone(hue, pc, t);
+  const vib = Math.min(88, Math.max(C, 14)); // Expressive: primary keeps far more chroma (more vibrant containers)
+  const P = (t) => tone(hue, vib, t);
   const S = (t) => tone(hue, pc / 3, t);
-  const T = (t) => tone((hue + 60) % 360, pc / 2, t);
+  const T = (t) => tone((hue + 60) % 360, Math.max(pc / 2, vib / 2.4), t);
   const N = (t) => tone(hue, pc / 12, t);
   const NV = (t) => tone(hue, pc / 6, t);
 

@@ -57,14 +57,14 @@ let opening = false, running = false;
 dlg.addEventListener('close', () => { dlg.classList.remove('exporting'); if (!running) holdProxies(false); });
 
 export async function openExport() {
-  if (running || isExporting()) { toast(t('export.cleaning')); return; }
+  if (running || isExporting()) { toast(t('export.cleaning'), 3400, 'warning'); return; }
   if (opening) return;
-  if (totalDuration() <= 0) { toast(t('export.empty')); return; }
+  if (totalDuration() <= 0) { toast(t('export.empty'), 3400, 'warning'); return; }
   opening = true;
   holdProxies(true); // background preview optimisation pauses while the window is open
   try {
     bodyEl.onchange = null;
-    actionsEl.replaceChildren(h('button', { class: 'btn text', text: t('btn.cancel'), onclick: () => dlg.close() }));
+    actionsEl.replaceChildren(h('button', { class: 'btn tonal', onclick: () => dlg.close() }, icon('close'), t('btn.cancel')));
     if (!fmtReady) {
       // first time: show the window right away with a small loader while encoders are probed
       bodyEl.replaceChildren(h('div', { class: 'loading-row' }, h('i', { class: 'spinner' }), h('span', { text: t('export.preparing') })));
@@ -81,7 +81,7 @@ function render(fmts) {
   actionsEl.replaceChildren();
   if (!fmts.length) {
     bodyEl.append(h('p', { text: t('export.unsupported') }));
-    actionsEl.append(h('button', { class: 'btn text', text: t('btn.close'), onclick: () => dlg.close() }));
+    actionsEl.append(h('button', { class: 'btn tonal', onclick: () => dlg.close() }, icon('close'), t('btn.close')));
     return;
   }
   const S = settings.export;
@@ -138,9 +138,9 @@ function render(fmts) {
   bodyEl.onchange = refresh;
   refresh();
   actionsEl.append(
-    h('button', { class: 'btn text', text: t('btn.cancel'), onclick: () => dlg.close() }),
+    h('button', { class: 'btn tonal', onclick: () => dlg.close() }, icon('close'), t('btn.cancel')),
     h('span', { class: 'spacer' }),
-    h('button', { class: 'btn filled', text: t('export.start'), onclick: () => run(params()) }),
+    h('button', { class: 'btn filled', onclick: () => run(params()) }, icon('export'), t('export.start')),
   );
 }
 
@@ -170,7 +170,7 @@ async function runExport(p) {
     } else {
       target = await pickSavePath(settings.export.lastDir ? join(settings.export.lastDir, file) : file, [{ name: p.f.ext.toUpperCase(), extensions: [p.f.ext] }]);
     }
-  } catch (e) { toast(t('toast.error', { msg: e.message || e })); return; }
+  } catch (e) { toast(t('toast.error', { msg: e.message || e }), 6000, 'error'); return; }
   if (!target) return;
   if (inTauri && !new RegExp(`\\.${p.f.ext}$`, 'i').test(target)) target += '.' + p.f.ext;
   if (inTauri) { settings.export.lastDir = target.replace(/[\\/][^\\/]*$/, ''); saveSettings(); }
@@ -212,7 +212,7 @@ async function runExport(p) {
   // Cancel closes the window immediately; the pipeline unwinds and removes the partial file in the background
   let cancelled = false;
   const cancel = () => { if (cancelled) return; cancelled = true; ctl.abort(); dlg.close(); toast(t('export.cancelled')); };
-  actionsEl.replaceChildren(h('button', { class: 'btn text', text: t('btn.cancel'), onclick: cancel }));
+  actionsEl.replaceChildren(h('button', { class: 'btn danger', onclick: cancel }, icon('close'), t('btn.cancel')));
   dlg.oncancel = (e) => { e.preventDefault(); cancel(); };
   cancelProxies(); releaseForExport();
   const setBar = (v) => { bar.firstChild.style.width = v * 100 + '%'; };
@@ -292,5 +292,5 @@ function saveBlobBrowser(blob, name) {
 function finish(title, msg, diag = '') {
   dlg.classList.remove('exporting');
   bodyEl.replaceChildren(h('h3', { text: title }), h('p', { class: 'path', text: msg }), diag ? h('p', { class: 'hint diag', text: diag }) : h('span'));
-  actionsEl.replaceChildren(h('span', { class: 'spacer' }), h('button', { class: 'btn filled', text: t('btn.done'), onclick: () => dlg.close() }));
+  actionsEl.replaceChildren(h('span', { class: 'spacer' }), h('button', { class: 'btn filled', onclick: () => dlg.close() }, icon('check'), t('btn.done')));
 }

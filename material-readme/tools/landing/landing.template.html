@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en" data-mode="system">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Material Readme: Markdown editor and viewer in Material 3 Expressive</title>
+<meta name="description" content="Material Readme is a free, open source desktop app to write, preview and polish Markdown. Live split preview, command palette, 18 Material colours, light and dark themes, English and Vietnamese.">
+<meta name="keywords" content="markdown editor, markdown viewer, readme editor, desktop app, tauri, material design 3, material 3 expressive, open source, windows, minhtrong67">
+<meta name="author" content="minhtrong67">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://github.com/minhtrong67/my-tauri-apps/tree/main/material-readme">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="src-tauri/icons/128x128@2x.png">
+<meta name="theme-color" content="#FFF8F8" id="meta-theme">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Material Readme">
+<meta property="og:title" content="Material Readme: Markdown editor and viewer in Material 3 Expressive">
+<meta property="og:description" content="Write, preview and polish Markdown with a live split view, command palette and 18 Material colours. Free and open source.">
+<meta property="og:url" content="https://github.com/minhtrong67/my-tauri-apps/tree/main/material-readme">
+<meta property="og:image" content="https://raw.githubusercontent.com/minhtrong67/my-tauri-apps/main/material-readme/assets/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="vi_VN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Material Readme: Markdown editor and viewer in Material 3 Expressive">
+<meta name="twitter:description" content="Write, preview and polish Markdown with a live split view, command palette and 18 Material colours. Free and open source.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/minhtrong67/my-tauri-apps/main/material-readme/assets/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Material Readme","operatingSystem":"Windows 10, Windows 11","applicationCategory":"DeveloperApplication","softwareVersion":"3.0.0","license":"https://opensource.org/licenses/MIT","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"minhtrong67"},"description":"A Material 3 Expressive Markdown editor and viewer for the desktop, built with Tauri."}</script>
+<script>
+// Apply the saved theme before first paint to avoid a flash.
+(function(){try{var s=JSON.parse(localStorage.getItem('mr-landing')||'{}');var m=s.mode||'system';document.documentElement.dataset.mode=m;
+var d=m==='dark'||(m==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light';}catch(e){}})();
+</script>
+<style>
+:root{
+  --font:system-ui,'Segoe UI Variable Text','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --r-sm:12px;--r-md:18px;--r-lg:28px;--r-xl:40px;--r-full:999px;
+  {{SPRINGS}}
+  --fx:cubic-bezier(.2,0,0,1);
+  --d-fast:280ms;--d:420ms;--d-slow:650ms;
+  --e1:0 1px 3px rgb(0 0 0/.2);--e2:0 4px 14px rgb(0 0 0/.14);--e3:0 14px 40px rgb(0 0 0/.2);
+  --cookie:{{COOKIE}};
+  /* default palette: pink, light (replaced by script) */
+  --primary:#B60050;--on-primary:#fff;--primary-container:#FFD9E2;--on-primary-container:#3F001B;--secondary:#8D4A24;--on-secondary:#fff;--secondary-container:#FFDBC9;--on-secondary-container:#331200;
+  --tertiary:#7F5700;--on-tertiary:#fff;--tertiary-container:#FFDDB0;--on-tertiary-container:#281800;--surface:#FFF8F8;--on-surface:#22191B;--on-surface-variant:#524345;
+  --sc-low:#FFF0F1;--sc:#FCEAEC;--sc-high:#F6E4E6;--sc-highest:#F0DEE0;--outline:#857375;--outline-variant:#D8C2C4;--inverse-surface:#382E30;--inverse-on-surface:#FFEDEF;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:6.5rem;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--surface);color:var(--on-surface);font:400 1rem/1.6 var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background-color .5s var(--fx),color .5s var(--fx)}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3,p{margin:0}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+:focus-visible{outline:3px solid var(--primary);outline-offset:3px;border-radius:8px}
+.ic{width:1.25em;height:1.25em;flex:none}
+.wrap{width:min(72rem,100% - 2.5rem);margin-inline:auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+#progress{position:fixed;inset:0 0 auto 0;height:4px;z-index:100;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,var(--primary),var(--tertiary))}
+
+/* buttons: the shape morphs on press */
+.btn{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;height:3rem;padding:0 1.5rem;border-radius:var(--r-full);font-weight:700;font-size:.9375rem;text-decoration:none;white-space:nowrap;
+  transition:border-radius var(--d-fast) var(--sp-fast),transform var(--d-fast) var(--sp-fast),box-shadow .25s var(--fx),background-color .25s var(--fx)}
+.btn::before{content:'';position:absolute;inset:0;z-index:-1;background:currentColor;opacity:0;transition:opacity .2s}
+.btn:hover::before{opacity:.09}.btn:active{border-radius:var(--r-md);transform:scale(.96)}
+.btn.lg{height:3.75rem;padding:0 2rem;font-size:1.0625rem;border-radius:var(--r-lg)}.btn.lg:active{border-radius:var(--r-sm)}
+.btn.filled{background:var(--primary);color:var(--on-primary);box-shadow:var(--e1)}.btn.filled:hover{box-shadow:var(--e2)}
+.btn.tonal{background:var(--secondary-container);color:var(--on-secondary-container)}
+.btn.outlined{box-shadow:inset 0 0 0 1.5px var(--outline);color:var(--primary)}
+.rp{position:absolute;border-radius:50%;background:currentColor;opacity:.18;transform:scale(0);pointer-events:none;animation:rp .6s var(--fx) forwards}@keyframes rp{to{transform:scale(1);opacity:0}}
+.ibtn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;width:2.75rem;height:2.75rem;border-radius:var(--r-full);color:var(--on-surface-variant);transition:border-radius var(--d-fast) var(--sp-fast),background-color .2s,transform var(--d-fast) var(--sp-fast)}
+.ibtn:hover{background:color-mix(in srgb,var(--on-surface) 9%,transparent)}.ibtn:active{border-radius:var(--r-sm);transform:scale(.92)}.ibtn.on{background:var(--secondary-container);color:var(--on-secondary-container);border-radius:var(--r-sm)}
+
+/* nav */
+header{position:fixed;z-index:50;inset:.75rem 0 auto 0;pointer-events:none}
+.nav{pointer-events:auto;display:flex;align-items:center;gap:.5rem;width:min(72rem,100% - 1.5rem);margin-inline:auto;padding:.5rem .5rem .5rem 1rem;border-radius:var(--r-full);background:color-mix(in srgb,var(--sc-high) 82%,transparent);backdrop-filter:blur(18px) saturate(1.4);box-shadow:var(--e1),inset 0 0 0 1px var(--outline-variant);transition:box-shadow .3s,transform var(--d) var(--sp)}
+.brand{display:flex;align-items:center;gap:.6rem;font-weight:800;letter-spacing:-.01em;text-decoration:none;margin-right:auto}.brand svg{width:2rem;height:2rem}
+.links{display:flex;gap:.125rem}.links a{position:relative;padding:.5rem 1rem;border-radius:var(--r-full);text-decoration:none;font-weight:600;font-size:.9rem;color:var(--on-surface-variant);transition:background-color .2s,color .2s,border-radius var(--d) var(--sp)}
+.links a:hover{background:color-mix(in srgb,var(--on-surface) 8%,transparent)}.links a.on{background:var(--secondary-container);color:var(--on-secondary-container)}
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:var(--r-full);background:var(--sc-highest)}
+.seg button{height:2.25rem;min-width:2.5rem;padding:0 .75rem;border-radius:var(--r-sm);font-weight:700;font-size:.8125rem;color:var(--on-surface-variant);display:inline-flex;align-items:center;justify-content:center;gap:.4rem;transition:border-radius var(--d) var(--sp),background-color .2s,color .2s}
+.seg button:first-child{border-radius:var(--r-full) var(--r-sm) var(--r-sm) var(--r-full)}.seg button:last-child{border-radius:var(--r-sm) var(--r-full) var(--r-full) var(--r-sm)}
+.seg button.on,.seg button.on:first-child,.seg button.on:last-child{background:var(--primary);color:var(--on-primary);border-radius:var(--r-full)}
+.nav .btn{height:2.75rem;padding:0 1.25rem}
+#menuBtn{display:none}
+.pop{position:absolute;right:0;top:calc(100% + .5rem);width:19rem;padding:1rem;border-radius:var(--r-lg);background:var(--sc-high);box-shadow:var(--e3);pointer-events:auto;transform-origin:top right;opacity:0;visibility:hidden;transform:scale(.85) translateY(-8px);transition:transform var(--d) var(--sp),opacity .2s,visibility 0s .2s}
+.pop.open{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.navwrap{position:relative;width:min(72rem,100% - 1.5rem);margin-inline:auto}
+.navwrap .nav{width:100%}
+.pop h4{margin:0 0 .75rem;font-size:.8125rem;color:var(--primary)}
+.sw-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem}
+.sw{aspect-ratio:1;border-radius:var(--r-sm);background:var(--c);display:grid;place-items:center;color:#fff;transition:border-radius var(--d) var(--sp),transform var(--d-fast) var(--sp-fast),box-shadow .2s}
+.sw svg{width:1rem;height:1rem;transform:scale(0);transition:transform var(--d) var(--sp)}.sw:hover{transform:scale(1.1)}
+.sw.on{border-radius:var(--r-full);box-shadow:0 0 0 2px var(--sc-high),0 0 0 4px var(--c)}.sw.on svg{transform:scale(1)}.sw.lt{color:#222}
+.mobile{display:none}
+
+/* sections */
+section{position:relative;padding:6rem 0}
+.eyebrow{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem .4rem .75rem;border-radius:var(--r-full);background:var(--tertiary-container);color:var(--on-tertiary-container);font-weight:700;font-size:.8125rem}
+h2.t{font-size:clamp(2rem,5vw,3.25rem);line-height:1.1;font-weight:800;letter-spacing:-.025em;margin:1rem 0 .75rem}
+.lead{color:var(--on-surface-variant);font-size:1.125rem;max-width:40rem}
+.center{text-align:center}.center .lead{margin-inline:auto}
+
+/* hero */
+.hero{padding:9rem 0 4rem;overflow:hidden}
+.blob{position:absolute;z-index:-1;color:var(--primary-container);opacity:.9;animation:spin 60s linear infinite;pointer-events:none}
+.blob.b2{color:var(--tertiary-container);animation-duration:44s;animation-direction:reverse}.blob.b3{color:var(--secondary-container);animation-duration:80s}
+.blob svg{width:100%;height:100%}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero h1{font-size:clamp(2.6rem,7.5vw,5.5rem);line-height:1.02;font-weight:800;letter-spacing:-.04em;margin:1.25rem auto 1.25rem;max-width:15ch}
+.hero h1 .w{display:inline-block;animation:rise var(--d-slow) var(--sp-slow) both;animation-delay:calc(var(--i)*70ms + 120ms)}
+.hero h1 em{font-style:normal;color:var(--primary);position:relative}
+.hero .lead{animation:rise var(--d-slow) var(--sp-slow) .5s both}
+.cta{display:flex;flex-wrap:wrap;justify-content:center;gap:.875rem;margin-top:2rem;animation:rise var(--d-slow) var(--sp-slow) .62s both}
+.note{margin-top:1rem;font-size:.8125rem;color:var(--on-surface-variant);animation:rise var(--d-slow) var(--sp-slow) .72s both}
+@keyframes rise{from{opacity:0;transform:translateY(28px) scale(.96)}}
+.stage{position:relative;margin-top:4rem;perspective:1600px;animation:rise 1s var(--sp-slow) .8s both}
+.frame{position:relative;border-radius:var(--r-xl);padding:.625rem;background:var(--sc-high);box-shadow:var(--e3),inset 0 0 0 1px var(--outline-variant);transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .25s var(--fx);transform-style:preserve-3d}
+.frame img{border-radius:calc(var(--r-xl) - .625rem);width:100%;height:auto}
+.chip-float{position:absolute;display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-radius:var(--r-full);font-weight:700;font-size:.875rem;box-shadow:var(--e2);animation:bob 5s ease-in-out infinite;transform:translateZ(60px)}
+.chip-float.a{left:-1rem;top:18%;background:var(--primary);color:var(--on-primary)}.chip-float.b{right:-.5rem;top:42%;background:var(--tertiary);color:var(--on-tertiary);animation-delay:-1.6s}.chip-float.c{left:6%;bottom:-1.25rem;background:var(--secondary-container);color:var(--on-secondary-container);animation-delay:-3.2s}
+@keyframes bob{50%{translate:0 -12px}}
+
+/* marquee */
+.marquee{overflow:hidden;padding:1rem 0;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.track{display:flex;gap:.75rem;width:max-content;animation:slide 38s linear infinite}.marquee:hover .track{animation-play-state:paused}
+.track span{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.1rem;border-radius:var(--r-full);background:var(--sc-high);font-weight:700;font-size:.9rem;color:var(--on-surface-variant)}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* features bento */
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:1rem;margin-top:3rem}
+.card{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:.75rem;padding:1.75rem;border-radius:var(--r-lg);background:var(--sc);grid-column:span 4;transition:transform var(--d) var(--sp),border-radius var(--d) var(--sp),background-color .3s}
+.card:hover{transform:translateY(-6px);border-radius:var(--r-xl)}
+.card.w6{grid-column:span 6}.card.w8{grid-column:span 8}
+.card .ico{display:grid;place-items:center;width:3.5rem;height:3.5rem;border-radius:var(--r-md);background:var(--primary-container);color:var(--on-primary-container);transition:border-radius var(--d) var(--sp),transform var(--d) var(--sp)}
+.card:hover .ico{border-radius:var(--r-full);transform:rotate(-8deg) scale(1.06)}.card .ico .ic{width:1.6rem;height:1.6rem}
+.card h3{font-size:1.25rem;font-weight:800;letter-spacing:-.01em}.card p{color:var(--on-surface-variant)}
+.card.hl{background:var(--primary);color:var(--on-primary)}.card.hl p{color:color-mix(in srgb,var(--on-primary) 85%,transparent)}.card.hl .ico{background:var(--on-primary);color:var(--primary)}
+.card.t2{background:var(--tertiary-container);color:var(--on-tertiary-container)}.card.t2 p{color:inherit;opacity:.85}.card.t2 .ico{background:var(--tertiary);color:var(--on-tertiary)}
+.card.s2{background:var(--secondary-container);color:var(--on-secondary-container)}.card.s2 p{color:inherit;opacity:.85}.card.s2 .ico{background:var(--secondary);color:var(--on-secondary)}
+.card::after{content:'';position:absolute;right:-2.5rem;bottom:-2.5rem;width:9rem;height:9rem;background:currentColor;opacity:.06;clip-path:var(--cookie);transition:transform 1.2s var(--sp-slow)}.card:hover::after{transform:rotate(60deg) scale(1.2)}
+
+/* gallery */
+.gallery{margin-top:2.5rem;display:grid;gap:1.25rem;justify-items:center}
+.shot{position:relative;width:min(64rem,100%);border-radius:var(--r-xl);padding:.625rem;background:var(--sc-high);box-shadow:var(--e3),inset 0 0 0 1px var(--outline-variant)}
+.shot .imgs{position:relative;border-radius:calc(var(--r-xl) - .625rem);overflow:hidden;aspect-ratio:1280/800;background:var(--sc)}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.06);transition:opacity .5s var(--fx),transform var(--d-slow) var(--sp-slow)}.shot img.on{opacity:1;transform:none}
+.cap{min-height:3rem;max-width:40rem;text-align:center;color:var(--on-surface-variant)}.cap b{display:block;color:var(--on-surface);font-size:1.125rem;margin-bottom:.125rem}
+
+/* customize */
+.custom{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:3rem;align-items:stretch}
+.panel{padding:2rem;border-radius:var(--r-xl);background:var(--sc)}.panel h3{font-size:1.25rem;margin-bottom:1rem}
+.panel .seg{display:flex}.panel .seg button{flex:1}.panel .sw-grid{margin-top:1.25rem;grid-template-columns:repeat(6,1fr)}.panel small{display:block;margin-top:1rem;color:var(--on-surface-variant)}
+.demo{display:flex;flex-direction:column;gap:.75rem;background:var(--primary-container);color:var(--on-primary-container)}
+.demo .row{display:flex;flex-wrap:wrap;gap:.625rem}
+.demo .tone{padding:.5rem 1rem;border-radius:var(--r-full);font-weight:700;font-size:.85rem}
+
+/* download */
+.dl{position:relative;overflow:hidden;display:grid;grid-template-columns:1.2fr .8fr;gap:2rem;align-items:center;padding:clamp(2rem,5vw,4rem);border-radius:var(--r-xl);background:var(--primary);color:var(--on-primary)}
+.dl::before{content:'';position:absolute;width:28rem;height:28rem;right:-8rem;top:-10rem;background:var(--on-primary);opacity:.1;clip-path:var(--cookie);animation:spin 50s linear infinite}
+.dl h2{font-size:clamp(2rem,4.5vw,3rem);font-weight:800;letter-spacing:-.025em;line-height:1.1}.dl p{margin-top:.75rem;opacity:.9;max-width:34rem}
+.dl .btn.filled{background:var(--on-primary);color:var(--primary);margin-top:1.5rem}.dl .btn.outlined{color:var(--on-primary);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--on-primary) 55%,transparent)}
+.dl .acts{display:flex;flex-wrap:wrap;gap:.75rem}
+.req{position:relative;display:grid;gap:.625rem;padding:1.5rem;border-radius:var(--r-lg);background:color-mix(in srgb,var(--on-primary) 14%,transparent);list-style:none;margin:0}
+.req li{display:flex;gap:.75rem;align-items:center;font-weight:600}.req .ic{color:var(--on-primary)}
+
+/* faq */
+.faq{display:grid;gap:.625rem;margin-top:2.5rem;max-width:48rem;margin-inline:auto}
+details{border-radius:var(--r-lg);background:var(--sc);transition:background-color .3s,border-radius var(--d) var(--sp)}details[open]{background:var(--sc-high)}
+summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.125rem 1.5rem;cursor:pointer;font-weight:700;list-style:none}summary::-webkit-details-marker{display:none}
+summary .ic{transition:transform var(--d) var(--sp)}details[open] summary .ic{transform:rotate(180deg)}
+details p{padding:0 1.5rem 1.25rem;color:var(--on-surface-variant)}
+footer{padding:3rem 0 4rem;color:var(--on-surface-variant);font-size:.9rem}
+.foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;padding-top:2rem;border-top:1px solid var(--outline-variant)}
+.foot a{text-decoration:none;font-weight:700;color:var(--primary)}.foot a:hover{text-decoration:underline}
+
+#top{position:fixed;z-index:60;right:1.25rem;bottom:1.25rem;width:3.5rem;height:3.5rem;border-radius:var(--r-lg);background:var(--primary-container);color:var(--on-primary-container);box-shadow:var(--e2);display:grid;place-items:center;opacity:0;visibility:hidden;transform:translateY(1rem) scale(.6);transition:transform var(--d) var(--sp),opacity .2s,visibility 0s .2s,border-radius var(--d-fast) var(--sp-fast)}
+#top.on{opacity:1;visibility:visible;transform:none;transition-delay:0s}#top:hover{border-radius:var(--r-full)}#top:active{transform:scale(.9)}#top .ic{width:1.6rem;height:1.6rem}
+
+/* reveal on scroll */
+.rv{opacity:0;transform:translateY(36px) scale(.97);transition:opacity .7s var(--fx),transform var(--d-slow) var(--sp-slow);transition-delay:var(--dl,0ms)}.rv.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .links{display:none}.nav>.btn.dlbtn{display:none}#menuBtn{display:inline-flex}
+  .mobile{display:grid;gap:.25rem;position:absolute;left:0;right:0;top:calc(100% + .5rem);padding:.75rem;border-radius:var(--r-lg);background:var(--sc-high);box-shadow:var(--e3);pointer-events:auto;opacity:0;visibility:hidden;transform:scale(.92) translateY(-8px);transform-origin:top;transition:transform var(--d) var(--sp),opacity .2s,visibility 0s .2s}
+  .mobile.open{opacity:1;visibility:visible;transform:none;transition-delay:0s}.mobile a{padding:.875rem 1rem;border-radius:var(--r-md);text-decoration:none;font-weight:700}.mobile a:hover,.mobile a.on{background:var(--secondary-container)}
+  .card,.card.w6,.card.w8{grid-column:span 6}.custom,.dl{grid-template-columns:1fr}section{padding:4.5rem 0}.hero{padding-top:7.5rem}
+  .chip-float{display:none}
+}
+@media (max-width:560px){.card,.card.w6,.card.w8{grid-column:span 12}.pop{position:fixed;left:.75rem;right:.75rem;width:auto;top:4.75rem}.seg button{padding:0 .5rem;min-width:2.25rem}.btn.lg{width:100%}.cta{flex-direction:column}.nav .brand span{display:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important;scroll-behavior:auto!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="progress" aria-hidden="true"></div>
+<a class="sr" href="#features" data-i18n="skip">Skip to content</a>
+
+<header>
+  <div class="navwrap">
+    <nav class="nav" aria-label="Main">
+      <a class="brand" href="#top-anchor" aria-label="Material Readme">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><path d="{{COOKIE_PATH}}" fill="var(--primary)"/><rect x="27" y="25" width="46" height="52" rx="13" fill="var(--primary-container)"/><path d="M33 62V40l9 11.5L51 40v22M64 40v21M58.5 55.5 64 61l5.5-5.5" fill="none" stroke="var(--on-primary-container)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="73" cy="27" r="7.5" fill="var(--tertiary)"/></svg>
+        <span>Material Readme</span>
+      </a>
+      <div class="links" id="links">
+        <a href="#features" data-i18n="nav_features">Features</a><a href="#gallery" data-i18n="nav_gallery">Gallery</a><a href="#customize" data-i18n="nav_custom">Customize</a><a href="#faq" data-i18n="nav_faq">FAQ</a>
+      </div>
+      <div class="seg" id="langSeg" role="radiogroup" aria-label="Language"><button type="button" data-lang="en" role="radio">EN</button><button type="button" data-lang="vi" role="radio">VI</button></div>
+      <button type="button" class="ibtn" id="modeBtn" aria-label="Theme">{{icon:SunMoon}}</button>
+      <button type="button" class="ibtn" id="palBtn" aria-label="Colour" aria-expanded="false" aria-controls="palPop">{{icon:Palette}}</button>
+      <a class="btn filled dlbtn" href="#download">{{icon:Download}}<span data-i18n="nav_download">Download</span></a>
+      <button type="button" class="ibtn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobile">{{icon:Menu}}</button>
+    </nav>
+    <div class="pop" id="palPop" role="dialog" aria-label="Theme colour"><h4 data-i18n="c_color">Theme colour</h4><div class="sw-grid" data-swatches></div></div>
+    <div class="mobile" id="mobile"><a href="#features" data-i18n="nav_features">Features</a><a href="#gallery" data-i18n="nav_gallery">Gallery</a><a href="#customize" data-i18n="nav_custom">Customize</a><a href="#faq" data-i18n="nav_faq">FAQ</a><a href="#download" data-i18n="nav_download">Download</a></div>
+  </div>
+</header>
+
+<main id="top-anchor">
+<section class="hero center" id="home">
+  <div class="blob" style="width:34rem;height:34rem;left:-12rem;top:-6rem"><svg viewBox="0 0 100 100"><path d="{{COOKIE_PATH}}" fill="currentColor"/></svg></div>
+  <div class="blob b2" style="width:22rem;height:22rem;right:-6rem;top:8rem"><svg viewBox="0 0 100 100"><path d="{{SOFT_PATH}}" fill="currentColor"/></svg></div>
+  <div class="blob b3" style="width:16rem;height:16rem;left:8%;bottom:6rem;opacity:.55"><svg viewBox="0 0 100 100"><path d="{{COOKIE_PATH}}" fill="currentColor"/></svg></div>
+  <div class="wrap">
+    <span class="eyebrow rv">{{icon:Sparkles}}<span data-i18n="hero_badge">Material 3 Expressive · Free and open source</span></span>
+    <h1 id="heroTitle" aria-label="Write Markdown beautifully"></h1>
+    <p class="lead" data-i18n="hero_sub">A desktop editor and viewer for Markdown with a live split preview, a command palette and 18 Material colours.</p>
+    <div class="cta">
+      <a class="btn filled lg" href="downloads/Material%20Readme_3.0.0_x64-setup.exe" download>{{icon:Download}}<span data-i18n="cta_download">Download for Windows</span></a>
+      <a class="btn tonal lg" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener">{{icon:Github}}<span data-i18n="cta_github">View on GitHub</span></a>
+    </div>
+    <p class="note" data-i18n="hero_note">Version 3.0.0 · Windows 10 and 11 · MIT licence</p>
+    <div class="stage" id="stage">
+      <div class="frame" id="frame"><img src="screenshots/image01.png" width="1920" height="1200" alt="Material Readme in split view with the outline, formatting toolbar and live preview" fetchpriority="high"></div>
+      <span class="chip-float a">{{icon:Columns2}}<span data-i18n="chip_a">Live split preview</span></span>
+      <span class="chip-float b">{{icon:Command}}<span data-i18n="chip_b">Command palette</span></span>
+      <span class="chip-float c">{{icon:Palette}}<span data-i18n="chip_c">18 Material colours</span></span>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true"><div class="track" id="track"></div></div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="center rv"><span class="eyebrow">{{icon:LayoutGrid}}<span data-i18n="f_eyebrow">Features</span></span><h2 class="t" data-i18n="f_title">Everything you need to write great docs</h2><p class="lead" data-i18n="f_sub">A calm, fast workspace with the details that make Markdown a pleasure.</p></div>
+    <div class="bento">
+      <article class="card hl w8 rv"><span class="ico">{{icon:Columns2}}</span><h3 data-i18n="f1_t">Live split preview</h3><p data-i18n="f1_d">Write on the left and watch the preview update block by block, with synchronized scrolling and an outline that follows you.</p></article>
+      <article class="card rv" style="--dl:60ms"><span class="ico">{{icon:Command}}</span><h3 data-i18n="f2_t">Command palette</h3><p data-i18n="f2_d">Press Ctrl+Shift+P to reach every action. Shortcuts cover the rest.</p></article>
+      <article class="card t2 rv"><span class="ico">{{icon:ImagePlus}}</span><h3 data-i18n="f3_t">Paste images</h3><p data-i18n="f3_d">Paste or drop an image and it is saved to an assets folder beside your file.</p></article>
+      <article class="card w8 rv" style="--dl:60ms"><span class="ico">{{icon:Palette}}</span><h3 data-i18n="f4_t">Make it yours</h3><p data-i18n="f4_d">18 Material colours, light, dark or system mode, three text sizes and seven fonts including Google Sans Flex, Roboto Flex and Be Vietnam Pro.</p></article>
+      <article class="card s2 rv"><span class="ico">{{icon:Languages}}</span><h3 data-i18n="f5_t">English and Tiếng Việt</h3><p data-i18n="f5_d">Switch the whole interface between two languages instantly.</p></article>
+      <article class="card rv" style="--dl:60ms"><span class="ico">{{icon:ShieldCheck}}</span><h3 data-i18n="f6_t">Never lose work</h3><p data-i18n="f6_d">Autosave, restored sessions with unsaved drafts, and a prompt when a file changes on disk.</p></article>
+      <article class="card t2 rv" style="--dl:120ms"><span class="ico">{{icon:LayoutTemplate}}</span><h3 data-i18n="f7_t">README helpers</h3><p data-i18n="f7_d">Templates, badges, a table of contents and a formatting toolbar for faster docs.</p></article>
+      <article class="card hl rv" style="--dl:180ms"><span class="ico">{{icon:Zap}}</span><h3 data-i18n="f8_t">Light as a feather</h3><p data-i18n="f8_d">Built with Tauri 2: a small installer that starts in a blink.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="gallery" style="background:var(--sc-low)">
+  <div class="wrap">
+    <div class="center rv"><span class="eyebrow">{{icon:Images}}<span data-i18n="g_eyebrow">Gallery</span></span><h2 class="t" data-i18n="g_title">See it in action</h2><p class="lead" data-i18n="g_sub">Light, dark, any colour. The same calm layout everywhere.</p></div>
+    <div class="gallery rv">
+      <div class="seg" id="tabs" role="tablist"></div>
+      <div class="shot"><div class="imgs" id="imgs">
+        <img src="screenshots/image01.png" width="1920" height="1200" alt="Split view in light pink" loading="lazy">
+        <img src="screenshots/image02.png" width="1920" height="1200" alt="Dark purple theme with the find bar" loading="lazy">
+        <img src="screenshots/image03.png" width="1920" height="1200" alt="Settings sheet with theme colours" loading="lazy">
+        <img src="screenshots/image04.png" width="1920" height="1200" alt="Vietnamese interface with the README template" loading="lazy">
+      </div></div>
+      <p class="cap" id="cap" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<section id="customize">
+  <div class="wrap">
+    <div class="center rv"><span class="eyebrow">{{icon:Paintbrush}}<span data-i18n="c_eyebrow">Personalize</span></span><h2 class="t" data-i18n="c_title">Pick a colour. The whole page follows.</h2><p class="lead" data-i18n="c_sub">Material Readme builds a full Material 3 Expressive palette from the colour you choose. Try it on this page.</p></div>
+    <div class="custom">
+      <div class="panel rv"><h3 data-i18n="c_mode">Mode</h3>
+        <div class="seg" id="modeSeg" role="radiogroup"><button type="button" data-mode="system" role="radio">{{icon:Monitor}}<span data-i18n="m_system">System</span></button><button type="button" data-mode="light" role="radio">{{icon:Sun}}<span data-i18n="m_light">Light</span></button><button type="button" data-mode="dark" role="radio">{{icon:Moon}}<span data-i18n="m_dark">Dark</span></button></div>
+        <h3 style="margin-top:1.75rem" data-i18n="c_color">Theme colour</h3><div class="sw-grid" data-swatches></div><small data-i18n="c_hint">Your choice is remembered on this device.</small></div>
+      <div class="panel demo rv" style="--dl:80ms"><h3 data-i18n="c_demo">Live palette</h3>
+        <div class="row"><a class="btn filled" href="#download" style="background:var(--primary);color:var(--on-primary)">{{icon:Download}}<span data-i18n="nav_download">Download</span></a><button class="btn tonal" type="button" style="background:var(--secondary-container);color:var(--on-secondary-container)">{{icon:Heart}}<span data-i18n="c_tonal">Tonal</span></button><button class="btn outlined" type="button" style="color:var(--on-primary-container)">{{icon:Star}}<span data-i18n="c_outlined">Outlined</span></button></div>
+        <div class="row"><span class="tone" style="background:var(--primary);color:var(--on-primary)">Primary</span><span class="tone" style="background:var(--secondary);color:var(--on-secondary)">Secondary</span><span class="tone" style="background:var(--tertiary);color:var(--on-tertiary)">Tertiary</span><span class="tone" style="background:var(--surface);color:var(--on-surface)">Surface</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="download" style="padding-top:2rem">
+  <div class="wrap"><div class="dl rv">
+    <div><h2 data-i18n="d_title">Get Material Readme</h2><p data-i18n="d_sub">Free for everyone, forever. Download the installer, or build it from source in three commands.</p>
+      <div class="acts"><a class="btn filled lg" href="downloads/Material%20Readme_3.0.0_x64-setup.exe" download>{{icon:Download}}<span data-i18n="d_btn">Download .exe (Windows x64)</span></a><a class="btn outlined lg" href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener">{{icon:Github}}<span data-i18n="d_src">Source code</span></a></div></div>
+    <ul class="req"><li>{{icon:MonitorCheck}}<span data-i18n="r1">Windows 10 or 11, 64-bit</span></li><li>{{icon:HardDrive}}<span data-i18n="r2">Small installer, no admin rights</span></li><li>{{icon:Scale}}<span data-i18n="r3">MIT licence, open source</span></li><li>{{icon:WifiOff}}<span data-i18n="r4">Works offline, files stay on your PC</span></li></ul>
+  </div></div>
+</section>
+
+<section id="faq" style="padding-top:2rem">
+  <div class="wrap"><div class="center rv"><h2 class="t" data-i18n="q_title">Questions, answered</h2></div>
+    <div class="faq rv" id="faqList"></div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><div class="foot"><span data-i18n="foot">Open source under the MIT licence.</span><a href="https://github.com/minhtrong67/my-tauri-apps" target="_blank" rel="noopener">github.com/minhtrong67/my-tauri-apps</a></div></div></footer>
+<button type="button" id="top" aria-label="Scroll to top">{{icon:ArrowUp}}</button>
+
+<script>
+/*PALETTES*/
+var NAMES={en:{red:'Red',pink:'Pink',purple:'Purple','deep-purple':'Deep purple',indigo:'Indigo',blue:'Blue','light-blue':'Light blue',cyan:'Cyan',teal:'Teal',green:'Green','light-green':'Light green',lime:'Lime',yellow:'Yellow',amber:'Amber',orange:'Orange','deep-orange':'Deep orange',brown:'Brown','blue-grey':'Blue grey'},vi:{red:'Đỏ',pink:'Hồng',purple:'Tím','deep-purple':'Tím than',indigo:'Chàm',blue:'Xanh dương','light-blue':'Xanh da trời',cyan:'Xanh lơ',teal:'Xanh mòng két',green:'Xanh lá','light-green':'Xanh lá nhạt',lime:'Chanh',yellow:'Vàng',amber:'Hổ phách',orange:'Cam','deep-orange':'Cam đậm',brown:'Nâu','blue-grey':'Xám xanh'}};
+var I18N={
+en:{skip:'Skip to content',nav_features:'Features',nav_gallery:'Gallery',nav_custom:'Customize',nav_faq:'FAQ',nav_download:'Download',
+hero_badge:'Material 3 Expressive · Free and open source',hero_title:'Write Markdown *beautifully*',hero_sub:'A desktop editor and viewer for Markdown with a live split preview, a command palette and 18 Material colours.',cta_download:'Download for Windows',cta_github:'View on GitHub',hero_note:'Version 3.0.0 · Windows 10 and 11 · MIT licence',
+chip_a:'Live split preview',chip_b:'Command palette',chip_c:'18 Material colours',
+f_eyebrow:'Features',f_title:'Everything you need to write great docs',f_sub:'A calm, fast workspace with the details that make Markdown a pleasure.',
+f1_t:'Live split preview',f1_d:'Write on the left and watch the preview update block by block, with synchronized scrolling and an outline that follows you.',f2_t:'Command palette',f2_d:'Press Ctrl+Shift+P to reach every action. Shortcuts cover the rest.',f3_t:'Paste images',f3_d:'Paste or drop an image and it is saved to an assets folder beside your file.',
+f4_t:'Make it yours',f4_d:'18 Material colours, light, dark or system mode, three text sizes and seven fonts including Google Sans Flex, Roboto Flex and Be Vietnam Pro.',f5_t:'English and Tiếng Việt',f5_d:'Switch the whole interface between two languages instantly.',f6_t:'Never lose work',f6_d:'Autosave, restored sessions with unsaved drafts, and a prompt when a file changes on disk.',f7_t:'README helpers',f7_d:'Templates, badges, a table of contents and a formatting toolbar for faster docs.',f8_t:'Light as a feather',f8_d:'Built with Tauri 2: a small installer that starts in a blink.',
+g_eyebrow:'Gallery',g_title:'See it in action',g_sub:'Light, dark, any colour. The same calm layout everywhere.',
+s1:'Split view',s1d:'Editor, outline and live preview side by side.',s2:'Dark theme',s2d:'Deep purple in dark mode, with find and highlight.',s3:'Settings',s3d:'Pick modes, colours, fonts and text size in one tidy sheet.',s4:'Tiếng Việt',s4d:'A fully translated interface with ready-made README templates.',
+c_eyebrow:'Personalize',c_title:'Pick a colour. The whole page follows.',c_sub:'Material Readme builds a full Material 3 Expressive palette from the colour you choose. Try it on this page.',c_mode:'Mode',c_color:'Theme colour',c_hint:'Your choice is remembered on this device.',c_demo:'Live palette',c_tonal:'Tonal',c_outlined:'Outlined',m_system:'System',m_light:'Light',m_dark:'Dark',
+d_title:'Get Material Readme',d_sub:'Free for everyone, forever. Download the installer, or build it from source in three commands.',d_btn:'Download .exe (Windows x64)',d_src:'Source code',r1:'Windows 10 or 11, 64-bit',r2:'Small installer, no admin rights',r3:'MIT licence, open source',r4:'Works offline, files stay on your PC',
+q_title:'Questions, answered',foot:'Open source under the MIT licence.',
+faq:[['Is Material Readme really free?','Yes. It is open source under the MIT licence, with no ads and no accounts.'],['Which systems are supported?','The installer is for Windows 10 and 11 (64-bit). Because it is built with Tauri, you can also build it from source for other platforms.'],['Does it upload my files?','Never. Everything runs on your computer and works offline. Only badge images from shields.io need the internet.'],['How do I build it myself?','Run npm install, then npm run dev to try it, and npm run build to create the installer.']]},
+vi:{skip:'Chuyển đến nội dung',nav_features:'Tính năng',nav_gallery:'Hình ảnh',nav_custom:'Tùy biến',nav_faq:'Hỏi đáp',nav_download:'Tải về',
+hero_badge:'Material 3 Expressive · Miễn phí và mã nguồn mở',hero_title:'Viết Markdown thật *đẹp*',hero_sub:'Trình soạn thảo và xem Markdown cho máy tính, có xem trước chia đôi trực tiếp, bảng lệnh và 18 màu Material.',cta_download:'Tải cho Windows',cta_github:'Xem trên GitHub',hero_note:'Phiên bản 3.0.0 · Windows 10 và 11 · Giấy phép MIT',
+chip_a:'Xem trước chia đôi',chip_b:'Bảng lệnh',chip_c:'18 màu Material',
+f_eyebrow:'Tính năng',f_title:'Mọi thứ bạn cần để viết tài liệu thật tốt',f_sub:'Không gian làm việc êm dịu, nhanh nhẹn với những chi tiết khiến Markdown trở nên dễ chịu.',
+f1_t:'Xem trước chia đôi trực tiếp',f1_d:'Viết bên trái, bản xem trước cập nhật từng khối ngay bên phải, cuộn đồng bộ và mục lục luôn bám theo bạn.',f2_t:'Bảng lệnh',f2_d:'Nhấn Ctrl+Shift+P để dùng mọi thao tác. Phím tắt lo phần còn lại.',f3_t:'Dán ảnh trực tiếp',f3_d:'Dán hoặc kéo thả ảnh, ảnh tự lưu vào thư mục assets cạnh tệp của bạn.',
+f4_t:'Của riêng bạn',f4_d:'18 màu Material, chế độ sáng, tối hoặc theo hệ thống, ba cỡ chữ và bảy font gồm Google Sans Flex, Roboto Flex và Be Vietnam Pro.',f5_t:'Tiếng Anh và Tiếng Việt',f5_d:'Đổi toàn bộ giao diện giữa hai ngôn ngữ ngay lập tức.',f6_t:'Không lo mất dữ liệu',f6_d:'Tự động lưu, khôi phục phiên cùng bản nháp chưa lưu, và nhắc khi tệp thay đổi trên đĩa.',f7_t:'Hỗ trợ viết README',f7_d:'Mẫu có sẵn, huy hiệu, mục lục tài liệu và thanh định dạng giúp viết tài liệu nhanh hơn.',f8_t:'Nhẹ như lông hồng',f8_d:'Xây dựng bằng Tauri 2: bộ cài nhỏ gọn, mở lên trong chớp mắt.',
+g_eyebrow:'Hình ảnh',g_title:'Xem thực tế',g_sub:'Sáng, tối, màu nào cũng được. Bố cục êm dịu như nhau ở mọi nơi.',
+s1:'Chia đôi',s1d:'Trình soạn thảo, mục lục và bản xem trước cạnh nhau.',s2:'Giao diện tối',s2d:'Màu tím than ở chế độ tối, kèm tìm kiếm và tô sáng.',s3:'Cài đặt',s3d:'Chọn chế độ, màu sắc, font và cỡ chữ trong một bảng gọn gàng.',s4:'Tiếng Việt',s4d:'Giao diện dịch đầy đủ cùng các mẫu README có sẵn.',
+c_eyebrow:'Cá nhân hóa',c_title:'Chọn một màu. Cả trang đổi theo.',c_sub:'Material Readme dựng bảng màu Material 3 Expressive đầy đủ từ màu bạn chọn. Thử ngay trên trang này.',c_mode:'Chế độ',c_color:'Màu chủ đề',c_hint:'Lựa chọn của bạn được ghi nhớ trên thiết bị này.',c_demo:'Bảng màu trực tiếp',c_tonal:'Tông màu',c_outlined:'Viền',m_system:'Hệ thống',m_light:'Sáng',m_dark:'Tối',
+d_title:'Tải Material Readme',d_sub:'Miễn phí cho mọi người, mãi mãi. Tải bộ cài hoặc tự build từ mã nguồn chỉ với ba lệnh.',d_btn:'Tải .exe (Windows x64)',d_src:'Mã nguồn',r1:'Windows 10 hoặc 11, 64-bit',r2:'Bộ cài nhỏ, không cần quyền quản trị',r3:'Giấy phép MIT, mã nguồn mở',r4:'Chạy ngoại tuyến, tệp ở lại máy bạn',
+q_title:'Câu hỏi thường gặp',foot:'Mã nguồn mở theo giấy phép MIT.',
+faq:[['Material Readme có thật sự miễn phí?','Có. Đây là mã nguồn mở theo giấy phép MIT, không quảng cáo và không cần tài khoản.'],['Hỗ trợ những hệ điều hành nào?','Bộ cài dành cho Windows 10 và 11 (64-bit). Vì xây dựng bằng Tauri nên bạn cũng có thể tự build từ mã nguồn cho nền tảng khác.'],['Ứng dụng có tải tệp của tôi lên không?','Không bao giờ. Mọi thứ chạy trên máy bạn và hoạt động ngoại tuyến. Chỉ ảnh huy hiệu từ shields.io mới cần internet.'],['Làm sao để tự build?','Chạy npm install, sau đó npm run dev để thử và npm run build để tạo bộ cài.']]}};
+
+(function(){
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var root=document.documentElement,mq=matchMedia('(prefers-color-scheme: dark)'),rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var S={mode:'system',seed:'pink',lang:(navigator.language||'en').toLowerCase().indexOf('vi')===0?'vi':'en'};
+try{Object.assign(S,JSON.parse(localStorage.getItem('mr-landing')||'{}'))}catch(e){}
+var save=function(){try{localStorage.setItem('mr-landing',JSON.stringify(S))}catch(e){}};
+var isDark=function(){return S.mode==='dark'||(S.mode==='system'&&mq.matches)};
+var MAP={primary:'--primary',onPrimary:'--on-primary',primaryContainer:'--primary-container',onPrimaryContainer:'--on-primary-container',secondary:'--secondary',onSecondary:'--on-secondary',secondaryContainer:'--secondary-container',onSecondaryContainer:'--on-secondary-container',tertiary:'--tertiary',onTertiary:'--on-tertiary',tertiaryContainer:'--tertiary-container',onTertiaryContainer:'--on-tertiary-container',surface:'--surface',onSurface:'--on-surface',onSurfaceVariant:'--on-surface-variant',scLow:'--sc-low',sc:'--sc',scHigh:'--sc-high',scHighest:'--sc-highest',outline:'--outline',outlineVariant:'--outline-variant',inverseSurface:'--inverse-surface',inverseOnSurface:'--inverse-on-surface'};
+function paint(){var p=PALETTES[S.seed]||PALETTES.pink,c=p[isDark()?'dark':'light'];for(var k in MAP)root.style.setProperty(MAP[k],c[k]);root.dataset.theme=isDark()?'dark':'light';root.dataset.mode=S.mode;root.style.colorScheme=isDark()?'dark':'light';$('#meta-theme').setAttribute('content',c.surface);
+  $$('[data-mode]',$('#modeSeg')).forEach(function(b){b.classList.toggle('on',b.dataset.mode===S.mode);b.setAttribute('aria-checked',b.dataset.mode===S.mode)});
+  $$('.sw').forEach(function(b){var on=b.dataset.seed===S.seed;b.classList.toggle('on',on);b.setAttribute('aria-checked',on)})}
+function reveal(fn,x,y){var vt=document.startViewTransition;if(!vt||rm||x==null){fn();return}var end=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));var t=vt.call(document,fn);t.ready.then(function(){root.animate({clipPath:['circle(0px at '+x+'px '+y+'px)','circle('+end+'px at '+x+'px '+y+'px)']},{duration:600,easing:'cubic-bezier(.2,0,0,1)',pseudoElement:'::view-transition-new(root)'})}).catch(function(){})}
+var mid=function(e){var r=e.currentTarget.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2]};
+function setMode(m,e){var o=e?mid(e):[null,null];reveal(function(){S.mode=m;save();paint()},o[0],o[1])}
+function setSeed(s,e){var o=e?mid(e):[null,null];reveal(function(){S.seed=s;save();paint()},o[0],o[1])}
+mq.addEventListener('change',function(){if(S.mode==='system')paint()});
+$('#modeBtn').addEventListener('click',function(e){setMode(S.mode==='system'?'light':S.mode==='light'?'dark':'system',e)});
+$$('[data-mode]',$('#modeSeg')).forEach(function(b){b.addEventListener('click',function(e){setMode(b.dataset.mode,e)})});
+
+/* swatches */
+var CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+var LIGHT={yellow:1,lime:1,amber:1,'light-green':1};
+$$('[data-swatches]').forEach(function(g){Object.keys(PALETTES).forEach(function(id){var b=document.createElement('button');b.type='button';b.className='sw'+(LIGHT[id]?' lt':'');b.dataset.seed=id;b.setAttribute('role','radio');b.style.setProperty('--c',PALETTES[id].seed);b.innerHTML=CHECK;b.addEventListener('click',function(e){setSeed(id,e)});g.appendChild(b)})});
+
+/* language */
+function setLang(l){S.lang=l;save();root.lang=l;var d=I18N[l];
+  $$('[data-i18n]').forEach(function(el){var v=d[el.dataset.i18n];if(v!=null)el.textContent=v});
+  $$('#langSeg button').forEach(function(b){var on=b.dataset.lang===l;b.classList.toggle('on',on);b.setAttribute('aria-checked',on)});
+  $$('.sw').forEach(function(b){var n=NAMES[l][b.dataset.seed];b.title=n;b.setAttribute('aria-label',n)});
+  heroTitle(d.hero_title);tabs(d);faq(d.faq);
+  document.title=l==='vi'?'Material Readme: Trình soạn thảo và xem Markdown theo phong cách Material 3 Expressive':'Material Readme: Markdown editor and viewer in Material 3 Expressive';
+  $('meta[name=description]').setAttribute('content',l==='vi'?'Material Readme là ứng dụng máy tính miễn phí, mã nguồn mở để viết và xem trước Markdown. Xem trước chia đôi, bảng lệnh, 18 màu Material, giao diện sáng tối, tiếng Anh và tiếng Việt.':'Material Readme is a free, open source desktop app to write, preview and polish Markdown. Live split preview, command palette, 18 Material colours, light and dark themes, English and Vietnamese.')}
+$$('#langSeg button').forEach(function(b){b.addEventListener('click',function(){setLang(b.dataset.lang)})});
+function heroTitle(t){var h=$('#heroTitle');h.innerHTML='';h.setAttribute('aria-label',t.replace(/\*/g,''));var i=0;t.split(' ').forEach(function(w){var s=document.createElement('span');s.className='w';s.setAttribute('aria-hidden','true');s.style.setProperty('--i',i++);var em=/^\*.*\*$/.test(w);s.innerHTML=em?'<em>'+w.replace(/\*/g,'')+'</em>':w;h.appendChild(s);h.appendChild(document.createTextNode(' '))})}
+var cur=0;function tabs(d){var seg=$('#tabs'),cap=$('#cap');seg.innerHTML='';[1,2,3,4].forEach(function(n,i){var b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.textContent=d['s'+n];b.className=i===cur?'on':'';b.addEventListener('click',function(){show(i,true)});seg.appendChild(b)});show(cur,false)}
+function show(i,user){cur=i;var d=I18N[S.lang];$$('#imgs img').forEach(function(im,k){im.classList.toggle('on',k===i)});$$('#tabs button').forEach(function(b,k){b.classList.toggle('on',k===i);b.setAttribute('aria-selected',k===i)});$('#cap').innerHTML='<b>'+d['s'+(i+1)]+'</b>'+d['s'+(i+1)+'d'];if(user)clearInterval(auto)}
+var auto=setInterval(function(){if(!document.hidden&&inView('#gallery'))show((cur+1)%4,false)},5200);
+function inView(s){var r=$(s).getBoundingClientRect();return r.top<innerHeight&&r.bottom>0}
+function faq(list){var el=$('#faqList');el.innerHTML='';list.forEach(function(q,i){var d=document.createElement('details');if(i===0)d.open=true;d.innerHTML='<summary><span></span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><p></p>';d.querySelector('span').textContent=q[0];d.querySelector('p').textContent=q[1];el.appendChild(d)})}
+var TECH=['Tauri 2','React','TypeScript','Vite','Tailwind CSS','Material 3 Expressive','CodeMirror 6','Rust','Lucide icons','Google Sans Flex','Roboto Flex','Be Vietnam Pro'];
+$('#track').innerHTML=TECH.concat(TECH).map(function(t){return '<span>'+t+'</span>'}).join('');
+
+/* popovers */
+var pal=$('#palPop'),palBtn=$('#palBtn'),mob=$('#mobile'),menuBtn=$('#menuBtn');
+function toggle(el,btn,on){var o=on==null?!el.classList.contains('open'):on;el.classList.toggle('open',o);btn.setAttribute('aria-expanded',o);btn.classList.toggle('on',o)}
+palBtn.addEventListener('click',function(e){e.stopPropagation();toggle(mob,menuBtn,false);toggle(pal,palBtn)});
+menuBtn.addEventListener('click',function(e){e.stopPropagation();toggle(pal,palBtn,false);toggle(mob,menuBtn)});
+document.addEventListener('click',function(e){if(!pal.contains(e.target))toggle(pal,palBtn,false);if(!mob.contains(e.target))toggle(mob,menuBtn,false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){toggle(pal,palBtn,false);toggle(mob,menuBtn,false)}});
+
+/* smooth scroll for in-page links */
+$$('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){var id=a.getAttribute('href');if(id==='#'||id.length<2)return;var t=$(id);if(!t)return;e.preventDefault();t.scrollIntoView({behavior:rm?'auto':'smooth',block:'start'});history.replaceState(null,'',id);toggle(mob,menuBtn,false);toggle(pal,palBtn,false)})});
+$('#top').addEventListener('click',function(){scrollTo({top:0,behavior:rm?'auto':'smooth'});history.replaceState(null,'',location.pathname)});
+
+/* scroll effects: progress bar, back to top, active link */
+var secs=['features','gallery','customize','faq'].map(function(id){return document.getElementById(id)});
+function onScroll(){var h=document.documentElement,max=h.scrollHeight-innerHeight;$('#progress').style.transform='scaleX('+(max>0?scrollY/max:0)+')';$('#top').classList.toggle('on',scrollY>700);
+  var act=null;secs.forEach(function(s){if(s.getBoundingClientRect().top<innerHeight*.4)act=s.id});$$('.links a,.mobile a').forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+act)})}
+var ticking=false;addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(function(){onScroll();ticking=false})}},{passive:true});onScroll();
+
+/* reveal on scroll */
+if('IntersectionObserver' in window&&!rm){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -6% 0px'});$$('.rv').forEach(function(el){io.observe(el)})}else $$('.rv').forEach(function(el){el.classList.add('in')});
+
+/* hero tilt */
+var stage=$('#stage'),frame=$('#frame');if(!rm&&matchMedia('(hover:hover)').matches){stage.addEventListener('pointermove',function(e){var r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;frame.style.setProperty('--ry',(x*7).toFixed(2)+'deg');frame.style.setProperty('--rx',(-y*6).toFixed(2)+'deg')});stage.addEventListener('pointerleave',function(){frame.style.setProperty('--rx','0deg');frame.style.setProperty('--ry','0deg')})}
+
+/* ripple */
+document.addEventListener('pointerdown',function(e){var el=e.target.closest&&e.target.closest('.btn,.ibtn');if(!el)return;var r=el.getBoundingClientRect(),s=Math.hypot(r.width,r.height)*2,n=document.createElement('span');n.className='rp';n.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(e.clientX-r.left-s/2)+'px;top:'+(e.clientY-r.top-s/2)+'px';el.appendChild(n);n.addEventListener('animationend',function(){n.remove()})});
+
+paint();setLang(S.lang);
+})();
+</script>
+</body>
+</html>

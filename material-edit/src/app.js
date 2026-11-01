@@ -24,6 +24,8 @@ import {
 import { takeScreenshot } from './screenshot.js';
 import { openExport, setExportToast, warmExport } from './exporter.js';
 import { $, $$, fmtTime, baseName, stripExt, clamp, uid, h } from './util.js';
+import { initExpressive, toast as xToast, setToastLabels } from './expressive.js';
+import { initPalette, openPalette } from './palette.js';
 
 /* ------------------------------------------------------------------ */
 /*  Motion helpers                                                    */
@@ -57,23 +59,18 @@ document.addEventListener('pointerdown', (e) => {
 /* ------------------------------------------------------------------ */
 /*  Toast, confirm, prompt                                            */
 /* ------------------------------------------------------------------ */
-let toastTimer;
-export function toast(msg, ms = 3400) {
-  const s = $('#snackbar');
-  s.textContent = msg;
-  s.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => s.classList.remove('show'), ms);
-}
+export const toast = xToast;
 setExportToast(toast);
 
-function askConfirm({ title, msg, yes, no, cancel = true }) {
+function askConfirm({ title, msg, yes, no, cancel = true, danger = false, yesIcon = 'check' }) {
   return new Promise((resolve) => {
     const dlg = $('#dlg-confirm');
     $('#cf-title').textContent = title;
     $('#cf-msg').textContent = msg;
     const bYes = $('#cf-yes'), bNo = $('#cf-no'), bCancel = $('#cf-cancel');
-    bYes.textContent = yes; bNo.textContent = no; bCancel.hidden = !cancel;
+    bYes.querySelector('span').textContent = yes; bNo.querySelector('span').textContent = no; bCancel.hidden = !cancel;
+    bYes.classList.toggle('danger', danger); bYes.classList.toggle('filled', !danger);
+    bYes.querySelector('use').setAttribute('href', '#i-' + yesIcon);
     const fin = (v) => { bYes.onclick = bNo.onclick = bCancel.onclick = dlg.oncancel = null; if (dlg.open) dlg.close(); resolve(v); };
     bYes.onclick = () => fin('yes');
     bNo.onclick = () => fin('no');
@@ -88,7 +85,7 @@ function askPrompt({ title, value = '', ok }) {
     const dlg = $('#dlg-prompt');
     const input = $('#pr-input');
     $('#pr-title').textContent = title;
-    $('#pr-ok').textContent = ok || t('btn.ok');
+    $('#pr-ok-t').textContent = ok || t('btn.ok');
     input.value = value;
     const fin = (v) => { $('#pr-ok').onclick = $('#pr-cancel').onclick = dlg.oncancel = input.onkeydown = null; if (dlg.open) dlg.close(); resolve(v); };
     $('#pr-ok').onclick = () => fin(input.value);
@@ -189,8 +186,8 @@ $('#btn-exdir').addEventListener('click', async () => {
 });
 $('#btn-exdir-clear').addEventListener('click', () => { settings.export.dir = ''; saveSettings(); showExDir(); });
 $('#seg-start').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; settings.start = b.dataset.start; saveSettings(); syncStart(); });
-$('#btn-reset-layout').addEventListener('click', () => { resetLayout(); toast(t('settings.resetDone')); });
-$('#btn-reset-export').addEventListener('click', () => { settings.export = { ...DEFAULTS.export }; saveSettings(); showExDir(); toast(t('settings.resetDone')); });
+$('#btn-reset-layout').addEventListener('click', () => { resetLayout(); toast(t('settings.resetDone'), 3400, 'success'); });
+$('#btn-reset-export').addEventListener('click', () => { settings.export = { ...DEFAULTS.export }; saveSettings(); showExDir(); toast(t('settings.resetDone'), 3400, 'success'); });
 
 /* ------------------------------------------------------------------ */
 /*  Title, save status, transport UI                                  */
@@ -265,10 +262,10 @@ export async function saveToLibrary(silent = false) {
     await job;
     markDirty(false);
     updateChrome();
-    if (!silent) toast(t('toast.savedLib'));
+    if (!silent) toast(t('toast.savedLib'), 3400, 'success');
     return true;
   } catch (err) {
-    toast(t('toast.error', { msg: err.message || err }), 6000);
+    toast(t('toast.error', { msg: err.message || err }), 6000, 'error');
     return false;
   } finally { saving = null; }
 }
@@ -308,7 +305,7 @@ $('#tp-mute').addEventListener('click', () => { vol.value = settings.vol > 0 ? 0
 
 $('#btn-undo').addEventListener('click', undo);
 $('#btn-redo').addEventListener('click', redo);
-$('#tl-split').addEventListener('click', () => { if (!splitAt()) toast(t('toast.splitNone')); });
+$('#tl-split').addEventListener('click', () => { if (!splitAt()) toast(t('toast.splitNone'), 3400, 'warning'); });
 $('#tl-dup').addEventListener('click', duplicateSelected);
 $('#tl-del').addEventListener('click', deleteSelected);
 const toggleSnap = () => { state.snap = !state.snap; updateChrome(); };
@@ -456,8 +453,8 @@ stage.addEventListener('dblclick', (e) => { if (fsOn && e.target.closest('#stage
 /*  Import (native picker / drag & drop)                              */
 /* ------------------------------------------------------------------ */
 async function afterImport({ added, failed }, addToTimeline) {
-  if (failed.length) toast(t('toast.importFailed', { names: failed.slice(0, 3).join(', ') }), 6000);
-  else toast(t('toast.imported', { n: added.length }));
+  if (failed.length) toast(t('toast.importFailed', { names: failed.slice(0, 3).join(', ') }), 6000, 'warning');
+  else toast(t('toast.imported', { n: added.length }), 3400, 'success');
   if (addToTimeline && added.length === 1 && !added[0].offline) placeMedia(added[0], 'main');
   emit('change');
 }
@@ -474,15 +471,15 @@ async function doImportPaths(paths, addToTimeline = false) {
 async function importPicker() {
   if (isHomeOpen()) await newProject();
   if (inTauri) {
-    try { const paths = await pickMediaPaths(); if (paths.length) doImportPaths(paths); } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000); }
+    try { const paths = await pickMediaPaths(); if (paths.length) doImportPaths(paths); } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000, 'error'); }
   } else $('#file-import').click();
 }
 async function locateMedia(m) {
   if (!inTauri) { $('#file-import').click(); toast(t('media.locateHint', { name: m.name }), 6000); return; }
   try {
     const [p] = await pickMediaPaths(true);
-    if (p) { await relinkPath(m.id, p); toast(t('media.relinked', { name: m.name })); }
-  } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000); }
+    if (p) { await relinkPath(m.id, p); toast(t('media.relinked', { name: m.name }), 3400, 'success'); }
+  } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000, 'error'); }
 }
 setPanelHandlers({ toast, importFiles: importPicker, locate: locateMedia });
 $('#file-import').addEventListener('change', (e) => { const f = [...e.target.files]; e.target.value = ''; doImport(f); });
@@ -547,7 +544,7 @@ async function afterLoad() {
   updateChrome();
   await restoreMedia();
   const off = state.media.filter((m) => m.offline).length;
-  if (off) toast(t('toast.openedOffline', { n: off }), 7000);
+  if (off) toast(t('toast.openedOffline', { n: off }), 7000, 'warning');
   updateChrome();
   fitStage();
 }
@@ -560,7 +557,7 @@ async function openFromLibrary(id) {
     state.cover = data.cover || null;
     hideHome();
     await afterLoad();
-  } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000); }
+  } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000, 'error'); }
 }
 
 /** Adds a project file from disk to the library (as a new project) and opens it. */
@@ -574,14 +571,14 @@ async function importProjectData(text, fallbackName) {
   await openFromLibrary(data.id);
 }
 async function openProjectPath(path) {
-  try { await saveToLibrary(true); await importProjectData(await readText(path), stripExt(baseName(path))); } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000); }
+  try { await saveToLibrary(true); await importProjectData(await readText(path), stripExt(baseName(path))); } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000, 'error'); }
 }
 async function openProjectFile(file) {
-  try { await saveToLibrary(true); await importProjectData(await file.text(), stripExt(file.name)); } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000); }
+  try { await saveToLibrary(true); await importProjectData(await file.text(), stripExt(file.name)); } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000, 'error'); }
 }
 async function openFilePicker() {
   if (inTauri) {
-    try { const p = await pickOpenPath(projFilters()); if (p) await openProjectPath(p); } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000); }
+    try { const p = await pickOpenPath(projFilters()); if (p) await openProjectPath(p); } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000, 'error'); }
   } else { const inp = $('#file-project'); inp.value = ''; inp.click(); }
 }
 $('#file-project').addEventListener('change', (e) => { const f = e.target.files[0]; if (f) openProjectFile(f); });
@@ -593,14 +590,14 @@ async function saveCopy() {
     if (!path) return false;
     const full = /\.(medit|mvep)$/i.test(path) ? path : path + '.medit';
     await writeText(full, JSON.stringify(toProject({ cover: state.cover })));
-    toast(t('toast.copySaved', { name: baseName(full) }));
+    toast(t('toast.copySaved', { name: baseName(full) }), 3400, 'success');
     return true;
-  } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000); return false; }
+  } catch (err) { toast(t('toast.error', { msg: err.message || err }), 6000, 'error'); return false; }
 }
 
 async function goHome() {
   if (isHomeOpen()) return;
-  if (engine.isExporting()) { toast(t('export.busy')); return; }
+  if (engine.isExporting()) { toast(t('export.busy'), 3400, 'warning'); return; }
   if (fsOn) await setFullscreen(false);
   engine.pause();
   await saveToLibrary(true);
@@ -669,9 +666,9 @@ const COMMANDS = {
   fullscreen: toggleFullscreen,
   escape: () => { if (fsOn) setFullscreen(false); else if (!fileMenu.hidden) toggleMenu(false); else { clearMediaSel(); E.clearSelection(); } },
   selectAll: () => { if (mediaZone === 'media') selectAllMedia(); else E.selectAllClips(); },
-  split: () => { if (!splitAt()) toast(t('toast.splitNone')); },
-  trimLeft: () => { if (!E.trimToPlayhead('left')) toast(t('toast.splitNone')); },
-  trimRight: () => { if (!E.trimToPlayhead('right')) toast(t('toast.splitNone')); },
+  split: () => { if (!splitAt()) toast(t('toast.splitNone'), 3400, 'warning'); },
+  trimLeft: () => { if (!E.trimToPlayhead('left')) toast(t('toast.splitNone'), 3400, 'warning'); },
+  trimRight: () => { if (!E.trimToPlayhead('right')) toast(t('toast.splitNone'), 3400, 'warning'); },
   delete: () => { if (!deleteSelectedMedia()) deleteSelected(); },
   rippleDelete: E.rippleDelete,
   duplicate: duplicateSelected,
@@ -687,8 +684,38 @@ const COMMANDS = {
   fit: () => $('#tl-fit').click(),
   new: newProject, home: goHome, openFile: openFilePicker, save: () => saveToLibrary(false), saveAs: saveCopy,
   import: importPicker, export: openExport, shortcuts: openShortcuts, settings: openSettings,
+  palette: () => openPalette(),
 };
 initShortcuts(COMMANDS, { blocked: () => engine.isExporting(), onHome: isHomeOpen });
+const editing = () => !isHomeOpen();
+initPalette([
+  { id: 'new', label: 'cmd.new', icon: 'new', keys: 'Ctrl+N', run: newProject },
+  { id: 'home', label: 'cmd.home', icon: 'home', keys: 'Ctrl+Shift+H', run: goHome, enabled: editing },
+  { id: 'open', label: 'cmd.open', icon: 'open', keys: 'Ctrl+O', run: openFilePicker },
+  { id: 'save', label: 'cmd.save', icon: 'save', keys: 'Ctrl+S', run: () => saveToLibrary(false), enabled: editing },
+  { id: 'saveas', label: 'cmd.saveAs', icon: 'export', keys: 'Ctrl+Shift+S', run: saveCopy, enabled: editing },
+  { id: 'import', label: 'cmd.import', icon: 'film', keys: 'Ctrl+I', run: importPicker, enabled: editing },
+  { id: 'export', label: 'cmd.export', icon: 'export', keys: 'Ctrl+E', run: openExport, enabled: editing },
+  { id: 'play', label: 'cmd.play', icon: 'play', keys: 'Space', run: engine.toggle, enabled: editing },
+  { id: 'start', label: 'cmd.toStart', icon: 'first', keys: 'Home', run: COMMANDS.toStart, enabled: editing },
+  { id: 'end', label: 'cmd.toEnd', icon: 'last', keys: 'End', run: COMMANDS.toEnd, enabled: editing },
+  { id: 'split', label: 'cmd.split', icon: 'split', keys: 'S', run: COMMANDS.split, enabled: editing },
+  { id: 'duplicate', label: 'cmd.duplicate', icon: 'copy', keys: 'Ctrl+D', run: duplicateSelected, enabled: editing },
+  { id: 'delete', label: 'cmd.delete', icon: 'trash', keys: 'Delete', run: COMMANDS.delete, enabled: editing },
+  { id: 'mute', label: 'cmd.mute', icon: 'mute', keys: 'M', run: E.toggleMute, enabled: editing },
+  { id: 'text', label: 'cmd.addText', icon: 'text', keys: 'T', run: () => addTextAt(), enabled: editing },
+  { id: 'undo', label: 'cmd.undo', icon: 'undo', keys: 'Ctrl+Z', run: undo, enabled: editing },
+  { id: 'redo', label: 'cmd.redo', icon: 'redo', keys: 'Ctrl+Y', run: redo, enabled: editing },
+  { id: 'snap', label: 'cmd.snap', icon: 'magnet', keys: 'N', run: toggleSnap, enabled: editing },
+  { id: 'fit', label: 'cmd.fit', icon: 'fit', keys: 'Shift+Z', run: COMMANDS.fit, enabled: editing },
+  { id: 'zoomin', label: 'cmd.zoomIn', icon: 'plus', keys: '=', run: COMMANDS.zoomIn, enabled: editing },
+  { id: 'zoomout', label: 'cmd.zoomOut', icon: 'minus', keys: '-', run: COMMANDS.zoomOut, enabled: editing },
+  { id: 'fullscreen', label: 'cmd.fullscreen', icon: 'fullscreen', keys: 'F', run: toggleFullscreen, enabled: editing },
+  { id: 'screenshot', label: 'cmd.screenshot', icon: 'camera', run: shot, enabled: editing },
+  { id: 'theme', label: 'cmd.theme', icon: 'sun', run: () => $('#btn-theme').click() },
+  { id: 'settings', label: 'cmd.settings', icon: 'gear', keys: 'Ctrl+,', run: openSettings },
+  { id: 'shortcuts', label: 'cmd.shortcuts', icon: 'keyboard', keys: 'Ctrl+/', run: openShortcuts },
+]);
 void msg;
 
 /* ------------------------------------------------------------------ */
@@ -702,6 +729,11 @@ fitStage();
 engine.start();
 layout();
 updateChrome();
+
+$('#home-new').addEventListener('click', () => COMMANDS.new());
+$('#home-open').addEventListener('click', () => COMMANDS.openFile());
+initExpressive({ scrollLabel: t('tip.top') });
+setToastLabels(t('btn.close'));
 
 async function boot() {
   const w = currentWindow();
@@ -724,4 +756,4 @@ async function boot() {
 }
 boot();
 
-window.__mve = { state, engine, edit: E, placeMedia, doImport, removeMedia, buildTimeline, saveToLibrary, goHome, openFromLibrary, newProject, refreshHome, settings };
+if (!inTauri || localStorage.getItem('mve.debug') === '1') window.__mve = { state, engine, edit: E, placeMedia, doImport, removeMedia, buildTimeline, saveToLibrary, goHome, openFromLibrary, newProject, refreshHome, settings };

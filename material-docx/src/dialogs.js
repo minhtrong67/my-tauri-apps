@@ -5,8 +5,8 @@ import { t, lang } from './i18n.js';
 import { doc, bus, PAPERS, MARGIN_PRESETS } from './state.js';
 import { settings, saveSettings, units, DEFAULTS } from './settings.js';
 import { SWATCHES } from './theme.js';
-import { formDialog, closePopup, openPopover, toast, askConfirm } from './popup.js';
-import { refreshTheme, setTheme, setSeed, refreshLanguage, applyUiFont } from './appearance.js';
+import { formDialog, closePopup, openPopover, toast, askConfirm, select as csel } from './popup.js';
+import { refreshTheme, setTheme, setSeed, refreshLanguage, applyUiFont, applyUiSize } from './appearance.js';
 import { FONTS, SIZES, SYMBOLS, insertText, setParagraph, setLink, currentLink, removeLink, formatDate, setHeaderFooter, queryState, setFont, setSize, setColor, toggle } from './cmds.js';
 import { insertTable, TABLE_STYLES, splitCell } from './tables.js';
 import { setImageSize, imageSize, setAlt } from './images.js';
@@ -160,8 +160,8 @@ export async function openLinkDialog() {
       { id: 'text', type: 'text', label: t('link.text'), value: a ? a.textContent : selText, wide: true },
       { id: 'url', type: 'text', label: t('link.address'), value: a ? a.getAttribute('href') : 'https://', wide: true, placeholder: 'https://' },
     ],
-    onOk: (v) => { if (!v.url.trim() || v.url.trim() === 'https://') { toast(t('toast.emptyUrl')); return false; } return true; },
-    extra: () => (a ? el('button', { class: 'btn text danger', type: 'button', text: t('link.remove'), onclick: () => { document.querySelector('dialog.form [data-cancel]')?.click(); removeLink(); } }) : el('span')),
+    onOk: (v) => { if (!v.url.trim() || v.url.trim() === 'https://') { toast.warning(t('toast.emptyUrl')); return false; } return true; },
+    extra: () => (a ? el('button', { class: 'btn tonal danger-soft', type: 'button', html: icon('trash') + `<span>${esc(t('link.remove'))}</span>`, onclick: () => { document.querySelector('dialog.form [data-cancel]')?.click(); removeLink(); } }) : el('span')),
   });
   if (!r) return;
   let url = r.url.trim();
@@ -311,21 +311,21 @@ export function aboutNode() {
   w.innerHTML = `
     <svg viewBox="0 0 32 32" class="about-logo"><rect width="32" height="32" rx="8" fill="var(--md-primary)"/><path d="M9 8h9l5 5v11a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" fill="var(--md-on-primary)"/><path d="M18 8v5h5z" fill="var(--md-primary-container)"/><path d="M11 17h10M11 20.500h10M11 24h6" stroke="var(--md-primary)" stroke-width="1.700" stroke-linecap="round"/></svg>
     <h3>Material Docx</h3>
-    <p class="about-v">${esc(t('about.version'))} 2.0.0</p>
+    <p class="about-v">${esc(t('about.version'))} 2.3.0</p>
     <p class="about-d">${esc(t('about.desc'))}</p>
     <div class="credit"><span>${esc(t('about.by'))}</span><b class="author">minhtrong67</b><span>${esc(t('about.with'))}</span><b class="ai">Claude</b></div>`;
   return w;
 }
 export function openAbout() {
   const dlg = el('dialog', { class: 'dialog confirm about-dlg' });
-  dlg.append(aboutNode(), el('div', { class: 'dlg-actions' }, el('span', { class: 'spacer' }), el('button', { class: 'btn filled', type: 'button', text: t('btn.close'), onclick: () => { dlg.close(); setTimeout(() => dlg.remove(), 250); } })));
+  dlg.append(aboutNode(), el('div', { class: 'dlg-actions' }, el('span', { class: 'spacer' }), el('button', { class: 'btn filled', type: 'button', html: icon('close') + `<span>${esc(t('btn.close'))}</span>`, onclick: () => { dlg.close(); setTimeout(() => dlg.remove(), 250); } })));
   document.body.append(dlg);
   dlg.addEventListener('cancel', (e) => { e.preventDefault(); dlg.close(); setTimeout(() => dlg.remove(), 250); });
   dlg.showModal();
 }
 
 /* ------------------------------ settings ------------------------------ */
-const UI_FONTS = ['Segoe UI', 'Roboto', 'Inter', 'Arial', 'Calibri', 'Tahoma', 'Verdana', 'Trebuchet MS', 'Georgia', 'Times New Roman', 'Consolas'];
+export const UI_FONTS = ['Roboto', 'Inter', 'Open Sans', 'Lexend', 'Noto Sans']; // bundled with the app (src/fonts)
 
 export function openSettings(startPage) {
   if ($('#dlg-settings')) return;
@@ -350,13 +350,7 @@ export function openSettings(startPage) {
     paint();
     return seg;
   };
-  const select = (opts, get, set) => {
-    const s = el('select', { class: 'select' });
-    for (const [v, l] of opts) s.append(el('option', { value: v, text: l }));
-    s.value = get();
-    s.onchange = () => set(s.value);
-    return s;
-  };
+  const select = (opts, get, set) => csel({ options: opts, value: get(), onChange: set });
   const toggle = (get, set) => {
     const i = el('input', { type: 'checkbox', class: 'switch' });
     i.checked = !!get();
@@ -379,7 +373,7 @@ export function openSettings(startPage) {
   custom.oninput = () => { setSeed(custom.value); paintSw(); };
   swatches.append(el('label', { class: 'swatch custom', title: t('set.customColor') }, el('span', { html: icon('accent') }), custom));
   paintSw();
-  const resetColor = el('button', { class: 'btn text sm', type: 'button', text: t('set.resetColor'), onclick: () => { setSeed(DEFAULTS.seed); custom.value = DEFAULTS.seed; paintSw(); } });
+  const resetColor = el('button', { class: 'btn tonal sm', type: 'button', html: icon('undo') + `<span>${esc(t('set.resetColor'))}</span>`, onclick: () => { setSeed(DEFAULTS.seed); custom.value = DEFAULTS.seed; paintSw(); } });
 
   const uiFontSel = select([['system', t('set.fontSystem')], ...UI_FONTS.map((f) => [f, f])], () => settings.uiFont || 'system', (v) => { settings.uiFont = v; saveSettings(); applyUiFont(); });
 
@@ -389,14 +383,16 @@ export function openSettings(startPage) {
       row(t('set.theme'), segBtns([['light', t('theme.light'), 'sun'], ['dark', t('theme.dark'), 'moon'], ['system', t('theme.system'), 'auto']], () => settings.theme, (v) => setTheme(v)), t('set.themeD'), 'accent'),
       row(t('set.darkPage'), toggle(() => settings.darkPage, (v) => { settings.darkPage = v; saveSettings(); refreshTheme(); }), t('set.darkPageD'), 'moon')),
     card(stack(t('set.accent'), t('set.accentD'), swatches), el('div', { class: 'set-foot' }, resetColor)),
-    card(row(t('set.uiFont'), uiFontSel, t('set.uiFontD'), 'textcolor')));
+    card(
+      row(t('set.uiFont'), uiFontSel, t('set.uiFontD'), 'textcolor'),
+      row(t('set.uiSize'), segBtns([['small', t('size.small'), 'fontshrink'], ['medium', t('size.medium'), 'case'], ['large', t('size.large'), 'fontgrow']], () => settings.uiSize, (v) => { settings.uiSize = v; saveSettings(); applyUiSize(); }), t('set.uiSizeD'), 'fontgrow')));
 
   /* ---- window ---- */
   const startCards = el('div', { class: 'start-cards' });
   const paintStart = () => { for (const b of startCards.children) { const on = b.dataset.v === settings.start; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); } };
   for (const [v, ic, title, desc] of [['remember', 'window', t('set.startRemember'), t('set.startRememberD')], ['maximized', 'fullscreen', t('set.startMax'), t('set.startMaxD')]]) {
     const b = el('button', { class: 'start-card', type: 'button', role: 'radio', dataset: { v }, html: `<span class="sc-ic">${icon(ic)}</span><span class="sc-t"><b>${esc(title)}</b><small>${esc(desc)}</small></span><span class="sc-radio"></span>` });
-    b.onclick = () => { if (settings.start === v) return; settings.start = v; saveSettings(); bus.emit('start-changed', v); paintStart(); toast(t('set.startNote')); };
+    b.onclick = () => { if (settings.start === v) return; settings.start = v; saveSettings(); bus.emit('start-changed', v); paintStart(); toast.info(t('set.startNote')); };
     startCards.append(b);
   }
   paintStart();
@@ -430,8 +426,8 @@ export function openSettings(startPage) {
     card(row(t('set.author'), authorIn, t('set.authorD'))));
 
   /* ---- about ---- */
-  const resetAll = el('button', { class: 'btn tonal', type: 'button', text: t('set.resetAll'), onclick: async () => {
-    const r = await askConfirm({ title: t('set.resetAll'), msg: t('set.resetAllD'), yes: t('set.resetAll'), cancel: true });
+  const resetAll = el('button', { class: 'btn tonal danger-soft', type: 'button', html: icon('undo') + `<span>${esc(t('set.resetAll'))}</span>`, onclick: async () => {
+    const r = await askConfirm({ title: t('set.resetAll'), msg: t('set.resetAllD'), yes: t('set.resetAll'), cancel: true, yesIcon: 'undo', tone: 'danger', badge: 'warn' });
     if (r !== 'yes') return;
     const keep = { recent: settings.recent, migrated2: settings.migrated2 };
     Object.assign(settings, JSON.parse(JSON.stringify(DEFAULTS)), keep);
@@ -442,7 +438,7 @@ export function openSettings(startPage) {
     bus.emit('start-changed', settings.start); bus.emit('settings-doc');
     drawRuler();
     close();
-    setTimeout(() => { openSettings('about'); toast(t('set.resetDone')); }, 260);
+    setTimeout(() => { openSettings('about'); toast.success(t('set.resetDone')); }, 260);
   } });
   const pageAbout = el('div', { class: 'set-page' },
     el('h3', { class: 'set-h', text: t('set.about') }),
@@ -485,9 +481,9 @@ export function openSettings(startPage) {
     el('h2', { html: icon('gear') + `<span>${esc(t('settings.title'))}</span>` }),
     el('button', { class: 'icon-btn', type: 'button', html: icon('close'), 'aria-label': t('btn.close'), onclick: () => close() }));
   const foot = el('div', { class: 'dlg-actions' },
-    el('button', { class: 'btn text', type: 'button', text: t('set.shortcuts'), onclick: () => openShortcuts() }),
+    el('button', { class: 'btn text', type: 'button', html: icon('keyboard') + `<span>${esc(t('set.shortcuts'))}</span>`, onclick: () => openShortcuts() }),
     el('span', { class: 'spacer' }),
-    el('button', { class: 'btn filled', type: 'button', text: t('btn.done'), onclick: () => close() }));
+    el('button', { class: 'btn filled', type: 'button', html: icon('check') + `<span>${esc(t('btn.done'))}</span>`, onclick: () => close() }));
   dlg.append(head, el('div', { class: 'set-main' }, nav, pages), foot);
   document.body.append(dlg);
   const close = () => { dlg.close(); setTimeout(() => dlg.remove(), 260); };

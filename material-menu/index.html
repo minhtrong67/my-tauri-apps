@@ -72,7 +72,7 @@ h2{font-size:clamp(2rem,4.4vw,3.1rem);font-weight:700;max-width:18ch}
 .icon-btn:hover{background:var(--s3)}.icon-btn:active{border-radius:12px}
 /* header */
 header.top{position:fixed;inset:0 0 auto 0;z-index:50;transition:background .3s,box-shadow .3s}
-header.top.stuck{background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--olv)}
+header.top.stuck{background:color-mix(in srgb,var(--bg) 94%,transparent);box-shadow:0 1px 0 var(--olv)}
 .bar{display:flex;align-items:center;gap:6px;height:68px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem;margin-right:auto}
 .brand img{width:34px;height:34px}
@@ -101,10 +101,10 @@ nav.links a:hover,nav.links a.on{background:var(--sc);color:var(--onsc)}
 .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
 .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;color:var(--muted);font-size:.9rem}
 .meta span{display:inline-flex;align-items:center;gap:7px}
-.blob{position:absolute;z-index:-1;border-radius:60% 40% 55% 45%/55% 45% 60% 40%;animation:morph 16s ease-in-out infinite;filter:blur(.2px)}
+.blob{position:absolute;z-index:-1;border-radius:60% 40% 55% 45%/55% 45% 60% 40%;animation:morph 18s ease-in-out infinite;will-change:transform}
 .b1{width:520px;height:520px;right:-120px;top:40px;background:var(--pc);opacity:.65}
 .b2{width:300px;height:300px;left:-90px;bottom:-60px;background:var(--tc);opacity:.55;animation-delay:-7s}
-@keyframes morph{0%,100%{border-radius:60% 40% 55% 45%/55% 45% 60% 40%;transform:rotate(0)}33%{border-radius:40% 60% 45% 55%/60% 40% 45% 55%;transform:rotate(40deg) scale(1.06)}66%{border-radius:55% 45% 60% 40%/40% 60% 55% 45%;transform:rotate(-30deg) scale(.96)}}
+@keyframes morph{0%,100%{transform:rotate(0)}33%{transform:rotate(40deg) scale(1.06)}66%{transform:rotate(-30deg) scale(.96)}}
 /* stage: morphing context menu */
 .stage{position:relative;display:grid;place-items:center;min-height:430px}
 .desk{width:min(430px,100%);background:var(--s1);border:1px solid var(--olv);border-radius:32px;padding:26px 22px 22px;position:relative;box-shadow:0 20px 60px rgb(0 0 0/.14)}
@@ -118,12 +118,12 @@ nav.links a:hover,nav.links a.on{background:var(--sc);color:var(--onsc)}
 .row .i{color:var(--muted)}.row small{margin-left:auto;color:var(--muted);font-size:.74rem}
 .icons{display:flex;justify-content:space-between;background:var(--s2);border-radius:10px;padding:10px 14px;color:var(--muted);margin-bottom:4px;max-height:44px;transition:max-height .5s var(--emph),opacity .35s,padding .5s,margin .5s}
 .stage.classic .icons{max-height:0;opacity:0;padding-block:0;margin:0;overflow:hidden}
-.extra{overflow:hidden;max-height:0;opacity:0;transition:max-height .7s var(--emph),opacity .4s .1s}
+.extra{overflow:hidden;max-height:0;opacity:0;transition:max-height .5s var(--emph),opacity .3s .05s}
 .stage.classic .extra{max-height:340px;opacity:1}
 .mine{background:var(--pc);color:var(--onpc);font-weight:600}.mine .i{color:inherit}
 .more{background:var(--sc);color:var(--onsc);transition:max-height .4s,opacity .3s,padding .4s;max-height:38px;overflow:hidden}
 .stage.classic .more{max-height:0;opacity:0;padding:0}
-.stage .extra .row{transform:translateX(-14px);opacity:0;transition:transform .55s var(--spring),opacity .35s}
+.stage .extra .row{transform:translateX(-14px);opacity:0;transition:transform .45s var(--spring),opacity .3s;will-change:transform}
 .stage.classic .extra .row{transform:none;opacity:1}
 .stage.classic .extra .row:nth-child(1){transition-delay:.12s}.stage.classic .extra .row:nth-child(2){transition-delay:.2s}.stage.classic .extra .row:nth-child(3){transition-delay:.28s}.stage.classic .extra .row:nth-child(4){transition-delay:.36s}.stage.classic .extra .row:nth-child(5){transition-delay:.4s}.stage.classic .extra .row:nth-child(6){transition-delay:.44s}
 .cursor{position:absolute;width:30px;height:30px;right:70px;top:300px;z-index:3;filter:drop-shadow(0 3px 5px rgb(0 0 0/.35));transition:transform .9s var(--emph)}
@@ -134,7 +134,7 @@ nav.links a:hover,nav.links a.on{background:var(--sc);color:var(--onsc)}
 .grid{display:grid;gap:16px;margin-top:48px}
 .g3{grid-template-columns:repeat(3,1fr)}
 @media(max-width:900px){.g3{grid-template-columns:1fr 1fr}}@media(max-width:600px){.g3{grid-template-columns:1fr}}
-.card{background:var(--s1);border-radius:28px;padding:28px;transition:transform .45s var(--spring),border-radius .45s var(--spring),background .3s}
+.card{background:var(--s1);border-radius:28px;padding:28px;transition:transform .35s var(--spring),border-radius .35s var(--spring);will-change:transform}
 .card:hover{transform:translateY(-6px);border-radius:40px 20px 40px 20px;background:var(--s2)}
 .ico{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;background:var(--pc);color:var(--onpc);margin-bottom:20px;transition:border-radius .5s var(--spring),transform .5s var(--spring)}
 .card:hover .ico{border-radius:50%;transform:rotate(-8deg) scale(1.08)}
@@ -270,7 +270,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;
   <article class="card rv"><div class="ico"><svg class="i"><use href="#i-eye"/></svg></div><h3 data-i18n="f2t">Hide the clutter</h3><p data-i18n="f2d">Scan what Windows and your apps added, then switch items off with one click. Nothing is uninstalled and everything can be brought back.</p></article>
   <article class="card rv"><div class="ico"><svg class="i"><use href="#i-cursor"/></svg></div><h3 data-i18n="f3t">Classic or compact</h3><p data-i18n="f3d">Skip “Show more options” by turning on the classic full menu, or go back to the compact Windows 11 look any time.</p></article>
   <article class="card rv"><div class="ico"><svg class="i"><use href="#i-layers"/></svg></div><h3 data-i18n="f4t">Submenus &amp; order</h3><p data-i18n="f4d">Group commands into submenus, pin them to the top or bottom, add separators or show them only with Shift.</p></article>
-  <article class="card rv"><div class="ico"><svg class="i"><use href="#i-arch"/></svg></div><h3 data-i18n="f5t">Backup &amp; reset</h3><p data-i18n="f5d">Export your setup to a JSON file, restore it on another PC, or reset everything to Windows defaults in one step.</p></article>
+  <article class="card rv"><div class="ico"><svg class="i"><use href="#i-arch"/></svg></div><h3 data-i18n="f5t">Backup &amp; reset</h3><p data-i18n="f5d">Export your setup to JSON or .reg, keep named profiles, restore on another PC, or reset everything to Windows defaults in one step.</p></article>
   <article class="card rv"><div class="ico"><svg class="i"><use href="#i-pal"/></svg></div><h3 data-i18n="f6t">Made to look good</h3><p data-i18n="f6d">Material Design 3 Expressive with light, dark and system themes, 12 theme colors, seven fonts and English or Vietnamese.</p></article>
  </div>
 </div></section>
@@ -309,7 +309,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;
  <div class="faq">
   <details><summary><span data-i18n="q1">Where do my custom commands appear?</span><svg class="i"><use href="#i-plus"/></svg></summary><p data-i18n="a1">Classic registry entries show up under “Show more options” (Shift+F10) in the compact Windows 11 menu. Turn on the classic full menu in the app to see them right away.</p></details>
   <details><summary><span data-i18n="q2">How is this different from the built-in “Customize menu”?</span><svg class="i"><use href="#i-plus"/></svg></summary><p data-i18n="a2">Windows 11 with update KB5127936 is rolling out its own Customize menu entry. Material Menu works through the registry, so it also works on builds that do not have that update, and it adds your own commands and backups.</p></details>
-  <details><summary><span data-i18n="q3">Is it safe? Can I undo everything?</span><svg class="i"><use href="#i-plus"/></svg></summary><p data-i18n="a3">Everything is stored for your user only. Use Reset in the Backup page to remove all custom commands, show hidden items and return to the compact menu.</p></details>
+  <details><summary><span data-i18n="q3">Is it safe? Can I undo everything?</span><svg class="i"><use href="#i-plus"/></svg></summary><p data-i18n="a3">Everything is stored for your user only, and the uninstaller offers to restore the default menu. You can also use Reset in the Backup page to remove all custom commands, show hidden items and return to the compact menu.</p></details>
   <details><summary><span data-i18n="q4">Do I need administrator rights?</span><svg class="i"><use href="#i-plus"/></svg></summary><p data-i18n="a4">No. The installer and the app only write to your own user profile and registry hive.</p></details>
  </div>
 </div></section>
@@ -332,14 +332,14 @@ en:{nFeatures:'Features',nGallery:'Screenshots',nHow:'How it works',nFaq:'FAQ',n
  f2t:'Hide the clutter',f2d:'Scan what Windows and your apps added, then switch items off with one click. Nothing is uninstalled and everything can be brought back.',
  f3t:'Classic or compact',f3d:'Skip “Show more options” by turning on the classic full menu, or go back to the compact Windows 11 look any time.',
  f4t:'Submenus & order',f4d:'Group commands into submenus, pin them to the top or bottom, add separators or show them only with Shift.',
- f5t:'Backup & reset',f5d:'Export your setup to a JSON file, restore it on another PC, or reset everything to Windows defaults in one step.',
+ f5t:'Backup & reset',f5d:'Export your setup to JSON or .reg, keep named profiles, restore on another PC, or reset everything to Windows defaults in one step.',
  f6t:'Made to look good',f6d:'Material Design 3 Expressive with light, dark and system themes, 12 theme colors, seven fonts and English or Vietnamese.',
  gTitle:'See it in action',gt1:'Overview',gt2:'Commands',gt3:'Menu layout',gt4:'Settings',
  hTitle:'Three steps to a better menu',h1t:'Install',h1d:'Download the installer and run it. It installs for your user only – no administrator prompt.',h2t:'Customize',h2d:'Add commands, hide items you never use and choose the classic or compact menu.',h3t:'Restart Explorer',h3d:'One button restarts Explorer so Windows picks up the changes. Right-click and enjoy.',
  dTitle:'Get Material Menu',dLead:'Free forever and open source under the MIT license.',dNote:'Version 1.0.0 · Windows 10/11 (64-bit) · Installer (.exe)',d1:'Per-user install, no admin rights',d2:'Changes stay in your user registry',d3:'Build from source anytime',
  qTitle:'Good to know',q1:'Where do my custom commands appear?',a1:'Classic registry entries show up under “Show more options” (Shift+F10) in the compact Windows 11 menu. Turn on the classic full menu in the app to see them right away.',
  q2:'How is this different from the built-in “Customize menu”?',a2:'Windows 11 with update KB5127936 is rolling out its own Customize menu entry. Material Menu works through the registry, so it also works on builds that do not have that update, and it adds your own commands and backups.',
- q3:'Is it safe? Can I undo everything?',a3:'Everything is stored for your user only. Use Reset in the Backup page to remove all custom commands, show hidden items and return to the compact menu.',
+ q3:'Is it safe? Can I undo everything?',a3:'Everything is stored for your user only, and the uninstaller offers to restore the default menu. You can also use Reset in the Backup page to remove all custom commands, show hidden items and return to the compact menu.',
  q4:'Do I need administrator rights?',a4:'No. The installer and the app only write to your own user profile and registry hive.',withAi:'with the support of Claude (AI)',up:'Back to top'},
 vi:{nFeatures:'Tính năng',nGallery:'Ảnh chụp',nHow:'Cách hoạt động',nFaq:'Hỏi đáp',nDownload:'Tải về',theme:'Giao diện',system:'Hệ thống',light:'Sáng',dark:'Tối',color:'Màu chủ đề',language:'Ngôn ngữ',
  pill:'Miễn phí · Mã nguồn mở · Windows 10 & 11',h1a:'Chuột phải,',h1b:'theo ý bạn.',heroLead:'Thêm lệnh riêng, ẩn bớt mục thừa và chọn giữa menu gọn của Windows 11 hoặc menu cổ điển đầy đủ – không cần sửa registry bằng tay.',
@@ -349,14 +349,14 @@ vi:{nFeatures:'Tính năng',nGallery:'Ảnh chụp',nHow:'Cách hoạt động',
  f2t:'Ẩn bớt mục thừa',f2d:'Quét các mục do Windows và ứng dụng thêm vào rồi tắt chúng chỉ với một cú nhấp. Không gỡ cài đặt gì và luôn bật lại được.',
  f3t:'Cổ điển hoặc gọn',f3d:'Bỏ qua bước “Show more options” bằng menu cổ điển đầy đủ, hoặc quay về giao diện gọn của Windows 11 bất cứ lúc nào.',
  f4t:'Menu phụ & thứ tự',f4d:'Gom lệnh vào menu phụ, ghim lên đầu hoặc cuối, thêm đường kẻ hoặc chỉ hiện khi giữ Shift.',
- f5t:'Sao lưu & đặt lại',f5d:'Xuất thiết lập ra tệp JSON, khôi phục trên máy khác hoặc đưa mọi thứ về mặc định của Windows chỉ trong một bước.',
+ f5t:'Sao lưu & đặt lại',f5d:'Xuất thiết lập ra JSON hoặc .reg, lưu hồ sơ có tên, khôi phục trên máy khác hoặc đưa mọi thứ về mặc định của Windows chỉ trong một bước.',
  f6t:'Đẹp và dễ chịu',f6d:'Material Design 3 Expressive với giao diện sáng, tối, theo hệ thống, 12 màu chủ đề, bảy phông chữ và hai ngôn ngữ Anh – Việt.',
  gTitle:'Xem thực tế',gt1:'Tổng quan',gt2:'Lệnh tuỳ chỉnh',gt3:'Bố cục menu',gt4:'Cài đặt',
  hTitle:'Ba bước để có menu tốt hơn',h1t:'Cài đặt',h1d:'Tải bộ cài và chạy. App chỉ cài cho tài khoản của bạn nên không bị hỏi quyền quản trị.',h2t:'Tuỳ chỉnh',h2d:'Thêm lệnh, ẩn các mục không dùng và chọn menu cổ điển hoặc menu gọn.',h3t:'Khởi động lại Explorer',h3d:'Một nút để khởi động lại Explorer cho Windows nhận thay đổi. Bấm chuột phải và tận hưởng.',
  dTitle:'Tải Material Menu',dLead:'Miễn phí mãi mãi và là mã nguồn mở theo giấy phép MIT.',dNote:'Phiên bản 1.0.0 · Windows 10/11 (64-bit) · Bộ cài (.exe)',d1:'Cài cho riêng người dùng, không cần quyền quản trị',d2:'Thay đổi chỉ nằm trong registry của bạn',d3:'Có thể tự build từ mã nguồn',
  qTitle:'Điều cần biết',q1:'Lệnh tuỳ chỉnh xuất hiện ở đâu?',a1:'Các mục registry kiểu cổ điển nằm trong “Show more options” (Shift+F10) của menu gọn Windows 11. Bật menu cổ điển đầy đủ trong app để thấy ngay.',
  q2:'Khác gì “Customize menu” có sẵn của Windows?',a2:'Windows 11 với bản cập nhật KB5127936 đang triển khai mục Customize menu riêng. Material Menu hoạt động qua registry nên vẫn dùng được trên các bản dựng chưa có bản cập nhật đó, lại có thêm lệnh riêng và sao lưu.',
- q3:'Có an toàn không? Hoàn tác được không?',a3:'Mọi thứ chỉ lưu cho tài khoản của bạn. Dùng Đặt lại ở trang Sao lưu để xoá lệnh tuỳ chỉnh, hiện lại các mục đã ẩn và quay về menu gọn.',
+ q3:'Có an toàn không? Hoàn tác được không?',a3:'Mọi thứ chỉ lưu cho tài khoản của bạn và trình gỡ cài đặt sẽ hỏi có khôi phục menu mặc định không. Bạn cũng có thể dùng Đặt lại ở trang Sao lưu để xoá lệnh tuỳ chỉnh, hiện lại các mục đã ẩn và quay về menu gọn.',
  q4:'Có cần quyền quản trị không?',a4:'Không. Bộ cài và app chỉ ghi vào hồ sơ và nhánh registry của riêng bạn.',withAi:'với sự hỗ trợ của Claude (AI)',up:'Lên đầu trang'}
 };
 var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};

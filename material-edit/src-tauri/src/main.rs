@@ -24,6 +24,35 @@ fn ffmpeg_command() -> Command {
     cmd
 }
 
+
+/// Extensions the webview may write (exports, screenshots, projects, subtitles, temp files).
+/// Anything executable or script-like is refused, so a compromised page can never drop a program on disk.
+const WRITE_EXTS: &[&str] = &[
+    "mp4", "m4v", "mov", "webm", "mkv", "ogv", "mp3", "wav", "ogg", "m4a", "aac", "flac", "opus",
+    "png", "jpg", "jpeg", "webp", "gif", "bmp", "medit", "mvep", "json", "srt", "vtt", "txt", "tmp",
+];
+/// Extensions the webview may read as text (project files, subtitles).
+const READ_EXTS: &[&str] = &["medit", "mvep", "json", "srt", "vtt", "txt"];
+
+fn ext_of(p: &Path) -> String {
+    p.extension().and_then(|e| e.to_str()).unwrap_or("").to_ascii_lowercase()
+}
+
+/// Rejects relative paths, `..` segments and extensions that are not in `allowed`.
+fn check_path(path: &str, allowed: &[&str]) -> Result<PathBuf, String> {
+    let p = PathBuf::from(path);
+    if !p.is_absolute() {
+        return Err(format!("{path}: absolute path required"));
+    }
+    if p.components().any(|c| matches!(c, std::path::Component::ParentDir)) {
+        return Err(format!("{path}: path traversal is not allowed"));
+    }
+    if !allowed.contains(&ext_of(&p).as_str()) {
+        return Err(format!("{path}: this file type is not allowed"));
+    }
+    Ok(p)
+}
+
 /// Writes a chunk of raw bytes to a file.
 /// Headers: `x-path` = base64(UTF-8 path), `x-mode` = "create" (truncate) | "append" | "at"
 /// (write at byte offset `x-pos`, used by the MP4 muxer which back-patches its header).
@@ -43,6 +72,7 @@ fn save_chunk(request: tauri::ipc::Request<'_>) -> Result<(), String> {
         .unwrap_or("append");
     let path_bytes = STANDARD.decode(path_b64).map_err(|e| e.to_string())?;
     let path = String::from_utf8(path_bytes).map_err(|e| e.to_string())?;
+    let path = check_path(&path, WRITE_EXTS)?.to_string_lossy().into_owned();
 
     let mut opts = OpenOptions::new();
     match mode {
@@ -65,7 +95,8 @@ fn save_chunk(request: tauri::ipc::Request<'_>) -> Result<(), String> {
 /// Reads a UTF-8 text file (used for project files).
 #[tauri::command]
 fn read_text_file(path: String) -> Result<String, String> {
-    std::fs::read_to_string(&path).map_err(|e| format!("{path}: {e}"))
+    let p = check_path(&path, READ_EXTS)?;
+    std::fs::read_to_string(&p).map_err(|e| format!("{path}: {e}"))
 }
 
 /// A path inside the system temp folder for an intermediate file.
@@ -78,11 +109,12 @@ fn temp_path(name: String) -> String {
     std::env::temp_dir().join(file).to_string_lossy().into_owned()
 }
 
-/// Deletes a file, but only inside the system temp folder.
+/// Deletes a file, but only inside the system temp folder (paths are canonicalised first, so `..` tricks fail).
 #[tauri::command]
 fn remove_temp(path: String) -> Result<(), String> {
-    let p = PathBuf::from(&path);
-    if !p.starts_with(std::env::temp_dir()) {
+    let p = std::fs::canonicalize(&path).map_err(|e| e.to_string())?;
+    let tmp = std::fs::canonicalize(std::env::temp_dir()).map_err(|e| e.to_string())?;
+    if !p.starts_with(&tmp) || !p.is_file() {
         return Err("refusing to delete a file outside the temp folder".into());
     }
     std::fs::remove_file(p).map_err(|e| e.to_string())
@@ -285,11 +317,8 @@ fn reveal_file(path: String) -> Result<(), String> {
 /// Deletes an unfinished/cancelled export (only video files).
 #[tauri::command]
 fn delete_export(path: String) -> Result<(), String> {
-    let ext = Path::new(&path).extension().and_then(|e| e.to_str()).unwrap_or("").to_lowercase();
-    if !["mp4", "webm", "mov"].contains(&ext.as_str()) {
-        return Err("not a video file".into());
-    }
-    std::fs::remove_file(&path).map_err(|e| e.to_string())
+    let p = check_path(&path, &["mp4", "webm", "mov"])?;
+    std::fs::remove_file(&p).map_err(|e| e.to_string())
 }
 
 fn main() {

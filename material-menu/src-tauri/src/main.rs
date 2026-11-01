@@ -12,6 +12,10 @@ mod sys;
 use tauri::Manager;
 
 fn main() {
+    if std::env::args().any(|a| a == "--reset") {
+        store::reset_cli();
+        return;
+    }
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
@@ -48,6 +52,10 @@ fn main() {
             commands::delete_backup,
             commands::restore_state,
             commands::reset_all,
+            commands::get_icons,
+            commands::check_command,
+            commands::test_command,
+            commands::get_accent,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Material Menu");

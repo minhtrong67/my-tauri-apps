@@ -28,6 +28,7 @@ function place(node, anchor, { align = 'start', gap = 4, at = null } = {}) {
   const cap = parseFloat(getComputedStyle(node).maxHeight);
   node.style.maxHeight = Math.min(Number.isFinite(cap) ? cap : Infinity, vh - 16) + 'px';
   const r = node.getBoundingClientRect();
+  const ox = r.left, oy = r.top; // non-zero when the popup lives inside an animated <dialog> (it becomes the containing block)
   let x, y;
   if (at) { x = at.x; y = at.y; } else {
     const a = anchor.getBoundingClientRect();
@@ -37,8 +38,8 @@ function place(node, anchor, { align = 'start', gap = 4, at = null } = {}) {
   }
   if (x + r.width > vw - 8) x = vw - 8 - r.width;
   if (y + r.height > vh - 8) y = Math.max(8, vh - 8 - r.height);
-  node.style.left = Math.max(8, x) + 'px';
-  node.style.top = Math.max(8, y) + 'px';
+  node.style.left = Math.max(8, x) - ox + 'px';
+  node.style.top = Math.max(8, y) - oy + 'px';
 }
 
 /** Opens an arbitrary popover next to `anchor` (or at point `at`). */
@@ -46,7 +47,8 @@ export function openPopover(anchor, content, opts = {}) {
   closePopup();
   const node = el('div', { class: 'popup ' + (opts.cls || ''), role: opts.role || 'dialog' });
   node.append(content);
-  layer().append(node);
+  (opts.host || layer()).append(node); // `host`: a modal <dialog> (popups outside it would sit behind the dialog)
+  if (opts.minWidth) node.style.minWidth = opts.minWidth + 'px';
   place(node, anchor, opts);
   if (anchor && anchor.classList) anchor.classList.add('open');
   current = { node, anchor, onClose: opts.onClose };
@@ -120,7 +122,7 @@ document.addEventListener('pointerdown', (e) => {
   closePopup();
   closeSub();
 }, true);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && current) { closePopup(); closeSub(); e.stopPropagation(); } }, true);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && current) { closePopup(); closeSub(); e.stopPropagation(); e.preventDefault(); } }, true);
 window.addEventListener('blur', () => { closePopup(); closeSub(); });
 window.addEventListener('resize', () => { closePopup(); closeSub(); });
 
@@ -160,19 +162,79 @@ export function initTooltips() {
 }
 export const tip = (node, text, kbd) => { node.dataset.tip = kbd ? `${text}\n${kbd}` : text; node.removeAttribute('title'); node.setAttribute('aria-label', text); };
 
+/* ------------------------------ custom select (replaces the native <select>, follows light/dark) ------------------------------ */
+/** options: [[value, label]]. Returns a button with a `.value` property; the list is capped in height and scrolls. */
+export function select({ options, value, onChange, block = false, label = '' }) {
+  let cur = value;
+  const btn = el('button', { class: 'csel' + (block ? ' block' : ''), type: 'button', role: 'combobox' });
+  btn.setAttribute('aria-haspopup', 'listbox');
+  if (label) btn.setAttribute('aria-label', label);
+  const paint = () => {
+    const o = options.find(([v]) => String(v) === String(cur));
+    btn.innerHTML = `<span class="csel-l">${esc(o ? o[1] : '')}</span>${icon('down', 'csel-ch')}`;
+  };
+  const pick = (v) => { if (String(v) === String(cur)) return; cur = v; paint(); btn.dispatchEvent(new Event('change', { bubbles: true })); if (onChange) onChange(v); };
+  Object.defineProperty(btn, 'value', { get: () => cur, set: (v) => { cur = v; paint(); } });
+  let hl = -1;
+  const rows = () => [...(current ? current.node.querySelectorAll('.menu-item') : [])];
+  const reveal = (row) => { // scroll only the list (scrollIntoView would also scroll the dialog)
+    const p = current && current.node;
+    if (!p || !row) return;
+    if (row.offsetTop < p.scrollTop + 8) p.scrollTop = row.offsetTop - 8;
+    else if (row.offsetTop + row.offsetHeight > p.scrollTop + p.clientHeight - 8) p.scrollTop = row.offsetTop + row.offsetHeight - p.clientHeight + 8;
+  };
+  const mark = (i) => { const r = rows(); r.forEach((x) => x.classList.remove('hl')); hl = Math.max(0, Math.min(r.length - 1, i)); if (r[hl]) { r[hl].classList.add('hl'); reveal(r[hl]); } };
+  const openList = () => {
+    if (btn.classList.contains('open')) { closePopup(); return; }
+    const items = options.map(([v, l]) => ({ label: l, checked: String(v) === String(cur), run: () => pick(v) }));
+    const node = openPopover(btn, buildMenu(items), { cls: 'menu csel-pop', role: 'listbox', minWidth: btn.offsetWidth, host: btn.closest('dialog[open]') || null });
+    const idx = options.findIndex(([v]) => String(v) === String(cur));
+    hl = -1;
+    mark(Math.max(0, idx));
+    reveal(node.querySelector('.checked'));
+  };
+  btn.addEventListener('click', openList);
+  btn.addEventListener('keydown', (e) => {
+    const open = btn.classList.contains('open');
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!open) { openList(); return; }
+      mark(hl + (e.key === 'ArrowDown' ? 1 : -1));
+    } else if ((e.key === 'Enter' || e.key === ' ') && open) {
+      e.preventDefault(); e.stopPropagation();
+      const r = rows()[hl];
+      if (r) r.click(); else closePopup();
+    } else if (e.key === 'Home' && open) { e.preventDefault(); mark(0); }
+    else if (e.key === 'End' && open) { e.preventDefault(); mark(1e9); }
+  });
+  paint();
+  return btn;
+}
+
 /* ------------------------------ toast ------------------------------ */
 let toastTimer;
-export function toast(msg, ms = 3200, action) {
+const TOAST_ICON = { info: 'info', success: 'ok', warning: 'warn', error: 'err' };
+/** Snackbar toast. type: info | success | warning | error — each has its own colour in light and dark themes. */
+export function toast(msg, ms = 3200, action, type = 'info') {
   const s = $('#snackbar');
-  s.innerHTML = `<span>${esc(msg)}</span>`;
+  if (type === 'error') ms = Math.max(ms, 5200);
+  s.dataset.type = type;
+  s.setAttribute('role', type === 'error' || type === 'warning' ? 'alert' : 'status');
+  s.innerHTML = `<span class="sn-ic">${icon(TOAST_ICON[type] || 'info')}</span><span class="sn-msg">${esc(msg)}</span>`;
   if (action) {
-    const b = el('button', { class: 'btn text', text: action.label, onclick: () => { s.classList.remove('show'); action.run(); } });
+    const b = el('button', { class: 'btn text sn-act', text: action.label, onclick: () => { s.classList.remove('show'); action.run(); } });
     s.append(b);
   }
+  const x = el('button', { class: 'icon-btn sm sn-x', type: 'button', html: icon('close'), onclick: () => s.classList.remove('show') });
+  x.setAttribute('aria-label', t('btn.close'));
+  s.append(x, el('i', { class: 'sn-bar', style: { animationDuration: ms + 'ms' } }));
+  s.classList.remove('show');
+  void s.offsetWidth; // restart the entrance + progress animation
   s.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => s.classList.remove('show'), ms);
 }
+for (const k of ['info', 'success', 'warning', 'error']) toast[k] = (msg, ms, action) => toast(msg, ms, action, k);
 
 /* ------------------------------ dialogs ------------------------------ */
 const nativeClose = HTMLDialogElement.prototype.close;
@@ -188,17 +250,24 @@ HTMLDialogElement.prototype.close = function (rv) {
 };
 export const closeDialog = (d) => d.close();
 
-export function askConfirm({ title, msg, yes, no, cancel = true }) {
+/** Confirm dialog. Every action has a label, an icon and its own colour (tone: primary | danger). */
+export function askConfirm({ title, msg, yes, no, cancel = true, yesIcon = 'check', noIcon = 'trash', tone = 'primary', badge = 'info' }) {
   return new Promise((resolve) => {
     const dlg = $('#dlg-confirm');
     $('#cf-title').textContent = title;
     $('#cf-msg').textContent = msg;
+    dlg.dataset.tone = tone;
+    $('#cf-badge').innerHTML = icon(badge);
     const bYes = $('#cf-yes'), bNo = $('#cf-no'), bCancel = $('#cf-cancel');
-    bYes.textContent = yes;
-    bNo.textContent = no || '';
+    const fill = (b, ic, label) => { b.innerHTML = `${icon(ic)}<span>${esc(label)}</span>`; };
+    fill(bYes, yesIcon, yes);
+    bYes.className = 'btn filled' + (tone === 'danger' ? ' danger' : '');
+    if (no) fill(bNo, noIcon, no);
     bNo.hidden = !no;
+    bNo.className = 'btn tonal danger-soft';
     bCancel.hidden = !cancel;
-    bCancel.textContent = t('btn.cancel');
+    bCancel.className = 'btn neutral';
+    fill(bCancel, 'close', t('btn.cancel'));
     const done = (v) => {
       bYes.onclick = bNo.onclick = bCancel.onclick = dlg.oncancel = null;
       if (dlg.open) dlg.close();
@@ -223,7 +292,7 @@ export const wireDialogs = () => {
 };
 
 /** Generic form dialog. fields: [{id, type:'text'|'number'|'select'|'check'|'color'|'textarea'|'seg', label, value, options, min, max, step, unit, hint, wide}] */
-export function formDialog({ title, fields, ok, cancel, onOk, width, extra }) {
+export function formDialog({ title, fields, ok, cancel, onOk, width, extra, okIcon = 'check', tone = 'primary' }) {
   return new Promise((resolve) => {
     const dlg = el('dialog', { class: 'dialog form', style: width ? { width: width + 'px' } : {} });
     const body = el('div', { class: 'dlg-body' });
@@ -235,9 +304,7 @@ export function formDialog({ title, fields, ok, cancel, onOk, width, extra }) {
       const wrap = el('label', { class: 'lbl' + (f.wide ? ' wide' : '') + (f.type === 'check' ? ' check-row' : '') });
       let input;
       if (f.type === 'select') {
-        input = el('select', { class: 'select block' });
-        for (const [v, l] of f.options) input.append(el('option', { value: v, text: l }));
-        input.value = f.value;
+        input = select({ options: f.options, value: f.value, block: true, label: f.label });
       } else if (f.type === 'check') {
         input = el('input', { type: 'checkbox' });
         input.checked = !!f.value;
@@ -268,8 +335,8 @@ export function formDialog({ title, fields, ok, cancel, onOk, width, extra }) {
     body.append(grid);
     if (extra) body.append(extra(inputs));
     const actions = el('div', { class: 'dlg-actions' });
-    const bCancel = el('button', { class: 'btn text', type: 'button', text: cancel || t('btn.cancel') });
-    const bOk = el('button', { class: 'btn filled', type: 'button', text: ok || t('btn.ok') });
+    const bCancel = el('button', { class: 'btn tonal', type: 'button', html: `${icon('close')}<span>${esc(cancel || t('btn.cancel'))}</span>` });
+    const bOk = el('button', { class: 'btn filled' + (tone === 'danger' ? ' danger' : ''), type: 'button', html: `${icon(okIcon)}<span>${esc(ok || t('btn.ok'))}</span>` });
     actions.append(el('span', { class: 'spacer' }), bCancel, bOk);
     dlg.append(el('h2', { text: title }), body, actions);
     document.body.append(dlg);
@@ -290,7 +357,7 @@ export function formDialog({ title, fields, ok, cancel, onOk, width, extra }) {
     bCancel.onclick = () => finish(null);
     bOk.onclick = () => { const v = value(); if (onOk && onOk(v) === false) return; finish(v); };
     dlg.addEventListener('cancel', (e) => { e.preventDefault(); finish(null); });
-    dlg.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') { e.preventDefault(); bOk.click(); } });
+    dlg.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && !e.target.classList.contains('csel')) { e.preventDefault(); bOk.click(); } });
     dlg.addEventListener('mousedown', (e) => {
       if (e.target !== dlg) return;
       const r = dlg.getBoundingClientRect();

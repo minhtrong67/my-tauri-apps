@@ -14,7 +14,7 @@ const inside = (c) => state.t > c.start + 0.05 && state.t < c.start + c.dur - 0.
 
 function report(r, doneKey) {
   if (r.ok) api.toast(t(doneKey, { n: r.copies || 0 }));
-  else api.toast(t('match.' + r.reason));
+  else api.toast(t('match.' + r.reason), 3600, 'warning');
 }
 
 const selectItems = (track, c) => [
@@ -32,7 +32,7 @@ export function clipMenu(track, c) {
   const items = [
     { label: t('ctx.quick1'), icon: 'bolt', run: () => report(E.quickEdit01(c, track), 'quick.done'), disabled: !hasAudio },
     '-',
-    { label: t('ctx.split'), icon: 'split', kbd: 'S', run: () => { if (!splitAt()) api.toast(t('toast.splitNone')); }, disabled: !inside(c) },
+    { label: t('ctx.split'), icon: 'split', kbd: 'S', run: () => { if (!splitAt()) api.toast(t('toast.splitNone'), 3400, 'warning'); }, disabled: !inside(c) },
     { label: t('ctx.trimLeft'), icon: 'cut', kbd: 'Q', run: () => E.trimToPlayhead('left'), disabled: !inside(c) },
     { label: t('ctx.trimRight'), icon: 'cut', kbd: 'W', run: () => E.trimToPlayhead('right'), disabled: !inside(c) },
     '-',
@@ -89,7 +89,7 @@ export function previewMenu() {
       { label: t('ctx.duplicate'), icon: 'copy', kbd: 'Ctrl+D', run: duplicateSelected },
       { label: t('ctx.resetTransform'), icon: 'rotate', run: E.resetTransform },
       '-',
-      { label: t('ctx.split'), icon: 'split', kbd: 'S', run: () => { if (!splitAt()) api.toast(t('toast.splitNone')); }, disabled: !inside(c) },
+      { label: t('ctx.split'), icon: 'split', kbd: 'S', run: () => { if (!splitAt()) api.toast(t('toast.splitNone'), 3400, 'warning'); }, disabled: !inside(c) },
       { label: t('ctx.delete'), icon: 'trash', kbd: 'Del', danger: true, run: deleteSelected });
     void tr;
   } else {

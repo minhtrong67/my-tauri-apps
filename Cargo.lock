@@ -2908,7 +2908,7 @@ dependencies = [
 
 [[package]]
 name = "material-csv"
-version = "2.0.0"
+version = "3.0.0"
 dependencies = [
  "base64 0.22.1",
  "encoding_rs",
@@ -2922,7 +2922,7 @@ dependencies = [
 
 [[package]]
 name = "material-docx"
-version = "2.0.0"
+version = "2.3.0"
 dependencies = [
  "base64 0.22.1",
  "serde",
@@ -2935,7 +2935,7 @@ dependencies = [
 
 [[package]]
 name = "material-edit"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "base64 0.22.1",
  "serde",
@@ -3067,7 +3067,7 @@ dependencies = [
 
 [[package]]
 name = "material-readme"
-version = "2.0.0"
+version = "3.0.0"
 dependencies = [
  "base64 0.22.1",
  "serde",

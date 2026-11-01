@@ -1,4 +1,5 @@
 // File (backstage) view: home, new from template, open, save as, print, info, settings, about.
+import { OPEN_TYPES } from './readers.js';
 import { $, el, esc, baseName, dirName } from './util.js';
 import { icon } from './icons.js';
 import { t, lang } from './i18n.js';
@@ -90,6 +91,12 @@ const recentList = () => {
   return box;
 };
 
+const formatChips = () => {
+  const box = el('div', { class: 'fmt-chips' });
+  const groups = [['word', 'Word'], ['odf', 'OpenDocument'], ['rtf', 'RTF'], ['web', 'HTML'], ['md', 'Markdown'], ['data', 'CSV / TSV'], ['text', 'Text']];
+  for (const [k, label] of groups) box.append(el('span', { class: 'fmt-chip', html: `<b>${esc(label)}</b><small>${OPEN_TYPES[k].map((e) => '.' + e).join(' ')}</small>` }));
+  return box;
+};
 const tplCards = (limit) => {
   const g = el('div', { class: 'tpl-grid' });
   const blank = el('button', { class: 'tpl', type: 'button', html: `<span class="tpl-sheet blank"><i>+</i></span><b>${esc(t('tpl.blank'))}</b>` });
@@ -119,6 +126,7 @@ const PANELS = {
     w.append(el('h1', { text: t('bs.welcome') }));
     w.append(el('h3', { class: 'bs-h', text: t('bs.startNew') }), tplCards(3));
     w.append(el('h3', { class: 'bs-h', text: t('bs.recent') }), recentList());
+    w.append(el('h3', { class: 'bs-h', text: t('bs.formats') }), formatChips());
     return w;
   },
   new() {

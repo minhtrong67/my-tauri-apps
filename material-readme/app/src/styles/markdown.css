@@ -1,0 +1,44 @@
+/* Rendered Markdown. Shared by the preview and by HTML export (imported with ?inline). */
+.md { max-width: 52rem; margin: 0 auto; font-size: calc(1rem * var(--z, 1)); line-height: 1.7; color: var(--md-on-surface); word-wrap: break-word; }
+.md .blk { animation: blk-in var(--d, 420ms) var(--sp, ease) both; }
+.md.still .blk { animation: none; }
+@keyframes blk-in { from { opacity: 0; transform: translateY(10px); } }
+.md > .blk > :first-child { margin-top: 0; }
+.md h1, .md h2, .md h3, .md h4, .md h5, .md h6 { margin: 1.75em 0 .6em; font-weight: 800; line-height: 1.2; letter-spacing: -.01em; scroll-margin-top: 1rem; }
+.md h1 { font-size: 2.25em; padding-bottom: .3em; border-bottom: 1px solid var(--md-outline-variant); } .md h2 { font-size: 1.65em; padding-bottom: .25em; border-bottom: 1px solid var(--md-outline-variant); }
+.md h3 { font-size: 1.3em; } .md h4 { font-size: 1.1em; } .md h5, .md h6 { font-size: 1em; color: var(--md-on-surface-variant); }
+.md p, .md ul, .md ol, .md blockquote, .md pre, .md table, .md details { margin: 0 0 1em; }
+.md a { color: var(--md-primary); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--md-primary) 40%, transparent); text-underline-offset: 3px; transition: text-decoration-color .2s; cursor: pointer; }
+.md a:hover { text-decoration-color: currentColor; }
+.md ul, .md ol { padding-left: 1.6em; } .md ul { list-style: disc; } .md ol { list-style: decimal; } .md ul ul { list-style: circle; } .md ul ul ul { list-style: square; } .md li + li { margin-top: .25em; } .md li > p { margin: .25em 0; }
+.md ul li::marker { color: var(--md-primary); } .md ol li::marker { color: var(--md-primary); font-weight: 700; }
+.md li:has(> input[type='checkbox']) { list-style: none; margin-left: -1.4em; }
+.md input[type='checkbox'] { appearance: none; width: 1.1em; height: 1.1em; margin: 0 .5em -.2em 0; border-radius: .3em; box-shadow: inset 0 0 0 2px var(--md-outline); background: transparent; }
+.md input[type='checkbox']:checked { background: var(--md-primary); box-shadow: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); background-size: 80%; background-repeat: no-repeat; background-position: center; }
+.md blockquote { padding: .5em 1.1em; border-left: 4px solid var(--md-primary); border-radius: 4px 14px 14px 4px; background: var(--md-surface-container-low); color: var(--md-on-surface-variant); }
+.md blockquote > :last-child { margin-bottom: 0; }
+.md blockquote.alert { border-left-width: 0; border-radius: 18px; padding: .9em 1.2em; color: var(--md-on-surface); --ac: var(--md-primary); background: color-mix(in srgb, var(--ac) 14%, var(--md-surface)); }
+.md blockquote.alert .at { display: flex; align-items: center; gap: .5em; margin-bottom: .35em; font-weight: 800; color: var(--ac); } .md blockquote.alert .at svg { width: 1.15em; height: 1.15em; }
+.md blockquote.tip { --ac: var(--md-success); } .md blockquote.warning { --ac: var(--md-warning); } .md blockquote.caution { --ac: var(--md-error); } .md blockquote.important { --ac: var(--md-tertiary); } .md blockquote.note { --ac: var(--md-info); }
+.md hr { height: 3px; border: 0; margin: 2em 0; border-radius: 3px; background: var(--md-outline-variant); }
+.md img { max-width: 100%; height: auto; border-radius: 14px; } .md p > img { vertical-align: middle; }
+.md code { padding: .15em .45em; border-radius: 8px; background: var(--md-surface-container-high); font-family: var(--mono); font-size: .88em; color: var(--md-on-surface); }
+.md .cb { margin: 0 0 1em; overflow: hidden; border-radius: 20px; background: var(--md-surface-container-low); box-shadow: inset 0 0 0 1px var(--md-outline-variant); }
+.md .ch { display: flex; align-items: center; justify-content: space-between; padding: .35em .5em .35em 1em; background: var(--md-surface-container); font: 600 .75em var(--mono); color: var(--md-on-surface-variant); }
+.md .cp { display: inline-flex; align-items: center; gap: .4em; height: 2em; padding: 0 .8em; border-radius: 999px; color: var(--md-on-surface-variant); font: 600 1em/1 inherit; transition: background-color .2s, color .2s, border-radius .3s; }
+.md .cp:hover { background: color-mix(in srgb, var(--md-primary) 14%, transparent); color: var(--md-primary); } .md .cp:active { border-radius: 8px; }
+.md .cp.done { background: var(--md-primary); color: var(--md-on-primary); }
+.md .cb pre { margin: 0; padding: 1em 1.2em; overflow-x: auto; } .md .cb pre code { padding: 0; background: none; font-size: .875em; line-height: 1.6; border-radius: 0; }
+.md .tw { margin: 0 0 1em; overflow-x: auto; border-radius: 18px; box-shadow: inset 0 0 0 1px var(--md-outline-variant); }
+.md table { width: 100%; margin: 0; border-collapse: collapse; } .md th, .md td { padding: .6em 1em; text-align: left; border-bottom: 1px solid var(--md-outline-variant); }
+.md th { background: var(--md-surface-container); font-weight: 700; } .md tr:last-child td { border-bottom: 0; } .md tbody tr:hover { background: var(--md-surface-container-low); }
+.md details { padding: .6em 1em; border-radius: 16px; background: var(--md-surface-container-low); } .md summary { cursor: pointer; font-weight: 600; }
+.md details.fm { opacity: .85; font-size: .9em; } .md details.fm pre { margin: .5em 0 0; overflow-x: auto; } .md kbd { padding: .1em .45em; border-radius: 6px; background: var(--md-surface-container-high); box-shadow: inset 0 -1px 0 var(--md-outline-variant); font: 600 .85em var(--mono); }
+.md mark.hit { padding: 0 .1em; border-radius: 4px; background: color-mix(in srgb, var(--md-tertiary) 35%, transparent); color: inherit; } .md mark.hit.cur { background: var(--md-primary); color: var(--md-on-primary); }
+.md .hljs-comment, .md .hljs-quote { color: var(--md-outline); font-style: italic; }
+.md .hljs-keyword, .md .hljs-selector-tag, .md .hljs-literal, .md .hljs-doctag, .md .hljs-meta .hljs-keyword { color: var(--md-primary); font-weight: 600; }
+.md .hljs-string, .md .hljs-regexp, .md .hljs-addition, .md .hljs-attribute, .md .hljs-meta .hljs-string { color: var(--md-tertiary); }
+.md .hljs-number, .md .hljs-built_in, .md .hljs-symbol, .md .hljs-bullet, .md .hljs-variable, .md .hljs-template-variable { color: var(--md-secondary); }
+.md .hljs-title, .md .hljs-section, .md .hljs-type, .md .hljs-class .hljs-title, .md .hljs-function { color: var(--md-primary); }
+.md .hljs-name, .md .hljs-tag, .md .hljs-deletion, .md .hljs-selector-id, .md .hljs-selector-class { color: var(--md-error); }
+.md .hljs-emphasis { font-style: italic; } .md .hljs-strong { font-weight: 700; }

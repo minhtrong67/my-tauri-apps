@@ -34,8 +34,13 @@ Everything is written to **your user registry hive only** (`HKCU`). No administr
 - **Submenus, order and position** – group commands, pin to top/bottom, separators, "only with Shift", icons and ready-made presets (Terminal, PowerShell, CMD, VS Code, Notepad, Copy as path).
 - **Hide or show system items** – scans existing commands and shell extensions and switches them off per user (reversible, nothing is uninstalled).
 - **Classic full menu toggle** – skip "Show more options" or return to the compact Windows 11 menu.
+- **Menu layout** – a flat, per-location view (desktop, folder background, folders, files, drives) where every item has an on/off switch, with a live preview and real program icons. Highlights newly added items and flags third-party extensions (the usual cause of a slow menu).
+- **Profiles** – save the current setup and switch between setups in one click.
+- **Multi-select, drag & drop** reordering, grouping into submenus, undo after delete, command check and test-run.
+- **Quick search** (`Ctrl+K`) for pages, actions and commands.
+- **Uninstall safety** – the uninstaller offers to restore the default Windows menu first.
 - **Live preview** of the resulting menu.
-- **Backup & restore** – export/import JSON, restore saved backups, one-click reset.
+- **Backup & restore** – export/import JSON, export a `.reg` file, restore saved backups, one-click reset.
 - **Restart Explorer** button whenever a change needs it.
 - **Material Design 3 Expressive** UI: light / dark / system, 12 theme colors + custom color, text size, 7 fonts (System, Google Sans Flex, Roboto Flex, Roboto, Arial, Inter, Be Vietnam Pro), English and Vietnamese, custom tooltips, dropdowns, dialogs, side sheet and toasts.
 - Window behaviour: remember last size or always start maximized; configurable backup folder.
@@ -88,12 +93,13 @@ material-menu/
 ├── download/             # put the installer here
 ├── screenshots/          # image01.png … image04.png
 ├── src/
-│   ├── components/       # UI kit (tooltip, select, dialog, sheet, toast), titlebar, menu preview
+│   ├── components/       # UI kit (tooltip, select, dialog, sheet, toast), icons, palette, titlebar, menu preview
 │   ├── lib/              # api (+ browser mock), i18n, theme, settings, app state
-│   └── pages/            # Overview, Commands, System, Backup, Settings
+│   └── pages/            # Overview, Layout, Commands, System, Backup, Settings
 └── src-tauri/
     ├── src/              # registry.rs, commands.rs, store.rs, sys.rs, model.rs
     ├── icons/            # app / setup / uninstall icons, installer banners
+    ├── windows/          # NSIS uninstall hook
     ├── capabilities/
     └── tauri.conf.json
 ```

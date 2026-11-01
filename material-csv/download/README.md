@@ -1,11 +1,10 @@
 # download
 
-Put the installer built by `npm run build` in this folder, keeping its file name:
+Put the Windows installer here after running `npm run build`:
 
 ```
-Material CSV_2.0.0_x64-setup.exe
+download/Material CSV_3.0.0_x64-setup.exe
 ```
 
-The landing page (`index.html` in the project root) links to `download/Material%20CSV_2.0.0_x64-setup.exe`.
-After a new build, copy the file from `target/release/bundle/nsis/` (workspace root) into this folder.
-If you change the version, update `VERSION` / `FILE` at the top of the script in `index.html`.
+The landing page (`index.html`) links to this exact file name. The installer is generated in
+`target/release/bundle/nsis/` (workspace target folder).

@@ -152,6 +152,12 @@ function snapshot() {
   const html = packImages(cleanHtml());
   return { html, meta: JSON.stringify(cloneMeta()), sel: selSnapshot() };
 }
+export const getHistory = () => ({ stack: hist.stack, i: hist.i });
+export function setHistory(h) {
+  if (!h || !h.stack || !h.stack.length) return historyReset();
+  hist.stack = h.stack; hist.i = Math.min(h.i, h.stack.length - 1); hist.pending = false;
+  bus.emit('history');
+}
 export function historyReset() {
   hist.stack = [snapshot()];
   hist.i = 0;
@@ -336,7 +342,7 @@ const DROP = new Set('SCRIPT STYLE IFRAME OBJECT EMBED LINK META NOSCRIPT TEMPLA
 const STYLE_OK = ['font-weight', 'font-style', 'text-decoration', 'text-decoration-line', 'text-decoration-style', 'color', 'background-color', 'font-size', 'font-family',
   'text-align', 'line-height', 'margin-left', 'margin-right', 'margin-top', 'margin-bottom', 'vertical-align', 'text-indent', 'text-transform', 'letter-spacing', 'font-variant',
   'padding-left', 'list-style-type', 'border-top', 'border-bottom', 'border-left', 'border-right', 'border-color', 'border-style', 'border-width', 'width', 'height', 'float', 'text-shadow', 'display', 'table-layout', 'padding', 'transform', 'margin'];
-const DATA_OK = new Set(['data-st', 'data-wrap', 'data-ts', 'data-hdr', 'data-band', 'data-fc', 'data-pb', 'data-toc', 'data-valign', 'data-w', 'data-keep-ce', 'data-lvl', 'data-toc-title', 'data-rot', 'data-flip', 'data-band', 'data-first']);
+const DATA_OK = new Set(['data-st', 'data-wrap', 'data-ts', 'data-hdr', 'data-band', 'data-fc', 'data-pb', 'data-toc', 'data-valign', 'data-w', 'data-keep-ce', 'data-lvl', 'data-toc-title', 'data-rot', 'data-flip', 'data-band', 'data-first', 'data-k', 'data-fn', 'data-cm', 'data-n', 'data-tip']);
 const SAFE_URL = /^(https?:|mailto:|tel:|#)/i;
 
 /** Near-black / near-white text colours are really "automatic" — dropping them keeps text readable on light and dark pages. */
@@ -378,6 +384,7 @@ export function sanitizeHtml(html, { keepData = true } = {}) {
         if (n.hasAttribute('start')) el.setAttribute('start', n.getAttribute('start'));
       }
       if (n.classList && n.classList.contains('pb')) el.className = 'pb';
+      if (n.classList && (n.classList.contains('mdx-fn') || n.classList.contains('mdx-cm'))) { el.className = n.classList.contains('mdx-fn') ? 'mdx-fn' : 'mdx-cm'; el.setAttribute('contenteditable', 'false'); }
       if (keepData) for (const a of n.attributes) if (DATA_OK.has(a.name)) el.setAttribute(a.name, a.value);
       if (n.style) {
         for (const p of STYLE_OK) {

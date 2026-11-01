@@ -40,6 +40,7 @@ export const doc = {
   header: { text: '', align: 'left' },
   footer: { text: '', align: 'center' },
   diffFirst: false,       // hide header/footer on the first page
+  keep: null,             // comments / footnotes / endnotes parts of an opened .docx, written back on save
 };
 
 export function pageDims(p = doc.page) {
@@ -57,4 +58,5 @@ export function applyMeta(m) {
   if (m.header) doc.header = { text: '', align: 'left', ...m.header };
   if (m.footer) doc.footer = { text: '', align: 'center', ...m.footer };
   if ('diffFirst' in m) doc.diffFirst = !!m.diffFirst;
+  if ('keep' in m) doc.keep = m.keep || null;
 }
