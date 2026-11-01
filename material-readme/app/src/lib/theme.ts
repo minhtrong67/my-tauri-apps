@@ -3,8 +3,8 @@ import {
   type DynamicColor, type DynamicScheme,
 } from '@material/material-color-utilities';
 
-/** Default seed: the colour of the app icon (Material pink 600). */
-export const DEFAULT_SEED = '#D81B60';
+/** Default seed: Material blue, the colour family of the app icon. */
+export const DEFAULT_SEED = '#2196F3';
 
 /** The Material Design palette (500 tones, plus the pink of the icon) offered as theme colours. */
 export const PALETTE: { id: string; hex: string }[] = [

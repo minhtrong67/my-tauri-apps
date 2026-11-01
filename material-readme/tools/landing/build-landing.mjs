@@ -22,6 +22,8 @@ for (const [id, hex] of Object.entries(SEEDS)) {
     P[id][dark ? 'dark' : 'light'] = o;
   }
 }
+const VARMAP = { primary: 'primary', onPrimary: 'on-primary', primaryContainer: 'primary-container', onPrimaryContainer: 'on-primary-container', secondary: 'secondary', onSecondary: 'on-secondary', secondaryContainer: 'secondary-container', onSecondaryContainer: 'on-secondary-container', tertiary: 'tertiary', onTertiary: 'on-tertiary', tertiaryContainer: 'tertiary-container', onTertiaryContainer: 'on-tertiary-container', surface: 'surface', onSurface: 'on-surface', onSurfaceVariant: 'on-surface-variant', scLow: 'sc-low', sc: 'sc', scHigh: 'sc-high', scHighest: 'sc-highest', outline: 'outline', outlineVariant: 'outline-variant', inverseSurface: 'inverse-surface', inverseOnSurface: 'inverse-on-surface' };
+html = html.replace('{{DEFAULT_VARS}}', Object.entries(VARMAP).map(([k, v]) => `--${v}:${P.blue.light[k]};`).join(''));
 html = html.replace('/*PALETTES*/', 'var PALETTES=' + JSON.stringify(P) + ';');
 
 const cookie = (R, lobes, amp, steps = 160) => { let d = ''; for (let i = 0; i <= steps; i++) { const a = (i / steps) * 2 * Math.PI, r = R + amp * Math.cos(lobes * a); d += (i ? 'L' : 'M') + (50 + r * Math.cos(a)).toFixed(1) + ' ' + (50 + r * Math.sin(a)).toFixed(1); } return d + 'Z'; };

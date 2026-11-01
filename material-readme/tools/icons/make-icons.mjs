@@ -9,8 +9,8 @@ const root = path.resolve(import.meta.dirname, '../..');
 const out = path.join(root, 'src-tauri/icons'), assets = path.join(root, 'assets');
 fs.mkdirSync(out, { recursive: true }); fs.mkdirSync(assets, { recursive: true });
 
-// Raspberry pink (Material pink 600) is the seed colour of the app and of its icon.
-const C = { primary: '#D81B60', deep: '#9E0F45', container: '#FFD9E3', onContainer: '#5C0A2C', tertiary: '#FFB300', surface: '#FFF8F8' };
+// Material blue is the seed colour of the app and of its icon.
+const C = { primary: '#1E6FE0', deep: '#0A3F91', container: '#D6E3FF', onContainer: '#001B3E', tertiary: '#FFB300', surface: '#F8F9FF' };
 
 const cookie = (R = 45, lobes = 12, amp = 3.6, cx = 50, cy = 50, steps = 240) => {
   let d = '';
@@ -23,7 +23,7 @@ const svg = (body, size = 100) => `<svg xmlns="http://www.w3.org/2000/svg" viewB
 /** Full app icon: scalloped cookie, a tonal "page" with the M-down mark, and a tertiary spark. */
 const appFull = svg(`
   <path d="${cookie()}" fill="${C.primary}"/>
-  <path d="${cookie(41, 12, 3.2)}" fill="#E8457F" opacity=".55"/>
+  <path d="${cookie(41, 12, 3.2)}" fill="#4C8DF6" opacity=".55"/>
   <rect x="27" y="29" width="46" height="52" rx="13" fill="${C.deep}" opacity=".35"/>
   <rect x="27" y="25" width="46" height="52" rx="13" fill="${C.container}"/>
   <path d="${GLYPH}" fill="none" stroke="${C.onContainer}" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -35,13 +35,13 @@ const appSmall = svg(`
 /** Uninstall icon: same cookie in a muted tone with a bin. */
 const BIN = 'M30 38h40M42 38V31a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v7M35 38l3 33a4 4 0 0 0 4 3.5h16a4 4 0 0 0 4-3.5l3-33M45 48v18M55 48v18';
 const uninstall = svg(`
-  <path d="${cookie()}" fill="#6E4A58"/>
-  <path d="${cookie(41, 12, 3.2)}" fill="#8A6070" opacity=".5"/>
-  <path d="${BIN}" fill="none" stroke="#FFD9E3" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="${cookie()}" fill="#4A5A74"/>
+  <path d="${cookie(41, 12, 3.2)}" fill="#667B99" opacity=".5"/>
+  <path d="${BIN}" fill="none" stroke="#D6E3FF" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
   <circle cx="75" cy="25" r="9" fill="#BA1A3A"/><path d="M71 21l8 8M79 21l-8 8" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>`);
 const uninstallSmall = svg(`
-  <path d="${cookie(46, 10, 4.4)}" fill="#6E4A58"/>
-  <path d="${BIN}" transform="translate(50 52) scale(1.12) translate(-50 -52)" fill="none" stroke="#FFD9E3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`);
+  <path d="${cookie(46, 10, 4.4)}" fill="#4A5A74"/>
+  <path d="${BIN}" transform="translate(50 52) scale(1.12) translate(-50 -52)" fill="none" stroke="#D6E3FF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`);
 
 fs.writeFileSync(path.join(assets, 'app-icon.svg'), appFull);
 fs.writeFileSync(path.join(assets, 'favicon.svg'), appSmall);
@@ -103,10 +103,10 @@ const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" vi
   <g transform="translate(640 -120) scale(7.4)"><path d="${cookie(45, 12, 3.6, 50, 50)}" fill="${C.container}"/></g>
   <g transform="translate(900 330) scale(3.2)"><path d="${cookie(45, 8, 5, 50, 50)}" fill="#FFB300" opacity=".35"/></g>
   <g transform="translate(762 135) scale(3.6)"><svg width="100" height="100" viewBox="0 0 100 100">${appFull.replace(/<\/?svg[^>]*>/g, '')}</svg></g>
-  <text x="80" y="270" font-family="DejaVu Sans, Arial, sans-serif" font-weight="800" font-size="84" fill="#3B0A1E">Material</text>
+  <text x="80" y="270" font-family="DejaVu Sans, Arial, sans-serif" font-weight="800" font-size="84" fill="#0B1B3A">Material</text>
   <text x="80" y="360" font-family="DejaVu Sans, Arial, sans-serif" font-weight="800" font-size="84" fill="${C.primary}">Readme</text>
-  <text x="80" y="430" font-family="DejaVu Sans, Arial, sans-serif" font-size="30" fill="#5F4B52">Write and preview Markdown</text>
-  <text x="80" y="472" font-family="DejaVu Sans, Arial, sans-serif" font-size="30" fill="#5F4B52">in Material 3 Expressive.</text>
+  <text x="80" y="430" font-family="DejaVu Sans, Arial, sans-serif" font-size="30" fill="#44505F">Write and preview Markdown</text>
+  <text x="80" y="472" font-family="DejaVu Sans, Arial, sans-serif" font-size="30" fill="#44505F">in Material 3 Expressive.</text>
 </svg>`;
 fs.writeFileSync(path.join(assets, 'og-image.png'), await sharp(Buffer.from(og), { density: 144 }).resize(1200, 630).png().toBuffer());
 console.log('icons ready');

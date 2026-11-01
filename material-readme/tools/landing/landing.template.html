@@ -11,7 +11,7 @@
 <link rel="canonical" href="https://github.com/minhtrong67/my-tauri-apps/tree/main/material-readme">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="apple-touch-icon" href="src-tauri/icons/128x128@2x.png">
-<meta name="theme-color" content="#FFF8F8" id="meta-theme">
+<meta name="theme-color" content="#F8F9FF" id="meta-theme">
 <meta name="color-scheme" content="light dark">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Material Readme">
@@ -40,10 +40,8 @@ var d=m==='dark'||(m==='system'&&matchMedia('(prefers-color-scheme: dark)').matc
   --d-fast:280ms;--d:420ms;--d-slow:650ms;
   --e1:0 1px 3px rgb(0 0 0/.2);--e2:0 4px 14px rgb(0 0 0/.14);--e3:0 14px 40px rgb(0 0 0/.2);
   --cookie:{{COOKIE}};
-  /* default palette: pink, light (replaced by script) */
-  --primary:#B60050;--on-primary:#fff;--primary-container:#FFD9E2;--on-primary-container:#3F001B;--secondary:#8D4A24;--on-secondary:#fff;--secondary-container:#FFDBC9;--on-secondary-container:#331200;
-  --tertiary:#7F5700;--on-tertiary:#fff;--tertiary-container:#FFDDB0;--on-tertiary-container:#281800;--surface:#FFF8F8;--on-surface:#22191B;--on-surface-variant:#524345;
-  --sc-low:#FFF0F1;--sc:#FCEAEC;--sc-high:#F6E4E6;--sc-highest:#F0DEE0;--outline:#857375;--outline-variant:#D8C2C4;--inverse-surface:#382E30;--inverse-on-surface:#FFEDEF;
+  /* default palette: blue, light (replaced by script) */
+  {{DEFAULT_VARS}}
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:6.5rem;-webkit-text-size-adjust:100%}
@@ -263,7 +261,7 @@ footer{padding:3rem 0 4rem;color:var(--on-surface-variant);font-size:.9rem}
     <div class="gallery rv">
       <div class="seg" id="tabs" role="tablist"></div>
       <div class="shot"><div class="imgs" id="imgs">
-        <img src="screenshots/image01.png" width="1920" height="1200" alt="Split view in light pink" loading="lazy">
+        <img src="screenshots/image01.png" width="1920" height="1200" alt="Split view in light blue" loading="lazy">
         <img src="screenshots/image02.png" width="1920" height="1200" alt="Dark purple theme with the find bar" loading="lazy">
         <img src="screenshots/image03.png" width="1920" height="1200" alt="Settings sheet with theme colours" loading="lazy">
         <img src="screenshots/image04.png" width="1920" height="1200" alt="Vietnamese interface with the README template" loading="lazy">
@@ -337,7 +335,7 @@ faq:[['Material Readme có thật sự miễn phí?','Có. Đây là mã nguồn
 (function(){
 var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
 var root=document.documentElement,mq=matchMedia('(prefers-color-scheme: dark)'),rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
-var S={mode:'system',seed:'pink',lang:(navigator.language||'en').toLowerCase().indexOf('vi')===0?'vi':'en'};
+var S={mode:'system',seed:'blue',lang:(navigator.language||'en').toLowerCase().indexOf('vi')===0?'vi':'en'};
 try{Object.assign(S,JSON.parse(localStorage.getItem('mr-landing')||'{}'))}catch(e){}
 var save=function(){try{localStorage.setItem('mr-landing',JSON.stringify(S))}catch(e){}};
 var isDark=function(){return S.mode==='dark'||(S.mode==='system'&&mq.matches)};

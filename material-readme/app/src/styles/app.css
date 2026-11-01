@@ -401,3 +401,9 @@ dialog.closing .pal { animation: dlg-out var(--d-fx) var(--fx) forwards; }
 @media (max-width: 760px) { .seg > button > span { display: none; } .seg > button { padding: 0 .75rem; } .appbar { gap: .25rem; padding-inline: .5rem; } .appbar .ibtn { width: 2.25rem; } }
 .sh-body > * { flex: none; }
 .fab-top { overflow: hidden; }
+
+/* Line numbers follow the theme (CodeMirror's base theme would otherwise paint a light gutter) */
+.cm-editor .cm-gutters { background: transparent !important; color: var(--md-outline) !important; border: 0 !important; padding-left: .5rem; }
+.cm-editor .cm-gutterElement { color: inherit; }
+.cm-editor .cm-activeLineGutter { background: color-mix(in srgb, var(--md-primary) 8%, transparent) !important; color: var(--md-primary) !important; font-weight: 700; }
+.cm-editor .cm-lineNumbers .cm-gutterElement { padding: 0 .75rem 0 .5rem; min-width: 2.25rem; }
