@@ -8,7 +8,7 @@ const DAY = 86400000;
 
 /** Auto-updating lists built from what is already known about the library (play counts, dates, format) */
 export function smartTracks(id: SmartId, byId: Record<string, Track>, plays: Record<string, number>): Track[] {
-  const all = Object.values(byId);
+  const all = Object.values(byId).filter((t) => !t.source);
   switch (id) {
     case 'top':
       return Object.entries(plays)
@@ -41,6 +41,7 @@ export function ruleTracks(r: SmartRules, byId: Record<string, Track>, plays: Re
   const since = r.addedDays ? now - r.addedDays * DAY : 0;
   return Object.values(byId)
     .filter((t) => {
+      if (t.source) return false;
       if (genre && !t.genre.toLowerCase().includes(genre)) return false;
       if (r.yearFrom && (!t.year || t.year < r.yearFrom)) return false;
       if (r.yearTo && (!t.year || t.year > r.yearTo)) return false;

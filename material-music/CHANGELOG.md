@@ -2,6 +2,39 @@
 
 All notable changes to Material Music. The format follows [Keep a Changelog](https://keepachangelog.com/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [1.5.0] - 2026-11-08
+
+### Changed
+- **YouTube Music only.** Audius and Deezer are gone. Search and playback talk to YouTube Music's web API directly from Rust instead of starting yt-dlp, so searching takes a moment instead of several seconds and nothing needs to be installed.
+- The Discover page is simpler: one source, no filter chips or per-row badges, a result count, and your last results are kept when you come back to the page.
+- yt-dlp is now an optional last-resort fallback (Settings → Online music) instead of a requirement.
+
+### Fixed
+- **Theme colour now follows the artwork of online songs** (the cover is downloaded by the Rust side so its colour can be read). The previous song's colour stays until the new one is ready instead of flashing back to the default.
+- **Songs that did not play / long loading:** several YouTube client identities are tried in parallel (the JavaScript-free `visionOS` one first), every stream link is probed before it is used, results are cached for the session, the next song and the song under the pointer are looked up ahead of time, and a stream that never starts is retried once after 12 s.
+- A failed online song no longer shows the misleading "file is missing or unsupported" message, and the queue no longer skips through every failing song: playback stops with a clear reason and a *Retry* button.
+- The play button no longer keeps spinning when a stream stalls.
+
+### Removed
+- Audius and Deezer sources, 30-second previews, and the source toggles in Settings. Songs saved from them by 1.4.0 are forgotten (they cannot be played any more).
+
+## [1.4.0] - 2026-11-07
+
+### Added
+- **Online music:** a new **Discover** page that searches and streams songs online, with the same queue, favorites, playlists, equalizer, crossfade and mini player as local files.
+- **Sources** (Settings → Online music): **Audius** (full songs) and **Deezer** (30 s previews) are on by default; **YouTube** through yt-dlp is optional and off by default.
+- **yt-dlp manager:** downloads yt-dlp (and Deno, the JavaScript runtime it needs) from the official releases with SHA-256 verification, updates / removes what it installed, or uses your own copy. Nothing is bundled.
+- **Synced lyrics for online songs** from LRCLIB, cached on disk (*Settings → Online music → Lyrics cache*). Previews show plain lyrics because they are excerpts.
+- **Local streaming proxy** (127.0.0.1 only, per-stream tokens, Range support) so the equalizer and visualizer also work on online songs.
+- Online songs you favorite or add to a playlist are kept in the library; others are forgotten after a while. A *Back to top* button on the Discover page.
+- Rust unit tests for the providers, the proxy (end-to-end with a fake upstream) and the yt-dlp output parsing; Vitest tests for online ids and error messages.
+
+### Fixed
+- The loading indicator used an invalid animation spline (console error); it now morphs as intended.
+
+### Changed
+- The Content Security Policy now allows `https:` images (online artwork) and media from `127.0.0.1` (the streaming proxy).
+
 ## [1.3.0] - 2026-10-25
 
 ### Added

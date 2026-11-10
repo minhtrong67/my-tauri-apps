@@ -27,7 +27,17 @@ export interface Track {
   rgAlbumPeak?: number | null;
   /** 1 = the file was read by a build that knows ReplayGain (older entries are re-read once) */
   rgv?: number;
+  /** Online songs only: where it comes from. Local files have no `source`. */
+  source?: OnlineSource;
+  /** id inside that source */
+  remoteId?: string;
+  /** artwork URL (online songs) */
+  coverUrl?: string;
+  /** the user kept this online song (favorite / playlist / "Add to library"): it shows up in the library lists and survives restarts */
+  saved?: boolean;
 }
+
+export type OnlineSource = 'youtube';
 
 export interface Playlist {
   id: string;
@@ -97,6 +107,10 @@ export interface Settings {
   /** look lyrics up on LRCLIB by itself when a song has none saved */
   autoLyrics: boolean;
   scrobbleToken: string;
+  /** yt-dlp the user picked by hand ('' = the one the app installed, or the one on PATH) */
+  ytdlpPath: string;
+  /** look lyrics up for online songs while they play */
+  onlineLyrics: boolean;
 }
 
 export const defaultSettings: Settings = {
@@ -131,6 +145,8 @@ export const defaultSettings: Settings = {
   scrobble: false,
   autoLyrics: false,
   scrobbleToken: '',
+  ytdlpPath: '',
+  onlineLyrics: true,
 };
 
 export type SmartId = 'top' | 'new' | 'unplayed' | 'lossless';
@@ -181,6 +197,7 @@ export type View =
   | { name: 'recent' }
   | { name: 'smart'; id: SmartId }
   | { name: 'smartlist'; id: string }
+  | { name: 'discover' }
   | { name: 'stats' }
   | { name: 'duplicates' }
   | { name: 'settings' };

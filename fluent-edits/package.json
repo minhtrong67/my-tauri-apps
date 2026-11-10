@@ -1,0 +1,22 @@
+{
+  "name": "fluent-edits",
+  "version": "2.0.0",
+  "description": "A simple, Fluent Design video editor for Windows.",
+  "author": "minhtrong67",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "icons": "python3 tools/make-icons.py",
+    "sprite": "node tools/build-sprite.mjs"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=9"
+  }
+}

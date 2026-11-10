@@ -5,7 +5,7 @@ import {
   Pause, Pencil, PictureInPicture2, Pipette, Play, Plus, RefreshCw, Repeat, Repeat1, Ruler, Search, SearchX, Settings, Share, Shrink, Shuffle,
   SkipBack, SkipForward, SlidersHorizontal, SlidersVertical, Sparkles, Square, Sun, SunMoon, Trash2, Unlink, Upload, User, Volume1, Volume2,
   VolumeX, X, Languages, Type, Power, Pin, HardDrive, Wrench, ShieldAlert, Headphones, AppWindow, TriangleAlert, Eraser, DatabaseBackup, ArchiveRestore,
-  CircleCheck, CircleAlert, CloudDownload, TrendingUp, Gem, EyeOff, Save, Gauge,
+  CircleCheck, CircleAlert, LoaderCircle, Compass, Globe, Link2, ExternalLink, WifiOff, CloudOff, CloudDownload, TrendingUp, Gem, EyeOff, Save, Gauge,
   ChartColumn, MonitorSpeaker, Merge, WandSparkles, Timer, Waves, Activity, RadioTower, RotateCcw, Trophy, CalendarDays, ListFilter, Circle, CopyCheck, Flame,
   type LucideIcon,
 } from 'lucide-react';
@@ -32,6 +32,13 @@ export const ICONS: Record<string, LucideIcon> = {
   folder_open: FolderOpen,
   queue_music: ListMusic,
   settings: Settings, // the gear (cog) icon
+  progress_activity: LoaderCircle,
+  explore: Compass,
+  public: Globe,
+  link: Link2,
+  open_in_new: ExternalLink,
+  wifi_off: WifiOff,
+  cloud_off: CloudOff,
   add: Plus,
   remove: Minus,
   play_arrow: Play,

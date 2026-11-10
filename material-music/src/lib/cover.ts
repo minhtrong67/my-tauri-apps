@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getCover, assetUrl } from './tauri';
+import { getCover, assetUrl, onlineImage } from './tauri';
 import type { Track } from './types';
 
 /** Ảnh bìa dự phòng cho bài cũ chưa có trường `cover` (khóa theo id bài hát, không theo thư mục/album) */
@@ -21,12 +21,14 @@ async function limited<T>(fn: () => Promise<T>): Promise<T> {
 
 /** string = có ảnh, null = chắc chắn không có, undefined = chưa biết (bài cũ) */
 export function coverUrlOf(t: Track): string | null | undefined {
+  if (t.source) return t.coverUrl ?? null; // online artwork is a plain web address
   if (t.cover) return assetUrl(t.cover);
   if (t.cover === '') return null;
   return undefined;
 }
 
 export function loadCover(t: Track): Promise<string | null> {
+  if (t.source) return Promise.resolve(t.coverUrl ?? null);
   if (legacy.has(t.id)) return Promise.resolve(legacy.get(t.id)!);
   let p = pending.get(t.id);
   if (!p) {
@@ -45,7 +47,7 @@ export function loadCover(t: Track): Promise<string | null> {
 
 /** Ghi lại tệp ảnh bìa nếu bộ nhớ đệm đã bị xóa */
 /** Re-extract the cover into the current cache folder; resolves with the cached file path (or null) */
-export const restoreCover = (t: Track) => getCover(t.path, false).then((r) => r?.file ?? null).catch(() => null);
+export const restoreCover = (t: Track) => t.source ? Promise.resolve(null) : getCover(t.path, false).then((r) => r?.file ?? null).catch(() => null);
 
 export function useCover(t: Track | undefined, enabled = true): string | null {
   const direct = t ? coverUrlOf(t) : null;
@@ -69,14 +71,23 @@ export function useCover(t: Track | undefined, enabled = true): string | null {
 const seedCache = new Map<string, string | null>();
 export async function seedFromCover(t: Track): Promise<string | null> {
   if (seedCache.has(t.id)) return seedCache.get(t.id)!;
+  let url: string | null = null;
   try {
-    const res = await getCover(t.path, true);
-    if (!res?.dataUrl) {
-      seedCache.set(t.id, null);
-      return null;
+    if (t.source) {
+      // online artwork: the backend downloads it (the web view may not read pixels of a cross-origin image)
+      if (!t.coverUrl) return null;
+      const bytes = await onlineImage(t.coverUrl);
+      url = URL.createObjectURL(new Blob([bytes], { type: 'image/jpeg' }));
+    } else {
+      const res = await getCover(t.path, true);
+      if (!res?.dataUrl) {
+        seedCache.set(t.id, null);
+        return null;
+      }
+      url = res.dataUrl;
     }
     const img = new Image();
-    img.src = res.dataUrl;
+    img.src = url;
     await img.decode();
     const { sourceColorFromImage, hexFromArgb } = await import('@material/material-color-utilities');
     const hex = hexFromArgb(await sourceColorFromImage(img));
@@ -84,5 +95,7 @@ export async function seedFromCover(t: Track): Promise<string | null> {
     return hex;
   } catch {
     return null; // lỗi tạm thời: không nhớ để lần sau thử lại
+  } finally {
+    if (url?.startsWith('blob:')) URL.revokeObjectURL(url);
   }
 }

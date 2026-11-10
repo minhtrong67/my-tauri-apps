@@ -1,0 +1,49 @@
+{
+  "name": "fluent-note",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Fluent Note - a fast notepad in Microsoft Fluent Design, built with Tauri, React and TypeScript.",
+  "author": "minhtrong67",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "web:dev": "vite",
+    "web:build": "tsc --noEmit && vite build",
+    "tauri": "tauri",
+    "icons": "python tools/generate_icons.py"
+  },
+  "dependencies": {
+    "@fluentui/react-icons": "^2.0.345",
+    "@fontsource-variable/google-sans-flex": "^5.3.2",
+    "@fontsource-variable/inter": "^5.2.5",
+    "@fontsource-variable/jetbrains-mono": "^5.2.5",
+    "@fontsource-variable/lora": "^5.2.5",
+    "@fontsource-variable/noto-sans": "^5.3.0",
+    "@fontsource-variable/open-sans": "^5.3.0",
+    "@fontsource-variable/roboto": "^5.2.5",
+    "@fontsource-variable/roboto-flex": "^5.3.0",
+    "@fontsource-variable/source-sans-3": "^5.3.1",
+    "@fontsource/be-vietnam-pro": "^5.3.0",
+    "@tauri-apps/api": "^2.9.0",
+    "@tauri-apps/plugin-dialog": "^2.4.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@tauri-apps/cli": "^2.9.0",
+    "@types/node": "^26.6.5",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

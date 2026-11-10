@@ -79,3 +79,28 @@ export interface OnlineLyrics { synced: string; plain: string; title: string; ar
 export const fetchLyricsOnline = (title: string, artist: string, album: string, duration: number) =>
   invoke<OnlineLyrics | null>('fetch_lyrics_online', { title, artist, album, duration });
 
+
+// ---------- online music ----------
+export interface OnlineTrack {
+  source: 'youtube';
+  id: string;
+  title: string;
+  artist: string;
+  album: string;
+  duration: number;
+  coverUrl: string;
+}
+export interface YtdlpStatus { installed: boolean; path: string; version: string; managed: boolean; runtime: string }
+export interface OnlineProgress { stage: 'checksum' | 'ytdlp' | 'runtime'; done: number; total: number }
+
+export const onlineSearch = (query: string, limit = 20) => invoke<OnlineTrack[]>('online_search', { query, limit });
+export const onlineResolve = (id: string, fresh = false) => invoke<{ url: string }>('online_resolve', { id, fresh });
+/** cover bytes fetched by the backend (the web view cannot read pixels of a cross-origin image) */
+export const onlineImage = (url: string) => invoke<ArrayBuffer>('online_image', { url });
+export const ytdlpConfigure = (path: string) => invoke<YtdlpStatus>('online_ytdlp_configure', { path });
+export const ytdlpStatus = () => invoke<YtdlpStatus>('online_ytdlp_status');
+export const ytdlpInstall = (runtime: boolean) => invoke<YtdlpStatus>('online_ytdlp_install', { runtime });
+export const ytdlpRemove = () => invoke<YtdlpStatus>('online_ytdlp_remove');
+export const lyricsCacheGet = (key: string) => invoke<string | null>('lyrics_cache_get', { key });
+export const lyricsCachePut = (key: string, data: string) => invoke<void>('lyrics_cache_put', { key, data });
+export const lyricsCacheClear = () => invoke<number>('lyrics_cache_clear');

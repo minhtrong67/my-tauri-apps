@@ -1,5 +1,6 @@
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { tr } from './i18n';
+import { forgetStream, isOnlinePath, onlineErrorText, resolveStream } from './online';
 
 export const EQ_FREQS = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 export const EQ_LABELS = ['31', '62', '125', '250', '500', '1k', '2k', '4k', '8k', '16k'];
@@ -25,6 +26,14 @@ interface Deck {
   /** ReplayGain as a linear factor */
   rgLin: number;
   fallbackTried: boolean;
+  /** online songs: bumped for every stream lookup so a late answer for an old song is ignored */
+  seq: number;
+  /** online songs: the stream was already looked up again once after a playback error */
+  retried: boolean;
+  /** online songs: a stream lookup is running */
+  resolving: boolean;
+  /** online songs: timer that gives up on a stream that never starts */
+  watch: number | undefined;
 }
 
 interface Fade {
@@ -74,20 +83,23 @@ class Engine {
   private justTimer: number | undefined;
 
   onEnded: () => void = () => {};
-  onError: (msg: string) => void = () => {};
+  /** `online`: the failing song is an online one (its message is already worded for that) */
+  onError: (msg: string, online?: boolean) => void = () => {};
   onTime: (t: number) => void = () => {};
   onDuration: (d: number) => void = () => {};
   onPlayState: (p: boolean) => void = () => {};
   onPlaying: () => void = () => {};
   /** The next song has already started on the other deck (gapless / crossfade): the app should move its queue forward */
   onAutoAdvance: () => void = () => {};
+  /** online song: waiting for its stream (true) / the stream arrived or failed (false) */
+  onResolving: (busy: boolean) => void = () => {};
 
   constructor() {
     const mk = (): Deck => {
       const a = new Audio();
       a.preload = 'auto';
       a.crossOrigin = 'anonymous';
-      return { audio: a, node: null, rg: null, path: null, fade: 1, rgLin: 1, fallbackTried: false };
+      return { audio: a, node: null, rg: null, path: null, fade: 1, rgLin: 1, fallbackTried: false, seq: 0, retried: false, resolving: false, watch: undefined };
     };
     this.decks = [mk(), mk()];
     for (const d of this.decks) {
@@ -101,6 +113,10 @@ class Engine {
       a.addEventListener('pause', () => d === this.active && this.onPlayState(false));
       a.addEventListener('playing', () => d === this.active && this.onPlaying());
       a.addEventListener('loadedmetadata', () => this.handleLoaded(d));
+      // an online song may stall while the stream is being fetched: keep the spinner honest
+      a.addEventListener('waiting', () => d === this.active && d.path && isOnlinePath(d.path) && this.wantPlay && this.onResolving(true));
+      a.addEventListener('playing', () => { window.clearTimeout(d.watch); if (d === this.active) this.onResolving(false); });
+      a.addEventListener('canplay', () => { window.clearTimeout(d.watch); if (d === this.active && !d.resolving) this.onResolving(false); });
       a.addEventListener('error', () => this.handleError(d));
     }
     window.setInterval(() => this.tick(), 40);
@@ -126,13 +142,60 @@ class Engine {
 
   // ---------- loading ----------
 
-  private prepare(d: Deck, path: string) {
+  /** `lazy`: an online song that is only being queued (not played) is not looked up until the user presses play */
+  private prepare(d: Deck, path: string, lazy = false) {
     d.path = path;
     d.fallbackTried = false;
     if (this.corsFailed) d.audio.removeAttribute('crossorigin');
     else d.audio.crossOrigin = 'anonymous';
+    d.retried = false;
+    if (isOnlinePath(path)) {
+      if (lazy) {
+        d.seq++;
+        d.resolving = false;
+        d.audio.pause();
+        d.audio.removeAttribute('src');
+        d.audio.load();
+      } else this.prepareOnline(d, path, false);
+      return;
+    }
+    d.seq++; // a stream lookup that is still running for the previous (online) song must not take over
     d.audio.src = convertFileSrc(path);
     d.audio.load();
+  }
+
+  /** Online song: stop what this deck was doing, ask the backend for the stream, then start it */
+  private prepareOnline(d: Deck, path: string, fresh: boolean) {
+    const seq = ++d.seq;
+    d.resolving = true;
+    window.clearTimeout(d.watch);
+    const isMain = () => d === this.active;
+    d.audio.pause();
+    d.audio.removeAttribute('src');
+    d.audio.load();
+    if (isMain()) this.onResolving(true);
+    resolveStream(path, fresh)
+      .then((url) => {
+        if (d.seq !== seq || d.path !== path) return;
+        d.resolving = false;
+        if (isMain()) this.onResolving(false);
+        d.audio.src = url;
+        d.audio.load();
+        if (isMain() && this.wantPlay) void this.play();
+        // a stream that never starts must not leave the spinner running: look it up again once, then report it
+        window.clearTimeout(d.watch);
+        d.watch = window.setTimeout(() => {
+          if (d.seq === seq && d.path === path && d.audio.readyState < 3 && (isMain() ? this.wantPlay : true)) this.handleError(d);
+        }, 12000);
+      })
+      .catch((e) => {
+        if (d.seq !== seq || d.path !== path) return;
+        d.resolving = false;
+        if (isMain()) {
+          this.onResolving(false);
+          this.onError(onlineErrorText(e), true);
+        } else if (this.preloaded === path) this.preloaded = null; // the next song is not ready: the normal "ended" path will load it
+      });
   }
 
   load(path: string, play: boolean, startAt = 0, rgDb = 0) {
@@ -146,12 +209,14 @@ class Engine {
     const idle = this.idle;
     idle.audio.pause();
     this.preloaded = null;
+    window.clearTimeout(idle.watch);
     const d = this.active;
     d.fade = 1;
     d.rgLin = Math.pow(10, rgDb / 20);
     this.pendingStart = startAt;
     this.wantPlay = play;
-    this.prepare(d, path);
+    this.onResolving(false);
+    this.prepare(d, path, !play);
     this.applyVolumes();
     if (play) void this.play();
   }
@@ -210,6 +275,24 @@ class Engine {
 
   private handleError(d: Deck) {
     const a = d.audio;
+    if (d.path && isOnlinePath(d.path)) {
+      window.clearTimeout(d.watch);
+      // the stream link may have expired: look it up once more before giving up
+      if (!a.getAttribute('src')) return; // the deck was just cleared while a lookup is running
+      if (!d.retried) {
+        d.retried = true;
+        forgetStream(d.path);
+        this.prepareOnline(d, d.path, true);
+        return;
+      }
+      if (d !== this.active) {
+        if (this.preloaded === d.path) this.preloaded = null;
+        return;
+      }
+      this.onResolving(false);
+      this.onError(tr('onErrStream'), true);
+      return;
+    }
     if (!d.fallbackTried && !this.corsOk && a.crossOrigin !== null && d.path && !this.ctx) {
       d.fallbackTried = true;
       a.removeAttribute('crossorigin');
@@ -233,10 +316,7 @@ class Engine {
     }
     if (d !== this.active) return;
     // safety net when the timer missed the end of the song
-    if (this.preloaded && this.nextPath === this.preloaded) {
-      this.startTransition(0);
-      return;
-    }
+    if (this.preloaded && this.nextPath === this.preloaded && this.startTransition(0)) return;
     this.onEnded();
   }
 
@@ -264,10 +344,12 @@ class Engine {
     if (remaining <= lead) this.startTransition(cf);
   }
 
-  private startTransition(fadeSec: number) {
+  private startTransition(fadeSec: number): boolean {
     const inn = this.idle;
     const out = this.active;
-    if (!this.preloaded || inn.path !== this.preloaded) return;
+    if (!this.preloaded || inn.path !== this.preloaded) return false;
+    // an online song whose stream has not arrived yet cannot take over: the app loads it the normal way when this one ends
+    if (!inn.audio.getAttribute('src')) return false;
     this.fading = { out, inn, start: performance.now(), dur: fadeSec * 1000 };
     this.cur = 1 - this.cur;
     inn.fade = fadeSec > 0 ? 0 : 1;
@@ -288,6 +370,7 @@ class Engine {
     this.onAutoAdvance(); // the app moves its queue first, so the duration below is attributed to the right song
     if (isFinite(inn.audio.duration)) this.onDuration(inn.audio.duration);
     this.onPlayState(true);
+    return true;
   }
 
   private finishFade() {
@@ -419,6 +502,11 @@ class Engine {
 
   play() {
     this.wantPlay = true;
+    const d = this.active;
+    if (d.path && isOnlinePath(d.path) && !d.audio.getAttribute('src')) {
+      if (!d.resolving) this.prepareOnline(d, d.path, false); // queued earlier without a lookup (or after a failed one)
+      return Promise.resolve();
+    }
     if (this.corsOk) this.ensureGraph();
     void this.ctx?.resume();
     return this.active.audio.play().catch(() => undefined);

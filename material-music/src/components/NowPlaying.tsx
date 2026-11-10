@@ -9,7 +9,8 @@ import { WindowControls } from './TitleBar';
 import { useCurrent, useStore } from '../lib/store';
 import { useCover } from '../lib/cover';
 import { engine } from '../lib/audio';
-import { fetchLyricsOnline, readLyrics, writeTextFile, type OnlineLyrics } from '../lib/tauri';
+import { fetchLyricsOnline, lyricsCacheGet, lyricsCachePut, readLyrics, writeTextFile, type OnlineLyrics } from '../lib/tauri';
+import { SOURCE_LABEL } from '../lib/online';
 import { activeLine, parseLyrics, type Lyrics } from '../lib/lrc';
 import { playClose, playOpen, prefersReducedMotion, type MorphTargets } from '../lib/morph';
 
@@ -124,14 +125,17 @@ function LyricsPane() {
   const [lyrics, setLyrics] = useState<Lyrics | null>(null);
   const [loading, setLoading] = useState(false);
   const [online, setOnline] = useState<{ raw: string; saved: boolean; source: string } | null>(null);
-  const autoLyrics = useStore((s) => s.settings.autoLyrics);
+  const localAuto = useStore((s) => s.settings.autoLyrics);
+  const onlineAuto = useStore((s) => s.settings.onlineLyrics);
+  const autoLyrics = t?.source ? onlineAuto : localAuto;
   const [searching, setSearching] = useState(false);
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const scroller = useRef<HTMLDivElement>(null);
 
   const show = (res: OnlineLyrics) => {
     const raw = res.synced.trim() ? res.synced : res.plain;
-    setLyrics(parseLyrics(raw));
+    const parsed = parseLyrics(raw);
+    setLyrics(parsed);
     setOnline({ raw, saved: false, source: [res.artist, res.title].filter(Boolean).join(' – ') });
   };
 
@@ -141,11 +145,14 @@ function LyricsPane() {
     const toast = useStore.getState().showToast;
     setSearching(true);
     try {
-      const res = await fetchLyricsOnline(t.title, t.artist === tr('unknownArtist') ? '' : t.artist, t.album, t.duration);
+      const noArtist = t.artist === tr('unknownArtist') || (t.source && t.artist === SOURCE_LABEL[t.source]);
+      const noAlbum = !t.album || (t.source && t.album === SOURCE_LABEL[t.source]);
+      const res = await fetchLyricsOnline(t.title, noArtist ? '' : t.artist, noAlbum ? '' : t.album, t.duration);
       const raw = res ? (res.synced.trim() ? res.synced : res.plain) : '';
       if (res && raw.trim()) {
         lyricsCache.set(t.id, res);
         show(res);
+        if (t.source) void lyricsCachePut(t.id, JSON.stringify(res)).catch(() => undefined);
       } else {
         lyricsCache.set(t.id, null);
         if (!silent) toast(tr('lyricsNotFoundOnline'), undefined, undefined, 'warning');
@@ -176,6 +183,21 @@ function LyricsPane() {
     setLoading(true);
     setLyrics(null);
     setOnline(null);
+    if (t.source) {
+      // online song: there is no file next to it, so look in the lyrics cache (the lookup itself runs below when needed)
+      lyricsCacheGet(t.id)
+        .then((raw) => {
+          if (!alive || !raw) return;
+          try {
+            const res = JSON.parse(raw) as OnlineLyrics;
+            lyricsCache.set(t.id, res);
+            show(res);
+          } catch { /* a damaged cache file is simply ignored */ }
+        })
+        .catch(() => undefined)
+        .finally(() => alive && setLoading(false));
+      return () => { alive = false; };
+    }
     readLyrics(t.path)
       .then((raw) => alive && setLyrics(raw ? parseLyrics(raw) : null))
       .catch(() => alive && setLyrics(null))
@@ -212,7 +234,7 @@ function LyricsPane() {
       <div className="h-full flex flex-col items-center justify-center text-center text-on-surface-variant gap-2 px-10">
         <Icon name="lyrics" size={48} />
         <div className="text-title-md text-on-surface">{tr('noLyrics')}</div>
-        <div className="text-body-md">{tr('noLyricsHelp')}</div>
+        <div className="text-body-md">{t?.source ? tr('noLyricsOnlineHelp') : tr('noLyricsHelp')}</div>
         <Button variant="tonal" icon="cloud_download" className="mt-2" disabled={searching} onClick={() => void searchOnline(false)}>{searching ? tr('lyricsSearching') : tr('lyricsSearchOnline')}</Button>
         <div className="text-body-sm">{tr('lyricsOnlineNote')}</div>
       </div>
@@ -225,7 +247,7 @@ function LyricsPane() {
           {online && (
             <div className="absolute top-3 right-4 flex items-center gap-2 animate-fade-in">
               <span title={online.source} className="px-3 h-8 max-w-[300px] inline-flex items-center rounded-full bg-surface-container-high text-label-md text-on-surface-variant"><span className="truncate">{tr('lyricsFromOnline')}{online.source ? ` · ${online.source}` : ''}</span></span>
-              {!online.saved && <Button variant="tonal" icon="save" onClick={saveLrc}>{tr('lyricsSaveLrc')}</Button>}
+              {!online.saved && !t?.source && <Button variant="tonal" icon="save" onClick={saveLrc}>{tr('lyricsSaveLrc')}</Button>}
             </div>
           )}
         </div>

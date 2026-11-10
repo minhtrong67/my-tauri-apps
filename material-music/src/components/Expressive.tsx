@@ -14,7 +14,7 @@ function shape(n: number, a: number, squash = 1): string {
 }
 const SHAPES = [shape(9, 0.1), shape(5, 0.14), shape(3, 0.2), shape(12, 0.09), shape(6, 0.17), shape(2, 0.12, 0.86)];
 const VALUES = [...SHAPES, SHAPES[0]].join(';');
-const SPLINE = Array(SHAPES.length).fill('0.34 1.56 0.64 1').join(';');
+const SPLINE = Array(SHAPES.length).fill('0.34 1 0.64 1').join(';');
 const TIMES = Array.from({ length: SHAPES.length + 1 }, (_, i) => (i / SHAPES.length).toFixed(3)).join(';');
 
 export function LoadingIndicator({ size = 48, contained = true, className = '' }: { size?: number; contained?: boolean; className?: string }) {

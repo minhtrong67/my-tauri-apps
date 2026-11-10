@@ -1,3 +1,4 @@
+import { forgetStream } from '../online';
 import { engine } from '../audio';
 import { replayGainDb } from './helpers';
 import { tr, setActiveLang, resolveLang } from '../i18n';
@@ -9,7 +10,7 @@ import type { GetFn, SetFn, AppSlice } from './types';
 
 
 export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => {
-  const { subscribe, flags, snapshot, pushTrayLabels, relabelUnknown, snapshotLibrary, snapshotUser, applySnapshot, dedupeLibrary, pruneMissing, playCurrentIndex, scheduleSave, syncNext, allowLibrary, syncWatchers } = core;
+  const { subscribe, flags, snapshot, pushTrayLabels, relabelUnknown, snapshotLibrary, snapshotUser, applySnapshot, dedupeLibrary, pruneMissing, playCurrentIndex, scheduleSave, syncNext, allowLibrary, syncWatchers, gcOnline, keepReferencedOnline } = core;
   /** Is this parsed JSON a Material Music backup (or a copy of user.json)? */
   const isBackup = (d: unknown): boolean => {
     if (!d || typeof d !== 'object' || Array.isArray(d)) return false;
@@ -90,6 +91,7 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
             let changed = false;
             const byId = { ...s.byId };
             for (const t of Object.values(byId)) {
+              if (t.source) continue;
               if (t.cover === undefined || (t.cover && !pathKey(t.cover).startsWith(prefix))) {
                 byId[t.id] = { ...t, modified: 0 };
                 changed = true;
@@ -116,6 +118,8 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
       if (s.audioDevice) void engine.setOutputDevice(s.audioDevice);
       // gapless / crossfade: the next song already started on the other deck, move the queue forward
       engine.onAutoAdvance = () => get().next(true);
+      engine.onResolving = (busy) => set({ loadingTrack: busy });
+      void api.ytdlpConfigure(get().settings.ytdlpPath).catch(() => undefined);
 
       engine.onTime = (t) => {
         set({ position: t });
@@ -147,9 +151,15 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
         }
         get().next(true);
       };
-      engine.onError = () => {
+      engine.onError = (msg, online) => {
         const st = get();
         const t = st.byId[st.queue[st.index]];
+        if (online || t?.source) {
+          // an online song failed (network, YouTube refused...): stop, say why and offer a retry; skipping through the whole queue would only hide it
+          set({ isPlaying: false, loadingTrack: false });
+          get().showToast(msg, tr('retry'), () => { const s2 = get(); const cur = s2.queue[s2.index]; if (cur) { forgetStream(cur); s2.playIndex(s2.index); } }, 'error');
+          return;
+        }
         get().showToast(tr('cannotPlay', { title: t?.title ?? tr('aSong') }), undefined, undefined, 'error');
         flags.errorStreak++;
         if (flags.errorStreak < 5 && st.index < st.queue.length - 1) get().next(true);
@@ -168,6 +178,7 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
         if (queue.length) playCurrentIndex(idx, false, session.position ?? 0);
       }
 
+      gcOnline(true); // after the queue was restored, so queued online songs survive
       set({ ready: true });
       if (recovered) window.setTimeout(() => get().showToast(tr('dataRecovered'), undefined, undefined, 'warning'), 600);
       syncNext();
@@ -180,6 +191,7 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
         )
           syncNext();
         if (st.playlists !== prev.playlists || st.settings.watchFolders !== prev.settings.watchFolders || st.settings.autoScanMusic !== prev.settings.autoScanMusic) void syncWatchers();
+        if (st.liked !== prev.liked || st.playlists !== prev.playlists) keepReferencedOnline();
         if (st.byId !== prev.byId) scheduleSave('library');
         if (
           st.playlists !== prev.playlists ||
@@ -254,6 +266,7 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
           if (!ok) get().showToast(tr('deviceFailed'), undefined, undefined, 'warning');
         });
       }
+      if ('ytdlpPath' in p) void api.ytdlpConfigure(settings.ytdlpPath).catch(() => undefined);
       if ('replayGain' in p) {
         const st = get();
         const cur = st.byId[st.queue[st.index]];

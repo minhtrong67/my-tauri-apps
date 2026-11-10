@@ -1,5 +1,5 @@
 import type { StoreApi } from 'zustand';
-import type { TagEdit } from '../tauri';
+import type { TagEdit, OnlineTrack } from '../tauri';
 import type { ToastKind, MenuItem, MenuState, Listen, SmartList, Playlist, RepeatMode, Settings, Toast, ViewMode, Track, View, Dialog } from '../types';
 
 export interface UiSlice {
@@ -107,7 +107,18 @@ export interface AppSlice {
   updateSettings: (p: Partial<Settings>) => void;
 }
 
-export type State = UiSlice & LibrarySlice & PlayerSlice & PlaylistSlice & AppSlice;
+export interface OnlineSlice {
+  /** an online song is waiting for its stream (the play button shows a spinner) */
+  loadingTrack: boolean;
+  /** Puts found songs into the track table (not the library) and returns their ids */
+  ensureOnline: (list: OnlineTrack[]) => string[];
+  /** Play a list of found songs, starting at `start` */
+  playOnline: (list: OnlineTrack[], start?: number) => void;
+  /** Keep / forget online songs (kept ones show up in Songs, Recent and so on) */
+  setOnlineSaved: (ids: string[], saved: boolean) => void;
+}
+
+export type State = UiSlice & LibrarySlice & PlayerSlice & PlaylistSlice & AppSlice & OnlineSlice;
 export type SetFn = StoreApi<State>['setState'];
 export type GetFn = StoreApi<State>['getState'];
 export type SubscribeFn = StoreApi<State>['subscribe'];

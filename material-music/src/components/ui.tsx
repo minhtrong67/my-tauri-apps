@@ -21,11 +21,13 @@ export function Icon({ name, fill, size = 24, className = '' }: { name: string; 
 
 type IBVariant = 'standard' | 'filled' | 'tonal' | 'outlined';
 export function IconButton({
-  icon, onClick, title, variant = 'standard', size = 'md', active, fill, className = '', disabled, onContextMenu, pop,
+  icon, onClick, title, variant = 'standard', size = 'md', active, fill, className = '', disabled, onContextMenu, pop, busy,
 }: {
   icon: string; onClick?: (e: MouseEvent<HTMLButtonElement>) => void; title?: string; variant?: IBVariant;
   size?: 'sm' | 'md' | 'lg' | 'xl'; active?: boolean; fill?: boolean; className?: string; disabled?: boolean;
   onContextMenu?: (e: MouseEvent<HTMLButtonElement>) => void; pop?: boolean;
+  /** shows a spinner instead of the icon (something is loading) */
+  busy?: boolean;
 }) {
   const isz = size === 'xl' ? 32 : size === 'lg' ? 28 : size === 'sm' ? 20 : 24;
   const v =
@@ -43,7 +45,7 @@ export function IconButton({
       type="button" title={title} aria-label={title} aria-pressed={active} disabled={disabled} onClick={onClick} onContextMenu={onContextMenu}
       className={`ripple ibtn ibtn-${size} ${v} inline-flex items-center justify-center focus-ring disabled:opacity-40 disabled:pointer-events-none shrink-0 ${className}`}
     >
-      {pop ? <span key={`${icon}${active ? 1 : 0}`} className="pop-heart inline-flex"><Icon name={icon} fill={fill || active} size={isz} /></span> : <Icon name={icon} fill={fill || active} size={isz} />}
+      {busy ? <Icon name="progress_activity" size={isz} className="animate-spin" /> : pop ? <span key={`${icon}${active ? 1 : 0}`} className="pop-heart inline-flex"><Icon name={icon} fill={fill || active} size={isz} /></span> : <Icon name={icon} fill={fill || active} size={isz} />}
     </button>
   );
 }

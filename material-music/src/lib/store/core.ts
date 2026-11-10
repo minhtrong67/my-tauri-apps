@@ -108,6 +108,44 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
   /** Library file: tracks only (rewritten rarely) */
   const snapshotLibrary = () => JSON.stringify({ v: 2, tracks: Object.values(get().byId) });
 
+  /** Online songs the user did not keep are only remembered while something refers to them (queue, history, favorites, playlists) */
+  const MAX_LOOSE_ONLINE = 300;
+  const gcOnline = (force = false) => {
+    const s = get();
+    // songs saved by an older version from Audius / Deezer can no longer be played: forget them
+    const legacy = force ? Object.values(s.byId).filter((t) => t.source && (t.source as string) !== 'youtube').map((t) => t.id) : [];
+    if (legacy.length) {
+      set((st) => {
+        const byId = { ...st.byId };
+        legacy.forEach((i) => delete byId[i]);
+        return { byId };
+      });
+    }
+    const loose = Object.values(s.byId).filter((t) => t.source && !t.saved);
+    if (!force && loose.length <= MAX_LOOSE_ONLINE) return;
+    const keep = new Set<string>([...s.queue, ...s.baseQueue, ...Object.keys(s.liked), ...s.history.map((h) => h.id), ...s.playlists.flatMap((p) => p.trackIds)]);
+    const drop = loose.filter((t) => !keep.has(t.id)).map((t) => t.id);
+    if (!drop.length) return;
+    set((st) => {
+      const byId = { ...st.byId };
+      drop.forEach((i) => delete byId[i]);
+      return { byId };
+    });
+  };
+
+  /** Anything the user favorites or puts in a playlist is kept: it becomes part of the library */
+  const keepReferencedOnline = () => {
+    const s = get();
+    const ids = new Set<string>([...Object.keys(s.liked), ...s.playlists.flatMap((p) => p.trackIds)]);
+    const todo = [...ids].filter((i) => s.byId[i]?.source && !s.byId[i].saved);
+    if (!todo.length) return;
+    set((st) => {
+      const byId = { ...st.byId };
+      for (const i of todo) if (byId[i]) byId[i] = { ...byId[i], saved: true };
+      return { byId };
+    });
+  };
+
   /** User file: small and cheap to rewrite (playlists, favorites, history, settings, session) */
   const snapshotUser = () => {
     const s = get();
@@ -208,6 +246,7 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
     const s = get();
     const groups = new Map<string, Track[]>();
     for (const t of Object.values(s.byId)) {
+      if (t.source) continue;
       const k = pathKey(t.path);
       (groups.get(k) ?? groups.set(k, []).get(k)!).push(t);
     }
@@ -227,7 +266,7 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
   const knownFiles = (): api.KnownFile[] =>
     // songs scanned before ReplayGain existed (no `rgv`) are left out so they are read once more
     Object.values(get().byId)
-      .filter((t) => t.rgv === 1)
+      .filter((t) => !t.source && t.rgv === 1)
       .map((t) => ({ path: t.path, size: t.size, modified: t.modified ?? 0 }));
 
   /** Quét đường dẫn. `known` có giá trị = quét tăng dần (bỏ qua tệp không đổi); không có = đọc lại và ghi đè. */
@@ -265,7 +304,7 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
 
   /** Xóa các bài mà tệp đã bị xóa khỏi ổ đĩa (bỏ qua khi cả ổ đĩa đang không truy cập được) */
   const pruneMissing = async (): Promise<number> => {
-    const all = Object.values(get().byId);
+    const all = Object.values(get().byId).filter((t) => !t.source); // online songs have no file
     if (!all.length) return 0;
     try {
       const gone = new Set((await api.findRemoved(all.map((t) => t.path))).map(pathKey));
@@ -321,7 +360,7 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
   };
 
   /** Let the asset protocol serve the folders that hold the library */
-  const allowLibrary = () => api.allowPaths([...new Set(Object.values(get().byId).map((t) => t.folder).filter(Boolean))]);
+  const allowLibrary = () => api.allowPaths([...new Set(Object.values(get().byId).filter((t) => !t.source).map((t) => t.folder).filter(Boolean))]);
 
   let musicDirCache: string | null | undefined;
   let watchKey = '';
@@ -358,7 +397,7 @@ export function createCore(set: SetFn, get: GetFn, subscribe: SubscribeFn) {
   return {
     subscribe, flags, snapshot, beginListen, tickListen, fixSettings, retrack, pushTrayLabels, relabelUnknown, snapshotLibrary, snapshotUser, applySnapshot, remapState,
     mergeTracks, dedupeLibrary, knownFiles, ingest, sortedIds, upsertFolderPlaylist, pruneMissing, addFolder, playCurrentIndex, scheduleSave,
-    syncNext, allowLibrary, syncWatchers,
+    syncNext, allowLibrary, syncWatchers, gcOnline, keepReferencedOnline,
   };
 }
 

@@ -28,7 +28,7 @@ export function Cover({ track, className = '', iconSize = 24, round = false, eag
   const loaded = !!src && loadedSrc === src;
 
   const onError = () => {
-    if (!track || tried.current === track.id) return setFailedSrc(src);
+    if (!track || track.source || tried.current === track.id) return setFailedSrc(src);
     tried.current = track.id;
     // the cached file is gone (cache cleaned / library imported from an older build): extract it again
     void restoreCover(track).then((file) => {

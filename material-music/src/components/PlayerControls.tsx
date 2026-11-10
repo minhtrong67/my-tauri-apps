@@ -25,12 +25,13 @@ export function TransportControls({ size = 'md' }: { size?: 'md' | 'lg' }) {
   const isPlaying = useStore((s) => s.isPlaying);
   const shuffle = useStore((s) => s.shuffle);
   const repeat = useStore((s) => s.repeat);
+  const loading = useStore((s) => s.loadingTrack);
   const st = useStore.getState();
   return (
     <div className="flex items-center gap-1">
       <IconButton icon="shuffle" title={`${tr('shuffle')} (S)`} active={shuffle} onClick={st.toggleShuffle} />
       <IconButton icon="skip_previous" title={`${tr('previous')} (Ctrl+←)`} fill size={size === 'lg' ? 'lg' : 'md'} onClick={st.prev} />
-      <IconButton icon={isPlaying ? 'pause' : 'play_arrow'} title={`${isPlaying ? tr('pause') : tr('play')} (Space)`} variant="filled" fill pop active={isPlaying} size={size === 'lg' ? 'xl' : 'lg'} className={isPlaying ? 'halo' : ''} onClick={st.togglePlay} />
+      <IconButton icon={isPlaying ? 'pause' : 'play_arrow'} title={`${isPlaying ? tr('pause') : tr('play')} (Space)`} variant="filled" fill pop busy={loading} active={isPlaying} size={size === 'lg' ? 'xl' : 'lg'} className={isPlaying && !loading ? 'halo' : ''} onClick={st.togglePlay} />
       <IconButton icon="skip_next" title={`${tr('next')} (Ctrl+→)`} fill size={size === 'lg' ? 'lg' : 'md'} onClick={() => st.next(false)} />
       <IconButton icon={repeat === 'one' ? 'repeat_one' : 'repeat'} title={`${tr('repeat')} (R)`} active={repeat !== 'off'} onClick={st.cycleRepeat} />
     </div>

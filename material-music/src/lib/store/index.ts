@@ -3,6 +3,7 @@ import { createCore } from './core';
 import { createAppSlice } from './app';
 import { createLibrarySlice } from './library';
 import { createPlayerSlice } from './player';
+import { createOnlineSlice } from './online';
 import { createPlaylistSlice } from './playlists';
 import { createUiSlice } from './ui';
 import type { State } from './types';
@@ -15,6 +16,7 @@ export const useStore = create<State>((set, get, api) => {
     ...createPlayerSlice(set, get, core),
     ...createPlaylistSlice(set, get, core),
     ...createAppSlice(set, get, core),
+    ...createOnlineSlice(set, get, core),
   };
 });
 

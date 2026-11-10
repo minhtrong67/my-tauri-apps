@@ -5,6 +5,7 @@ import type { View } from '../lib/types';
 
 const getItems = (): { icon: string; label: string; view: View }[] => [
   { icon: 'home', label: tr('navHome'), view: { name: 'home' } },
+  { icon: 'explore', label: tr('navDiscover'), view: { name: 'discover' } },
   { icon: 'music_note', label: tr('navSongs'), view: { name: 'songs' } },
   { icon: 'album', label: tr('navAlbums'), view: { name: 'albums' } },
   { icon: 'person', label: tr('navArtists'), view: { name: 'artists' } },

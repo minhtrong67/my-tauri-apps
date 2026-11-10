@@ -5,6 +5,7 @@ import { Cover } from './Cover';
 import { useStore } from '../lib/store';
 import { EQ_LABELS, EQ_PRESETS, engine } from '../lib/audio';
 import { fmtSize, fmtTime } from '../lib/utils';
+import { SOURCE_LABEL } from '../lib/online';
 import { ACTIONS, RESERVED, comboFor, comboFromEvent, conflictFor, prettyCombo, type ActionId } from '../lib/keymap';
 import { defaultRules, ruleTracks, rulesAreEmpty } from '../lib/smart';
 import type { SmartRules } from '../lib/types';
@@ -52,11 +53,16 @@ function AddToPlaylist({ ids, onClose }: { ids: string[]; onClose: () => void })
 function InfoDialog({ id, onClose }: { id: string; onClose: () => void }) {
   const t = useStore((s) => s.byId[id]);
   if (!t) return null;
-  const rows: [string, string][] = [
-    [tr('infoTitle'), t.title], [tr('infoArtist'), t.artist], [tr('infoAlbum'), t.album], [tr('infoGenre'), t.genre || '—'], [tr('infoYear'), t.year ? String(t.year) : '—'],
-    [tr('infoDuration'), fmtTime(t.duration)], [tr('infoFormat'), t.format.toUpperCase()], [tr('infoBitrate'), t.bitrate ? `${t.bitrate} kbps` : '—'],
-    [tr('infoSampleRate'), t.sampleRate ? `${(t.sampleRate / 1000).toFixed(1)} kHz` : '—'], [tr('infoSize'), fmtSize(t.size)], [tr('infoPath'), t.path],
-  ];
+  const rows: [string, string][] = t.source
+    ? [
+        [tr('infoTitle'), t.title], [tr('infoArtist'), t.artist], [tr('onlineSource'), SOURCE_LABEL[t.source]],
+        [tr('infoDuration'), fmtTime(t.duration)], [tr('onlineInLibrary'), t.saved ? tr('yes') : tr('no')],
+      ]
+    : [
+        [tr('infoTitle'), t.title], [tr('infoArtist'), t.artist], [tr('infoAlbum'), t.album], [tr('infoGenre'), t.genre || '—'], [tr('infoYear'), t.year ? String(t.year) : '—'],
+        [tr('infoDuration'), fmtTime(t.duration)], [tr('infoFormat'), t.format.toUpperCase()], [tr('infoBitrate'), t.bitrate ? `${t.bitrate} kbps` : '—'],
+        [tr('infoSampleRate'), t.sampleRate ? `${(t.sampleRate / 1000).toFixed(1)} kHz` : '—'], [tr('infoSize'), fmtSize(t.size)], [tr('infoPath'), t.path],
+      ];
   return (
     <Modal title={tr('songInfo')} wide onClose={onClose} actions={<Button variant="tonal" icon="close" onClick={onClose}>{tr('close')}</Button>}>
       <div className="flex gap-4 mb-4"><Cover track={t} eager className="w-28 h-28 rounded-2xl" iconSize={48} /></div>

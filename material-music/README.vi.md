@@ -128,7 +128,15 @@ App phát nhạc bằng bộ giải mã media của Microsoft Edge WebView2, nê
 - Khay hệ thống có phát / tạm dừng / trước / sau, tùy chọn *đóng xuống khay*, luôn ở trên cùng, chỉ chạy một cửa sổ.
 - Thanh tiêu đề Material tự vẽ.
 
-### Trực tuyến (tùy chọn)
+### Nhạc trực tuyến (tùy chọn)
+- **Trang Khám phá:** tìm bài hát, nghệ sĩ trên mạng và phát như mọi bài khác – hàng chờ, xáo trộn, yêu thích, playlist, equalizer, crossfade và mini player đều dùng được. Bài nào bạn thả tim hoặc thêm vào playlist sẽ được giữ trong thư viện, các bài còn lại sẽ tự quên.
+- **Chỉ dùng YouTube Music:** tìm kiếm và phát nhạc gọi thẳng API web của YouTube Music từ phía Rust – nhanh, không cần chương trình phụ và không phải thiết lập gì. Nhiều “danh tính” client được thử song song và mọi liên kết luồng đều được kiểm tra trước khi phát, nên bài mà một client không mở được sẽ được client khác cứu. Bài kế tiếp được tra sẵn, và kết quả bạn rê chuột tới cũng được chuẩn bị trước khi bấm.
+- **yt-dlp dự phòng (tùy chọn)** (*Settings → Nhạc trực tuyến*): không kèm sẵn và mặc định không dùng. Chỉ được thử như phương án cuối cho bài mà cách tra tích hợp không mở được. Khi cài, nó được tải từ bản phát hành chính thức trên GitHub (kiểm tra SHA-256) vào thư mục dữ liệu của app, hoặc bạn trỏ tới bản có sẵn. Dùng yt-dlp có thể vi phạm Điều khoản dịch vụ của YouTube và quyền của nghệ sĩ – bạn tự chịu trách nhiệm.
+- **Màu chủ đề đổi theo ảnh bìa** cả với bài online (phía Rust tải ảnh bìa để đọc màu).
+- **Lời bài hát chạy theo nhạc cho bài online:** tìm trên LRCLIB khi bài đang phát và lưu đệm trên đĩa. Bấm vào một dòng để tua tới, chỉnh lệch thời gian bằng nút −/+ 0,1 giây.
+- **Cách phát hoạt động:** phía Rust lấy luồng nhạc rồi phát qua một proxy chỉ lắng nghe trên máy (`127.0.0.1`, mã riêng khó đoán cho mỗi luồng, kiểm tra Host, hỗ trợ Range), thêm header CORS để Web Audio hoạt động, nên equalizer và visualizer cũng dùng được với bài online. Liên kết hết hạn sẽ tự được lấy lại, và luồng không bao giờ bắt đầu sẽ được thử lại một lần thay vì quay mãi.
+
+### Scrobble (tùy chọn)
 - **Scrobble lên ListenBrainz:** dán token người dùng trong *Settings → Trực tuyến*; app (phía Rust) gửi các bài bạn thực sự đã nghe và bài *đang phát*. Mặc định tắt.
 
 ### Bảo mật

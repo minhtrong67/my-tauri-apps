@@ -128,7 +128,15 @@ Playback uses the Microsoft Edge WebView2 media stack, so a file plays if WebVie
 - System tray with play / pause / previous / next, optional *close to tray*, always on top, single instance.
 - Frameless Material title bar.
 
-### Online (optional)
+### Online music (optional)
+- **Discover page:** search songs and artists online and play them like any other song – queue, shuffle, favorites, playlists, equalizer, crossfade and the mini player all work. Songs you favorite or put in a playlist are kept in your library; the rest are forgotten.
+- **YouTube Music only:** search and playback use YouTube Music's own web API directly from the Rust side – fast, no helper program and nothing to set up. Several client identities are tried in parallel and every stream link is checked before it is played, so a song that one identity cannot open is rescued by another. The next song is looked up in advance, and results you hover are prepared ahead of the click.
+- **Optional yt-dlp fallback** (*Settings → Online music*): not bundled and off unless you install it. It is only used as a last resort for songs the built-in lookup cannot open. When installed it is downloaded from the official GitHub releases (SHA-256 verified) into the app data folder, or you can point to your own copy. Using yt-dlp may go against YouTube's Terms of Service and the rights of the artists – you are responsible for how you use it.
+- **Theme colour follows the artwork** of online songs too (the Rust side downloads the cover so the colour can be read).
+- **Synced lyrics for online songs:** looked up on LRCLIB while the song plays and cached on disk. Click a line to seek, and fix the timing with the −/+ 0.1 s offset.
+- **How streaming works:** the Rust side resolves the stream and serves it through a loopback-only proxy (`127.0.0.1`, unguessable per-stream tokens, Host check, Range support) that adds the CORS headers Web Audio needs, so the equalizer and visualizer work on online songs too. Stream links that expire are looked up again automatically, and a stream that never starts is retried once instead of spinning forever.
+
+### Scrobbling (optional)
 - **ListenBrainz scrobbling:** paste your user token in *Settings → Online*; songs you really listened to (and *now playing*) are sent by the Rust side. Off by default.
 
 ### Security
@@ -314,7 +322,7 @@ material-music/
 │  │  └─ tauri.ts, window.ts, types.ts, utils.ts
 │  ├─ components/             TitleBar, NavDrawer, PlayerBar, NowPlaying, QueuePanel, MiniPlayer,
 │  │                          Collection, TrackRow, TrackListView, MediaCard, Dialogs, ui (M3 kit) …
-│  └─ views/                  Library (home, songs, albums, artists, playlists, search), Settings, Extra (statistics, duplicates, smart playlist)
+│  └─ views/                  Library (home, songs, albums, artists, playlists, search), Discover (online search), Settings, Extra (statistics, duplicates, smart playlist)
 ├─ scripts/
 │  ├─ generate-icons.py       generates every icon (app, setup, uninstall)
 │  ├─ copy-installer.mjs · make-portable.mjs · check-i18n.mjs
@@ -323,6 +331,7 @@ material-music/
 ├─ src-tauri/                 Rust backend
 │  ├─ src/lib.rs              app setup: plugins, tray, command registration
 │  ├─ src/scan.rs · state.rs · window.rs · system.rs · lyrics.rs · watch.rs · scrobble.rs · util.rs   scan & tags, safe storage & backups, window memory, OS helpers, LRCLIB, folder watcher, ListenBrainz
+│  ├─ src/online/             online music: YouTube Music search and stream lookup (InnerTube), optional yt-dlp fallback, loopback streaming proxy, lyrics cache
 │  ├─ src/main.rs
 │  ├─ capabilities/           Tauri permissions
 │  ├─ icons/                  app, setup and uninstall icons

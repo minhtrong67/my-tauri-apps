@@ -131,7 +131,7 @@ export function DuplicatesView() {
   const mergeDuplicates = useStore((s) => s.mergeDuplicates);
   const openDialog = useStore((s) => s.openDialog);
   const showToast = useStore((s) => s.showToast);
-  const groups = useMemo(() => findDuplicateGroups(all, [tr('unknownArtist', undefined, 'en'), tr('unknownArtist', undefined, 'vi')]), [all]);
+  const groups = useMemo(() => findDuplicateGroups(all.filter((t) => !t.source), [tr('unknownArtist', undefined, 'en'), tr('unknownArtist', undefined, 'vi')]), [all]);
   const extras = groups.reduce((a, g) => a + g.length - 1, 0);
 
   const keepBest = () =>

@@ -16,6 +16,7 @@ import { AlbumView, AlbumsView, ArtistView, ArtistsView, HomeView, LikedView, Pl
 
 // heavy screens are loaded on demand so the app opens faster
 const SettingsView = lazy(() => import('./views/Settings').then((m) => ({ default: m.SettingsView })));
+const DiscoverView = lazy(() => import('./views/Discover').then((m) => ({ default: m.DiscoverView })));
 const StatsView = lazy(() => import('./views/Extra').then((m) => ({ default: m.StatsView })));
 const DuplicatesView = lazy(() => import('./views/Extra').then((m) => ({ default: m.DuplicatesView })));
 const SmartListView = lazy(() => import('./views/Extra').then((m) => ({ default: m.SmartListView })));
@@ -49,6 +50,7 @@ function CurrentView() {
     case 'recent': return <RecentView />;
     case 'smart': return <SmartView id={view.id} />;
     case 'smartlist': return <Suspense fallback={null}><SmartListView id={view.id} /></Suspense>;
+    case 'discover': return <Suspense fallback={null}><DiscoverView /></Suspense>;
     case 'stats': return <Suspense fallback={null}><StatsView /></Suspense>;
     case 'duplicates': return <Suspense fallback={null}><DuplicatesView /></Suspense>;
     case 'settings': return <Suspense fallback={null}><SettingsView /></Suspense>;
@@ -104,9 +106,11 @@ export default function App() {
     };
     try { localStorage.setItem('app-theme', JSON.stringify({ seed: settings.seedColor, mode: settings.themeMode, font: settings.fontFamily })); } catch { /* ignore */ }
     const key = `${settings.seedColor}|${settings.themeMode}`;
-    apply(settings.seedColor, key !== lastKey.current);
+    const dynamic = settings.dynamicColor && !!current;
+    // with dynamic colour the previous song's colour stays until the new artwork has been read (online artwork takes a moment)
+    if (!dynamic || key !== lastKey.current || !themeApplied.current) apply(settings.seedColor, key !== lastKey.current);
     lastKey.current = key;
-    if (settings.dynamicColor && current) seedFromCover(current).then((hex) => alive && hex && apply(hex));
+    if (dynamic) seedFromCover(current!).then((hex) => alive && (hex ? apply(hex, true) : apply(settings.seedColor, true)));
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const onChange = () => settings.themeMode === 'system' && apply(settings.seedColor);
     mq.addEventListener('change', onChange);
@@ -210,9 +214,9 @@ export default function App() {
     if (!('mediaSession' in navigator) || !current) return;
     navigator.mediaSession.metadata = new MediaMetadata({
       title: current.title, artist: current.artist, album: current.album,
-      artwork: current.cover ? [{ src: convertFileSrc(current.cover), sizes: '512x512' }] : [],
+      artwork: current.coverUrl ? [{ src: current.coverUrl, sizes: '512x512' }] : current.cover ? [{ src: convertFileSrc(current.cover), sizes: '512x512' }] : [],
     });
-  }, [current?.id, current?.cover]);
+  }, [current?.id, current?.cover, current?.coverUrl]);
   // the Windows media overlay / lock screen follows the play state and shows the progress bar
   useEffect(() => {
     if (!('mediaSession' in navigator)) return;

@@ -1,0 +1,6 @@
+# pnpm settings. Only esbuild needs a post-install script (it links its native binary).
+# `allowBuilds` is read by pnpm 11+, `onlyBuiltDependencies` by pnpm 10.
+allowBuilds:
+  esbuild: true
+onlyBuiltDependencies:
+  - esbuild

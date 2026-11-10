@@ -2,7 +2,9 @@ import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 
 import { getActiveLang, tr } from '../lib/i18n';
 import { AuthorCredit, Button, Chip, Icon, Logo, Segmented, Select, Switch } from '../components/ui';
 import { engine } from '../lib/audio';
-import { getBackupDir, openFolder, scrobbleValidate } from '../lib/tauri';
+import { listen } from '@tauri-apps/api/event';
+import { getBackupDir, lyricsCacheClear, openFolder, pickOne, scrobbleValidate, ytdlpInstall, ytdlpRemove, ytdlpStatus, type OnlineProgress, type YtdlpStatus } from '../lib/tauri';
+import { onlineErrorText } from '../lib/online';
 import { FONT_OPTIONS, MATERIAL_COLORS } from '../lib/theme';
 import { useDerived, useStore } from '../lib/store';
 import { fmtSize } from '../lib/utils';
@@ -144,6 +146,85 @@ function ScrobbleToken() {
   );
 }
 
+/** yt-dlp (YouTube): status, install / update / remove, or pick your own copy */
+function YtdlpPanel() {
+  const custom = useStore((st) => st.settings.ytdlpPath);
+  const update = useStore((st) => st.updateSettings);
+  const [status, setStatus] = useState<YtdlpStatus | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [prog, setProg] = useState<OnlineProgress | null>(null);
+  const toast = useStore.getState().showToast;
+
+  const refresh = () => void ytdlpStatus().then(setStatus).catch(() => setStatus(null));
+  useEffect(() => { refresh(); }, [custom]);
+  useEffect(() => {
+    const un = listen<OnlineProgress>('online-progress', (e) => setProg(e.payload));
+    return () => { void un.then((f) => f()).catch(() => undefined); };
+  }, []);
+
+  const install = async () => {
+    setBusy(true);
+    setProg(null);
+    try {
+      const st = await ytdlpInstall(true);
+      setStatus(st);
+      toast(tr('ytInstalled', { v: st.version || '' }), undefined, undefined, 'success');
+    } catch (e) {
+      toast(onlineErrorText(e), tr('retry'), () => void install(), 'error');
+    } finally {
+      setBusy(false);
+      setProg(null);
+    }
+  };
+  const remove = () =>
+    useStore.getState().openDialog({
+      type: 'confirm', title: tr('ytRemoveQ'), text: tr('ytRemoveText'), confirmLabel: tr('delete'), danger: true,
+      onConfirm: () => void ytdlpRemove().then(setStatus).then(() => toast(tr('ytRemoved'), undefined, undefined, 'success')).catch((e) => toast(onlineErrorText(e), undefined, undefined, 'error')),
+    });
+  const choose = async () => {
+    const p = await pickOne(['exe'], 'yt-dlp');
+    if (p) update({ ytdlpPath: p });
+  };
+
+  const pct = prog && prog.total > 0 ? Math.min(100, Math.round((prog.done / prog.total) * 100)) : null;
+  const stage = prog?.stage === 'runtime' ? tr('ytStageRuntime') : prog?.stage === 'ytdlp' ? tr('ytStageDownload') : tr('ytStageCheck');
+  return (
+    <div className="px-5 py-4 space-y-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <span className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${status?.installed ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container-highest text-on-surface-variant'}`}><Icon name={status?.installed ? 'check_circle' : 'cloud_download'} size={22} /></span>
+        <div className="min-w-0 flex-1">
+          <div className="text-body-lg">{status?.installed ? tr('ytReady', { v: status.version || '?' }) : tr('ytNotInstalled')}</div>
+          <div className="text-body-sm text-on-surface-variant break-all line-clamp-1" title={status?.path}>
+            {status?.installed ? status.path : tr('ytNotInstalledDesc')}
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <span className={`px-3 h-7 inline-flex items-center gap-1.5 rounded-full text-label-md ${status?.runtime ? 'bg-secondary-container text-on-secondary-container' : 'bg-error-container text-on-error-container'}`}>
+          <Icon name={status?.runtime ? 'check' : 'info'} size={14} />{status?.runtime ? tr('ytRuntimeOk', { r: status.runtime }) : tr('ytRuntimeMissing')}
+        </span>
+        {custom && <span className="px-3 h-7 inline-flex items-center rounded-full bg-tertiary-container text-on-tertiary-container text-label-md">{tr('ytCustomPath')}</span>}
+      </div>
+      {busy && (
+        <div className="animate-fade-in">
+          <div className="text-body-sm text-on-surface-variant mb-1.5">{stage}{pct !== null ? ` · ${pct}%` : ''}</div>
+          <div className="h-2 rounded-full bg-surface-container-highest overflow-hidden"><div className="h-full rounded-full bg-primary transition-[width] duration-200" style={{ width: `${pct ?? 8}%` }} /></div>
+        </div>
+      )}
+      <div className="flex flex-wrap gap-2">
+        <Button icon={status?.managed ? 'sync' : 'download'} disabled={busy} onClick={() => void install()}>{status?.managed ? tr('ytUpdate') : tr('ytInstall')}</Button>
+        <Button variant="tonal" icon="folder_open" disabled={busy} onClick={() => void choose()}>{tr('ytChoose')}</Button>
+        {custom && <Button variant="outlined" icon="restart" disabled={busy} onClick={() => update({ ytdlpPath: '' })}>{tr('ytUseAuto')}</Button>}
+        {status?.managed && <Button variant="outlined" danger icon="delete" disabled={busy} onClick={remove}>{tr('ytRemove')}</Button>}
+      </div>
+      <div className="rounded-2xl bg-tertiary-container/60 text-on-tertiary-container px-4 py-3 flex gap-3 text-body-sm">
+        <Icon name="info" size={20} className="shrink-0 mt-0.5" />
+        <span>{tr('ytLegal')}</span>
+      </div>
+    </div>
+  );
+}
+
 /* ───────────── page ───────────── */
 
 const JUMPS: { id: string; icon: string; label: () => string }[] = [
@@ -151,6 +232,7 @@ const JUMPS: { id: string; icon: string; label: () => string }[] = [
   { id: 'appearance', icon: 'palette', label: () => tr('appearance') },
   { id: 'playback', icon: 'graphic_eq', label: () => tr('playbackSection') },
   { id: 'library', icon: 'library_music', label: () => tr('librarySection') },
+  { id: 'music-online', icon: 'public', label: () => tr('onlineMusicSection') },
   { id: 'online', icon: 'radio', label: () => tr('scrobbleSection') },
   { id: 'about', icon: 'info', label: () => tr('aboutSection') },
 ];
@@ -337,6 +419,20 @@ export function SettingsView() {
             <Button icon="download" variant="outlined" onClick={st.backup}>{tr('backup')}</Button>
             <Button icon="upload" variant="outlined" onClick={st.restore}>{tr('restore')}</Button>
           </Row>
+        </Section>
+
+        {/* Online music */}
+        <Section id="music-online" title={tr('onlineMusicSection')} icon="public">
+          <Row title={tr('onlineMusicInfoTitle')} desc={tr('onlineMusicInfoDesc')}>
+            <span className="w-10 h-10 rounded-2xl bg-primary text-on-primary flex items-center justify-center"><Icon name="play_arrow" fill size={22} /></span>
+          </Row>
+          <ToggleRow title={tr('onlineLyrics')} desc={tr('onlineLyricsDesc')} checked={s.onlineLyrics} onChange={(v) => update({ onlineLyrics: v })} />
+          <Row title={tr('lyricsCache')} desc={tr('lyricsCacheDesc')}>
+            <Button variant="tonal" icon="delete" onClick={() => void lyricsCacheClear().then((n) => st.showToast(tr('lyricsCacheCleared', { n }), undefined, undefined, 'success')).catch(() => st.showToast(tr('onErrDisk'), undefined, undefined, 'error'))}>{tr('clear')}</Button>
+          </Row>
+          <BlockRow title={tr('ytTitle')} desc={tr('ytDesc')}>
+            <div className="-mx-5 -mb-4"><YtdlpPanel /></div>
+          </BlockRow>
         </Section>
 
         {/* Online */}

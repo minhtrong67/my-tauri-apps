@@ -1,0 +1,25 @@
+[package]
+name = "fluent-note"
+version = "2.0.0"
+description = "Fluent Note - a fast, expressive Material 3 notepad built with Tauri."
+authors = ["minhtrong67"]
+license = "MIT"
+edition = "2021"
+rust-version = "1.77"
+
+[build-dependencies]
+tauri-build = { version = "2.6", features = [] }
+
+[dependencies]
+tauri = { version = "2.11", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+encoding_rs = "0.8"
+
+[target.'cfg(windows)'.dependencies]
+# Native Windows 11 Mica backdrop (falls back gracefully on Windows 10)
+window-vibrancy = "0.6"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "2"

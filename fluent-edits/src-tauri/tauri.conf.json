@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Fluent Edits",
+  "version": "2.0.0",
+  "identifier": "com.minhtrong67.fluentedits",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Fluent Edits",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 1020,
+        "minHeight": 640,
+        "center": true,
+        "visible": false,
+        "dragDropEnabled": true,
+        "transparent": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data: blob: http://127.0.0.1:*; media-src 'self' blob: http://127.0.0.1:*; style-src 'self' 'unsafe-inline'; style-src-attr 'unsafe-inline'; style-src-elem 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'; connect-src ipc: http://ipc.localhost blob: http://127.0.0.1:*",
+      "dangerousDisableAssetCspModification": ["style-src", "style-src-elem", "style-src-attr"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "minhtrong67",
+    "copyright": "Copyright © 2026 minhtrong67",
+    "category": "Video",
+    "shortDescription": "A simple Fluent Design video editor",
+    "longDescription": "Fluent Edits is a lightweight video editor with a Microsoft Fluent Design interface: multi-track timeline, trim and split, filters, transitions, text, overlays, music, and export to MP4/WebM. Light/dark/system themes, custom accent colors, English and Vietnamese UI.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/installer.ico",
+        "installerHooks": "installer-hooks.nsh",
+        "sidebarImage": "icons/nsis-sidebar.bmp",
+        "headerImage": "icons/nsis-header.bmp",
+        "languages": ["English", "Vietnamese"],
+        "displayLanguageSelector": true,
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

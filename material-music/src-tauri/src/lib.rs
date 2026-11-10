@@ -1,5 +1,6 @@
 #![allow(unused_imports)]
 mod lyrics;
+mod online;
 mod scan;
 mod state;
 mod system;
@@ -78,6 +79,7 @@ pub fn run() {
         })
         .setup(|app| {
             let handle = app.handle();
+            online::init(handle);
             // the asset protocol serves nothing by default: only the cover cache here, library folders as they are scanned / loaded
             if let Ok(dir) = app.path().app_cache_dir() {
                 let covers = dir.join("covers");
@@ -184,6 +186,16 @@ pub fn run() {
             window::app_ready,
             window::set_tray_labels,
             lyrics::fetch_lyrics_online,
+            online::online_search,
+            online::online_resolve,
+            online::online_image,
+            online::online_ytdlp_configure,
+            online::online_ytdlp_status,
+            online::online_ytdlp_install,
+            online::online_ytdlp_remove,
+            online::lyrics_cache_get,
+            online::lyrics_cache_put,
+            online::lyrics_cache_clear,
             watch::watch_folders,
             scrobble::scrobble_now_playing,
             scrobble::scrobble_listen,

@@ -1,0 +1,291 @@
+@import "tailwindcss";
+@import "@fontsource-variable/roboto/wght.css";
+@import "@fontsource-variable/google-sans-flex/wght.css";
+@import "@fontsource-variable/roboto-flex/wght.css";
+@import "@fontsource-variable/open-sans/wght.css";
+@import "@fontsource-variable/noto-sans/wght.css";
+@import "@fontsource-variable/source-sans-3/wght.css";
+@import "@fontsource/be-vietnam-pro/400.css";
+@import "@fontsource/be-vietnam-pro/500.css";
+@import "@fontsource/be-vietnam-pro/600.css";
+@import "@fontsource/be-vietnam-pro/700.css";
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/lora/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+
+@custom-variant dark (&:where([data-scheme="dark"], [data-scheme="dark"] *));
+
+/* Colours are written to :root as --fl-* by lib/theme.ts (Microsoft Fluent 2: neutrals + one accent). */
+@theme inline {
+  /* surfaces */
+  --color-app: var(--fl-app); /* window backdrop: transparent when the native Mica material is active */
+  --color-recess: var(--fl-recess); /* always-solid grey for recessed areas (segmented track, dialog footer) */
+  --color-layer: var(--fl-layer);
+  --color-card: var(--fl-card);
+  --color-dialog: var(--fl-dialog);
+  --color-flyout: var(--fl-flyout);
+  --color-field: var(--fl-field);
+  --color-ctl: var(--fl-ctl);
+  --color-ctl-hover: var(--fl-ctl-hover);
+  --color-ctl-pressed: var(--fl-ctl-pressed);
+  /* "subtle" fills for transparent controls */
+  --color-sub-hover: var(--fl-sub-hover);
+  --color-sub-press: var(--fl-sub-press);
+  --color-sub-select: var(--fl-sub-select);
+  /* text */
+  --color-fg: var(--fl-fg);
+  --color-fg2: var(--fl-fg2);
+  --color-fg3: var(--fl-fg3);
+  --color-fg-disabled: var(--fl-fg-disabled);
+  /* strokes */
+  --color-stroke: var(--fl-stroke);
+  --color-stroke-ctl: var(--fl-stroke-ctl);
+  --color-divider: var(--fl-divider);
+  /* accent */
+  --color-brand: var(--fl-primary);
+  --color-brand-hover: var(--fl-primary-hover);
+  --color-brand-pressed: var(--fl-primary-pressed);
+  --color-on-brand: var(--fl-on-primary);
+  --color-brand-tint: var(--fl-primary-tint);
+  --color-on-brand-tint: var(--fl-on-primary-tint);
+  /* status */
+  --color-ok: var(--fl-ok);
+  --color-ok-bg: var(--fl-ok-bg);
+  --color-warn: var(--fl-warn);
+  --color-warn-bg: var(--fl-warn-bg);
+  --color-err: var(--fl-err);
+  --color-err-bg: var(--fl-err-bg);
+  --color-info: var(--fl-info);
+  --color-info-bg: var(--fl-info-bg);
+
+  --font-sans: var(--app-font);
+
+  /* Fluent elevation: shadow2 / 4 / 8 / 16 / 28 / 64 */
+  --shadow-fl2: var(--fl-shadow-2);
+  --shadow-fl4: var(--fl-shadow-4);
+  --shadow-fl8: var(--fl-shadow-8);
+  --shadow-fl16: var(--fl-shadow-16);
+  --shadow-fl28: var(--fl-shadow-28);
+  --shadow-fl64: var(--fl-shadow-64);
+
+  /* Fluent motion: no springs or overshoot, just calm decelerating curves */
+  --ease-standard: cubic-bezier(0.33, 0, 0.67, 1);
+  --ease-decel: cubic-bezier(0.1, 0.9, 0.2, 1);
+  --ease-accel: cubic-bezier(0.9, 0.1, 1, 0.2);
+}
+
+:root {
+  --app-font: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --root-size: 16px;
+  --editor-size: 16px;
+  color-scheme: light;
+}
+:root[data-scheme="dark"] { color-scheme: dark; }
+
+html { font-size: var(--root-size); }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--app-font);
+  font-size: 0.875rem;
+  line-height: 1.4286;
+  background: var(--fl-app);
+  color: var(--fl-fg);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  cursor: default;
+}
+input, textarea, [contenteditable], .selectable { user-select: text; }
+@layer base {
+  button { font: inherit; color: inherit; cursor: default; }
+}
+
+/* Fluent scrollbars: a slim bar that widens when the pointer reaches it */
+*::-webkit-scrollbar { width: 14px; height: 14px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-corner { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--fl-scroll); background-clip: content-box; border: 5px solid transparent; border-radius: 9px;
+  transition: border-width 120ms var(--ease-decel);
+}
+*::-webkit-scrollbar-thumb:hover { border-width: 3px; }
+*::-webkit-scrollbar-button { display: none; }
+
+/* Focus: a 2 px neutral ring, the Fluent focus visual */
+:focus-visible { outline: 2px solid var(--fl-fg); outline-offset: 1px; }
+input:focus-visible, textarea:focus-visible { outline: none; }
+::selection { background: var(--fl-primary); color: var(--fl-on-primary); }
+
+/* ---------- Controls ---------- */
+/* in the components layer, so Tailwind utilities (w-full, text-current ...) can still override them */
+@layer components {
+/* "Subtle" control: transparent until hovered (Fluent subtle appearance) */
+.fl-subtle { background: transparent; transition: background-color 83ms linear; }
+.fl-subtle:hover { background: var(--fl-sub-hover); }
+.fl-subtle:active { background: var(--fl-sub-press); }
+.fl-subtle[aria-expanded="true"], .fl-subtle[aria-pressed="true"], .fl-subtle[aria-selected="true"] { background: var(--fl-sub-select); }
+.fl-subtle:disabled, .fl-subtle[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
+
+/* Standard control surface (buttons, dropdown buttons) */
+.btn-tonal, .btn-neutral, .fl-ctl {
+  background: var(--fl-ctl); color: var(--fl-fg);
+  border: 1px solid var(--fl-stroke-ctl); border-bottom-color: var(--fl-stroke-ctl-bottom);
+}
+.btn-tonal:hover, .btn-neutral:hover, .fl-ctl:hover { background: var(--fl-ctl-hover); }
+.btn-tonal:active, .btn-neutral:active, .fl-ctl:active { background: var(--fl-ctl-pressed); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2rem; min-width: 5rem; padding: 0 0.75rem;
+  border-radius: 4px; font-size: 0.875rem; font-weight: 600; line-height: 1; white-space: nowrap; border: 1px solid transparent;
+  transition: background-color 120ms var(--ease-standard), border-color 120ms var(--ease-standard), color 120ms var(--ease-standard), transform 120ms var(--ease-standard);
+}
+.btn:active { transform: scale(0.985); }
+.btn-sm { height: 1.75rem; min-width: 0; padding: 0 0.625rem; font-size: 0.8125rem; gap: 0.375rem; }
+.btn-filled { background: var(--fl-primary); color: var(--fl-on-primary); }
+.btn-filled:hover { background: var(--fl-primary-hover); }
+.btn-filled:active { background: var(--fl-primary-pressed); }
+.btn-danger { background: var(--fl-danger); color: #fff; }
+.btn-danger:hover { background: var(--fl-danger-hover); }
+.btn-danger:active { background: var(--fl-danger-pressed); }
+.btn-success { background: var(--fl-success); color: #fff; }
+.btn-success:hover { background: var(--fl-success-hover); }
+.btn-success:active { background: var(--fl-success-pressed); }
+.btn-outlined { background: transparent; color: var(--fl-fg); border-color: var(--fl-stroke-ctl); }
+.btn-outlined:hover { background: var(--fl-sub-hover); }
+.btn-outlined:active { background: var(--fl-sub-press); }
+.btn-text { background: transparent; color: var(--fl-primary); min-width: 0; }
+.btn-text:hover { background: var(--fl-sub-hover); }
+.btn-text:active { background: var(--fl-sub-press); }
+.btn:disabled { opacity: 1; background: var(--fl-sub-select); color: var(--fl-fg-disabled); border-color: transparent; pointer-events: none; }
+.btn:focus-visible { outline-offset: 2px; }
+
+.icon-btn {
+  display: inline-grid; place-items: center; width: 2rem; height: 2rem; border: 0; border-radius: 4px; background: transparent;
+  color: var(--fl-fg); flex: none; transition: background-color 83ms linear;
+}
+.icon-btn:hover { background: var(--fl-sub-hover); }
+.icon-btn:active { background: var(--fl-sub-press); }
+.icon-btn-sm { width: 1.75rem; height: 1.75rem; }
+.icon-btn[aria-pressed="true"], .icon-btn[aria-expanded="true"] { background: var(--fl-sub-select); }
+.icon-btn:disabled { opacity: 0.4; pointer-events: none; }
+
+/* Keyboard accelerator text */
+.kbd { display: inline-flex; align-items: center; font-size: 0.75rem; color: var(--fl-fg2); font-family: inherit; white-space: nowrap; }
+
+/* Text field: 1 px outline with a stronger bottom edge that becomes a 2 px accent line on focus */
+.fl-field {
+  display: flex; align-items: center; height: 2rem; border-radius: 4px; background: var(--fl-field);
+  border: 1px solid var(--fl-stroke-ctl); border-bottom-color: var(--fl-field-bottom); transition: background-color 83ms linear;
+}
+.fl-field:hover { background: var(--fl-field-hover); }
+.fl-field:focus-within { background: var(--fl-field); border-bottom-color: var(--fl-primary); box-shadow: inset 0 -1px 0 var(--fl-primary); }
+.fl-field input { height: 100%; min-width: 0; flex: 1; background: transparent; padding: 0 0.625rem; font-size: 0.875rem; outline: none; }
+.fl-field input::placeholder { color: var(--fl-fg3); }
+
+/* The accent "selection pill" that marks the current item of a list or navigation */
+.fl-selected { position: relative; background: var(--fl-sub-select); }
+.fl-selected::before {
+  content: ""; position: absolute; left: 0; top: 50%; width: 3px; height: 1rem; transform: translateY(-50%);
+  border-radius: 3px; background: var(--fl-primary); animation: fl-pill-in 260ms var(--ease-decel) both;
+}
+}
+
+/* ---------- Surfaces ---------- */
+.fl-card { background: var(--fl-card); border: 1px solid var(--fl-stroke); border-radius: 4px; }
+/* Acrylic: menus and dropdowns */
+.fl-flyout {
+  background: var(--fl-flyout); border: 1px solid var(--fl-stroke); border-radius: 8px; box-shadow: var(--fl-shadow-16);
+  -webkit-backdrop-filter: blur(30px) saturate(1.25); backdrop-filter: blur(30px) saturate(1.25);
+}
+
+/* ---------- Editor ---------- */
+.editor-text {
+  font-family: var(--app-font); font-size: var(--editor-size); line-height: 1.5; tab-size: 4; letter-spacing: 0;
+  padding: 0.75rem 1rem 3rem; margin: 0; border: 0; box-sizing: border-box;
+}
+textarea.editor-text {
+  display: block; width: 100%; height: 100%; resize: none; outline: none; background: transparent; color: var(--fl-fg);
+  position: absolute; inset: 0; z-index: 1; cursor: text;
+}
+textarea.editor-text[hidden] { display: none; }
+textarea.editor-text:not([wrap="off"]) { overflow-x: hidden; }
+.zen-mode textarea.editor-text { padding-left: max(2rem, calc((100% - 52rem) / 2)); padding-right: max(2rem, calc((100% - 52rem) / 2)); }
+/* Line numbers */
+.has-gutter { --gutter-w: calc(var(--gd, 2) * 0.5 * var(--editor-size) + 2.25rem); }
+.has-gutter .editor-text { padding-left: calc(var(--gutter-w) + 0.5rem); }
+.gutter {
+  position: absolute; inset: 0 auto 0 0; width: var(--gutter-w); overflow: hidden; pointer-events: none; z-index: 2;
+  background: var(--fl-layer); color: var(--fl-fg3); font-size: calc(var(--editor-size) * 0.85); font-variant-numeric: tabular-nums;
+}
+.gutter-inner { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
+.gutter-n { position: absolute; left: 0; right: 0.75rem; height: calc(var(--editor-size) * 1.5); line-height: calc(var(--editor-size) * 1.5); text-align: right; }
+.gutter-n.cur { color: var(--fl-fg); }
+.hl-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.hl-inner { color: transparent; white-space: pre-wrap; overflow-wrap: break-word; will-change: transform; }
+.hl-inner.nowrap { white-space: pre; overflow-wrap: normal; }
+.hl-inner mark { color: transparent; background: var(--fl-find); border-radius: 2px; }
+.hl-inner mark.cur { background: color-mix(in srgb, var(--fl-primary) 45%, transparent); box-shadow: 0 0 0 1px var(--fl-primary); }
+
+/* ---------- Motion ---------- */
+/* Fluent timing: 83 ms (fast) · 167 ms (normal) · 250-300 ms (gentle), decelerating in, accelerating out.
+ * Only opacity and transform are animated, so everything runs on the compositor and stays smooth. */
+@keyframes fl-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fl-fade-out { to { opacity: 0; } }
+@keyframes fl-dialog-in { from { opacity: 0; transform: translateY(14px) scale(0.965); } to { opacity: 1; transform: none; } }
+@keyframes fl-dialog-out { to { opacity: 0; transform: translateY(6px) scale(0.985); } }
+@keyframes fl-menu-in { from { opacity: 0; transform: translateY(-8px) scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes fl-menu-in-up { from { opacity: 0; transform: translateY(8px) scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes fl-toast-in { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes fl-toast-out { to { opacity: 0; transform: translateX(16px); } }
+@keyframes fl-bar-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+@keyframes fl-page-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes fl-tab-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes fl-pill-in { from { transform: translateY(-50%) scaleY(0.25); opacity: 0; } to { transform: translateY(-50%) scaleY(1); opacity: 1; } }
+@keyframes progress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+.anim-fade-in { animation: fl-fade-in 200ms var(--ease-decel) both; }
+.anim-fade-out { animation: fl-fade-out 140ms var(--ease-accel) both; }
+.anim-pop-in { animation: fl-dialog-in 320ms var(--ease-decel) both; }
+.anim-pop-out { animation: fl-dialog-out 150ms var(--ease-accel) both; }
+.anim-menu-in { animation: fl-menu-in 220ms var(--ease-decel) both; transform-origin: top center; }
+.anim-menu-in[data-up="true"] { animation-name: fl-menu-in-up; transform-origin: bottom center; }
+.anim-slide-up { animation: fl-toast-in 320ms var(--ease-decel) both; }
+.anim-slide-down { animation: fl-bar-in 240ms var(--ease-decel) both; }
+.anim-tab-in { animation: fl-tab-in 220ms var(--ease-decel) both; }
+.anim-page-in { animation: fl-page-in 320ms var(--ease-decel) both; }
+.anim-toast-out { animation: fl-toast-out 160ms var(--ease-accel) both; }
+/* children of a page appear one after another */
+.stagger > * { animation: fl-page-in 340ms var(--ease-decel) both; }
+.stagger > *:nth-child(2) { animation-delay: 30ms; }
+.stagger > *:nth-child(3) { animation-delay: 60ms; }
+.stagger > *:nth-child(4) { animation-delay: 90ms; }
+.stagger > *:nth-child(5) { animation-delay: 120ms; }
+.stagger > *:nth-child(6) { animation-delay: 150ms; }
+.stagger > *:nth-child(n + 7) { animation-delay: 180ms; }
+
+/* theme switch: a short cross-fade, like Windows does */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 200ms; animation-timing-function: var(--ease-standard); }
+
+/* softer colour changes when the accent or mode changes */
+.theme-fade, .theme-fade * { transition: background-color 200ms, color 200ms, border-color 200ms, box-shadow 200ms !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* ---------- printing ---------- */
+#print-root { display: none; }
+@media print {
+  body > *:not(#print-root) { display: none !important; }
+  #print-root { display: block; white-space: pre-wrap; font: 12pt/1.5 var(--app-font); color: #000; background: #fff; padding: 0; margin: 0; }
+  body { overflow: visible; background: #fff; }
+}
+
+/* ---------- performance ---------- */
+/* The editor layer, dialogs and tooltips get their own compositor layers so hover/animation never repaints the text. */
+main { contain: layout paint; }
+/* tab strips: a new tab can never create a scrollbar */
+.strip-x { scroll-behavior: smooth; overflow-x: auto; overflow-y: hidden; overscroll-behavior: contain; scrollbar-width: none; }
+.strip-x::-webkit-scrollbar { display: none; }
+.strip-y { overflow-y: auto; overflow-x: hidden; }

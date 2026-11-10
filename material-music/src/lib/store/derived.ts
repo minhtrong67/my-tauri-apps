@@ -3,6 +3,7 @@ import { tr, getActiveLang, type ActiveLang } from '../i18n';
 import { natural, norm } from '../utils';
 import type { Album, Artist, Track, ViewMode } from '../types';
 import { albumKey } from './helpers';
+import { inLibrary } from '../online';
 import { useStore } from './index';
 
 let derivedFor: Record<string, Track> | null = null;
@@ -11,10 +12,11 @@ let derivedCache: { all: Track[]; albums: Album[]; artists: Artist[] } | null = 
 
 export function derive(byId: Record<string, Track>) {
   if (derivedFor === byId && derivedCache && derivedLang === getActiveLang()) return derivedCache;
-  const all = Object.values(byId);
+  const all = Object.values(byId).filter(inLibrary);
   const albumMap = new Map<string, Track[]>();
   const artistMap = new Map<string, Track[]>();
   for (const t of all) {
+    if (t.source) continue; // kept online songs are listed under Songs / playlists, not as albums or artists
     const ak = albumKey(t);
     (albumMap.get(ak) ?? albumMap.set(ak, []).get(ak)!).push(t);
     (artistMap.get(t.artist) ?? artistMap.set(t.artist, []).get(t.artist)!).push(t);
