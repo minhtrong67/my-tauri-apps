@@ -1,4 +1,4 @@
-import { memo, useCallback, useId, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useId, useRef, useState } from "react";
 import { Search, Command, Sun, Moon, Settings, Info, FileText } from "./ui/icons";
 import { IconButton } from "./ui/Button";
 import { Popover, MenuList, type MenuEntry } from "./ui/Popover";
@@ -9,8 +9,10 @@ import { useDocs, clearRecent } from "../store/docs";
 import { useUi } from "../store/ui";
 import { openPaths } from "../lib/actions";
 import { openFind } from "../lib/find";
-import { baseName } from "../lib/utils";
+import { baseName, cn } from "../lib/utils";
 import { resolveDark } from "../lib/theme";
+import { isTauri } from "../lib/tauri";
+import { WindowControls } from "./WindowControls";
 
 /** App mark (same design as the app icon): accent squircle, soft top light, note page with a folded corner. */
 export function Logo({ size = 32 }: { size?: number }) {
@@ -98,8 +100,38 @@ const MenuBar = memo(function MenuBar() {
   };
   const labels = { file: t("menu.file"), edit: t("menu.edit"), view: t("menu.view") };
 
+  // Alt (pressed and released on its own) opens the first menu, like a Windows menu bar
+  useEffect(() => {
+    let pending = false;
+    const down = (e: KeyboardEvent) => {
+      pending = e.key === "Alt" && !e.repeat && !e.ctrlKey && !e.shiftKey && !e.metaKey;
+    };
+    const up = (e: KeyboardEvent) => {
+      if (e.key !== "Alt" || !pending) return;
+      pending = false;
+      e.preventDefault();
+      const ui = useUi.getState();
+      if (ui.settingsOpen || ui.aboutOpen || ui.gotoOpen || ui.paletteOpen || ui.confirm || ui.zen) return;
+      setOpen((o) => (o ? null : "file"));
+    };
+    window.addEventListener("keydown", down, true);
+    window.addEventListener("keyup", up, true);
+    return () => {
+      window.removeEventListener("keydown", down, true);
+      window.removeEventListener("keyup", up, true);
+    };
+  }, []);
+
+  const order = ["file", "edit", "view"] as const;
+  const onNavKey = (e: React.KeyboardEvent) => {
+    if (!open || (e.key !== "ArrowLeft" && e.key !== "ArrowRight")) return;
+    e.preventDefault();
+    const i = order.indexOf(open);
+    setOpen(order[(i + (e.key === "ArrowRight" ? 1 : order.length - 1)) % order.length]);
+  };
+
   return (
-    <nav className="flex items-center" aria-label="Menu">
+    <nav className="flex items-center" aria-label="Menu" onKeyDown={onNavKey}>
       {(["file", "edit", "view"] as const).map((k) => (
         <div key={k}>
           <button
@@ -127,6 +159,7 @@ export const AppBar = memo(function AppBar() {
   const theme = useSettings((s) => s.theme);
   const dark = resolveDark(theme);
   const openSettings = useUi((s) => s.openSettings);
+  const integrated = useSettings((s) => s.titleBar === "integrated") && isTauri;
 
   const switchTheme = () => {
     const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
@@ -136,18 +169,21 @@ export const AppBar = memo(function AppBar() {
   };
 
   return (
-    <header className="flex h-11 flex-none items-center gap-1 px-2">
-      <div className="flex items-center gap-2 pl-1.5 pr-3">
-        <Logo size={20} />
-        <span className="hidden text-xs sm:block">{t("app.name")}</span>
+    <header data-tauri-drag-region={integrated || undefined} className={cn("flex h-11 flex-none items-center gap-1 pl-2", integrated ? "pr-0" : "pr-2")}>
+      <div data-tauri-drag-region={integrated || undefined} className="flex items-center gap-2 pl-1.5 pr-3">
+        <span className="pointer-events-none flex items-center gap-2">
+          <Logo size={20} />
+          <span className="hidden text-xs sm:block">{t("app.name")}</span>
+        </span>
       </div>
       <MenuBar />
-      <div className="flex-1" />
+      <div data-tauri-drag-region={integrated || undefined} className="h-full min-w-6 flex-1" />
       <IconButton icon={Search} label={t("edit.find")} kbd="Ctrl+F" onClick={() => openFind(false)} />
       <IconButton icon={Command} label={t("toolbar.palette")} kbd="Ctrl+Shift+P" onClick={() => useUi.setState({ paletteOpen: true })} />
       <IconButton icon={dark ? Sun : Moon} label={t("toolbar.theme")} onClick={switchTheme} />
       <IconButton icon={Settings} label={t("toolbar.settings")} kbd="Ctrl+," onClick={() => openSettings()} />
       <IconButton icon={Info} label={t("toolbar.about")} onClick={() => useUi.setState({ aboutOpen: true })} />
+      {integrated && <WindowControls className="ml-1" />}
     </header>
   );
 });

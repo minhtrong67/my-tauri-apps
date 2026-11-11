@@ -1401,6 +1401,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "fluent-claude"
+version = "1.0.0"
+dependencies = [
+ "base64 0.22.1",
+ "chrono",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-autostart",
+ "tauri-plugin-notification",
+ "tauri-plugin-single-instance",
+ "tiny_http",
+ "uuid",
+ "window-vibrancy 0.8.1",
+]
+
+[[package]]
 name = "fluent-edits"
 version = "2.0.0"
 dependencies = [
@@ -1411,6 +1429,20 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-dialog",
  "tauri-plugin-window-state",
+]
+
+[[package]]
+name = "fluent-md"
+version = "1.0.0"
+dependencies = [
+ "base64 0.22.1",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-opener",
+ "tauri-plugin-single-instance",
 ]
 
 [[package]]
@@ -1425,6 +1457,7 @@ dependencies = [
  "tauri-plugin-dialog",
  "tauri-plugin-single-instance",
  "window-vibrancy 0.6.0",
+ "winreg 0.55.0",
 ]
 
 [[package]]

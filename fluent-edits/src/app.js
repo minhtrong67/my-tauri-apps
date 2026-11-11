@@ -23,7 +23,7 @@ import {
   libRead, libWrite, setWindowFullscreen, isWindowFullscreen,
 } from './io.js';
 import { takeScreenshot } from './screenshot.js';
-import { openExport, setExportToast, warmExport } from './exporter.js';
+import { openExport, setExportToast, setExportConfirm, warmExport } from './exporter.js';
 import { $, $$, fmtTime, baseName, stripExt, clamp, uid, h } from './util.js';
 import { initUI, toast as xToast, setToastLabels } from './ui.js';
 import { initPalette, openPalette } from './palette.js';
@@ -54,6 +54,7 @@ HTMLDialogElement.prototype.close = function (rv) {
 /* ------------------------------------------------------------------ */
 export const toast = xToast;
 setExportToast(toast);
+setExportConfirm(askConfirm);
 
 function askConfirm({ title, msg, yes, no, cancel = true, danger = false, yesIcon = 'check' }) {
   return new Promise((resolve) => {

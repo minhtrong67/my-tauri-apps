@@ -21,6 +21,8 @@ export interface Doc {
   /** The file changed on disk while it had unsaved edits. */
   conflict: boolean;
   untitled: number;
+  /** Pinned tabs stay at the start of the strip and are skipped by "Close other tabs". */
+  pinned: boolean;
 }
 
 interface DocsState {
@@ -66,6 +68,7 @@ export function createDoc(o: NewDoc = {}): Doc {
     mtime: o.mtime ?? null,
     conflict: false,
     untitled: o.path ? 0 : ++untitledSeq,
+    pinned: false,
   };
   useDocs.setState((s) => ({ docs: [...s.docs, doc] }));
   return doc;
@@ -114,3 +117,16 @@ const saveRecent = (list: string[]) => {
 export const pushRecent = (p: string) => saveRecent([p, ...useDocs.getState().recent.filter((x) => !samePath(x, p))]);
 export const dropRecent = (p: string) => saveRecent(useDocs.getState().recent.filter((x) => !samePath(x, p)));
 export const clearRecent = () => saveRecent([]);
+
+/** Pins or unpins a tab; pinned tabs are kept together at the start of the strip. */
+export function togglePin(id: number) {
+  useDocs.setState((st) => {
+    const list = st.docs.map((d) => (d.id === id ? { ...d, pinned: !d.pinned } : d));
+    const target = list.find((d) => d.id === id);
+    if (!target) return st;
+    const rest = list.filter((d) => d.id !== id);
+    const pinnedCount = rest.filter((d) => d.pinned).length;
+    rest.splice(target.pinned ? pinnedCount : pinnedCount, 0, target);
+    return { docs: rest };
+  });
+}

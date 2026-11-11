@@ -40,6 +40,8 @@ It is part of the open-source collection [my-tauri-apps](https://github.com/minh
 - **Editing helpers** – go to line, duplicate/delete line, upper/lower case, insert time/date, zoom with `Ctrl+Wheel`, word wrap, focus mode, full screen, print.
 - **Auto save** for files that already have a name, automatic session recovery, and a configurable **default save folder**.
 - **Settings** – light / dark / system, 10 Windows-style accent colours plus a custom colour picker, 14 fonts (System UI, Google Sans Flex, Roboto Flex, Roboto, Arial, Inter, Be Vietnam Pro, Open Sans, Noto Sans, Source Sans 3, Lora, JetBrains Mono, Cascadia Code, Consolas), line numbers, a window effect (Mica / Acrylic / Mica Alt), Small / Medium / Large text, English and Vietnamese, and the window start behaviour (remember size or always maximised).
+- **Windows 11 feel** – integrated title bar with caption buttons (or the native one), Windows accent colour, Fluent right-click menus in the editor and on tabs, pinned tabs, Alt-key menu navigation, click or drag the line numbers to select lines.
+- **Safer sessions** – open tabs and unsaved drafts are stored as a file in the app data folder (no browser size limit). Settings can be searched, exported and imported.
 - **Polished UX** – custom tooltips, custom dropdowns, 4-variant toasts (info, success, warning, error), icon + label + colour on every dialog action, back-to-top buttons, drag & drop files, single instance.
 - **Open files from Explorer** – `.txt`, `.md`, `.log`, `.json`, `.csv` and more.
 

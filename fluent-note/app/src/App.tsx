@@ -17,6 +17,8 @@ import { markSessionReady, persistSession, restoreSession } from "./lib/session"
 import { scheduleStatus } from "./lib/editorOps";
 import { PhysicalSize, getCurrentWebview, isTauri, listen, startupFiles, win } from "./lib/tauri";
 import { enableWindowEffect } from "./lib/appearance";
+import { ZenTitleBar } from "./components/WindowControls";
+import { ContextMenuHost } from "./components/ContextMenu";
 import { useT, t } from "./lib/i18n";
 import { cn, debounce } from "./lib/utils";
 
@@ -108,6 +110,7 @@ export default function App() {
   const statusBar = useSettings((s) => s.statusBar);
   const vertical = useSettings((s) => s.tabLayout === "vertical");
   const zen = useUi((s) => s.zen);
+  const integrated = useSettings((s) => s.titleBar === "integrated") && isTauri;
   const activeName = useDocs((s) => {
     const d = s.docs.find((x) => x.id === s.activeId);
     return d ? (d.dirty ? "● " : "") + docName(d) : "";
@@ -191,6 +194,7 @@ export default function App() {
   return (
     <div className={cn("flex h-full flex-col bg-app transition-opacity duration-200", ready ? "opacity-100" : "opacity-0")}>
       {!zen && <AppBar />}
+      {zen && integrated && <ZenTitleBar />}
       <div className={cn("flex min-h-0 flex-1", vertical && !zen ? "flex-row" : "flex-col")}>
         {!zen && <TabStrip />}
         <main
@@ -216,6 +220,7 @@ export default function App() {
       <GotoDialog />
       <CommandPalette />
       <ConfirmDialog />
+      <ContextMenuHost />
       <ToastHost />
       <TooltipHost />
 

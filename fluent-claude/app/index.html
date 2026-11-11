@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fluent Claude</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // Áp dụng giao diện đã lưu trước khi React chạy -> không nháy sáng/tối, đúng chất liệu ngay khung hình đầu tiên
+      try {
+        var p = JSON.parse(localStorage.getItem("fluent-claude.prefs") || "{}");
+        var d = document.documentElement.dataset;
+        var dark = p.theme === "dark" || ((!p.theme || p.theme === "system") && matchMedia("(prefers-color-scheme: dark)").matches);
+        d.theme = dark ? "dark" : "light";
+        d.font = p.font || "md";
+        d.accent = p.accent || "blue";
+        d.ff = p.ff || "system";
+        d.fx = p.transparency === false ? "none" : p.effect || "mica";
+        if (p.motion === false) d.motion = "off";
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

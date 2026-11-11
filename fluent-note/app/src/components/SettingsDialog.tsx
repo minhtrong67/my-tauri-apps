@@ -1,24 +1,37 @@
-import { useRef, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Settings, Palette, PenLine, AppWindow, Sun, Moon, Monitor, Languages, Type, PanelTop, PanelLeft, WrapText,
   PanelBottom, SpellCheck, History, Save, Check, RotateCcw, Pipette, Move, LineNumbers, Blur, Maximize2, Brush, LayoutPanelTop, CaseSensitive,
-  TriangleAlert, FolderOpen, FolderCog, type IconType,
+  TriangleAlert, FolderOpen, FolderCog, Search, Download, Upload, type IconType,
 } from "./ui/icons";
 import { Dialog } from "./ui/Dialog";
 import { Button } from "./ui/Button";
 import { Select } from "./ui/Popover";
 import { Segmented, Switch, ScrollArea } from "./ui/Controls";
-import { useSettings, type Settings as S } from "../store/settings";
+import { useSettings, sanitize, type Settings as S } from "../store/settings";
 import { useUi, confirmDialog, toast, type SettingsTab } from "../store/ui";
-import { isTauri, pickFolder } from "../lib/tauri";
+import { isTauri, pickFiles, pickFolder, pickSavePath, readTextFile, writeTextFile } from "../lib/tauri";
 import { PRESETS, isHex } from "../lib/theme";
 import { FONTS } from "../lib/fonts";
 import { useT } from "../lib/i18n";
 import { cn } from "../lib/utils";
 import { X } from "./ui/icons";
 
+/* ---- search: while a query is typed, every page is shown and only matching cards stay visible ---- */
+const SearchCtx = createContext("");
+const norm = (v: string) => v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").toLowerCase();
+const matches = (q: string, ...texts: (string | undefined)[]) => !q || norm(texts.filter(Boolean).join(" ")).includes(q);
+
+/** A group of controls that appears as a whole when any of its texts matches the search. */
+function Section({ texts, children }: { texts: string[]; children: ReactNode }) {
+  const q = useContext(SearchCtx);
+  return matches(q, ...texts) ? <>{children}</> : null;
+}
+
 /** Setting card (Windows 11 Settings style): glyph, title + description, and the control on the right or below. */
 function Row({ icon: Icon, title, desc, children, stack }: { icon: IconType; title: string; desc?: string; children: ReactNode; stack?: boolean }) {
+  const q = useContext(SearchCtx);
+  if (!matches(q, title, desc)) return null;
   return (
     <div className={cn("fl-card p-4", stack ? "flex flex-col gap-3" : "flex items-center gap-4")}>
       <div className="flex min-w-0 flex-1 items-center gap-4">
@@ -66,7 +79,17 @@ export function SettingsDialog() {
   const set = (p: Partial<S>) => st.set(p);
   const colorInput = useRef<HTMLInputElement>(null);
   const close = () => useUi.setState({ settingsOpen: false });
-  const isPreset = PRESETS.some((p) => p.hex.toLowerCase() === st.seed.toLowerCase());
+  const [query, setQuery] = useState("");
+  const q = norm(query.trim());
+  const pages = useRef<HTMLDivElement>(null);
+  const [noMatch, setNoMatch] = useState(false);
+  useEffect(() => {
+    setNoMatch(!!q && pages.current?.children.length === 0);
+  });
+  const show = (id: SettingsTab) => (q ? id !== "reset" : tab === id);
+  const sysAccent = useUi((u) => u.systemAccent);
+  const useSystem = st.systemAccent && !!sysAccent;
+  const isPreset = useSystem || PRESETS.some((p) => p.hex.toLowerCase() === st.seed.toLowerCase());
 
   const reset = async () => {
     const r = await confirmDialog({
@@ -82,6 +105,33 @@ export function SettingsDialog() {
     if (r === "reset") {
       st.reset();
       toast.success(t("msg.settingsReset"));
+    }
+  };
+
+  const exportSettings = async () => {
+    try {
+      const path = await pickSavePath("fluent-note-settings.json", [{ name: "JSON", extensions: ["json"] }]);
+      if (!path) return;
+      const { winState: _w, ...rest } = useSettings.getState();
+      void _w;
+      const data = Object.fromEntries(Object.entries(rest).filter(([, v]) => typeof v !== "function"));
+      await writeTextFile(path, JSON.stringify(data, null, 2), "lf", "utf-8");
+      toast.success(t("msg.exported"));
+    } catch (e) {
+      toast.error(String(e));
+    }
+  };
+
+  const importSettings = async () => {
+    try {
+      const [path] = await pickFiles([{ name: "JSON", extensions: ["json"] }]);
+      if (!path) return;
+      const raw = JSON.parse((await readTextFile(path)).content) as Record<string, unknown>;
+      if (!raw || typeof raw !== "object" || !("theme" in raw || "seed" in raw || "font" in raw)) throw new Error("bad");
+      st.set({ ...sanitize(raw), winState: useSettings.getState().winState });
+      toast.success(t("msg.imported"));
+    } catch {
+      toast.error(t("msg.importFail"));
     }
   };
 
@@ -117,15 +167,22 @@ export function SettingsDialog() {
       footer={<Button tone="primary" icon={Check} onClick={close} data-autofocus>{t("settings.done")}</Button>}
     >
       <nav className="flex flex-none gap-1 overflow-x-auto px-4 pb-2 sm:w-52 sm:flex-col sm:overflow-visible sm:px-3 sm:pb-0" aria-label={t("settings.title")}>
+        <div className="fl-field mb-1 hidden flex-none sm:flex">
+          <Search size={16} className="ml-2.5 flex-none text-fg2" aria-hidden />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t("settings.search")} aria-label={t("settings.search")} />
+        </div>
         {nav.map((n) => {
-          const on = n.id === tab;
+          const on = n.id === tab && !q;
           return (
             <button
               key={n.id}
               type="button"
               role="tab"
               aria-selected={on}
-              onClick={() => useUi.setState({ settingsTab: n.id })}
+              onClick={() => {
+                setQuery("");
+                useUi.setState({ settingsTab: n.id });
+              }}
               className={cn(
                 "flex h-10 flex-none items-center gap-3 rounded px-3 text-sm transition-colors duration-100",
                 on ? "fl-selected" : "text-fg hover:bg-sub-hover active:bg-sub-press",
@@ -138,9 +195,10 @@ export function SettingsDialog() {
         })}
       </nav>
 
-      <ScrollArea resetKey={tab} className="px-4 pb-4 sm:pl-2 sm:pr-5">
-        <div key={tab} className="stagger flex flex-col gap-2 pt-1">
-          {tab === "appearance" && (
+      <ScrollArea resetKey={tab + q} className="px-4 pb-4 sm:pl-2 sm:pr-5">
+        <SearchCtx.Provider value={q}>
+        <div ref={pages} key={q ? "search" : tab} className="stagger flex flex-col gap-2 pt-1">
+          {show("appearance") && (
             <>
               <Row icon={Sun} title={t("settings.theme")} desc={t("settings.d.theme")} stack>
                 <Segmented
@@ -157,8 +215,25 @@ export function SettingsDialog() {
 
               <Row icon={Brush} title={t("settings.color")} desc={t("settings.d.color")} stack>
                 <div className="flex flex-wrap items-center gap-2" role="radiogroup" aria-label={t("settings.color")}>
+                  {sysAccent && (
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={useSystem}
+                      aria-label={t("settings.systemColor")}
+                      data-tip={t("settings.systemColor")}
+                      onClick={() => set({ systemAccent: true })}
+                      className={cn(
+                        "grid h-8 w-8 place-items-center rounded text-white transition-shadow duration-100",
+                        useSystem ? "outline outline-2 outline-offset-2 outline-fg" : "hover:shadow-fl4",
+                      )}
+                      style={{ background: sysAccent }}
+                    >
+                      {useSystem ? <Check size={16} strokeWidth={2.4} /> : <AppWindow size={16} />}
+                    </button>
+                  )}
                   {PRESETS.map((p) => {
-                    const on = p.hex.toLowerCase() === st.seed.toLowerCase();
+                    const on = !useSystem && p.hex.toLowerCase() === st.seed.toLowerCase();
                     return (
                       <button
                         key={p.hex}
@@ -167,7 +242,7 @@ export function SettingsDialog() {
                         aria-checked={on}
                         aria-label={t(p.key)}
                         data-tip={t(p.key)}
-                        onClick={() => set({ seed: p.hex })}
+                        onClick={() => set({ seed: p.hex, systemAccent: false })}
                         className={cn(
                           "grid h-8 w-8 place-items-center rounded text-white transition-shadow duration-100",
                           on ? "outline outline-2 outline-offset-2 outline-fg" : "hover:shadow-fl4",
@@ -194,7 +269,7 @@ export function SettingsDialog() {
                       ref={colorInput}
                       type="color"
                       value={isHex(st.seed) ? st.seed : "#0078d4"}
-                      onChange={(e) => set({ seed: e.target.value })}
+                      onChange={(e) => set({ seed: e.target.value, systemAccent: false })}
                       className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                       tabIndex={-1}
                       aria-hidden
@@ -239,7 +314,7 @@ export function SettingsDialog() {
             </>
           )}
 
-          {tab === "editor" && (
+          {show("editor") && (
             <>
               <Row icon={LayoutPanelTop} title={t("settings.tabLayout")} desc={t("settings.d.tabLayout")} stack>
                 <Segmented
@@ -291,8 +366,9 @@ export function SettingsDialog() {
             </>
           )}
 
-          {tab === "window" && (
+          {show("window") && (
             <>
+              <Section texts={[t("settings.windowOnStart"), t("settings.d.windowStart"), t("settings.winRemember"), t("settings.winMax")]}>
               <div className="px-1 pt-1">
                 <div className="text-sm font-semibold">{t("settings.windowOnStart")}</div>
                 <div className="text-xs text-fg2">{t("settings.d.windowStart")}</div>
@@ -301,6 +377,20 @@ export function SettingsDialog() {
                 <ChoiceCard on={st.windowMode === "remember"} icon={Move} title={t("settings.winRemember")} desc={t("settings.d.winRemember")} onClick={() => set({ windowMode: "remember" })} />
                 <ChoiceCard on={st.windowMode === "maximized"} icon={Maximize2} title={t("settings.winMax")} desc={t("settings.d.winMax")} onClick={() => set({ windowMode: "maximized" })} />
               </div>
+              </Section>
+              {isTauri && (
+                <Row icon={PanelTop} title={t("settings.titleBar")} desc={t("settings.d.titleBar")} stack>
+                  <Segmented
+                    ariaLabel={t("settings.titleBar")}
+                    value={st.titleBar}
+                    onChange={(v) => set({ titleBar: v })}
+                    options={[
+                      { value: "integrated", label: t("titleBar.integrated") },
+                      { value: "native", label: t("titleBar.native") },
+                    ]}
+                  />
+                </Row>
+              )}
               {isTauri && (
                 <Row icon={Blur} title={t("settings.effect")} desc={t("settings.d.effect")} stack>
                   <Segmented
@@ -318,12 +408,24 @@ export function SettingsDialog() {
             </>
           )}
 
-          {tab === "reset" && (
+          {show("reset") && (
+            <>
+            {isTauri && (
+              <Row icon={Download} title={t("settings.backup")} desc={t("settings.d.backup")}>
+                <div className="flex flex-none gap-2">
+                  <Button tone="neutral" icon={Upload} small onClick={() => void exportSettings()}>{t("settings.export")}</Button>
+                  <Button tone="neutral" icon={Download} small onClick={() => void importSettings()}>{t("settings.import")}</Button>
+                </div>
+              </Row>
+            )}
             <Row icon={RotateCcw} title={t("settings.reset")} desc={t("settings.d.reset")}>
               <Button tone="danger" icon={RotateCcw} small onClick={reset}>{t("reset.confirm")}</Button>
             </Row>
+            </>
           )}
         </div>
+        {noMatch && <p className="px-2 py-10 text-center text-sm text-fg2">{t("settings.noResults")}</p>}
+        </SearchCtx.Provider>
       </ScrollArea>
     </Dialog>
   );

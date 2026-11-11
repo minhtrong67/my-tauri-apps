@@ -135,6 +135,69 @@ fn reveal_cursor() {
     cursor::reveal();
 }
 
+/* ---------- session (open tabs and unsaved drafts), stored as a file in the app data folder ---------- */
+fn session_file(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    app.path()
+        .app_data_dir()
+        .map(|d| d.join("session.json"))
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn session_load(app: tauri::AppHandle) -> Option<String> {
+    fs::read_to_string(session_file(&app).ok()?).ok()
+}
+
+#[tauri::command]
+fn session_save(app: tauri::AppHandle, data: String) -> Result<(), String> {
+    let path = session_file(&app)?;
+    if let Some(dir) = path.parent() {
+        fs::create_dir_all(dir).map_err(|e| e.to_string())?;
+    }
+    files::write_atomic(&path, data.as_bytes())
+}
+
+#[tauri::command]
+fn session_clear(app: tauri::AppHandle) {
+    if let Ok(path) = session_file(&app) {
+        let _ = fs::remove_file(path);
+    }
+}
+
+/// Shows a file selected in the system file manager.
+#[tauri::command]
+fn reveal_in_explorer(path: String) -> Result<(), String> {
+    #[cfg(windows)]
+    let r = std::process::Command::new("explorer").arg(format!("/select,{}", path)).spawn();
+    #[cfg(target_os = "macos")]
+    let r = std::process::Command::new("open").args(["-R", &path]).spawn();
+    #[cfg(all(unix, not(target_os = "macos")))]
+    let r = std::process::Command::new("xdg-open")
+        .arg(Path::new(&path).parent().unwrap_or_else(|| Path::new("/")))
+        .spawn();
+    r.map(|_| ()).map_err(|e| e.to_string())
+}
+
+/// The Windows accent colour as `#RRGGBB` (None on other systems).
+#[tauri::command]
+fn system_accent() -> Option<String> {
+    #[cfg(windows)]
+    {
+        use winreg::{enums::HKEY_CURRENT_USER, RegKey};
+        let hkcu = RegKey::predef(HKEY_CURRENT_USER);
+        let abgr: u32 = hkcu
+            .open_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent")
+            .and_then(|k| k.get_value("AccentColorMenu"))
+            .or_else(|_| hkcu.open_subkey("Software\\Microsoft\\Windows\\DWM").and_then(|k| k.get_value("AccentColor")))
+            .ok()?;
+        Some(format!("#{:02X}{:02X}{:02X}", abgr & 0xff, (abgr >> 8) & 0xff, (abgr >> 16) & 0xff))
+    }
+    #[cfg(not(windows))]
+    {
+        None
+    }
+}
+
 /// Applies the Windows 11 backdrop material behind the (transparent) window: "mica", "acrylic" or "micaAlt".
 /// Returns false when the system cannot do it (Windows 10, other platforms): the page then keeps a solid background.
 #[cfg(windows)]
@@ -195,7 +258,12 @@ fn main() {
             startup_files,
             open_url,
             reveal_cursor,
-            set_window_effect
+            set_window_effect,
+            session_load,
+            session_save,
+            session_clear,
+            reveal_in_explorer,
+            system_accent
         ])
         .run(tauri::generate_context!())
         .expect("error while running Fluent Note");

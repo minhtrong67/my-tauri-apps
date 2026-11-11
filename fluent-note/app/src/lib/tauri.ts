@@ -38,6 +38,12 @@ export const startupFiles = () => invoke<string[]>("startup_files");
 /** Applies a Windows 11 backdrop ("mica" | "acrylic" | "micaAlt"); true when the system supports it. */
 export const setWindowEffect = (effect: string, dark: boolean) =>
   isTauri ? invoke<boolean>("set_window_effect", { effect, dark }).catch(() => false) : Promise.resolve(false);
+export const sessionLoad = () => (isTauri ? invoke<string | null>("session_load").catch(() => null) : Promise.resolve(null));
+export const sessionSave = (data: string) => invoke<void>("session_save", { data });
+export const sessionClear = () => (isTauri ? invoke("session_clear").catch(() => {}) : Promise.resolve());
+export const revealInExplorer = (path: string) => invoke<void>("reveal_in_explorer", { path });
+/** The Windows accent colour (#RRGGBB), or null when it cannot be read. */
+export const systemAccent = () => (isTauri ? invoke<string | null>("system_accent").catch(() => null) : Promise.resolve(null));
 export const revealCursor = () => (isTauri ? invoke("reveal_cursor").catch(() => {}) : Promise.resolve());
 
 export interface Filter {

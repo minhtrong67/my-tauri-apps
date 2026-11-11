@@ -1,0 +1,80 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Fluent MD",
+  "version": "1.0.0",
+  "identifier": "com.minhtrong67.fluentmd",
+  "build": {
+    "beforeDevCommand": "pnpm web:dev",
+    "beforeBuildCommand": "pnpm web:build",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Fluent MD",
+        "width": 1240,
+        "height": 820,
+        "minWidth": 520,
+        "minHeight": 400,
+        "center": true,
+        "decorations": false,
+        "shadow": true,
+        "visible": false,
+        "dragDropEnabled": true,
+        "transparent": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https: http:; connect-src 'self' ipc: http://ipc.localhost; object-src 'none'; base-uri 'none'; frame-src 'none'",
+      "devCsp": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https: http:; connect-src 'self' ipc: http://ipc.localhost ws://localhost:1420 http://localhost:1420"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "publisher": "minhtrong67",
+    "copyright": "Copyright (c) 2026 minhtrong67",
+    "category": "Productivity",
+    "shortDescription": "Fluent Design Markdown editor and viewer",
+    "longDescription": "Fluent MD is a Windows 11 style desktop app to read, write and live-preview Markdown files, with Mica, Acrylic and Mica Alt window materials.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "fileAssociations": [
+      {
+        "ext": [
+          "md",
+          "markdown",
+          "mdown",
+          "mkd"
+        ],
+        "name": "Markdown Document",
+        "description": "Markdown document",
+        "role": "Editor",
+        "mimeType": "text/markdown"
+      }
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "installerIcon": "icons/icon.ico",
+        "uninstallerIcon": "icons/uninstall.ico",
+        "headerImage": "icons/installer-header.bmp",
+        "sidebarImage": "icons/installer-sidebar.bmp",
+        "displayLanguageSelector": false,
+        "languages": [
+          "English",
+          "Vietnamese"
+        ]
+      }
+    }
+  }
+}

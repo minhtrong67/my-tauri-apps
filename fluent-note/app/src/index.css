@@ -170,6 +170,9 @@ input:focus-visible, textarea:focus-visible { outline: none; }
 .icon-btn[aria-pressed="true"], .icon-btn[aria-expanded="true"] { background: var(--fl-sub-select); }
 .icon-btn:disabled { opacity: 0.4; pointer-events: none; }
 
+/* menu items show keyboard focus as a filled row, like Windows menus */
+[role^="menuitem"]:focus-visible { outline: none; background: var(--fl-sub-select); }
+
 /* Keyboard accelerator text */
 .kbd { display: inline-flex; align-items: center; font-size: 0.75rem; color: var(--fl-fg2); font-family: inherit; white-space: nowrap; }
 
@@ -215,7 +218,7 @@ textarea.editor-text:not([wrap="off"]) { overflow-x: hidden; }
 .has-gutter { --gutter-w: calc(var(--gd, 2) * 0.5 * var(--editor-size) + 2.25rem); }
 .has-gutter .editor-text { padding-left: calc(var(--gutter-w) + 0.5rem); }
 .gutter {
-  position: absolute; inset: 0 auto 0 0; width: var(--gutter-w); overflow: hidden; pointer-events: none; z-index: 2;
+  position: absolute; inset: 0 auto 0 0; width: var(--gutter-w); overflow: hidden; z-index: 2; cursor: default;
   background: var(--fl-layer); color: var(--fl-fg3); font-size: calc(var(--editor-size) * 0.85); font-variant-numeric: tabular-nums;
 }
 .gutter-inner { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
@@ -256,13 +259,12 @@ textarea.editor-text:not([wrap="off"]) { overflow-x: hidden; }
 .anim-page-in { animation: fl-page-in 320ms var(--ease-decel) both; }
 .anim-toast-out { animation: fl-toast-out 160ms var(--ease-accel) both; }
 /* children of a page appear one after another */
-.stagger > * { animation: fl-page-in 340ms var(--ease-decel) both; }
-.stagger > *:nth-child(2) { animation-delay: 30ms; }
-.stagger > *:nth-child(3) { animation-delay: 60ms; }
-.stagger > *:nth-child(4) { animation-delay: 90ms; }
-.stagger > *:nth-child(5) { animation-delay: 120ms; }
-.stagger > *:nth-child(6) { animation-delay: 150ms; }
-.stagger > *:nth-child(n + 7) { animation-delay: 180ms; }
+.stagger > * { animation: fl-page-in 260ms var(--ease-decel) both; }
+.stagger > *:nth-child(2) { animation-delay: 20ms; }
+.stagger > *:nth-child(3) { animation-delay: 40ms; }
+.stagger > *:nth-child(4) { animation-delay: 60ms; }
+.stagger > *:nth-child(5) { animation-delay: 80ms; }
+.stagger > *:nth-child(n + 6) { animation-delay: 100ms; }
 
 /* theme switch: a short cross-fade, like Windows does */
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 200ms; animation-timing-function: var(--ease-standard); }
@@ -272,6 +274,23 @@ textarea.editor-text:not([wrap="off"]) { overflow-x: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* ---------- accessibility ---------- */
+/* "Reduce transparency" in Windows: menus become solid */
+@media (prefers-reduced-transparency: reduce) {
+  .fl-flyout { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--fl-dialog); }
+}
+/* Windows high-contrast themes: let the system colours win, but keep the signs of selection and state visible */
+@media (forced-colors: active) {
+  :focus-visible { outline-color: CanvasText; }
+  .fl-selected::before, .gutter-n.cur { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+  .gutter-n.cur { background: transparent; color: Highlight; }
+  [role="switch"][aria-checked="true"], [role="switch"][aria-checked="true"] > span { forced-color-adjust: none; background: Highlight; border-color: Highlight; }
+  [role="switch"][aria-checked="true"] > span { background: HighlightText; }
+  [role="radio"][aria-checked="true"] { outline: 2px solid Highlight; }
+  .btn-filled { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+  .fl-card, .fl-flyout, .fl-field, .btn, .icon-btn { border-color: ButtonText; }
 }
 
 /* ---------- printing ---------- */

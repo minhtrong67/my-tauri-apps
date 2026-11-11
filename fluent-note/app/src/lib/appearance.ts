@@ -1,9 +1,11 @@
 import { useSettings, TEXT_SIZE_PX, type Settings } from "../store/settings";
 import { applyScheme, resolveDark, setMica } from "./theme";
 import { fontById } from "./fonts";
-import { isTauri, setWindowEffect, win } from "./tauri";
+import { isTauri, setWindowEffect, systemAccent, win } from "./tauri";
+import { useUi } from "../store/ui";
 
 let lastScheme = "";
+let lastTitleBar = "";
 let lastEffect = "";
 let effectReady = false;
 
@@ -29,7 +31,8 @@ let fadeTimer = 0;
 export function applyAppearance(s: Settings) {
   const root = document.documentElement;
   const dark = resolveDark(s.theme);
-  const key = `${s.seed}|${dark}`;
+  const seed = s.systemAccent && useUi.getState().systemAccent ? (useUi.getState().systemAccent as string) : s.seed;
+  const key = `${seed}|${dark}`;
   if (key !== lastScheme) {
     const colourOnly = lastScheme.endsWith(`|${dark}`) && lastScheme !== "";
     // a palette change (same mode) fades smoothly; a light/dark flip is handled by the view transition
@@ -38,7 +41,7 @@ export function applyAppearance(s: Settings) {
       clearTimeout(fadeTimer);
       fadeTimer = window.setTimeout(() => root.classList.remove("theme-fade"), 360);
     }
-    applyScheme(s.seed, dark);
+    applyScheme(seed, dark);
     lastScheme = key;
     void win()?.setTheme(dark ? "dark" : "light").catch(() => {});
   }
@@ -47,11 +50,28 @@ export function applyAppearance(s: Settings) {
   root.style.setProperty("--root-size", base + "px");
   root.style.setProperty("--editor-size", ((base * s.zoom) / 100).toFixed(2) + "px");
   if (root.lang !== s.lang) root.lang = s.lang;
+  if (s.titleBar !== lastTitleBar) {
+    lastTitleBar = s.titleBar;
+    void win()?.setDecorations(s.titleBar === "native").catch(() => {});
+  }
   if (effectReady) void syncWindowEffect();
+}
+
+/** Reads the Windows accent colour; re-applies the theme when it changed (e.g. the user picked a new colour in Windows). */
+export async function refreshSystemAccent() {
+  const c = await systemAccent();
+  if (c !== useUi.getState().systemAccent) {
+    useUi.setState({ systemAccent: c });
+    applyAppearance(useSettings.getState());
+  }
 }
 
 export function initAppearance() {
   applyAppearance(useSettings.getState());
+  if (isTauri) {
+    void refreshSystemAccent();
+    window.addEventListener("focus", () => void refreshSystemAccent());
+  }
   useSettings.subscribe((s) => applyAppearance(s));
   // follow the OS when the mode is "system"
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {

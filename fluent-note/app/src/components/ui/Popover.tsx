@@ -124,8 +124,28 @@ export type MenuEntry =
   | { type: "header"; label: string };
 
 export function MenuList({ entries, onDone }: { entries: MenuEntry[]; onDone: () => void }) {
+  const box = useRef<HTMLDivElement>(null);
+  const items = () => Array.from(box.current?.querySelectorAll<HTMLButtonElement>('button[role^="menuitem"]:not(:disabled)') ?? []);
+  // focus the first item on open so the menu can be driven with the keyboard
+  useEffect(() => {
+    items()[0]?.focus({ preventScroll: true });
+  }, []);
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    const list = items();
+    if (!list.length) return;
+    const i = list.indexOf(document.activeElement as HTMLButtonElement);
+    let next = -1;
+    if (e.key === "ArrowDown") next = (i + 1) % list.length;
+    else if (e.key === "ArrowUp") next = (i - 1 + list.length) % list.length;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = list.length - 1;
+    if (next >= 0) {
+      e.preventDefault();
+      list[next].focus({ preventScroll: false });
+    }
+  };
   return (
-    <div role="menu" className="min-w-[15rem] max-w-[22rem]">
+    <div ref={box} role="menu" onKeyDown={onKeyDown} className="min-w-[15rem] max-w-[22rem]">
       {entries.map((e, i) => {
         if (e.type === "divider") return <div key={i} role="separator" className="mx-1 my-1 h-px bg-divider" />;
         if (e.type === "header")

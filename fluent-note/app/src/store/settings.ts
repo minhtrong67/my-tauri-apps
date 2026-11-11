@@ -10,6 +10,8 @@ export type WindowMode = "remember" | "maximized";
 export type TabLayout = "horizontal" | "vertical";
 /** Windows 11 backdrop material behind the window */
 export type WindowEffect = "mica" | "acrylic" | "micaAlt";
+/** "integrated": menus and window buttons live in our own title bar; "native": the standard Windows title bar */
+export type TitleBar = "integrated" | "native";
 
 export interface WinState {
   w: number;
@@ -28,6 +30,9 @@ export interface Settings {
   wrap: boolean;
   lineNumbers: boolean;
   windowEffect: WindowEffect;
+  titleBar: TitleBar;
+  /** follow the Windows accent colour (the chosen colour is used when Windows does not report one) */
+  systemAccent: boolean;
   statusBar: boolean;
   spellcheck: boolean;
   restore: boolean;
@@ -58,6 +63,8 @@ export const defaults = (): Settings => ({
   wrap: true,
   lineNumbers: false,
   windowEffect: "mica",
+  titleBar: "integrated",
+  systemAccent: true,
   statusBar: true,
   spellcheck: false,
   restore: true,
@@ -70,9 +77,8 @@ export const defaults = (): Settings => ({
 });
 
 // Validates every field, so settings saved by older versions (or edited by hand) never break the app.
-function load(): Settings {
+export function sanitize(s: Record<string, unknown>): Settings {
   const d = defaults();
-  const s = readJson<Record<string, unknown>>(SETTINGS_KEY) ?? {};
   const pick = <T extends string>(v: unknown, allowed: readonly T[], fallback: T): T =>
     typeof v === "string" && (allowed as readonly string[]).includes(v) ? (v as T) : fallback;
   const bool = (v: unknown, fb: boolean) => (typeof v === "boolean" ? v : fb);
@@ -91,6 +97,8 @@ function load(): Settings {
     wrap: bool(s.wrap, d.wrap),
     lineNumbers: bool(s.lineNumbers, d.lineNumbers),
     windowEffect: pick(s.windowEffect, ["mica", "acrylic", "micaAlt"] as const, d.windowEffect),
+    titleBar: pick(s.titleBar, ["integrated", "native"] as const, d.titleBar),
+    systemAccent: bool(s.systemAccent, d.systemAccent),
     statusBar: bool(s.statusBar, d.statusBar),
     spellcheck: bool(s.spellcheck, d.spellcheck),
     restore: bool(s.restore, d.restore),
@@ -105,6 +113,8 @@ function load(): Settings {
     saveDir: typeof s.saveDir === "string" && s.saveDir.trim() ? s.saveDir : null,
   };
 }
+
+const load = (): Settings => sanitize(readJson<Record<string, unknown>>(SETTINGS_KEY) ?? {});
 
 interface Store extends Settings {
   set: (p: Partial<Settings>) => void;

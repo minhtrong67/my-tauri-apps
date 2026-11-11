@@ -14,6 +14,8 @@ const bodyEl = $('#export-body');
 const actionsEl = $('#export-actions');
 let toast = () => {};
 export const setExportToast = (f) => { toast = f; };
+let askConfirm = null;
+export const setExportConfirm = (f) => { askConfirm = f; };
 
 const RES = [[480, '480p'], [720, '720p HD'], [1080, '1080p Full HD'], [1440, '1440p 2K'], [2160, '2160p 4K']];
 const FPS = [24, 25, 30, 50, 60];
@@ -209,8 +211,17 @@ async function runExport(p) {
     h('p', { class: 'hint', text: t('export.keepOpen') }), diagEl);
   const tick = setInterval(() => { elapsedV.textContent = fmtTime((performance.now() - started) / 1000, false); }, 500);
   // Cancel closes the window immediately; the pipeline unwinds and removes the partial file in the background
-  let cancelled = false;
-  const cancel = () => { if (cancelled) return; cancelled = true; ctl.abort(); dlg.close(); toast(t('export.cancelled')); };
+  let cancelled = false, asking = false, settled = false;
+  const doCancel = () => { if (cancelled || settled) return; cancelled = true; ctl.abort(); dlg.close(); toast(t('export.cancelled')); };
+  // Ask first: a long export is easy to lose with one stray click or Esc
+  const cancel = async () => {
+    if (cancelled || settled || asking) return;
+    if (!askConfirm) { doCancel(); return; }
+    asking = true;
+    const r = await askConfirm({ title: t('export.cancelTitle'), msg: t('export.cancelMsg'), yes: t('export.cancelYes'), no: t('export.cancelKeep'), cancel: false, danger: true, yesIcon: 'close' });
+    asking = false;
+    if (r === 'yes') doCancel();
+  };
   actionsEl.replaceChildren(h('button', { class: 'btn danger', onclick: cancel }, icon('close'), t('btn.cancel')));
   dlg.oncancel = (e) => { e.preventDefault(); cancel(); };
   cancelProxies(); releaseForExport();
@@ -275,7 +286,7 @@ async function runExport(p) {
     if (err && err.name === 'AbortError') { if (!cancelled) { dlg.close(); toast(t('export.cancelled')); } }
     else finish(t('export.failed'), String((err && err.message) || err), stats.report || diagEl.textContent);
   } finally {
-    dlg.oncancel = null; clearInterval(tick);
+    settled = true; dlg.oncancel = null; clearInterval(tick);
   }
 }
 

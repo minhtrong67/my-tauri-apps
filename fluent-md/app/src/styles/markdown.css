@@ -1,0 +1,45 @@
+/* Rendered Markdown. Shared by the preview and by HTML export (imported with ?inline). */
+.md { max-width: 52rem; margin: 0 auto; font-size: calc(1rem * var(--z, 1)); line-height: 1.65; color: var(--fg); word-wrap: break-word; }
+.md .blk { animation: blk-in 167ms cubic-bezier(0, 0, 0, 1) both; }
+.md.still .blk { animation: none; }
+@keyframes blk-in { from { opacity: 0; transform: translateY(6px); } }
+.md > .blk > :first-child { margin-top: 0; }
+.md h1, .md h2, .md h3, .md h4, .md h5, .md h6 { margin: 1.6em 0 .55em; font-weight: 600; line-height: 1.25; scroll-margin-top: 1rem; }
+.md h1 { font-size: 2em; padding-bottom: .3em; border-bottom: 1px solid var(--divider); } .md h2 { font-size: 1.5em; padding-bottom: .25em; border-bottom: 1px solid var(--divider); }
+.md h3 { font-size: 1.25em; } .md h4 { font-size: 1.05em; } .md h5, .md h6 { font-size: 1em; color: var(--fg-2); }
+.md p, .md ul, .md ol, .md blockquote, .md pre, .md table, .md details { margin: 0 0 1em; }
+.md a { color: var(--accent-text); text-decoration: none; cursor: pointer; } .md a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.md ul, .md ol { padding-left: 1.6em; } .md ul { list-style: disc; } .md ol { list-style: decimal; } .md ul ul { list-style: circle; } .md ul ul ul { list-style: square; } .md li + li { margin-top: .25em; } .md li > p { margin: .25em 0; }
+.md ul li::marker, .md ol li::marker { color: var(--fg-2); }
+.md li:has(> input[type='checkbox']) { list-style: none; margin-left: -1.4em; }
+.md input[type='checkbox'] { appearance: none; width: 1.1em; height: 1.1em; margin: 0 .5em -.2em 0; border-radius: 4px; border: 1px solid var(--strong-stroke); background: transparent; cursor: pointer; transition: background-color 83ms linear; }
+.md input[type='checkbox']:hover { background: var(--subtle); }
+.md input[type='checkbox']:checked { background-color: var(--accent); border-color: var(--accent); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); background-size: 78%; background-repeat: no-repeat; background-position: center; }
+.md blockquote { padding: .4em 1em; border-left: 3px solid var(--strong-stroke); border-radius: 0 4px 4px 0; background: var(--card); color: var(--fg-2); }
+.md blockquote > :last-child { margin-bottom: 0; }
+.md blockquote.alert { border-left-width: 3px; border-left-color: var(--ac); padding: .7em 1em; color: var(--fg); --ac: var(--accent-text); background: color-mix(in srgb, var(--ac) 9%, transparent); }
+.md blockquote.alert .at { display: flex; align-items: center; gap: .5em; margin-bottom: .25em; font-weight: 600; color: var(--ac); } .md blockquote.alert .at svg { width: 1.05em; height: 1.05em; }
+.md blockquote.tip { --ac: var(--ok); } .md blockquote.warning { --ac: var(--warn); } .md blockquote.caution { --ac: var(--err); } .md blockquote.important { --ac: var(--syn-keyword); } .md blockquote.note { --ac: var(--info); }
+.md hr { height: 1px; border: 0; margin: 2em 0; background: var(--divider); }
+.md img { max-width: 100%; height: auto; border-radius: 6px; } .md p > img { vertical-align: middle; }
+.md code { padding: .12em .4em; border-radius: 4px; background: var(--code); font-family: var(--mono); font-size: .88em; color: var(--fg); }
+.md .cb { margin: 0 0 1em; overflow: hidden; border-radius: 8px; background: var(--card); border: 1px solid var(--stroke); }
+.md .ch { display: flex; align-items: center; justify-content: space-between; padding: .25em .4em .25em .9em; border-bottom: 1px solid var(--divider); font: 400 .75em var(--mono); color: var(--fg-2); }
+.md .cp { display: inline-flex; align-items: center; gap: .4em; height: 2em; padding: 0 .7em; border-radius: 4px; color: var(--fg-2); font: 400 1em/1 inherit; transition: background-color 83ms linear; }
+.md .cp svg { width: 1.15em; height: 1.15em; } .md .cp:hover { background: var(--subtle); color: var(--fg); } .md .cp.done { background: var(--accent); color: var(--on-accent); }
+.md .cb pre { margin: 0; padding: 1em 1.2em; overflow-x: auto; } .md .cb pre code { padding: 0; background: none; font-size: .875em; line-height: 1.6; border-radius: 0; }
+.md .tw { margin: 0 0 1em; overflow-x: auto; border-radius: 8px; border: 1px solid var(--stroke); }
+.md table { width: 100%; margin: 0; border-collapse: collapse; } .md th, .md td { padding: .55em .9em; text-align: left; border-bottom: 1px solid var(--divider); }
+.md th { background: var(--card); font-weight: 600; } .md tr:last-child td { border-bottom: 0; } .md tbody tr:hover { background: var(--subtle); }
+.md details { padding: .55em .9em; border-radius: 8px; background: var(--card); border: 1px solid var(--stroke); } .md summary { cursor: pointer; font-weight: 600; }
+.md details.fm { opacity: .85; font-size: .9em; } .md details.fm pre { margin: .5em 0 0; overflow-x: auto; }
+.md kbd { padding: .05em .45em; border-radius: 4px; background: var(--card); border: 1px solid var(--stroke); border-bottom-width: 2px; font: 400 .85em var(--font-ui, system-ui); }
+.md mark.hit { padding: 0 .1em; border-radius: 2px; background: rgb(255 185 0 / .4); color: inherit; } .md mark.hit.cur { background: rgb(255 140 0 / .75); color: #000; }
+.md .hljs-comment, .md .hljs-quote { color: var(--syn-comment); font-style: italic; }
+.md .hljs-keyword, .md .hljs-selector-tag, .md .hljs-literal, .md .hljs-doctag, .md .hljs-meta .hljs-keyword { color: var(--syn-keyword); }
+.md .hljs-string, .md .hljs-regexp, .md .hljs-addition, .md .hljs-meta .hljs-string { color: var(--syn-string); }
+.md .hljs-number, .md .hljs-symbol, .md .hljs-bullet { color: var(--syn-number); }
+.md .hljs-built_in, .md .hljs-variable, .md .hljs-template-variable, .md .hljs-attribute { color: var(--syn-var); }
+.md .hljs-title, .md .hljs-section, .md .hljs-function { color: var(--syn-func); } .md .hljs-type, .md .hljs-class .hljs-title { color: var(--syn-type); }
+.md .hljs-name, .md .hljs-tag, .md .hljs-deletion, .md .hljs-selector-id, .md .hljs-selector-class { color: var(--syn-tag); }
+.md .hljs-emphasis { font-style: italic; } .md .hljs-strong { font-weight: 700; }

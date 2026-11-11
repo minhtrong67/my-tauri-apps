@@ -67,6 +67,8 @@ export const extraEn = {
   'media.addN': 'Add {n} items to timeline', 'media.addOverlayN': 'Add {n} items as overlay', 'media.removeN': 'Remove {n} items',
   'insp.multi': '{n} clips selected', 'insp.multiHint': 'Changes apply to every selected clip. Drag to move them together.', 'insp.multiVol': 'Volume', 'insp.multiSpeed': 'Speed', 'insp.multiOpacity': 'Opacity',
   'btn.deselect': 'Clear selection',
+  'export.cancelTitle': 'Cancel export?', 'export.cancelMsg': 'The export will stop and the unfinished file will be deleted.', 'export.cancelYes': 'Cancel export', 'export.cancelKeep': 'Keep exporting',
+  'export.cancelTitle': 'Hủy xuất video?', 'export.cancelMsg': 'Quá trình xuất sẽ dừng lại và tệp chưa hoàn thành sẽ bị xóa.', 'export.cancelYes': 'Hủy xuất', 'export.cancelKeep': 'Tiếp tục xuất',
   'export.busy': 'An export is running — wait for it to finish or cancel it first.',
   'export.quitTitle': 'Export in progress', 'export.quitMsg': 'Quitting now will cancel the export. Quit anyway?', 'export.quitYes': 'Quit',
   'settings.nav.appearance': 'Appearance', 'settings.nav.general': 'General', 'settings.nav.editor': 'Editor', 'settings.nav.about': 'About',

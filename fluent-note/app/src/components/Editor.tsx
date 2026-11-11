@@ -10,6 +10,7 @@ import { allMatches, buildRegex } from "../lib/find";
 import { useT } from "../lib/i18n";
 import { cn } from "../lib/utils";
 import { FindBar } from "./FindBar";
+import { openContextMenu, editorMenu } from "../lib/contextMenus";
 import { EmptyState } from "./EmptyState";
 
 const EditorPane = memo(function EditorPane({ doc, active, wrap, spellcheck, onScrolled }: {
@@ -55,6 +56,7 @@ const EditorPane = memo(function EditorPane({ doc, active, wrap, spellcheck, onS
       onInput={() => onEdit(doc.id)}
       onScroll={(e) => active && onScrolled(e.currentTarget.scrollTop > 1200)}
       onSelect={scheduleStatus}
+      onContextMenu={(e) => openContextMenu(e, editorMenu())}
       onKeyUp={scheduleStatus}
       onMouseUp={scheduleStatus}
       onKeyDown={(e) => {
@@ -198,8 +200,9 @@ function Gutter({ activeId, wrap }: { activeId: number | null; wrap: boolean }) 
       for (let i = text.indexOf("\n"); i !== -1; i = text.indexOf("\n", i + 1)) n++;
       ta.parentElement?.style.setProperty("--gd", String(Math.max(2, String(n).length)));
       let tops: number[] | null = null;
-      let hidden = false;
-      if (wrap) {
+      // very large documents: skip the numbers rather than slow typing down
+      let hidden = text.length > 4_000_000;
+      if (wrap && !hidden) {
         if (n > MAX_WRAPPED_LINES) hidden = true;
         else {
           const m = document.createElement("div");
@@ -262,9 +265,48 @@ function Gutter({ activeId, wrap }: { activeId: number | null; wrap: boolean }) 
       );
     }
   }
+  // click a number to select the whole line, drag to select several lines
+  const onPointerDown = (e: React.PointerEvent) => {
+    const ta = activeId === null ? undefined : editors.get(activeId);
+    if (!ta || e.button !== 0) return;
+    e.preventDefault();
+    ta.focus({ preventScroll: true });
+    const text = ta.value;
+    const starts = [0];
+    for (let i = text.indexOf("\n"); i !== -1; i = text.indexOf("\n", i + 1)) starts.push(i + 1);
+    const L = lay.current;
+    const lineAt = (clientY: number) => {
+      const y = clientY - ta.getBoundingClientRect().top + ta.scrollTop - L.top;
+      if (!L.tops) return Math.max(0, Math.min(starts.length - 1, Math.floor(y / L.lh)));
+      let lo = 0;
+      let hi = L.tops.length - 1;
+      while (lo < hi) {
+        const mid = (lo + hi + 1) >> 1;
+        if (L.tops[mid] <= y) lo = mid;
+        else hi = mid - 1;
+      }
+      return Math.min(lo, starts.length - 1);
+    };
+    const anchor = lineAt(e.clientY);
+    const select = (a: number, b: number) => {
+      const lo = Math.min(a, b);
+      const hi = Math.max(a, b);
+      ta.setSelectionRange(starts[lo], hi + 1 < starts.length ? starts[hi + 1] : text.length);
+      scheduleStatus();
+    };
+    select(anchor, anchor);
+    const move = (ev: PointerEvent) => select(anchor, lineAt(ev.clientY));
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  };
+
   return (
-    <div className="gutter" aria-hidden>
-      <div ref={innerRef} className="gutter-inner">
+    <div className="gutter" onPointerDown={onPointerDown}>
+      <div ref={innerRef} className="gutter-inner" aria-hidden>
         {items}
       </div>
     </div>

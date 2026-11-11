@@ -1,0 +1,26 @@
+/* Fluent Design (Windows 11) cho popup + trang cài đặt của extension */
+:root { --bg:#f3f3f3; --card:#fff; --soft:#f9f9f9; --text:#1a1a1a; --muted:#5c5c5c; --line:rgb(0 0 0 / .0578); --line-b:rgb(0 0 0 / .1622); --accent:#0067c0; --on-accent:#fff; --ok:#0f7b0f; --bad:#c42b1c; --warn:#9d5d00; }
+@media (prefers-color-scheme: dark) { :root { --bg:#202020; --card:#2b2b2b; --soft:#323232; --text:#fff; --muted:#c5c5c5; --line:rgb(255 255 255 / .07); --line-b:rgb(255 255 255 / .07); --accent:#4cc2ff; --on-accent:#000; --ok:#6ccb5f; --bad:#ff99a4; --warn:#fce100; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.43 "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand img { width: 32px; height: 32px; }
+.brand b { font-size: 14px; font-weight: 600; display: block; line-height: 1.25; } .brand span { font-size: 12px; color: var(--muted); }
+.muted { color: var(--muted); } .small { font-size: 12px; }
+.pill { --c: var(--muted); display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 2px 10px 2px 8px; border-radius: 999px; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.pill.ok { --c: var(--ok); } .pill.bad { --c: var(--bad); } .pill.warn { --c: var(--warn); } .pill.idle { --c: var(--muted); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+.kv { display: grid; grid-template-columns: 110px 1fr; gap: 6px 10px; font-size: 13px; }
+.kv dt { color: var(--muted); margin: 0; } .kv dd { margin: 0; word-break: break-all; }
+label { display: block; font-weight: 600; font-size: 13px; margin: 14px 0 4px; }
+input { width: 100%; height: 32px; font: inherit; color: var(--text); background: var(--soft); border: 1px solid var(--line); border-bottom-color: var(--line-b); border-radius: 4px; padding: 0 10px; outline: none; }
+input:focus { border-bottom: 2px solid var(--accent); padding-bottom: 1px; }
+.hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.btn { font: inherit; height: 32px; padding: 0 14px; cursor: pointer; border-radius: 4px; border: 1px solid var(--line); border-bottom-color: var(--line-b); background: var(--card); color: var(--text); }
+.btn:hover { background: var(--soft); }
+.btn:active { opacity: .8; }
+.btn.primary { background: var(--accent); border-color: transparent; color: var(--on-accent); }
+.btn.primary:hover { background: color-mix(in srgb, var(--accent) 90%, #fff); }
+.btn:focus-visible, input:focus-visible { outline: 2px solid var(--text); outline-offset: 1px; }
+.row { display: flex; gap: 8px; }

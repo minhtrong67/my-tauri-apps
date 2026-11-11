@@ -2,12 +2,13 @@ import { useDocs, createDoc, setActiveId, type Eol } from "../store/docs";
 import { useSettings } from "../store/settings";
 import { useUi, toast } from "../store/ui";
 import { editors, viewState, rememberView } from "./editors";
-import { readTextFile } from "./tauri";
+import { isTauri, readTextFile, sessionClear, sessionLoad, sessionSave } from "./tauri";
 import { t } from "./i18n";
 import { readJson } from "./utils";
 
 const SESSION_KEY = "fluent-note.session";
-const DRAFT_LIMIT = 3_000_000; // max characters of unsaved text kept between launches
+// max characters of unsaved text kept between launches: the desktop app stores them in a file (no browser quota)
+const DRAFT_LIMIT = isTauri ? 40_000_000 : 3_000_000;
 
 let ready = false;
 let timer = 0;
@@ -23,6 +24,7 @@ interface SessionTab {
   scroll?: [number, number];
   draft?: string;
   forced?: boolean;
+  pinned?: boolean;
 }
 
 export const queuePersist = () => {
@@ -44,7 +46,7 @@ export function persistSession() {
     tabs: kept.map((d) => {
       const text = editors.get(d.id)?.value ?? d.initial;
       const v = viewState.get(d.id);
-      const item: SessionTab = { path: d.path, eol: d.eol, encoding: d.encoding, sel: v?.sel, scroll: v?.scroll };
+      const item: SessionTab = { path: d.path, eol: d.eol, encoding: d.encoding, sel: v?.sel, scroll: v?.scroll, pinned: d.pinned || undefined };
       if (d.dirty && text.length <= budget) {
         item.draft = text;
         item.forced = d.forced;
@@ -53,16 +55,27 @@ export function persistSession() {
       return item;
     }),
   };
-  try {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(data));
-  } catch {
-    // quota exceeded: unsaved text would be lost on the next launch, so say so (once)
+  const json = JSON.stringify(data);
+  const warn = () => {
+    // could not store the session: unsaved text would be lost on the next launch, so say so (once)
     if (!useUi.getState().draftWarned) {
       useUi.setState({ draftWarned: true });
       toast.warning(t("msg.draftFail"));
     }
+  };
+  if (isTauri) {
+    // serialised writes: a newer snapshot never overtakes an older one
+    writing = writing.then(() => sessionSave(json)).catch(warn);
+    return;
+  }
+  try {
+    localStorage.setItem(SESSION_KEY, json);
+  } catch {
+    warn();
   }
 }
+
+let writing: Promise<void> = Promise.resolve();
 
 export const clearSession = () => {
   clearTimeout(timer);
@@ -71,12 +84,27 @@ export const clearSession = () => {
   } catch {
     /* ignore */
   }
+  void sessionClear();
 };
+
+/** The saved session: the file in the app data folder (desktop), or the older localStorage copy. */
+async function loadSession() {
+  const raw = await sessionLoad();
+  if (raw) {
+    try {
+      return JSON.parse(raw) as { tabs?: SessionTab[]; paths?: string[]; active?: number };
+    } catch {
+      /* damaged file: fall through to the older copy */
+    }
+  }
+  return readJson<{ tabs?: SessionTab[]; paths?: string[]; active?: number }>(SESSION_KEY);
+}
 
 /** Re-creates the tabs of the last session. Returns how many tabs were restored. */
 export async function restoreSession(): Promise<number> {
-  const s = readJson<{ tabs?: SessionTab[]; paths?: string[]; active?: number }>(SESSION_KEY);
-  if (!useSettings.getState().restore || !s) return 0;
+  if (!useSettings.getState().restore) return 0;
+  const s = await loadSession();
+  if (!s) return 0;
   const items: SessionTab[] = Array.isArray(s.tabs)
     ? s.tabs
     : Array.isArray(s.paths)
@@ -110,6 +138,7 @@ export async function restoreSession(): Promise<number> {
       encoding: data?.encoding ?? it.encoding,
       mtime: data?.mtime ?? null,
     });
+    if (it.pinned) useDocs.setState((st) => ({ docs: st.docs.map((d) => (d.id === doc.id ? { ...d, pinned: true } : d)) }));
     if (it.forced) useDocs.setState((st) => ({ docs: st.docs.map((d) => (d.id === doc.id ? { ...d, forced: true, dirty: true } : d)) }));
     viewState.set(doc.id, {
       sel: Array.isArray(it.sel) ? [it.sel[0] | 0, it.sel[1] | 0] : [0, 0],

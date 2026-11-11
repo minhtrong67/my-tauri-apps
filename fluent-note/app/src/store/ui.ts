@@ -41,6 +41,10 @@ interface UiState {
   paletteOpen: boolean;
   zen: boolean;
   editRev: number;
+  /** Windows accent colour (#RRGGBB), null when it cannot be read */
+  systemAccent: string | null;
+  /** right-click menu currently shown */
+  contextMenu: { x: number; y: number; entries: import("../components/ui/Popover").MenuEntry[] } | null;
   draftWarned: boolean;
   openSettings: (tab?: SettingsTab) => void;
   patch: (p: Partial<UiState>) => void;
@@ -56,6 +60,8 @@ export const useUi = create<UiState>((set) => ({
   paletteOpen: false,
   zen: false,
   editRev: 0,
+  systemAccent: null,
+  contextMenu: null,
   draftWarned: false,
   openSettings: (tab) => set((s) => ({ settingsOpen: true, settingsTab: tab ?? s.settingsTab })),
   patch: (p) => set(p),

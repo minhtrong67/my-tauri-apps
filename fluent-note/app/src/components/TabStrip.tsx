@@ -1,5 +1,6 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { Plus, X, FileText } from "./ui/icons";
+import { Plus, X, FileText, Pin } from "./ui/icons";
+import { openContextMenu, tabMenu } from "../lib/contextMenus";
 import { IconButton } from "./ui/Button";
 import { useDocs, docName, moveDoc, type Doc } from "../store/docs";
 import { useSettings } from "../store/settings";
@@ -55,8 +56,12 @@ const Tab = memo(function Tab({ doc, active, vertical, dragOver, onDragStart, on
       onPointerDown={(e) => {
         if (e.button === 0 && !(e.target as HTMLElement).closest("button")) activateDoc(doc.id);
       }}
+      onContextMenu={(e) => {
+        activateDoc(doc.id);
+        openContextMenu(e, tabMenu(doc.id));
+      }}
       onAuxClick={(e) => {
-        if (e.button === 1) {
+        if (e.button === 1 && !doc.pinned) {
           e.preventDefault();
           void closeDoc(doc.id);
         }
@@ -69,13 +74,14 @@ const Tab = memo(function Tab({ doc, active, vertical, dragOver, onDragStart, on
         vertical
           ? cn("h-9 w-full rounded pl-3 pr-1.5", active ? "fl-selected text-fg" : "text-fg2 hover:bg-sub-hover active:bg-sub-press")
           : cn(
-              "h-9 min-w-[7rem] max-w-[15rem] rounded-t-lg border border-b-0 pl-3 pr-1.5",
+              cn("h-9 rounded-t-lg border border-b-0 pl-3 pr-1.5", doc.pinned ? "min-w-[4.5rem] max-w-[9rem]" : "min-w-[7rem] max-w-[15rem]"),
               active ? "z-10 border-stroke bg-layer text-fg" : "border-transparent text-fg2 hover:bg-sub-hover active:bg-sub-press",
             ),
         dragOver && "ring-2 ring-inset ring-brand",
       )}
     >
       {vertical && <FileText size={16} strokeWidth={1.6} className="flex-none text-fg2" />}
+      {doc.pinned && <Pin size={14} className="flex-none text-brand" aria-label="pinned" />}
       <span className="min-w-0 flex-1 truncate">{name}</span>
       <span className="relative grid h-6 w-6 flex-none place-items-center">
         {doc.dirty && (
@@ -93,6 +99,7 @@ const Tab = memo(function Tab({ doc, active, vertical, dragOver, onDragStart, on
           className={cn(
             "grid h-6 w-6 place-items-center rounded transition-[opacity,background-color] duration-100 hover:bg-sub-hover active:bg-sub-press",
             doc.dirty || !active ? "opacity-0 group-hover:opacity-100 focus-visible:opacity-100" : "opacity-100",
+            doc.pinned && "hidden",
           )}
         >
           <X size={13} strokeWidth={1.8} />

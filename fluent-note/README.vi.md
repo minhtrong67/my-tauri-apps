@@ -35,6 +35,8 @@ Dự án thuộc bộ sưu tập mã nguồn mở [my-tauri-apps](https://github
 - **Tiện ích soạn thảo** – đi tới dòng, nhân đôi/xoá dòng, chữ hoa/thường, chèn giờ/ngày, thu phóng bằng `Ctrl+Cuộn`, tự xuống dòng, chế độ tập trung, toàn màn hình, in.
 - **Tự động lưu** cho tệp đã có tên, tự khôi phục phiên làm việc và **thư mục lưu mặc định** tuỳ chỉnh.
 - **Cài đặt** – sáng / tối / hệ thống, 10 màu nhấn kiểu Windows và bộ chọn màu tuỳ ý, 14 phông chữ (System UI, Google Sans Flex, Roboto Flex, Roboto, Arial, Inter, Be Vietnam Pro, Open Sans, Noto Sans, Source Sans 3, Lora, JetBrains Mono, Cascadia Code, Consolas), hiển thị số dòng, hiệu ứng cửa sổ (Mica / Acrylic / Mica Alt), cỡ chữ Nhỏ / Vừa / Lớn, tiếng Anh và tiếng Việt, cách cửa sổ mở (ghi nhớ kích thước hoặc luôn phóng to tối đa).
+- **Cảm giác Windows 11** – thanh tiêu đề tích hợp với nút cửa sổ (hoặc thanh gốc), màu nhấn theo Windows, menu chuột phải kiểu Fluent trong vùng soạn thảo và trên tab, ghim tab, điều hướng menu bằng phím Alt, bấm hoặc kéo trên số dòng để chọn dòng.
+- **Phiên làm việc an toàn hơn** – các tab đang mở và bản nháp chưa lưu được lưu thành tệp trong thư mục dữ liệu của app (không bị giới hạn dung lượng trình duyệt). Cài đặt có thể tìm kiếm, xuất và nhập.
 - **Trải nghiệm trau chuốt** – tooltip và dropdown tự thiết kế, toast 4 loại (thông tin, thành công, cảnh báo, lỗi), nút hành động luôn có icon + nhãn + màu, nút lên đầu trang, kéo thả tệp, chỉ chạy một cửa sổ.
 
 ## Cài đặt

@@ -628,8 +628,9 @@ kbd.k { display: inline-block; min-width: 22px; padding: 1px 6px; border-radius:
 .search .i { width: 16px; height: 16px; }
 .home-tools { align-items: center; }
 .home-tools .search, .home-tools .select, .home-tools .segmented { height: 36px; }
-.home-tools .search { max-width: 420px; padding: 0 12px; }
-.home-tools .select { min-width: 176px; padding-left: 12px; }
+.home-tools { flex-wrap: nowrap; }
+.home-tools .search { flex: 1 1 0; min-width: 0; max-width: none; padding: 0 12px; }
+.home-tools .select { flex: none; width: 190px; min-width: 0; padding-left: 12px; }
 .home-tools .segmented { padding: 2px; flex: none; }
 .home-tools .segmented button { height: 30px; }
 .home-tools .segmented.icons button { width: 44px; }
@@ -667,7 +668,7 @@ kbd.k { display: inline-block; min-width: 22px; padding: 1px 6px; border-radius:
 .home-empty h3 { margin: 8px 0 0; color: var(--text); font: 600 18px/24px var(--font); }
 .home-empty p { margin: 0; max-width: 360px; }
 @media (max-width: 760px) { .home-hero { padding: 22px; } .home-hero h2 { font-size: 24px; } }
-@media (max-width: 720px) { .home-tools .search { flex-basis: 100%; max-width: none; } }
+@media (max-width: 720px) { .home-tools .select { width: 150px; } }
 
 /* ---------- Drag & drop ---------- */
 .drag-ghost { position: fixed; z-index: 150; pointer-events: none; width: 132px; border: 1px solid var(--stroke-surface); border-radius: var(--r-card); overflow: hidden; background: var(--flyout); box-shadow: var(--shadow-flyout); opacity: .96; transform: translate(-50%, -60%); }
@@ -717,3 +718,6 @@ html.theming *, html.theming *::before, html.theming *::after { transition: back
 html[data-fx] body, html[data-fx] #home { background-color: transparent; }
 html[data-fx="acrylic"] #left, html[data-fx="acrylic"] #right, html[data-fx="acrylic"] #center, html[data-fx="acrylic"] #timeline { background: color-mix(in srgb, var(--solid) 55%, transparent); }
 html[data-fx] .top-bar { background: transparent; }
+
+/* The project library is a full-screen page: with a translucent window material the editor must not show through behind it. */
+body:has(#home:not([hidden]):not(.leaving)) #app { visibility: hidden; }
