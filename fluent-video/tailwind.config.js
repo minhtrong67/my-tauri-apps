@@ -1,0 +1,91 @@
+const rgb = (n) => `rgb(var(--${n}) / <alpha-value>)`;
+const v = (n) => `var(--${n})`;
+
+/** Fluent Design (WinUI 3) design tokens. Colors are CSS variables so light / dark / accent can switch at runtime. */
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        accent: rgb('accent'),
+        'on-accent': rgb('on-accent'),
+        'accent-text': rgb('accent-text'),
+        'accent-ondark': rgb('accent-ondark'),
+        danger: rgb('danger'),
+        'on-danger': rgb('on-danger'),
+        mark: 'rgb(252 225 0 / <alpha-value>)',
+        base: v('base'),
+        solid: v('solid'),
+        layer: v('layer'),
+        card: v('card'),
+        'card-hover': v('card-hover'),
+        control: v('control'),
+        'control-hover': v('control-hover'),
+        'control-press': v('control-press'),
+        subtle: v('subtle'),
+        'subtle-press': v('subtle-press'),
+        stroke: v('stroke'),
+        'stroke-strong': v('stroke-strong'),
+        'stroke-card': v('stroke-card'),
+        divider: v('divider'),
+        fg: v('fg'),
+        'fg-2': v('fg-2'),
+        'fg-3': v('fg-3'),
+        'fg-dis': v('fg-dis'),
+        flyout: v('flyout'),
+        dialog: v('dialog'),
+        'dialog-footer': v('dialog-footer'),
+        'danger-bg': v('danger-bg'),
+      },
+      fontFamily: { sans: ['var(--app-font)', 'system-ui', 'sans-serif'] },
+      // WinUI type ramp
+      fontSize: {
+        caption: ['12px', { lineHeight: '16px', fontWeight: '400' }],
+        body: ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'body-strong': ['14px', { lineHeight: '20px', fontWeight: '600' }],
+        'body-large': ['18px', { lineHeight: '24px', fontWeight: '400' }],
+        subtitle: ['20px', { lineHeight: '28px', fontWeight: '600' }],
+        title: ['28px', { lineHeight: '36px', fontWeight: '600' }],
+        'title-large': ['40px', { lineHeight: '52px', fontWeight: '600' }],
+        display: ['68px', { lineHeight: '92px', fontWeight: '600' }],
+      },
+      // control corners 4px, overlays (flyouts, dialogs, cards) 8px
+      borderRadius: { none: '0', sm: '2px', DEFAULT: '4px', md: '4px', lg: '8px', xl: '8px', '2xl': '8px', '3xl': '8px', full: '9999px' },
+      boxShadow: {
+        sm: '0 1px 2px rgb(0 0 0 / .14)',
+        DEFAULT: '0 1px 3px rgb(0 0 0 / .14)',
+        md: '0 2px 4px rgb(0 0 0 / .14)',
+        lg: '0 4px 8px rgb(0 0 0 / .14)',
+        xl: '0 8px 16px rgb(0 0 0 / .14), 0 0 1px rgb(0 0 0 / .2)',
+        '2xl': '0 32px 64px rgb(0 0 0 / .28), 0 2px 21px rgb(0 0 0 / .22)',
+      },
+      // WinUI motion: fast-out / slow-in ("decelerate") curve
+      transitionTimingFunction: { fluent: 'cubic-bezier(0, 0, 0, 1)', 'fluent-point': 'cubic-bezier(0.55, 0.55, 0, 1)' },
+      keyframes: {
+        'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
+        'scale-in': { from: { opacity: '0', transform: 'scale(0.96)' }, to: { opacity: '1', transform: 'scale(1)' } },
+        'menu-in': { from: { opacity: '0', transform: 'translateY(-6px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        'slide-up': { from: { opacity: '0', transform: 'translateY(16px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        'slide-left': { from: { transform: 'translateX(32px)', opacity: '0' }, to: { transform: 'translateX(0)', opacity: '1' } },
+        rise: { from: { opacity: '0', transform: 'translateY(8px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        'card-in': { from: { opacity: '0', transform: 'translateY(10px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        pop: { '0%': { transform: 'scale(0.6)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } },
+        shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
+      },
+      animation: {
+        'fade-in': 'fade-in .167s linear',
+        'scale-in': 'scale-in .25s cubic-bezier(0,0,0,1)',
+        'menu-in': 'menu-in .167s cubic-bezier(0,0,0,1)',
+        'slide-up': 'slide-up .25s cubic-bezier(0,0,0,1)',
+        'slide-left': 'slide-left .333s cubic-bezier(0,0,0,1)',
+        rise: 'rise .333s cubic-bezier(0,0,0,1) both',
+        'card-in': 'card-in .333s cubic-bezier(0,0,0,1) both',
+        pop: 'pop .167s cubic-bezier(0,0,0,1) both',
+        shimmer: 'shimmer 1.5s linear infinite',
+      },
+    },
+  },
+  plugins: [],
+};

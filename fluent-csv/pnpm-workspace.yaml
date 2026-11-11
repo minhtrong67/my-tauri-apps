@@ -1,0 +1,8 @@
+# Build scripts pnpm is allowed to run (esbuild and Tailwind's native engine need their postinstall).
+# pnpm 10 reads onlyBuiltDependencies, newer pnpm reads allowBuilds.
+onlyBuiltDependencies:
+  - esbuild
+  - "@tailwindcss/oxide"
+allowBuilds:
+  esbuild: true
+  "@tailwindcss/oxide": true

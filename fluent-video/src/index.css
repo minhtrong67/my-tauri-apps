@@ -1,0 +1,222 @@
+@import './fonts.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   Fluent Design tokens (WinUI 3). Neutrals are translucent so the
+   Mica / Acrylic backdrop of the window shows through the layers.
+   ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+  /* accent family (rgb triplets, rewritten by lib/theme.ts from the chosen accent color) */
+  --accent: 0 103 192;
+  --on-accent: 255 255 255;
+  --accent-text: 0 90 158;
+  --accent-ondark: 96 205 255;
+  --danger: 196 43 28;
+  --on-danger: 255 255 255;
+  --danger-bg: rgb(253 231 233);
+
+  --base: rgb(243 243 243);
+  --solid: rgb(255 255 255);
+  --layer: rgb(255 255 255 / 0.5);
+  --card: rgb(255 255 255 / 0.7);
+  --card-hover: rgb(249 249 249 / 0.8);
+  --control: rgb(255 255 255 / 0.7);
+  --control-hover: rgb(249 249 249 / 0.5);
+  --control-press: rgb(249 249 249 / 0.3);
+  --subtle: rgb(0 0 0 / 0.0373);
+  --subtle-press: rgb(0 0 0 / 0.0241);
+  --stroke: rgb(0 0 0 / 0.0578);
+  --stroke-strong: rgb(0 0 0 / 0.4458);
+  --stroke-card: rgb(0 0 0 / 0.0578);
+  --divider: rgb(0 0 0 / 0.0803);
+  --fg: rgb(0 0 0 / 0.8956);
+  --fg-2: rgb(0 0 0 / 0.6063);
+  --fg-3: rgb(0 0 0 / 0.4458);
+  --fg-dis: rgb(0 0 0 / 0.3614);
+  --flyout: rgb(252 252 252 / 0.9);
+  --dialog: rgb(243 243 243);
+  --dialog-footer: rgb(234 234 234);
+  --input-focus: rgb(255 255 255);
+  --slider-track: rgb(0 0 0 / 0.4458);
+  --slider-thumb: rgb(255 255 255);
+  --tint-rgb: 243 243 243;
+  --tile-tint-alt: 230 230 230;
+
+  --app-font: 'Segoe UI Variable Text', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --danger: 255 153 164;
+  --on-danger: 0 0 0;
+  --danger-bg: rgb(68 39 38);
+
+  --base: rgb(32 32 32);
+  --solid: rgb(39 39 39);
+  --layer: rgb(58 58 58 / 0.3);
+  --card: rgb(255 255 255 / 0.05);
+  --card-hover: rgb(255 255 255 / 0.08);
+  --control: rgb(255 255 255 / 0.0605);
+  --control-hover: rgb(255 255 255 / 0.0837);
+  --control-press: rgb(255 255 255 / 0.0326);
+  --subtle: rgb(255 255 255 / 0.0605);
+  --subtle-press: rgb(255 255 255 / 0.0419);
+  --stroke: rgb(255 255 255 / 0.0698);
+  --stroke-strong: rgb(255 255 255 / 0.5442);
+  --stroke-card: rgb(255 255 255 / 0.0837);
+  --divider: rgb(255 255 255 / 0.0837);
+  --fg: rgb(255 255 255);
+  --fg-2: rgb(255 255 255 / 0.7728);
+  --fg-3: rgb(255 255 255 / 0.5442);
+  --fg-dis: rgb(255 255 255 / 0.3628);
+  --flyout: rgb(44 44 44 / 0.92);
+  --dialog: rgb(32 32 32);
+  --dialog-footer: rgb(26 26 26);
+  --input-focus: rgb(30 30 30);
+  --slider-track: rgb(255 255 255 / 0.5442);
+  --slider-thumb: rgb(69 69 69);
+  --tint-rgb: 32 32 32;
+  --tile-tint-alt: 20 20 20;
+}
+
+/* No backdrop material available (Windows 10 without acrylic, browser preview, ...): opaque layers instead */
+:root[data-solid='true'] {
+  --layer: rgb(249 249 249);
+  --card: rgb(253 253 253);
+  --card-hover: rgb(246 246 246);
+  --control: rgb(253 253 253);
+  --control-hover: rgb(249 249 249);
+  --control-press: rgb(245 245 245);
+}
+:root.dark[data-solid='true'] {
+  --layer: rgb(43 43 43);
+  --card: rgb(50 50 50);
+  --card-hover: rgb(56 56 56);
+  --control: rgb(45 45 45);
+  --control-hover: rgb(50 50 50);
+  --control-press: rgb(39 39 39);
+}
+
+html, body, #root { height: 100%; }
+html { -webkit-text-size-adjust: 100%; text-rendering: optimizeLegibility; background: transparent; }
+body {
+  margin: 0;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  background: transparent; /* the window material (Mica / Acrylic) shows through */
+  color: var(--fg);
+  font-family: var(--app-font);
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+}
+:root[data-solid='true'] body { background: var(--base); }
+img { -webkit-user-drag: none; }
+input, textarea { user-select: text; -webkit-user-select: text; }
+button { -webkit-tap-highlight-color: transparent; font: inherit; }
+::selection { background: rgb(var(--accent) / 0.35); }
+
+/* Fluent scroll bar: thin line that widens on hover */
+::-webkit-scrollbar { width: 14px; height: 14px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--fg-3);
+  border-radius: 999px;
+  border: 5px solid transparent;
+  background-clip: content-box;
+  min-height: 40px;
+  transition: border-width 0.15s;
+}
+::-webkit-scrollbar-thumb:hover { border-width: 4px; background-color: var(--fg-2); background-clip: content-box; }
+video::-webkit-media-controls { display: none !important; }
+
+/* Fluent slider: 4px rail, 20px thumb with an accent core that grows on hover and shrinks on press */
+.fluent-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  cursor: pointer;
+  --pct: 0%;
+  --fill: var(--accent);
+  --rail: var(--slider-track);
+  --thumb: var(--slider-thumb);
+  outline: none;
+}
+.fluent-slider.on-dark { --rail: rgb(255 255 255 / 0.4); --thumb: rgb(255 255 255); --fill: var(--accent-ondark); }
+.fluent-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, rgb(var(--fill)) var(--pct), var(--rail) var(--pct));
+}
+.fluent-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -8px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 4px solid var(--thumb);
+  background: rgb(var(--fill));
+  background-clip: padding-box;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.12), 0 1px 3px rgb(0 0 0 / 0.25);
+  transition: border-width 0.167s cubic-bezier(0, 0, 0, 1);
+}
+.fluent-slider:hover::-webkit-slider-thumb { border-width: 3px; }
+.fluent-slider:active::-webkit-slider-thumb { border-width: 5px; }
+.fluent-slider:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+/* Fluent text box: filled, hairline border, 2px accent line on focus */
+.fluent-input {
+  height: 32px;
+  border-radius: 4px;
+  background: var(--control);
+  border: 1px solid var(--stroke);
+  border-bottom-color: var(--stroke-strong);
+  color: var(--fg);
+  outline: none;
+  transition: background-color 0.167s, border-color 0.167s;
+}
+.fluent-input::placeholder { color: var(--fg-2); }
+.fluent-input:hover { background: var(--control-hover); }
+.fluent-input:focus { background: var(--input-focus); border-bottom-color: rgb(var(--accent)); box-shadow: 0 1px 0 0 rgb(var(--accent)); }
+
+@keyframes ping-out {
+  0% { opacity: 0.95; transform: scale(0.85); }
+  100% { opacity: 0; transform: scale(1.4); }
+}
+
+.focus-ring:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; }
+
+/* Loading skeleton + staggered entrance */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton {
+  background: linear-gradient(100deg, transparent 20%, var(--subtle) 50%, transparent 80%) 0 0 / 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+}
+.scroll-smooth { scroll-behavior: smooth; }
+
+/* Acrylic-like panels for flyouts and dialogs */
+.acrylic { backdrop-filter: blur(30px) saturate(1.25); -webkit-backdrop-filter: blur(30px) saturate(1.25); }
+
+@media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+.eq-bar { transform-origin: bottom; animation: eq 0.9s ease-in-out infinite; }
+
+/* Smooth cross-fade of the palette while the user changes accent color or light/dark mode */
+.theme-anim, .theme-anim *, .theme-anim *::before, .theme-anim *::after {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, fill 0.25s ease !important;
+}

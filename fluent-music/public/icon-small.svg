@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3DB8FF"/>
+      <stop offset="0.5" stop-color="#0A78DC"/>
+      <stop offset="1" stop-color="#5B45CC"/>
+    </linearGradient>
+  </defs>
+  <rect x="24" y="24" width="976" height="976" rx="230" fill="url(#bg)"/>
+  <g fill="#fff">
+    <ellipse cx="338" cy="738" rx="128" ry="100" transform="rotate(-22 338 738)"/>
+    <ellipse cx="704" cy="652" rx="128" ry="100" transform="rotate(-22 704 652)"/>
+    <rect x="396" y="270" width="76" height="466" rx="10"/>
+    <rect x="762" y="200" width="76" height="450" rx="10"/>
+    <path d="M396 236 L838 140 V300 L396 396 Z"/>
+  </g>
+</svg>

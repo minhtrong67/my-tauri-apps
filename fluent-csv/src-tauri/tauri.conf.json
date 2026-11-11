@@ -1,0 +1,79 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Fluent CSV",
+  "version": "4.0.0",
+  "identifier": "com.minhtrong67.fluentcsv",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeDevCommand": "pnpm web:dev",
+    "beforeBuildCommand": "pnpm web:build"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Fluent CSV",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 640,
+        "minHeight": 420,
+        "center": true,
+        "visible": false,
+        "decorations": false,
+        "shadow": true,
+        "dragDropEnabled": true,
+        "transparent": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "publisher": "minhtrong67",
+    "copyright": "Copyright (c) 2026 minhtrong67",
+    "shortDescription": "Fluent CSV: a full featured CSV editor",
+    "longDescription": "Fluent CSV is a fast CSV editor with a native Windows 11 Fluent Design interface and Mica, Acrylic or Mica Alt window materials: edit cells, sort, filter, find and replace, undo and redo, and export to CSV, TSV, JSON, Excel, Markdown or HTML.",
+    "category": "Productivity",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "fileAssociations": [
+      {
+        "ext": [
+          "csv"
+        ],
+        "name": "CSV File",
+        "description": "Comma-separated values",
+        "role": "Editor",
+        "mimeType": "text/csv"
+      },
+      {
+        "ext": [
+          "tsv"
+        ],
+        "name": "TSV File",
+        "description": "Tab-separated values",
+        "role": "Editor",
+        "mimeType": "text/tab-separated-values"
+      }
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "installerIcon": "icons/icon.ico",
+        "headerImage": "icons/installer-header.bmp",
+        "sidebarImage": "icons/installer-sidebar.bmp"
+      }
+    }
+  }
+}

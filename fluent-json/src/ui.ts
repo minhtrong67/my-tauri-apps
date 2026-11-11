@@ -1,0 +1,174 @@
+import { icon, type IconName } from './icons';
+import { t } from './i18n';
+
+export const $ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector<T>(sel)!;
+export const $$ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode = document) => Array.from(root.querySelectorAll<T>(sel));
+export const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+
+export function h(html: string): HTMLElement {
+  const tpl = document.createElement('template');
+  tpl.innerHTML = html.trim();
+  return tpl.content.firstElementChild as HTMLElement;
+}
+
+/* ───────────── snackbar ───────────── */
+export type ToastKind = 'info' | 'success' | 'warning' | 'error';
+const MAX_TOASTS = 3;
+export function toast(msg: string, kind: ToastKind = 'info') {
+  let host = document.getElementById('toasts');
+  if (!host) { host = document.createElement('div'); host.id = 'toasts'; host.setAttribute('role', 'status'); host.setAttribute('aria-live', 'polite'); document.body.appendChild(host); }
+  const ic: IconName = kind === 'error' ? 'error' : kind === 'success' ? 'ok' : kind === 'warning' ? 'warn' : 'info';
+  const ms = kind === 'error' ? 5200 : 2800;
+  // Collapse an identical toast that is already on screen instead of stacking duplicates.
+  for (const old of Array.from(host.children) as HTMLElement[]) if (old.dataset.msg === msg && old.dataset.kind === kind) old.remove();
+  const el = h(`<div class="snackbar ${kind}" data-msg="${esc(msg)}" data-kind="${kind}" style="--life:${ms}ms">${icon(ic)}<span class="sb-msg">${esc(msg)}</span><button class="sb-x" aria-label="×">${icon('close')}</button><i class="sb-bar"></i></div>`);
+  host.appendChild(el);
+  while (host.children.length > MAX_TOASTS) (host.firstElementChild as HTMLElement).remove();
+  let timer = 0;
+  const dismiss = () => {
+    clearTimeout(timer);
+    if (el.classList.contains('out')) return;
+    el.classList.add('out');
+    setTimeout(() => el.remove(), document.documentElement.dataset.motion === 'off' ? 0 : 260);
+  };
+  const arm = (t: number) => { clearTimeout(timer); timer = window.setTimeout(dismiss, t); };
+  arm(ms);
+  el.addEventListener('pointerenter', () => { clearTimeout(timer); el.classList.add('hold'); });
+  el.addEventListener('pointerleave', () => { el.classList.remove('hold'); arm(1400); });
+  el.querySelector('.sb-x')!.addEventListener('click', dismiss);
+}
+
+/* ───────────── dialog ───────────── */
+export interface DialogAction { id: string; label: string; primary?: boolean; danger?: boolean; icon?: IconName; tone?: 'danger' }
+export function dialog(opts: { title: string; body?: string; content?: HTMLElement; icon?: IconName; actions?: DialogAction[]; wide?: boolean }): Promise<string> {
+  return new Promise((resolve) => {
+    const prev = document.activeElement as HTMLElement | null;
+    const given = opts.actions ?? [{ id: 'ok', label: t('act.ok'), primary: true, icon: 'check' as IconName }];
+    // Windows ContentDialog order: the primary button first, then the others.
+    const actions = [...given.filter((a) => a.primary), ...given.filter((a) => !a.primary)];
+    const root = h(`
+      <div class="scrim" role="presentation">
+        <div class="dialog${opts.wide ? ' wide' : ''}" role="dialog" aria-modal="true" aria-label="${esc(opts.title)}">
+          <div class="dialog-main">
+          ${opts.icon ? `<div class="dialog-ic">${icon(opts.icon)}</div>` : ''}
+          <h2>${esc(opts.title)}</h2>
+          <div class="dialog-body">${opts.body ? `<p>${esc(opts.body)}</p>` : ''}</div>
+          </div>
+          <div class="dialog-actions">${actions.map((a) => `<button class="btn${a.primary ? ' accent' : ''}${a.primary && a.danger ? ' danger' : ''}" data-id="${a.id}">${a.icon ? icon(a.icon) : ''}<span>${esc(a.label)}</span></button>`).join('')}</div>
+        </div>
+      </div>`);
+    if (opts.content) root.querySelector('.dialog-body')!.appendChild(opts.content);
+    const close = (id: string) => {
+      root.classList.add('closing');
+      document.removeEventListener('keydown', onKey, true);
+      setTimeout(() => { root.remove(); prev?.focus?.(); }, document.documentElement.dataset.motion === 'off' ? 0 : 160);
+      resolve(id);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); close('cancel'); }
+      else if (e.key === 'Tab') {
+        const f = Array.from(root.querySelectorAll<HTMLElement>('button,input,select,textarea,[tabindex]')).filter((x) => !x.hasAttribute('disabled'));
+        if (!f.length) return;
+        const i = f.indexOf(document.activeElement as HTMLElement);
+        e.preventDefault();
+        f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+    root.addEventListener('pointerdown', (e) => { if (e.target === root) close('cancel'); });
+    root.querySelectorAll<HTMLButtonElement>('.dialog-actions .btn').forEach((b) => b.addEventListener('click', () => close(b.dataset.id!)));
+    document.body.appendChild(root);
+    (root.querySelector('.btn.accent') as HTMLElement | null ?? root.querySelector('.btn') as HTMLElement | null)?.focus();
+  });
+}
+
+/* ───────────── menu ───────────── */
+export interface MenuItem { label?: string; icon?: IconName; onClick?: () => void; divider?: boolean; disabled?: boolean; hint?: string; checked?: boolean; header?: boolean }
+let closeMenu: (() => void) | null = null;
+export function menu(anchor: HTMLElement, items: MenuItem[], align: 'start' | 'end' = 'start', width?: number) {
+  closeMenu?.();
+  const el = h(`<div class="menu" role="menu">${items.map((it, i) =>
+    it.divider ? '<div class="menu-div"></div>'
+      : it.header ? `<div class="menu-head">${esc(it.label ?? '')}</div>`
+      : `<button class="menu-item" role="menuitem" data-i="${i}" ${it.disabled ? 'disabled' : ''} ${it.checked ? 'data-checked="1"' : ''}>${it.icon ? icon(it.icon) : '<span class="ic"></span>'}<span class="menu-label">${esc(it.label ?? '')}</span>${it.checked ? icon('check', 'menu-check') : it.hint ? `<kbd>${esc(it.hint)}</kbd>` : ''}</button>`).join('')}</div>`);
+  if (width) el.style.minWidth = width + 'px';
+  document.body.appendChild(el);
+  const r = anchor.getBoundingClientRect();
+  const mw = el.offsetWidth, mh = el.offsetHeight;
+  let left = align === 'end' ? r.right - mw : r.left;
+  let top = r.bottom + 4;
+  if (top + mh > innerHeight - 8) top = Math.max(8, r.top - mh - 4);
+  left = Math.min(Math.max(8, left), innerWidth - mw - 8);
+  el.style.left = left + 'px'; el.style.top = top + 'px';
+  el.style.transformOrigin = `${align === 'end' ? 'right' : 'left'} ${top > r.top ? 'top' : 'bottom'}`;
+  requestAnimationFrame(() => el.classList.add('open'));
+  const close = () => {
+    el.classList.remove('open');
+    setTimeout(() => el.remove(), 120);
+    document.removeEventListener('pointerdown', onDown, true);
+    document.removeEventListener('keydown', onKey, true);
+    closeMenu = null;
+  };
+  const onDown = (e: Event) => { if (!el.contains(e.target as Node)) close(); };
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') { e.stopPropagation(); close(); anchor.focus(); }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const f = Array.from(el.querySelectorAll<HTMLElement>('.menu-item:not([disabled])'));
+      const i = f.indexOf(document.activeElement as HTMLElement);
+      f[(i + (e.key === 'ArrowDown' ? 1 : -1) + f.length) % f.length]?.focus();
+    }
+  };
+  el.querySelectorAll<HTMLElement>('.menu-item').forEach((b) => b.addEventListener('click', () => { close(); items[+b.dataset.i!].onClick?.(); }));
+  document.addEventListener('pointerdown', onDown, true);
+  document.addEventListener('keydown', onKey, true);
+  closeMenu = close;
+  const first = el.querySelector<HTMLElement>('.menu-item[data-checked]') ?? el.querySelector<HTMLElement>('.menu-item:not([disabled])');
+  first?.focus({ preventScroll: true });
+  first?.scrollIntoView({ block: 'nearest' });
+}
+
+export function copyText(s: string): Promise<boolean> {
+  return navigator.clipboard?.writeText(s).then(() => true, () => fallbackCopy(s)) ?? Promise.resolve(fallbackCopy(s));
+}
+function fallbackCopy(s: string) {
+  const ta = document.createElement('textarea');
+  ta.value = s; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select();
+  let ok = false; try { ok = document.execCommand('copy'); } catch { /* ignore */ }
+  ta.remove(); return ok;
+}
+
+export function basename(p: string) { return p.replace(/^.*[\\/]/, ''); }
+
+/* ───────────── custom select (themed, scrollable) ───────────── */
+export interface SelectOption { value: string; label: string }
+export class Select {
+  readonly el: HTMLButtonElement;
+  value = '';
+  private options: SelectOption[] = [];
+  constructor(host: HTMLElement, private onChange: (v: string) => void) {
+    this.el = document.createElement('button');
+    this.el.type = 'button';
+    this.el.className = 'select-btn';
+    this.el.setAttribute('role', 'combobox');
+    this.el.setAttribute('aria-haspopup', 'listbox');
+    host.replaceChildren(this.el);
+    this.el.addEventListener('click', () => this.open());
+    this.el.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); this.open(); } });
+  }
+  set(options: SelectOption[], value: string, disabled = false) {
+    this.options = options; this.value = options.some((o) => o.value === value) ? value : options[0]?.value ?? '';
+    this.el.disabled = disabled || !options.length;
+    this.paint();
+  }
+  private paint() {
+    const cur = this.options.find((o) => o.value === this.value);
+    this.el.innerHTML = `<span class="select-label">${esc(cur?.label ?? '')}</span>${icon('chevron', 'select-caret')}`;
+  }
+  private open() {
+    this.el.setAttribute('aria-expanded', 'true');
+    menu(this.el, this.options.map((o) => ({ label: o.label, checked: o.value === this.value, onClick: () => { this.value = o.value; this.paint(); this.onChange(o.value); } })), 'start', this.el.offsetWidth);
+    const off = () => this.el.setAttribute('aria-expanded', 'false');
+    setTimeout(() => document.addEventListener('pointerdown', off, { once: true, capture: true }), 0);
+  }
+}

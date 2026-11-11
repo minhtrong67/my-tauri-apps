@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="page" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#CFDFF4"/>
+    </linearGradient>
+    <linearGradient id="fold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#EAF2FC"/>
+      <stop offset="1" stop-color="#A9C6EA"/>
+    </linearGradient>
+    <linearGradient id="tbl" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3FA9F5"/>
+      <stop offset="0.55" stop-color="#1578D8"/>
+      <stop offset="1" stop-color="#0B4FB3"/>
+    </linearGradient>
+    <linearGradient id="hdr" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.16"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="tclip"><rect x="36" y="212" width="344" height="264" rx="44"/></clipPath>
+  </defs>
+
+  <!-- soft shadow under the page -->
+  <path d="M136 56H322L416 150V396A44 44 0 0 1 372 440H136A44 44 0 0 1 92 396V100A44 44 0 0 1 136 56Z" fill="#0B2E5C" opacity="0.07" transform="translate(0 12)"/>
+  <path d="M136 56H322L416 150V396A44 44 0 0 1 372 440H136A44 44 0 0 1 92 396V100A44 44 0 0 1 136 56Z" fill="#0B2E5C" opacity="0.07" transform="translate(0 6)"/>
+
+  <!-- page -->
+  <path d="M136 48H318L408 138V392A44 44 0 0 1 364 436H136A44 44 0 0 1 92 392V92A44 44 0 0 1 136 48Z" fill="url(#page)"/>
+  <path d="M318 48V102A36 36 0 0 0 354 138H408Z" fill="url(#fold)"/>
+  <rect x="140" y="104" width="118" height="20" rx="10" fill="#9DB9DC"/>
+  <rect x="140" y="148" width="168" height="20" rx="10" fill="#B9CFEA"/>
+
+  <!-- table card -->
+  <rect x="36" y="228" width="344" height="264" rx="44" fill="#06265A" opacity="0.10"/>
+  <rect x="36" y="222" width="344" height="264" rx="44" fill="#06265A" opacity="0.10"/>
+  <rect x="36" y="212" width="344" height="264" rx="44" fill="url(#tbl)"/>
+  <g clip-path="url(#tclip)">
+    <rect x="36" y="212" width="344" height="88" fill="url(#hdr)"/>
+    <rect x="36" y="212" width="344" height="130" fill="url(#gloss)"/>
+    <!-- grid lines -->
+    <rect x="144" y="212" width="12" height="264" fill="#FFFFFF" opacity="0.62"/>
+    <rect x="260" y="212" width="12" height="264" fill="#FFFFFF" opacity="0.62"/>
+    <rect x="36" y="296" width="344" height="12" fill="#FFFFFF" opacity="0.62"/>
+    <rect x="36" y="384" width="344" height="12" fill="#FFFFFF" opacity="0.62"/>
+  </g>
+  <rect x="36.75" y="212.75" width="342.5" height="262.5" rx="43.25" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="1.5"/>
+
+  <!-- comma badge -->
+  <circle cx="396" cy="408" r="64" fill="#06265A" opacity="0.12" transform="translate(0 6)"/>
+  <circle cx="396" cy="408" r="64" fill="#FFFFFF"/>
+  <circle cx="396" cy="408" r="64" fill="none" stroke="#1578D8" stroke-opacity="0.18" stroke-width="2"/>
+  <circle cx="398" cy="388" r="22" fill="#1169CC"/>
+  <path d="M420 392C420 420 406 440 380 452L371 436C386 428 394 418 394 400Z" fill="#1169CC"/>
+</svg>

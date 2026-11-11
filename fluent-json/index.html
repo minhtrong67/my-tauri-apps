@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-fs="medium" data-native="0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Fluent JSON</title>
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <script>
+      // Paint the right background before the bundle loads (no white flash in dark mode).
+      try {
+        var s = JSON.parse(localStorage.getItem('fluent-json:settings') || '{}');
+        var dark = s.theme === 'dark' || ((!s.theme || s.theme === 'system') && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+        document.documentElement.style.background = dark ? '#202020' : '#f3f3f3';
+      } catch (e) {}
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <div id="splash" aria-hidden="true"><div class="splash-logo"><img src="/icon.png" alt="" /></div><div class="splash-ring"></div></div>
+
+    <div id="app" data-nav="compact">
+      <nav class="nav" id="nav" aria-label="Navigation"></nav>
+
+      <div class="tabbar">
+        <div class="tabs" id="tabs" role="tablist"></div>
+        <button class="icon-btn sm" id="btn-newtab" data-i18n-title="tab.new"><i data-icon="plus"></i></button>
+      </div>
+
+      <div class="stage">
+        <header class="cmdbar">
+          <button class="cmd" id="btn-new" data-i18n-title="act.new"><i data-icon="filePlus"></i><span data-i18n="act.new"></span></button>
+          <button class="cmd" id="btn-open" data-i18n-title="act.open"><i data-icon="open"></i><span data-i18n="act.open"></span></button>
+          <button class="cmd" id="btn-save" data-i18n-title="act.save"><i data-icon="save"></i><span data-i18n="act.save"></span></button>
+          <span class="sep"></span>
+          <button class="cmd" id="btn-recent" data-i18n-title="act.recent"><i data-icon="history"></i><span data-i18n="act.recent"></span></button>
+          <span class="grow"></span>
+          <button class="icon-btn" id="btn-palette" data-i18n-title="act.palette"><i data-icon="command"></i></button>
+          <button class="icon-btn" id="btn-more" data-i18n-title="act.more"><i data-icon="more"></i></button>
+        </header>
+
+        <main id="views">
+          <section class="view" id="view-editor" data-view="editor">
+            <div class="toolbar" id="toolbar"></div>
+            <div class="panes" id="panes" data-mode="split">
+              <div class="pane pane-code"><div id="editor-host" class="editor-host"></div></div>
+              <div class="splitter" id="splitter" role="separator" tabindex="0"></div>
+              <div class="pane pane-tree" id="pane-tree"></div>
+            </div>
+          </section>
+          <section class="view" id="view-query" data-view="query"></section>
+          <section class="view" id="view-compare" data-view="compare"></section>
+          <section class="view" id="view-convert" data-view="convert"></section>
+          <section class="view" id="view-schema" data-view="schema"></section>
+          <section class="view" id="view-settings" data-view="settings"></section>
+        </main>
+
+        <footer class="statusbar" id="status"></footer>
+      </div>
+    </div>
+
+    <div id="dropzone"><div class="drop-card"><i data-icon="upload"></i><strong data-i18n="drop.title"></strong><span data-i18n="drop.sub"></span></div></div>
+  </body>
+</html>

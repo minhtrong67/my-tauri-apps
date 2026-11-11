@@ -1,0 +1,100 @@
+/* Fluent Design tokens, reset and typography.
+   Accent variables (--accent, --accent-hover, …) are injected at runtime from the chosen accent colour. */
+:root {
+  /* accent defaults (Windows blue) */
+  --accent: #0078d4; --accent-hover: rgba(0, 120, 212, .9); --accent-press: rgba(0, 120, 212, .8); --accent-dis: rgba(0, 0, 0, .22);
+  --accent-text: #005fb8; --accent-sub: rgba(0, 120, 212, .14); --on-accent: #fff;
+
+  /* shape */
+  --r-ctl: 4px; --r-card: 8px; --r-over: 8px;
+  /* motion */
+  --ease: cubic-bezier(.1, .9, .2, 1); --ease-in: cubic-bezier(.7, 0, 1, .5); --ease-std: cubic-bezier(.8, 0, .2, 1);
+  --t-fast: .167s; --t-norm: .25s; --t-slow: .333s;
+  /* type */
+  --font: 'Segoe UI Variable Text', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --mono-default: 'Cascadia Mono', 'Cascadia Code', ui-monospace, Consolas, 'SF Mono', Menlo, 'Liberation Mono', monospace;
+  --mono: var(--mono-default);
+  /* layout */
+  --nav-w: 48px; --tab-h: 40px; --bar-h: 44px; --status-h: 26px;
+  --dur: 1;
+
+  /* ── light theme ── */
+  --solid: #f3f3f3; --solid-2: #eeeeee; --dialog: #f9f9f9; --dialog-foot: #f3f3f3;
+  --text: rgba(0, 0, 0, .894); --text-2: rgba(0, 0, 0, .606); --text-3: rgba(0, 0, 0, .447); --text-dis: rgba(0, 0, 0, .361);
+  --stroke: rgba(0, 0, 0, .058); --stroke-elev: rgba(0, 0, 0, .16); --stroke-strong: rgba(0, 0, 0, .447); --divider: rgba(0, 0, 0, .08);
+  --ctl: rgba(255, 255, 255, .7); --ctl-hover: rgba(249, 249, 249, .5); --ctl-press: rgba(249, 249, 249, .3); --ctl-dis: rgba(249, 249, 249, .3);
+  --sub-hover: rgba(0, 0, 0, .037); --sub-press: rgba(0, 0, 0, .024);
+  --card: rgba(255, 255, 255, .7); --card-solid: #fbfbfb; --layer: rgba(255, 255, 255, .55); --seg-on: #fff;
+  --flyout: rgba(252, 252, 252, .94); --smoke: rgba(0, 0, 0, .32);
+  --sh-card: 0 1px 2px rgba(0, 0, 0, .04); --sh-fly: 0 8px 16px rgba(0, 0, 0, .14); --sh-dlg: 0 32px 64px rgba(0, 0, 0, .28);
+  --success: #0f7b0f; --caution: #9d5d00; --danger: #c42b1c; --info: #005fb8;
+  --json-string: #0f7b0f; --json-number: #b45309; --json-bool: #7a4fb5; --json-null: #c42b1c;
+  --app-bg: var(--solid);
+}
+html[data-theme='dark'] {
+  --solid: #202020; --solid-2: #1c1c1c; --dialog: #2b2b2b; --dialog-foot: #202020;
+  --text: #fff; --text-2: rgba(255, 255, 255, .786); --text-3: rgba(255, 255, 255, .544); --text-dis: rgba(255, 255, 255, .363);
+  --stroke: rgba(255, 255, 255, .07); --stroke-elev: rgba(255, 255, 255, .07); --stroke-strong: rgba(255, 255, 255, .545); --divider: rgba(255, 255, 255, .08);
+  --ctl: rgba(255, 255, 255, .061); --ctl-hover: rgba(255, 255, 255, .084); --ctl-press: rgba(255, 255, 255, .033); --ctl-dis: rgba(255, 255, 255, .043);
+  --sub-hover: rgba(255, 255, 255, .061); --sub-press: rgba(255, 255, 255, .042);
+  --card: rgba(255, 255, 255, .051); --card-solid: #2b2b2b; --layer: rgba(58, 58, 58, .3); --seg-on: rgba(255, 255, 255, .1);
+  --flyout: rgba(44, 44, 44, .94); --smoke: rgba(0, 0, 0, .5);
+  --sh-card: 0 1px 2px rgba(0, 0, 0, .2); --sh-fly: 0 8px 16px rgba(0, 0, 0, .36); --sh-dlg: 0 32px 64px rgba(0, 0, 0, .56);
+  --success: #6ccb5f; --caution: #fce100; --danger: #ff99a4; --info: #60cdff;
+  --json-string: #6ccb5f; --json-number: #ffb86c; --json-bool: #c4a0f5; --json-null: #ff99a4;
+}
+
+/* ── window materials: with a native backdrop the app surface is transparent and the layers sit on top of it ── */
+html[data-native='1'] { --app-bg: transparent; }
+html[data-native='1'][data-material='mica-alt'] { --layer: rgba(255, 255, 255, .72); }
+html[data-native='1'][data-material='acrylic'] { --layer: rgba(255, 255, 255, .38); --card: rgba(255, 255, 255, .62); }
+html[data-native='1'][data-material='mica-alt'][data-theme='dark'] { --layer: rgba(58, 58, 58, .5); }
+html[data-native='1'][data-material='acrylic'][data-theme='dark'] { --layer: rgba(40, 40, 40, .32); --card: rgba(255, 255, 255, .06); }
+/* without a native backdrop (browser, unsupported Windows) fall back to solid layers */
+html:not([data-native='1']) { --layer: #f9f9f9; }
+html:not([data-native='1'])[data-theme='dark'] { --layer: #272727; }
+
+html { font-size: 16px; }
+html[data-fs='small'] { font-size: 14px; }
+html[data-fs='large'] { font-size: 18px; }
+html[data-motion='off'] { --dur: 0; }
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+html[data-native='1'], html[data-native='1'] body { background: transparent; }
+body {
+  font-family: var(--font); font-size: .875rem; line-height: 1.4; color: var(--text); background: var(--app-bg);
+  overflow: hidden; -webkit-font-smoothing: antialiased; user-select: none; -webkit-user-select: none;
+}
+input, textarea, .cm-content, .res-val, .sbs, pre, code { user-select: text; -webkit-user-select: text; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: default; border: 0; background: none; padding: 0; }
+h1, h2, h3, p { margin: 0; }
+:focus-visible { outline: 2px solid var(--text); outline-offset: 1px; border-radius: var(--r-ctl); }
+::selection { background: var(--accent-sub); }
+* { scrollbar-width: thin; scrollbar-color: var(--text-3) transparent; }
+::-webkit-scrollbar { width: 14px; height: 14px; }
+::-webkit-scrollbar-thumb { background: var(--text-3); border-radius: 8px; border: 5px solid transparent; background-clip: padding-box; min-height: 40px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-2); background-clip: padding-box; border-width: 4px; }
+::-webkit-scrollbar-corner { background: transparent; }
+.grow { flex: 1 1 auto; min-width: 0; }
+.ic { width: 1rem; height: 1rem; flex: none; stroke-width: 1.6; }
+.muted { color: var(--text-2); }
+kbd { font: 400 .72rem var(--font); padding: 1px 6px; border-radius: var(--r-ctl); background: var(--ctl); border: 1px solid var(--stroke); border-bottom-color: var(--stroke-elev); color: var(--text-2); margin-left: 3px; }
+@media (prefers-reduced-motion: reduce) { :root { --dur: 0; } *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+html[data-motion='off'] *, html[data-motion='off'] *::before, html[data-motion='off'] *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+
+/* theme-switch reveal (View Transitions) */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
+
+/* splash */
+#splash { position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; justify-items: center; gap: 28px; background: var(--solid); transition: opacity .3s var(--ease), visibility .3s; }
+#splash.done { opacity: 0; visibility: hidden; pointer-events: none; }
+/* Pure-CSS failsafe: even if scripting dies completely, the splash can never keep blocking the window. */
+#splash { animation: splashFailsafe .01s linear 5s forwards; }
+@keyframes splashFailsafe { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+.splash-logo img { width: 72px; height: 72px; animation: logoIn .6s var(--ease) both; }
+.splash-ring { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--divider); border-top-color: var(--accent); animation: spin .9s linear infinite; }
+@keyframes logoIn { from { transform: scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes spin { to { transform: rotate(360deg); } }
