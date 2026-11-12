@@ -5,7 +5,7 @@ import { Icon, IconButton, Logo } from './ui';
 import { useStore } from '../lib/store';
 
 /** Windows 11 caption buttons: 46×32, thin glyphs, red close */
-export function WindowControls({ showMaximize = true, height = 32 }: { showMaximize?: boolean; height?: number }) {
+export function WindowControls({ showMaximize = true, height = 48 }: { showMaximize?: boolean; height?: number }) {
   const [maxed, setMaxed] = useState(false);
   useEffect(() => {
     const win = getCurrentWindow();
@@ -17,9 +17,9 @@ export function WindowControls({ showMaximize = true, height = 32 }: { showMaxim
   }, []);
   const win = getCurrentWindow();
   const cls = 'w-[46px] inline-flex items-center justify-center text-on-surface hover:bg-subtle active:bg-subtle-2 transition-colors duration-fast';
-  const st = { height };
+  const st = { height };  // full bar height: centred with the other buttons
   return (
-    <div className="flex shrink-0 self-start">
+    <div className="flex shrink-0 self-stretch items-stretch">
       <button style={st} className={cls} aria-label={tr('minimize')} onClick={() => win.minimize()}>
         <svg width="10" height="10" viewBox="0 0 10 10"><path d="M0 5h10" stroke="currentColor" strokeWidth="1" /></svg>
       </button>
@@ -54,7 +54,7 @@ export function TitleBar() {
   }, []);
 
   return (
-    <div data-tauri-drag-region className="h-12 shrink-0 flex items-center gap-1 pl-2 select-none">
+    <div data-tauri-drag-region className="h-12 shrink-0 flex items-center gap-1 pl-2 pr-0 select-none">
       <IconButton icon="arrow_back" size="sm" title={tr('back')} disabled={!canBack} onClick={back} />
       <div data-tauri-drag-region className="flex items-center gap-2 pl-1 pr-3 pointer-events-none"><Logo size={18} /><span className="text-body-md hidden sm:block">Fluent Music</span></div>
       <div data-tauri-drag-region className="flex-1 flex justify-center px-2">
@@ -70,7 +70,7 @@ export function TitleBar() {
       </div>
       <IconButton icon="refresh" size="sm" title={tr('refreshLibraryTip')} disabled={syncing} busy={syncing} onClick={() => useStore.getState().syncLibrary(false, true)} />
       <IconButton icon="picture_in_picture_alt" size="sm" title={tr('miniPlayer')} onClick={() => useStore.getState().set({ miniMode: true })} />
-      <div className="w-1" />
+      <div className="w-2" />
       <WindowControls />
     </div>
   );

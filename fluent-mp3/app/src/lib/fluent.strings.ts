@@ -1,0 +1,33 @@
+/** Chuỗi bổ sung cho giao diện Fluent (ghi đè / thêm vào en.base.json, vi.base.json và bảng trong i18n.tsx). */
+export const FLUENT_EN: Record<string, string> = {
+  "on": "On", "off": "Off", "nav.toggle": "Navigation",
+  "set.color": "Accent color", "set.colorDesc": "Buttons, links and highlights follow this color, just like in Windows.",
+  "c.blue": "Blue", "c.navy": "Navy", "c.cyan": "Cyan", "c.teal": "Teal", "c.mint": "Mint", "c.green": "Green", "c.gold": "Gold", "c.orange": "Orange",
+  "c.rust": "Rust", "c.red": "Red", "c.rose": "Rose", "c.orchid": "Orchid", "c.iris": "Iris", "c.lavender": "Lavender", "c.steel": "Steel", "c.stone": "Stone",
+  "font.system": "Segoe UI Variable",
+  "set.material": "Window material", "set.materialDesc": "The translucent backdrop behind the app. Pick the one you like best.",
+  "fx.mica": "Mica", "fx.micaDesc": "Soft and subtle, tinted by your wallpaper.",
+  "fx.acrylic": "Acrylic", "fx.acrylicDesc": "Frosted glass that blurs what is behind the window.",
+  "fx.tabbed": "Mica Alt", "fx.tabbedDesc": "A deeper, more tinted Mica for a calmer look.",
+  "fx.default": "Default",
+  "fx.unsupported": "This material isn't available on your system, so the app uses a solid background instead. Mica and Mica Alt need Windows 11.",
+  "fx.note": "Acrylic can feel slightly slower while you drag the window.",
+  "act.play": "Play", "hi.more": "More options", "hi.today": "Today", "hi.yesterday": "Yesterday",
+  "about.name": "Fluent MP3",
+};
+export const FLUENT_VI: Record<string, string> = {
+  "on": "Bật", "off": "Tắt", "nav.toggle": "Điều hướng",
+  "set.color": "Màu nhấn", "set.colorDesc": "Nút, liên kết và các điểm nhấn đổi theo màu này, giống như trong Windows.",
+  "c.blue": "Xanh dương", "c.navy": "Xanh hải quân", "c.cyan": "Xanh lơ", "c.teal": "Xanh ngọc", "c.mint": "Xanh bạc hà", "c.green": "Xanh lá", "c.gold": "Vàng", "c.orange": "Cam",
+  "c.rust": "Đỏ gạch", "c.red": "Đỏ", "c.rose": "Hồng đậm", "c.orchid": "Tím lan", "c.iris": "Tím iris", "c.lavender": "Tím oải hương", "c.steel": "Xám thép", "c.stone": "Xám đá",
+  "font.system": "Segoe UI Variable",
+  "set.material": "Chất liệu cửa sổ", "set.materialDesc": "Nền trong suốt phía sau ứng dụng. Hãy chọn kiểu bạn thích nhất.",
+  "fx.mica": "Mica", "fx.micaDesc": "Nhẹ nhàng, mang sắc màu từ hình nền của bạn.",
+  "fx.acrylic": "Acrylic", "fx.acrylicDesc": "Kính mờ, làm nhoè những gì nằm sau cửa sổ.",
+  "fx.tabbed": "Mica Alt", "fx.tabbedDesc": "Mica đậm và ngả màu hơn, mang lại cảm giác dịu mắt.",
+  "fx.default": "Mặc định",
+  "fx.unsupported": "Hệ thống của bạn không hỗ trợ chất liệu này nên app dùng nền đặc. Mica và Mica Alt cần Windows 11.",
+  "fx.note": "Acrylic có thể hơi chậm khi kéo cửa sổ.",
+  "act.play": "Phát", "hi.more": "Thêm tuỳ chọn", "hi.today": "Hôm nay", "hi.yesterday": "Hôm qua",
+  "about.name": "Fluent MP3",
+};

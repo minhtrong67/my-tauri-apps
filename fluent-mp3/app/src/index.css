@@ -1,0 +1,101 @@
+@import "./assets/fonts/fonts.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ───────────────────────── Fluent Design 2 · design tokens ───────────────────────── */
+:root {
+  --font: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --acc: 0 95 184; --acc-text: 0 62 146; --on-acc: 255 255 255;
+}
+
+/* Chủ đề sáng — giá trị theo WinUI 3 */
+html[data-scheme="light"] {
+  color-scheme: light;
+  --t1: rgba(0,0,0,.894); --t2: rgba(0,0,0,.606); --t3: rgba(0,0,0,.447); --td: rgba(0,0,0,.361);
+  --ctl: rgba(255,255,255,.7); --ctl-h: rgba(249,249,249,.5); --ctl-p: rgba(249,249,249,.3); --ctl-d: rgba(249,249,249,.3);
+  --hov: rgba(0,0,0,.0373); --prs: rgba(0,0,0,.0241);
+  --stroke: rgba(0,0,0,.0578); --stroke-b: rgba(0,0,0,.1622); --strong: rgba(0,0,0,.4458);
+  --card: rgba(255,255,255,.7); --card-h: rgba(249,249,249,.5); --card-line: rgba(0,0,0,.0578);
+  --line: rgba(0,0,0,.0803); --track: rgba(0,0,0,.1);
+  --solid: #f3f3f3; --flyout: #fcfcfc; --flyout-line: rgba(0,0,0,.08); --smoke: rgba(0,0,0,.3);
+  --layer: rgba(255,255,255,.5);
+  --ok: 15 123 15; --warn: 157 93 0; --err: 196 43 28;
+  --ok-bg: #dff6dd; --warn-bg: #fff4ce; --err-bg: #fde7e9; --info-bg: #f6f6f6;
+}
+/* Chủ đề tối */
+html[data-scheme="dark"] {
+  color-scheme: dark;
+  --t1: #ffffff; --t2: rgba(255,255,255,.786); --t3: rgba(255,255,255,.544); --td: rgba(255,255,255,.363);
+  --ctl: rgba(255,255,255,.0605); --ctl-h: rgba(255,255,255,.0837); --ctl-p: rgba(255,255,255,.0326); --ctl-d: rgba(255,255,255,.0419);
+  --hov: rgba(255,255,255,.0605); --prs: rgba(255,255,255,.0326);
+  --stroke: rgba(255,255,255,.0698); --stroke-b: rgba(255,255,255,.0698); --strong: rgba(255,255,255,.5442);
+  --card: rgba(255,255,255,.0512); --card-h: rgba(255,255,255,.0837); --card-line: rgba(0,0,0,.22);
+  --line: rgba(255,255,255,.0837); --track: rgba(255,255,255,.14);
+  --solid: #202020; --flyout: #2c2c2c; --flyout-line: rgba(117,117,117,.4); --smoke: rgba(0,0,0,.5);
+  --layer: rgba(58,58,58,.3);
+  --ok: 108 203 95; --warn: 252 225 0; --err: 255 153 164;
+  --ok-bg: #393d1b; --warn-bg: #433519; --err-bg: #442726; --info-bg: #323232;
+}
+
+/* Chất liệu cửa sổ (Mica / Acrylic / Mica Alt): lớp nội dung "Layer" nhìn xuyên nhẹ lên nền chất liệu */
+html[data-scheme="light"][data-fxkind="acrylic"] { --layer: rgba(255,255,255,.55); }
+html[data-scheme="dark"][data-fxkind="acrylic"]  { --layer: rgba(40,40,40,.45); }
+html[data-scheme="light"][data-fxkind="tabbed"]  { --layer: rgba(255,255,255,.7); }
+html[data-scheme="dark"][data-fxkind="tabbed"]   { --layer: rgba(255,255,255,.04); }
+/* Không có hiệu ứng (Windows 10 / lỗi hệ thống): dùng nền đặc */
+html[data-fx="off"][data-scheme="light"] { --layer: #f9f9f9; }
+html[data-fx="off"][data-scheme="dark"]  { --layer: #282828; }
+html[data-fx="off"] body { background: var(--solid); }
+html[data-fx="on"] body { background: transparent; }
+
+html, body, #root { height: 100%; }
+body { @apply font-sans text-body text-fg antialiased overflow-hidden select-none; }
+input, textarea, .selectable { @apply select-text; }
+button { @apply cursor-default; }
+a { @apply cursor-pointer; }
+[hidden] { display: none !important; }
+::selection { background: rgb(var(--acc) / .35); }
+
+/* Vòng focus kiểu Fluent: viền đậm 2px bao ngoài */
+:focus-visible { outline: 2px solid var(--t1); outline-offset: 1px; }
+input:focus-visible, textarea:focus-visible { outline: none; }
+
+/* Thanh cuộn mảnh kiểu Windows 11 (nở ra khi rê chuột) */
+::-webkit-scrollbar { width: 14px; height: 14px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--strong); border: 5px solid transparent; background-clip: padding-box; border-radius: 99px; min-height: 40px; }
+::-webkit-scrollbar-thumb:hover { border-width: 4px; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ───────────────────────── chuyển động (Fluent motion) ───────────────────────── */
+@keyframes enter   { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes enter-s { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes fade    { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop     { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes flyout  { from { opacity: 0; transform: translateY(-8px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes slide-r { from { transform: translateX(32px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes toast-in  { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(8px); } }
+@keyframes indicator { from { transform: translateY(-50%) scaleY(0); } to { transform: translateY(-50%) scaleY(1); } }
+@keyframes ring {
+  0%   { stroke-dasharray: 2 100; transform: rotate(0deg); }
+  50%  { stroke-dasharray: 58 100; }
+  100% { stroke-dasharray: 2 100; transform: rotate(720deg); }
+}
+@keyframes indet1 { 0% { left: -35%; right: 100%; } 60% { left: 100%; right: -90%; } 100% { left: 100%; right: -90%; } }
+@keyframes indet2 { 0% { left: -200%; right: 100%; } 60% { left: 107%; right: -8%; } 100% { left: 107%; right: -8%; } }
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+.animate-page   { animation: enter .333s cubic-bezier(0,0,0,1) both; }
+.animate-enter  { animation: enter-s .25s cubic-bezier(0,0,0,1) both; }
+.animate-fade   { animation: fade .167s linear both; }
+.animate-pop    { animation: pop .167s cubic-bezier(0,0,0,1) both; }
+.animate-flyout { animation: flyout .167s cubic-bezier(0,0,0,1) both; transform-origin: top; }
+.animate-slide  { animation: slide-r .25s cubic-bezier(0,0,0,1) both; }
+.animate-indicator { animation: indicator .2s cubic-bezier(0,0,0,1) both; }
+.skeleton { background: linear-gradient(90deg, var(--ctl) 25%, var(--ctl-h) 50%, var(--ctl) 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}

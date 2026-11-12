@@ -29,4 +29,18 @@ describe('computeStats', () => {
     expect(w[6].n).toBe(2); // today: 'a' and the missing song
     expect(w[5].n).toBe(1); // yesterday
   });
+  it('adds streaks, hours, unique songs and the previous-period comparison', () => {
+    const w = computeStats(listens, byId, 'week', NOW);
+    expect(w.uniqueTracks).toBe(1);
+    expect(w.activeDays).toBe(2);
+    expect(w.streak).toBe(2); // today + yesterday
+    expect(w.bestStreak).toBe(2);
+    expect(w.hours.reduce((x, y) => x + y, 0)).toBe(2);
+    expect(w.weekdays.reduce((x, y) => x + y, 0)).toBe(2);
+    expect(w.series).toHaveLength(7);
+    expect(w.series.reduce((x, p) => x + p.n, 0)).toBe(2);
+    expect(w.prevCount).toBe(1); // the song heard 10 days ago falls in the previous 7 days
+    expect(computeStats(listens, byId, 'all', NOW).prevCount).toBeNull();
+    expect(computeStats(listens, byId, 'all', NOW).series).toHaveLength(12);
+  });
 });

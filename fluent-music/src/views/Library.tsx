@@ -1,3 +1,5 @@
+import { ScrollPage } from '../components/ScrollPage';
+import { ScrollRow } from '../components/ScrollRow';
 import { useMemo, useState } from 'react';
 import { tr } from '../lib/i18n';
 import { Collection, EmptyLibrary, PageHeader } from '../components/Collection';
@@ -20,7 +22,7 @@ function Row({ title, children }: { title: string; children: React.ReactNode }) 
   return (
     <section className="mb-8">
       <h2 className="text-title-lg px-8 mb-2">{title}</h2>
-      <div className="flex gap-2 overflow-x-auto px-6 pb-2">{children}</div>
+      <ScrollRow className="px-6 pb-2">{children}</ScrollRow>
     </section>
   );
 }
@@ -103,7 +105,7 @@ export function HomeView() {
   const play = (list: Track[], i: number) => playTracks(list.map((t) => t.id), i);
 
   return (
-    <div className="h-full overflow-y-auto pb-6">
+    <ScrollPage className="pb-6">
       <div className="px-8 pt-8 pb-5">
         <h1 className="text-headline-lg">{greeting()}</h1>
         <p className="text-body-lg text-on-surface-variant">{tr('homeSummary', { songs: all.length, albums: albums.length })}</p>
@@ -121,7 +123,7 @@ export function HomeView() {
       {top.length > 0 && <Row title={tr('mostPlayed')}>{top.map((t, i) => <MediaCard key={t.id} track={t} title={t.title} subtitle={`${t.artist} • ${tr('nPlays', { n: plays[t.id] })}`} onOpen={() => play(top, i)} onPlay={() => play(top, i)} />)}</Row>}
       <Row title={tr('recentlyAdded')}>{newest.map((t, i) => <MediaCard key={t.id} track={t} title={t.title} subtitle={t.artist} onOpen={() => play(newest, i)} onPlay={() => play(newest, i)} />)}</Row>
       <Row title="Album">{albums.slice(0, 14).map((a) => <MediaCard key={a.key} track={a.tracks[0]} title={a.title} subtitle={albumSub(a)} onOpen={() => nav({ name: 'album', key: a.key })} onPlay={() => play(a.tracks, 0)} />)}</Row>
-    </div>
+    </ScrollPage>
   );
 }
 
@@ -221,9 +223,9 @@ export function ArtistView({ name }: { name: string }) {
   const extra = arts.length > 0 && (
     <section className="mb-4">
       <h2 className="text-title-lg px-8 mb-1">Album</h2>
-      <div className="flex gap-2 overflow-x-auto px-6 pb-2">
+      <ScrollRow className="px-6 pb-2">
         {arts.map((al) => <MediaCard key={al.key} track={al.tracks[0]} title={al.title} subtitle={albumSub(al)} onOpen={() => nav({ name: 'album', key: al.key })} onPlay={() => playTracks(al.tracks.map((t) => t.id), 0)} />)}
-      </div>
+      </ScrollRow>
       <h2 className="text-title-lg px-8 mt-4">{tr('songsTitle')}</h2>
     </section>
   );
@@ -342,17 +344,17 @@ export function SearchView() {
   const ids = res.tracks.map((t) => t.id);
   const empty = !res.tracks.length && !res.albums.length && !res.artists.length;
   return (
-    <div className="h-full overflow-y-auto pb-6">
+    <ScrollPage className="pb-6">
       <PageHeader title={tr('resultsFor', { q: q.trim() })} subtitle={empty ? undefined : tr('searchSummary', { songs: res.tracks.length, albums: res.albums.length, artists: res.artists.length })} />
       {empty && <div className="text-center py-20 text-on-surface-variant"><Icon name="search_off" size={48} /><div className="mt-2">{tr('noResults')}</div></div>}
       {res.artists.length > 0 && (
         <section className="mb-6"><h2 className="text-title-lg px-8 mb-2">{tr('navArtists')}</h2>
-          <div className="flex gap-2 overflow-x-auto px-6">{res.artists.slice(0, 12).map((a) => <MediaCard key={a.name} round track={a.tracks[0]} title={a.name} subtitle={tr('nSongs', { n: a.tracks.length })} onOpen={() => nav({ name: 'artist', artist: a.name })} />)}</div>
+          <ScrollRow className="px-6">{res.artists.slice(0, 12).map((a) => <MediaCard key={a.name} round track={a.tracks[0]} title={a.name} subtitle={tr('nSongs', { n: a.tracks.length })} onOpen={() => nav({ name: 'artist', artist: a.name })} />)}</ScrollRow>
         </section>
       )}
       {res.albums.length > 0 && (
         <section className="mb-6"><h2 className="text-title-lg px-8 mb-2">Album</h2>
-          <div className="flex gap-2 overflow-x-auto px-6">{res.albums.slice(0, 12).map((a) => <MediaCard key={a.key} track={a.tracks[0]} title={a.title} subtitle={a.artist} onOpen={() => nav({ name: 'album', key: a.key })} />)}</div>
+          <ScrollRow className="px-6">{res.albums.slice(0, 12).map((a) => <MediaCard key={a.key} track={a.tracks[0]} title={a.title} subtitle={a.artist} onOpen={() => nav({ name: 'album', key: a.key })} />)}</ScrollRow>
         </section>
       )}
       {res.tracks.length > 0 && (
@@ -361,7 +363,7 @@ export function SearchView() {
           {res.tracks.length > 100 && <div className="px-8 py-3 text-body-md text-on-surface-variant">{tr('showingFirst', { n: res.tracks.length })}</div>}
         </section>
       )}
-    </div>
+    </ScrollPage>
   );
 }
 

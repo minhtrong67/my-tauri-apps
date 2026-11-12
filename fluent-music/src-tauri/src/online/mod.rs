@@ -96,16 +96,23 @@ fn resolve_blocking(id: &str, fresh: bool) -> Result<Resolved, String> {
             }
         }
     }
-    let local = match innertube::resolve(id) {
-        Ok(s) => proxy::register(&s.url, vec![("User-Agent".into(), s.ua)])?,
-        Err(e) if e == "E_BAD_ID" => return Err(e),
-        Err(e) => match youtube::find_ytdlp() {
-            // optional last resort (only when the user installed yt-dlp)
-            Some(_) => {
-                let (u, h) = youtube::resolve(id).map_err(|e2| if e2 == "E_NO_YTDLP" { e.clone() } else { e2 })?;
-                proxy::register(&u, h)?
-            }
-            None => return Err(e),
+    // yt-dlp first when it is installed: it follows YouTube's changes (challenges, tokens) and its links keep working for the whole
+    // song. The direct lookup below is the quick path for machines without it, and the fallback when yt-dlp fails.
+    let mut ytdlp_err: Option<String> = None;
+    let mut local: Option<String> = None;
+    if youtube::find_ytdlp().is_some() {
+        match youtube::resolve(id) {
+            Ok((u, h)) => local = Some(proxy::register_for(&u, h, Some(id.to_string()), "yt-dlp")?),
+            Err(e) => ytdlp_err = Some(e),
+        }
+    }
+    let local = match local {
+        Some(l) => l,
+        None => match innertube::resolve(id) {
+            Ok(s) => proxy::register_for(&s.url, vec![("User-Agent".into(), s.ua)], Some(id.to_string()), s.client)?,
+            Err(e) if e == "E_BAD_ID" => return Err(e),
+            // when yt-dlp was tried and failed, its reason is the more useful one
+            Err(e) => return Err(ytdlp_err.unwrap_or(e)),
         },
     };
     if let Ok(mut g) = RESOLVED.lock() {
@@ -119,6 +126,12 @@ fn resolve_blocking(id: &str, fresh: bool) -> Result<Resolved, String> {
 #[tauri::command]
 pub async fn online_resolve(id: String, fresh: Option<bool>) -> Result<Resolved, String> {
     tauri::async_runtime::spawn_blocking(move || resolve_blocking(&id, fresh.unwrap_or(false))).await.map_err(|e| e.to_string())?
+}
+
+/// What the stream proxy last saw from YouTube (shown with a playback error so a failure can be understood)
+#[tauri::command]
+pub fn online_diag() -> String {
+    proxy::last_status()
 }
 
 /// cover bytes for the theme colour (the web view cannot read cross-origin pixels itself)

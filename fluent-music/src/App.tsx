@@ -24,7 +24,7 @@ const NowPlaying = lazy(() => import('./components/NowPlaying').then((m) => ({ d
 const Dialogs = lazy(() => import('./components/Dialogs').then((m) => ({ default: m.Dialogs })));
 import { useCurrent, useStore } from './lib/store';
 import { engine } from './lib/audio';
-import { applyBackdropAttr, applyFont, applyTheme, isDarkMode } from './lib/theme';
+import { applyBackdropAttr, applyFont, applyTheme, isDarkMode, tweenTheme } from './lib/theme';
 import { runThemeTransition } from './lib/themeTransition';
 import { seedFromCover } from './lib/cover';
 import { launchArgs, setBackdrop, setCloseToTray } from './lib/tauri';
@@ -113,13 +113,15 @@ export default function App() {
       runThemeTransition(() => applyTheme(seed, settings.themeMode), animate && themeApplied.current);
       themeApplied.current = true;
     };
+    // the colour of the song: a short blend (no full-window transition, which stutters when it runs on every song)
+    const blend = (seed: string) => { tweenTheme(seed, settings.themeMode); themeApplied.current = true; };
     try { localStorage.setItem('app-theme', JSON.stringify({ seed: settings.seedColor, mode: settings.themeMode, font: settings.fontFamily, backdrop: settings.backdrop })); } catch { /* ignore */ }
     const key = `${settings.seedColor}|${settings.themeMode}`;
     const dynamic = settings.dynamicColor && !!current;
     // with dynamic colour the previous song's colour stays until the new artwork has been read (online artwork takes a moment)
     if (!dynamic || key !== lastKey.current || !themeApplied.current) apply(settings.seedColor, key !== lastKey.current);
     lastKey.current = key;
-    if (dynamic) seedFromCover(current!).then((hex) => alive && (hex ? apply(hex, true) : apply(settings.seedColor, true)));
+    if (dynamic) seedFromCover(current!).then((hex) => alive && blend(hex ?? settings.seedColor));
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const onChange = () => settings.themeMode === 'system' && apply(settings.seedColor);
     mq.addEventListener('change', onChange);
@@ -329,7 +331,7 @@ export default function App() {
         </div>
       )}
       {dragOver && (
-        <div className="fixed inset-0 z-[90] fl-smoke backdrop-blur-sm flex items-center justify-center pointer-events-none animate-fade-in">
+        <div className="fixed inset-0 z-[90] fl-smoke flex items-center justify-center pointer-events-none animate-fade-in">
           <div className="fl-dialog text-on-surface px-12 py-10 text-center border-2 border-dashed !border-primary">
             <Icon name="library_add" size={48} className="mx-auto text-primary-container" />
             <div className="text-title-lg mt-2">{tr('dropTitle')}</div>

@@ -119,7 +119,12 @@ class Engine {
       a.addEventListener('canplay', () => { window.clearTimeout(d.watch); if (d === this.active && !d.resolving) this.onResolving(false); });
       a.addEventListener('error', () => this.handleError(d));
     }
-    window.setInterval(() => this.tick(), 40);
+    // idle: wake up 4x a second (enough for gapless hand-over); while a crossfade runs, 25x a second for a smooth fade
+    const loop = () => {
+      this.tick();
+      window.setTimeout(loop, this.fading ? 40 : 250);
+    };
+    window.setTimeout(loop, 250);
   }
 
   private get active() {

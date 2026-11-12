@@ -140,6 +140,7 @@ html[data-theme='dark'] .diff.add .badge, html[data-theme='dark'] .diff.remove .
 .set-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 16px; min-height: 60px; flex-wrap: wrap; background: var(--card); border: 1px solid var(--stroke); border-radius: var(--r-ctl); box-shadow: var(--sh-card); }
 .set-row.col { flex-direction: column; align-items: stretch; flex-wrap: nowrap; gap: 12px; }
 .set-row.dim { opacity: .6; }
+.set-row.col > .set-head { flex: none; }
 .set-head { display: flex; align-items: center; gap: 16px; min-width: 0; flex: 1 1 220px; }
 .set-head > .ic { width: 1.25rem; height: 1.25rem; color: var(--text); }
 .set-text { display: grid; gap: 1px; min-width: 0; flex: 1 1 200px; } .set-text strong { font-weight: 400; } .set-text span { font-size: .75rem; color: var(--text-2); }
@@ -181,3 +182,14 @@ html[data-theme='dark'] .mat-prev[data-m='acrylic'] i { background: rgba(30, 30,
 .font-card:hover { background: var(--ctl-hover); }
 .font-card[aria-checked='true'] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-sub); }
 .font-card[aria-checked='true'] .fn { color: var(--text); }
+
+/* page entrance: cards rise in one after another */
+.page > * { animation: rise calc(.38s * var(--dur)) var(--ease) both; }
+.page > :nth-child(2) { animation-delay: calc(.03s * var(--dur)); } .page > :nth-child(3) { animation-delay: calc(.06s * var(--dur)); }
+.page > :nth-child(4) { animation-delay: calc(.09s * var(--dur)); } .page > :nth-child(5) { animation-delay: calc(.12s * var(--dur)); }
+.page > :nth-child(n+6) { animation-delay: calc(.15s * var(--dur)); }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.set-section > .set-row { animation: rise calc(.36s * var(--dur)) var(--ease) both; }
+.set-section > .set-row:nth-child(3) { animation-delay: calc(.03s * var(--dur)); } .set-section > .set-row:nth-child(4) { animation-delay: calc(.06s * var(--dur)); }
+.set-section > .set-row:nth-child(n+5) { animation-delay: calc(.09s * var(--dur)); }
+.pane, .tree-scroll, .page { contain: layout style; }

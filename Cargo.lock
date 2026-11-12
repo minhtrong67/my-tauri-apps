@@ -1473,6 +1473,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "fluent-mp3"
+version = "0.5.0"
+dependencies = [
+ "arboard",
+ "futures-util",
+ "regex",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-notification",
+ "tauri-plugin-opener",
+ "tauri-plugin-single-instance",
+ "tokio",
+ "window-vibrancy 0.8.1",
+ "zip",
+]
+
+[[package]]
 name = "fluent-music"
 version = "2.0.0"
 dependencies = [

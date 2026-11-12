@@ -1,6 +1,6 @@
 import type { FluentIcon } from '@fluentui/react-icons';
 import {
-  Add24Regular, Add24Filled, ArrowLeft24Regular, ArrowLeft24Filled, Sparkle24Regular, Sparkle24Filled, Bed24Regular, Bed24Filled,
+  Navigation24Regular, Navigation24Filled, Add24Regular, Add24Filled, ArrowLeft24Regular, ArrowLeft24Filled, Sparkle24Regular, Sparkle24Filled, Bed24Regular, Bed24Filled,
   Bookmark24Regular, Bookmark24Filled, BookmarkAdd24Regular, BookmarkAdd24Filled, Color24Regular, Color24Filled,
   Checkmark24Regular, Checkmark24Filled, ChevronDown24Regular, ChevronDown24Filled, ChevronRight24Regular, ChevronRight24Filled,
   Dismiss24Regular, Dismiss24Filled, ClosedCaption24Regular, ClosedCaption24Filled, ClosedCaptionOff24Regular, ClosedCaptionOff24Filled,
@@ -39,6 +39,7 @@ const d = (r: FluentIcon, f: FluentIcon): Def => ({ r, f });
 
 export const ICONS = {
   add: d(Add24Regular, Add24Filled),
+  menu: d(Navigation24Regular, Navigation24Filled),
   arrow_back: d(ArrowLeft24Regular, ArrowLeft24Filled),
   auto_awesome: d(Sparkle24Regular, Sparkle24Filled),
   bedtime: d(Bed24Regular, Bed24Filled),

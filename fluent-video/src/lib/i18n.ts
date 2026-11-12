@@ -1,6 +1,7 @@
 import type { Lang } from './types';
 
 const en = {
+  collapseSidebar: 'Collapse sidebar', expandSidebar: 'Expand sidebar',
   backdropGroup: 'Window material', backdrop: 'Transparency effect', backdropDesc: 'The translucent material behind the app window (Windows 11)',
   backdropMica: 'Mica', backdropMicaDesc: 'Subtle, tinted by your desktop wallpaper. The default.',
   backdropAcrylic: 'Acrylic', backdropAcrylicDesc: 'Translucent frosted glass that blurs what is behind the window.',
@@ -96,6 +97,7 @@ const en = {
 export type Key = keyof typeof en;
 
 const vi: Record<Key, string> = {
+  collapseSidebar: 'Thu gọn thanh bên', expandSidebar: 'Mở rộng thanh bên',
   backdropGroup: 'Chất liệu cửa sổ', backdrop: 'Hiệu ứng trong suốt', backdropDesc: 'Chất liệu mờ phía sau cửa sổ ứng dụng (Windows 11)',
   backdropMica: 'Mica', backdropMicaDesc: 'Tinh tế, ánh màu từ hình nền của bạn. Mặc định.',
   backdropAcrylic: 'Acrylic', backdropAcrylicDesc: 'Kính mờ trong suốt, làm nhòe nội dung phía sau cửa sổ.',

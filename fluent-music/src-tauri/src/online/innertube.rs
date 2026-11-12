@@ -184,7 +184,7 @@ const CLIENTS: &[Client] = &[
         version: "1.20260115.01.00",
         ua: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
         extra: r#"{}"#,
-        delay_ms: 1200,
+        delay_ms: 700,
         embed: true,
     },
     Client {
@@ -193,7 +193,7 @@ const CLIENTS: &[Client] = &[
         version: "21.02.3",
         ua: "com.google.ios.youtube/21.02.3 (iPhone16,2; U; CPU iOS 18_3_2 like Mac OS X;)",
         extra: r#"{"deviceMake":"Apple","deviceModel":"iPhone16,2","osName":"iPhone","osVersion":"18.3.2.22D82"}"#,
-        delay_ms: 2500,
+        delay_ms: 1400,
         embed: false,
     },
     Client {
@@ -202,7 +202,17 @@ const CLIENTS: &[Client] = &[
         version: "1.65.10",
         ua: "com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip",
         extra: r#"{"deviceMake":"Oculus","deviceModel":"Quest 3","osName":"Android","osVersion":"12L","androidSdkVersion":32}"#,
-        delay_ms: 3500,
+        delay_ms: 2000,
+        embed: false,
+    },
+    // a newer VR build: another token-free identity in case the ones above are rejected
+    Client {
+        name: "ANDROID_VR",
+        id: "28",
+        version: "1.71.26",
+        ua: "com.google.android.apps.youtube.vr.oculus/1.71.26 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip",
+        extra: r#"{"deviceMake":"Oculus","deviceModel":"Quest 3","osName":"Android","osVersion":"12L","androidSdkVersion":32}"#,
+        delay_ms: 2600,
         embed: false,
     },
 ];
@@ -210,6 +220,8 @@ const CLIENTS: &[Client] = &[
 pub struct Stream {
     pub url: String,
     pub ua: String,
+    /// name of the client identity that produced it
+    pub client: &'static str,
     #[allow(dead_code)]
     pub bitrate: u64,
 }
@@ -262,7 +274,7 @@ pub fn pick_audio(v: &Value) -> Option<Stream> {
             best = Some((rank, br, url.to_string(), mime.split(';').next().unwrap_or(mime).to_string()));
         }
     }
-    best.map(|(_, bitrate, url, _)| Stream { url, ua: String::new(), bitrate })
+    best.map(|(_, bitrate, url, _)| Stream { url, ua: String::new(), client: "", bitrate })
 }
 
 fn fetch_stream(c: &Client, id: &str) -> Result<Stream, String> {
@@ -282,47 +294,92 @@ fn fetch_stream(c: &Client, id: &str) -> Result<Stream, String> {
         _ => "E_FORMAT".to_string(),
     })?;
     s.ua = c.ua.to_string();
+    s.client = c.name;
     Ok(s)
 }
 
-/// 2-byte range request: a rejected (403) or dead URL is caught here instead of in the audio element
+/// Reads the first bytes the same way the player will (bounded range, same headers). A rejected URL (403), an empty answer or a
+/// stream that stops at once is caught here instead of in the audio element, and the next client identity is used.
 fn probe(s: &Stream) -> bool {
-    let agent = ureq::AgentBuilder::new().timeout_connect(Duration::from_secs(5)).timeout(Duration::from_secs(8)).build();
-    match agent.get(&s.url).set("User-Agent", &s.ua).set("Range", "bytes=0-1").call() {
+    use std::io::Read;
+    let agent = ureq::AgentBuilder::new().timeout_connect(Duration::from_secs(5)).timeout(Duration::from_secs(10)).build();
+    let Ok(r) = agent.get(&s.url).set("User-Agent", &s.ua).set("Range", "bytes=0-32767").call() else { return false };
+    if r.status() != 200 && r.status() != 206 {
+        return false;
+    }
+    let ctype = r.content_type().to_string();
+    if !(ctype.starts_with("audio/") || ctype.starts_with("video/") || ctype == "application/octet-stream") {
+        return false;
+    }
+    let mut buf = Vec::new();
+    if !(r.into_reader().take(32768).read_to_end(&mut buf).is_ok() && buf.len() >= 1024) {
+        return false;
+    }
+    // some identities hand out URLs whose first bytes work but later ranges are refused: check a range deeper in the file too
+    match agent.get(&s.url).set("User-Agent", &s.ua).set("Range", "bytes=1048576-1049599").call() {
         Ok(r) => r.status() == 200 || r.status() == 206,
+        Err(ureq::Error::Status(416, _)) => true, // shorter than 1 MB: nothing deeper to refuse
         Err(_) => false,
     }
 }
 
 /// Resolves a playable audio stream for a video id. Identities run in parallel (staggered); the first probed URL wins.
+/// the identity that worked last time starts first (no waiting for the ones before it that tend to fail)
+static LAST_GOOD: std::sync::Mutex<Option<&'static str>> = std::sync::Mutex::new(None);
+
 pub fn resolve(id: &str) -> Result<Stream, String> {
+    resolve_skip(id, &[])
+}
+
+/// `skip`: identities whose streams already failed for this video (a refresh must not return the same broken kind of URL)
+pub fn resolve_skip(id: &str, skip: &[String]) -> Result<Stream, String> {
     if !valid_id(id) {
         return Err("E_BAD_ID".into());
     }
+    let good = LAST_GOOD.lock().ok().and_then(|g| *g);
+    let mut order: Vec<Client> = CLIENTS.iter().copied().filter(|c| !skip.iter().any(|s| s == c.name)).collect();
+    if order.is_empty() {
+        order = CLIENTS.to_vec(); // everything failed once: start over rather than give up
+    }
+    order.sort_by_key(|c| if Some(c.name) == good { 0 } else { 1 });
     let (tx, rx) = mpsc::channel::<Result<Stream, String>>();
-    let n = CLIENTS.len();
-    for c in CLIENTS {
+    let n = order.len();
+    for (k, c) in order.into_iter().enumerate() {
         let tx = tx.clone();
         let id = id.to_string();
         std::thread::spawn(move || {
-            if c.delay_ms > 0 {
-                std::thread::sleep(Duration::from_millis(c.delay_ms));
+            // staggered: the first at once, the others only if the first has not answered after a short while
+            let delay = if k == 0 { 0 } else { 350 * k as u64 };
+            if delay > 0 {
+                std::thread::sleep(Duration::from_millis(delay));
             }
-            let r = fetch_stream(c, &id).and_then(|s| if probe(&s) { Ok(s) } else { Err("E_FORBIDDEN".to_string()) });
+            let r = fetch_stream(&c, &id).and_then(|s| if probe(&s) { Ok(s) } else { Err("E_FORBIDDEN".to_string()) });
             let _ = tx.send(r);
         });
     }
     drop(tx);
     let mut last = "E_FORMAT".to_string();
+    // hard budget: waiting half a minute for a song is worse than a clear error
+    let deadline = std::time::Instant::now() + Duration::from_secs(9);
     for _ in 0..n {
-        match rx.recv_timeout(Duration::from_secs(25)) {
-            Ok(Ok(s)) => return Ok(s),
-            Ok(Err(e)) => {
-                // "unavailable" is the same for every identity: stop waiting for the slow ones
-                if e == "E_UNAVAILABLE" {
-                    return Err(e);
+        match rx.recv_timeout(deadline.saturating_duration_since(std::time::Instant::now())) {
+            Ok(Ok(s)) => {
+                if let Ok(mut g) = LAST_GOOD.lock() {
+                    *g = Some(s.client);
                 }
-                if last == "E_FORMAT" || e != "E_FORMAT" {
+                return Ok(s);
+            }
+            Ok(Err(e)) => {
+                // a single identity may be rejected as "unplayable" (outdated version, missing token) while another works:
+                // keep waiting, and report the most specific failure at the end
+                let rank = |c: &str| match c {
+                    "E_FORMAT" => 0,
+                    "E_FORBIDDEN" => 1,
+                    "E_LOGIN" => 2,
+                    "E_UNAVAILABLE" => 3,
+                    _ => 4,
+                };
+                if rank(&e) >= rank(&last) {
                     last = e;
                 }
             }

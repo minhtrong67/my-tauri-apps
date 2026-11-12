@@ -3,6 +3,7 @@ import { engine } from '../audio';
 import { replayGainDb } from './helpers';
 import { tr, setActiveLang, resolveLang } from '../i18n';
 import * as api from '../tauri';
+import { onlineErrorText } from '../online';
 import { defaultSettings, type RepeatMode } from '../types';
 import { pathKey } from './helpers';
 import type { Core } from './core';
@@ -157,7 +158,17 @@ export const createAppSlice = (set: SetFn, get: GetFn, core: Core): AppSlice => 
         if (online || t?.source) {
           // an online song failed (network, YouTube refused...): stop, say why and offer a retry; skipping through the whole queue would only hide it
           set({ isPlaying: false, loadingTrack: false });
-          get().showToast(msg, tr('retry'), () => { const s2 = get(); const cur = s2.queue[s2.index]; if (cur) { forgetStream(cur); s2.playIndex(s2.index); } }, 'error');
+          const retry = () => { const s2 = get(); const cur = s2.queue[s2.index]; if (cur) { forgetStream(cur); s2.playIndex(s2.index); } };
+          // the direct stream did not play: yt-dlp is the dependable fallback, so offer it (when it is not installed yet) with the reason YouTube gave
+          void Promise.all([api.ytdlpStatus().catch(() => null), api.onlineDiag().catch(() => '')]).then(([yt, diag]) => {
+            const detail = diag ? ` (${diag})` : '';
+            if (yt && !yt.installed) {
+              get().showToast(`${msg}${detail}`, tr('ytInstallRetry'), () => {
+                get().showToast(tr('ytInstalling'), undefined, undefined, 'info');
+                void api.ytdlpInstall(true).then(() => { get().showToast(tr('ytInstalled', { v: '' }), undefined, undefined, 'success'); retry(); }).catch((e) => get().showToast(onlineErrorText(e), tr('retry'), retry, 'error'));
+              }, 'error');
+            } else get().showToast(`${msg}${detail}`, tr('retry'), retry, 'error');
+          });
           return;
         }
         get().showToast(tr('cannotPlay', { title: t?.title ?? tr('aSong') }), undefined, undefined, 'error');

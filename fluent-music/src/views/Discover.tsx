@@ -30,6 +30,22 @@ const saveHistory = (list: string[]) => {
 
 const SUGGESTIONS = ['lofi beats', 'chill pop', 'synthwave', 'acoustic covers', 'jazz piano', 'indie rock'];
 
+/** Browse cards: [search, icon, gradient classes] */
+const GENRES: { q: string; label: string; icon: string; tone: string }[] = [
+  { q: 'pop hits', label: 'Pop', icon: 'trophy', tone: 'from-primary/35 to-primary/5' },
+  { q: 'hip hop', label: 'Hip hop', icon: 'headphones', tone: 'from-warning/35 to-warning/5' },
+  { q: 'rock classics', label: 'Rock', icon: 'flame', tone: 'from-error/30 to-error/5' },
+  { q: 'edm dance', label: 'EDM', icon: 'equalizer', tone: 'from-tertiary/35 to-tertiary/5' },
+  { q: 'chill lofi study', label: 'Lo-fi', icon: 'radio', tone: 'from-success/30 to-success/5' },
+  { q: 'jazz', label: 'Jazz', icon: 'music_note', tone: 'from-primary/30 to-warning/10' },
+  { q: 'acoustic', label: 'Acoustic', icon: 'music_note', tone: 'from-success/25 to-primary/10' },
+  { q: 'nhạc việt hot', label: 'V-Pop', icon: 'favorite', tone: 'from-error/25 to-primary/15' },
+  { q: 'k-pop', label: 'K-Pop', icon: 'wand', tone: 'from-tertiary/30 to-error/10' },
+  { q: 'classical piano', label: 'Classical', icon: 'library_music', tone: 'from-on-surface/15 to-primary/10' },
+  { q: 'workout motivation', label: 'Workout', icon: 'activity', tone: 'from-warning/30 to-error/10' },
+  { q: 'sleep relaxing', label: 'Sleep', icon: 'bedtime', tone: 'from-primary/25 to-tertiary/15' },
+];
+
 /* ───────────── a found song ───────────── */
 
 const ResultRow = memo(function ResultRow({ o, index, onPlay }: { o: OnlineTrack; index: number; onPlay: () => void }) {
@@ -140,16 +156,16 @@ export function DiscoverView() {
   return (
     <div className="h-full relative">
       <div ref={scroller} className="h-full overflow-y-auto pb-8">
-        <div className="px-8 pt-8">
+        <div className="px-8 pt-8 max-w-[1400px] mx-auto">
           <h1 className="text-headline-lg">{tr('navDiscover')}</h1>
           <p className="text-body-lg text-on-surface-variant">{tr('discoverSub')}</p>
         </div>
 
         {/* search bar */}
-        <div className="px-8 pt-5 sticky top-0 z-20 pb-3 bg-surface-container-low/90 backdrop-blur-md">
+        <div><div className="px-8 pt-5 pb-3 max-w-[1400px] mx-auto">
           <form
             onSubmit={(e) => { e.preventDefault(); run(input); }} role="search"
-            className="h-11 rounded-lg bg-ctl border border-card-stroke flex items-center gap-2 pl-4 pr-1.5 focus-within:border-b-2 focus-within:border-b-primary focus-within:bg-surface-container-lowest transition-colors max-w-3xl"
+            className="h-11 rounded-lg bg-ctl border border-card-stroke flex items-center gap-2 pl-4 pr-1.5 focus-within:border-b-2 focus-within:border-b-primary focus-within:bg-surface-container-lowest transition-colors"
           >
             {loading ? <LoadingIndicator size={28} contained={false} /> : <Icon name="search" className="text-on-surface-variant" />}
             <input
@@ -159,11 +175,19 @@ export function DiscoverView() {
             {input && <IconButton icon="close" title={tr('clear')} onClick={clear} />}
             <Button icon="search" onClick={() => run(input)} disabled={!input.trim() || loading}>{tr('searchBtn')}</Button>
           </form>
-        </div>
+        </div></div>
 
         {/* before the first search */}
         {!results && !loading && (
-          <div className="px-8 pt-4 max-w-3xl animate-fade-in">
+          <div className="px-8 pt-4 max-w-[1400px] mx-auto animate-fade-in">
+            <section className="rounded-lg bg-primary-container text-on-surface border border-card-stroke p-6 md:p-8 flex items-start gap-5 mb-8">
+              <span className="w-14 h-14 rounded-lg bg-primary text-on-primary flex items-center justify-center shrink-0"><Icon name="explore" size={28} /></span>
+              <div className="min-w-0">
+                <div className="text-title-lg">{tr('discoverHeroTitle')}</div>
+                <p className="text-body-md opacity-85 mt-1 max-w-2xl">{tr('discoverHeroText')}</p>
+                <div className="flex flex-wrap gap-2 mt-4">{SUGGESTIONS.map((x) => <button key={x} onClick={() => { setInput(x); run(x); }} className="h-8 px-3.5 rounded-lg bg-ctl border border-card-stroke hover:bg-ctl-hover text-label-lg transition-colors focus-ring">{x}</button>)}</div>
+              </div>
+            </section>
             {history.length > 0 && (
               <section className="mb-8">
                 <div className="flex items-center justify-between mb-2">
@@ -173,23 +197,25 @@ export function DiscoverView() {
                 <div className="flex flex-wrap gap-2">{history.map((h) => <Chip key={h} icon="history" onClick={() => { setInput(h); run(h); }}>{h}</Chip>)}</div>
               </section>
             )}
-            <section className="rounded-2xl bg-primary-container text-on-surface border border-card-stroke p-6 flex items-start gap-5 relative overflow-hidden">
-              
-              <span className="w-14 h-14 rounded-3xl bg-primary text-on-primary flex items-center justify-center shrink-0"><Icon name="explore" size={28} /></span>
-              <div className="relative min-w-0">
-                <div className="text-title-lg">{tr('discoverHeroTitle')}</div>
-                <p className="text-body-md opacity-85 mt-1">{tr('discoverHeroText')}</p>
-                <div className="flex flex-wrap gap-2 mt-4">{SUGGESTIONS.map((s) => <button key={s} onClick={() => { setInput(s); run(s); }} className="h-8 px-3.5 rounded-lg bg-ctl border border-card-stroke hover:bg-ctl-hover text-label-lg transition-colors focus-ring">{s}</button>)}</div>
+            <section>
+              <h2 className="text-title-md mb-3">{tr('discoverBrowse')}</h2>
+              <div className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
+                {GENRES.map((g) => (
+                  <button key={g.q} onClick={() => { setInput(g.q); run(g.q); }} className={`group relative h-24 rounded-lg overflow-hidden border border-card-stroke bg-gradient-to-br ${g.tone} text-left p-4 hover:border-primary/60 transition-colors focus-ring`}>
+                    <span className="text-title-md">{g.label}</span>
+                    <Icon name={g.icon} size={44} className="absolute -right-1 -bottom-1 opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-slow ease-decel" />
+                  </button>
+                ))}
               </div>
             </section>
           </div>
         )}
 
-        {loading && !results && <SkeletonRows />}
+        {loading && !results && <div className="max-w-[1400px] mx-auto"><SkeletonRows /></div>}
 
         {/* results */}
         {results && (
-          <div className="animate-fade-in">
+          <div className="animate-fade-in max-w-[1400px] mx-auto">
             <div className="px-8 pb-2 flex flex-wrap items-center gap-2">
               <span className="text-title-sm text-on-surface-variant">{tr('onlineResultsCount', { n: shown.length })}</span>
               <div className="ml-auto flex gap-2">
@@ -199,7 +225,7 @@ export function DiscoverView() {
             </div>
 
             {loading && <div className="px-8 py-2 text-body-sm text-on-surface-variant">{tr('onlineSearching')}</div>}
-            {shown.map((o, i) => <ResultRow key={`${o.source}:${o.id}`} o={o} index={i} onPlay={() => play(i)} />)}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-x-4 px-6">{shown.map((o, i) => <ResultRow key={`${o.source}:${o.id}`} o={o} index={i} onPlay={() => play(i)} />)}</div>
             {!shown.length && !loading && (
               <div className="text-center py-16 text-on-surface-variant animate-fade-in"><Icon name="search_off" size={48} /><div className="mt-2">{tr('noResults')}</div><div className="text-body-sm mt-1">{tr('onlineNoResultsHint')}</div></div>
             )}

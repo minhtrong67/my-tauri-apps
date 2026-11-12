@@ -227,6 +227,7 @@ export function isDarkMode(mode: ThemeMode) {
 }
 
 export function applyTheme(seedHex: string, mode: ThemeMode) {
+  cancelAnimationFrame(tweenRaf);
   const dark = isDarkMode(mode);
   const tokens = buildTokens(seedHex, dark);
   const root = document.documentElement;
@@ -235,6 +236,40 @@ export function applyTheme(seedHex: string, mode: ThemeMode) {
   root.style.colorScheme = dark ? 'dark' : 'light';
   return dark;
 }
+
+let tweenRaf = 0;
+const parseTrip = (v: string) => v.trim().split(/\s+/).map(Number);
+
+/** Fades to a new accent over `ms` (used when the colour follows the song): only the tokens that differ are touched, in one
+ *  rAF loop, so the change is a smooth blend instead of a jump. Falls back to a plain apply when the mode changes. */
+export function tweenTheme(seedHex: string, mode: ThemeMode, ms = 450) {
+  cancelAnimationFrame(tweenRaf);
+  const root = document.documentElement;
+  const dark = isDarkMode(mode);
+  if (root.classList.contains('dark') !== dark || prefersReduced()) return applyTheme(seedHex, mode);
+  const target = buildTokens(seedHex, dark);
+  const from: Record<string, number[]> = {};
+  const to: Record<string, number[]> = {};
+  for (const [k, v] of Object.entries(target)) {
+    const cur = root.style.getPropertyValue(`--fl-${k}`);
+    if (!cur || cur.trim() === v) continue;
+    from[k] = parseTrip(cur);
+    to[k] = parseTrip(v);
+  }
+  const keys = Object.keys(to);
+  if (!keys.length) return dark;
+  const t0 = performance.now();
+  const step = (now: number) => {
+    const t = Math.min(1, (now - t0) / ms);
+    const e = 1 - Math.pow(1 - t, 3); // ease-out cubic
+    for (const k of keys) root.style.setProperty(`--fl-${k}`, from[k].map((a, i) => Math.round(a + (to[k][i] - a) * e)).join(' '));
+    if (t < 1) tweenRaf = requestAnimationFrame(step);
+  };
+  tweenRaf = requestAnimationFrame(step);
+  return dark;
+}
+
+const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function applyFont(id: string) {
   document.documentElement.style.setProperty('--app-font', fontStack(id));

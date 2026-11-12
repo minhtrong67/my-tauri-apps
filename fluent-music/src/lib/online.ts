@@ -1,4 +1,4 @@
-import { onlineResolve, type OnlineTrack } from './tauri';
+import { onlineResolve, ytdlpInstall, ytdlpStatus, type OnlineTrack } from './tauri';
 import { tr, type Key } from './i18n';
 import type { OnlineSource, Track } from './types';
 
@@ -41,6 +41,7 @@ const inflight = new Map<string, Promise<string>>();
 
 /** Local stream URL for an online song (cached for a while; `fresh` skips the cache after a playback error) */
 export function resolveStream(path: string, fresh = false): Promise<string> {
+  prepareYoutube();
   const p = parseOnlinePath(path);
   if (!p) return Promise.reject(new Error('E_BAD_ID'));
   const hit = cache.get(path);
@@ -55,6 +56,25 @@ export function resolveStream(path: string, fresh = false): Promise<string> {
     .finally(() => inflight.delete(path));
   inflight.set(path, job);
   return job;
+}
+
+/** First online use: prepare yt-dlp (+ its small JavaScript runtime) once in the background. Direct YouTube links alone are refused
+ *  more and more often (403), yt-dlp is what keeps playback dependable. A failed attempt is not repeated automatically. */
+let prepared = false;
+export function prepareYoutube() {
+  if (prepared) return;
+  prepared = true;
+  try { if (localStorage.getItem('fm-yt-auto') === '1') return; } catch { /* storage can be unavailable */ }
+  void ytdlpStatus().then((st) => {
+    if (st.installed && st.runtime) return;
+    try { localStorage.setItem('fm-yt-auto', '1'); } catch { /* ignore */ }
+    // loaded on demand: the store itself imports this file
+    return import('./store').then(({ useStore }) => {
+      const toast = useStore.getState().showToast;
+      toast(tr('ytPreparing'), undefined, undefined, 'info');
+      return ytdlpInstall(true).then(() => toast(tr('ytPrepared'), undefined, undefined, 'success'));
+    });
+  }).catch(() => undefined);
 }
 
 export const forgetStream = (path: string) => cache.delete(path);

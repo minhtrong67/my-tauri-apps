@@ -1,3 +1,4 @@
+import { ScrollTop } from './ScrollTop';
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 
 /** Lưới ảo hoá: số cột tự co giãn theo chiều rộng, mỗi ô vuông cộng thêm phần chữ bên dưới (extraRowH) */
@@ -49,10 +50,13 @@ export function VirtualGrid<T>({
   }
 
   return (
-    <div ref={ref} className={`overflow-y-auto overflow-x-hidden ${className}`} onScroll={(e) => setScrollTop((e.target as HTMLDivElement).scrollTop)}>
+    <div className={`relative min-h-0 ${className}`}>
+    <div ref={ref} className="h-full overflow-y-auto overflow-x-hidden" onScroll={(e) => setScrollTop((e.target as HTMLDivElement).scrollTop)}>
       {header && <div ref={headRef}>{header}</div>}
       <div style={{ height: rows * rowH, position: 'relative' }}>{out}</div>
       {footer}
+    </div>
+    <ScrollTop target={ref} />
     </div>
   );
 }

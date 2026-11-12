@@ -66,6 +66,7 @@ export interface Settings {
   themeMode: ThemeMode;
   accentColor: string;
   backdrop: Backdrop;
+  sidebarCollapsed: boolean;
   fontFamily: string;
   resume: boolean;
   autoQueue: boolean;
@@ -89,6 +90,7 @@ export const defaultSettings: Settings = {
   themeMode: 'system',
   accentColor: '#0078D4',
   backdrop: 'mica',
+  sidebarCollapsed: false,
   fontFamily: 'system',
   resume: true,
   autoQueue: true,

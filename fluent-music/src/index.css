@@ -77,7 +77,7 @@
   --fl-layer: #f9f9f9;
   --fl-layer-stroke: rgba(0, 0, 0, 0.0578);
   --fl-bar: #f9f9f9;
-  --fl-flyout: rgba(252, 252, 252, 0.88);
+  --fl-flyout: rgba(252, 252, 252, 0.97);
   --fl-flyout-stroke: rgba(0, 0, 0, 0.1);
   --fl-smoke: rgba(0, 0, 0, 0.3);
   --fl-shadow-card: 0 2px 4px rgba(0, 0, 0, 0.04);
@@ -105,7 +105,7 @@
   --fl-layer: #282828;
   --fl-layer-stroke: rgba(0, 0, 0, 0.1);
   --fl-bar: #2b2b2b;
-  --fl-flyout: rgba(44, 44, 44, 0.9);
+  --fl-flyout: rgba(44, 44, 44, 0.97);
   --fl-flyout-stroke: rgba(0, 0, 0, 0.4);
   --fl-smoke: rgba(0, 0, 0, 0.45);
   --fl-shadow-card: 0 2px 4px rgba(0, 0, 0, 0.12);
@@ -187,8 +187,6 @@ input:focus-visible { outline: none; }
   border: 1px solid var(--fl-flyout-stroke);
   border-radius: 8px;
   box-shadow: var(--fl-shadow-flyout);
-  -webkit-backdrop-filter: blur(30px) saturate(1.25);
-  backdrop-filter: blur(30px) saturate(1.25);
 }
 .fl-dialog {
   background: rgb(var(--fl-surface-bright));
@@ -327,7 +325,6 @@ input:focus-visible { outline: none; }
   padding: 4px 8px; border-radius: 4px; background: var(--fl-flyout); border: 1px solid var(--fl-flyout-stroke); box-shadow: var(--fl-shadow-flyout);
   font-size: 12px; line-height: 16px; white-space: nowrap; font-variant-numeric: tabular-nums;
   transition: opacity var(--dur-normal) var(--ease-decel);
-  -webkit-backdrop-filter: blur(30px); backdrop-filter: blur(30px);
 }
 .slider-bubble.on { opacity: 1; }
 
@@ -425,7 +422,6 @@ html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
 /* ═══════════ InfoBar / toast ═══════════ */
 .toast {
   background: var(--fl-flyout); color: rgb(var(--fl-on-surface)); border: 1px solid var(--fl-flyout-stroke); border-radius: 8px; box-shadow: var(--fl-shadow-flyout);
-  -webkit-backdrop-filter: blur(30px) saturate(1.25); backdrop-filter: blur(30px) saturate(1.25);
 }
 .toast::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: rgb(var(--ta)); }
 .toast-info { --ta: var(--fl-primary); }
@@ -440,3 +436,10 @@ html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
 
 /* tooltip-ish pill for card badges etc. */
 .fl-badge { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 4px; font-size: 12px; line-height: 16px; background: var(--fl-subtle-hover); color: rgb(var(--fl-on-surface-variant)); }
+
+/* Now Playing backdrop: a soft accent glow on an opaque base (no full-screen blur) */
+.np-glow {
+  background:
+    radial-gradient(ellipse 70% 60% at 22% 30%, rgb(var(--fl-primary) / 0.22), transparent 70%),
+    radial-gradient(ellipse 60% 60% at 85% 85%, rgb(var(--fl-primary) / 0.12), transparent 70%);
+}

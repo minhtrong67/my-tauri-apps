@@ -19,6 +19,10 @@ struct Entry {
     url: String,
     headers: Vec<(String, String)>,
     at: Instant,
+    /// YouTube video id: lets the proxy fetch a fresh stream by itself when YouTube starts refusing the current one
+    id: Option<String>,
+    /// client identities whose streams already failed for this video
+    skip: Vec<String>,
 }
 
 fn registry() -> &'static Mutex<HashMap<String, Entry>> {
@@ -27,6 +31,17 @@ fn registry() -> &'static Mutex<HashMap<String, Entry>> {
 }
 
 static PORT: Mutex<Option<u16>> = Mutex::new(None);
+static LAST: Mutex<String> = Mutex::new(String::new());
+
+fn note(msg: String) {
+    if let Ok(mut g) = LAST.lock() {
+        *g = msg;
+    }
+}
+
+pub fn last_status() -> String {
+    LAST.lock().map(|g| g.clone()).unwrap_or_default()
+}
 
 fn upstream_agent() -> &'static ureq::Agent {
     static A: OnceLock<ureq::Agent> = OnceLock::new();
@@ -52,6 +67,11 @@ fn token() -> String {
 
 /// Registers an upstream URL and returns the local URL the audio element should use
 pub fn register(url: &str, headers: Vec<(String, String)>) -> Result<String, String> {
+    register_for(url, headers, None, "")
+}
+
+/// Like `register`, for a YouTube stream: remembers the video id so a refused stream can be replaced transparently
+pub fn register_for(url: &str, headers: Vec<(String, String)>, id: Option<String>, client: &str) -> Result<String, String> {
     if !url.starts_with("https://") && !url.starts_with("http://") {
         return Err("E_BAD_URL".into());
     }
@@ -65,7 +85,7 @@ pub fn register(url: &str, headers: Vec<(String, String)>) -> Result<String, Str
             reg.remove(&oldest);
         }
     }
-    reg.insert(tok.clone(), Entry { url: url.to_string(), headers, at: now });
+    reg.insert(tok.clone(), Entry { url: url.to_string(), headers, at: now, id, skip: if client.is_empty() { vec![] } else { vec![client.to_string()] } });
     Ok(format!("http://127.0.0.1:{port}/s/{tok}"))
 }
 
@@ -127,6 +147,57 @@ pub fn clean_range(r: &str) -> Option<String> {
     (ok(a) && ok(b) && !(a.is_empty() && b.is_empty())).then(|| format!("bytes={a}-{b}"))
 }
 
+static REFRESH: Mutex<()> = Mutex::new(());
+
+/// Replaces the stream of entry `tok` after `failed` was refused. Concurrent requests share one refresh.
+fn refresh(tok: &str, failed: &str) -> Option<(String, Vec<(String, String)>)> {
+    let _g = REFRESH.lock().ok()?;
+    let (cur, id, skip) = {
+        let r = registry().lock().ok()?;
+        let e = r.get(tok)?;
+        (e.url.clone(), e.id.clone()?, e.skip.clone())
+    };
+    if cur != failed {
+        // another request already refreshed it
+        return registry().lock().ok().and_then(|r| r.get(tok).map(|e| (e.url.clone(), e.headers.clone())));
+    }
+    let viaytdlp = || super::youtube::find_ytdlp().and_then(|_| super::youtube::resolve(&id).ok()).map(|(u, h)| (u, h, "yt-dlp".to_string()));
+    let viainner = || super::innertube::resolve_skip(&id, &skip).ok().map(|s| (s.url, vec![("User-Agent".to_string(), s.ua)], s.client.to_string()));
+    // a yt-dlp stream that failed is replaced by a direct one and the other way round
+    let (url, headers, client) = if skip.iter().any(|c| c == "yt-dlp") { viainner().or_else(viaytdlp)? } else { viaytdlp().or_else(viainner)? };
+    let mut r = registry().lock().ok()?;
+    let e = r.get_mut(tok)?;
+    e.url = url.clone();
+    e.headers = headers.clone();
+    if !client.is_empty() && !e.skip.contains(&client) {
+        // the new stream may fail too: its identity is skipped next time
+        e.skip.push(client);
+    }
+    note("refreshed stream".into());
+    Some((url, headers))
+}
+
+const CHUNK: u64 = 8 * 1024 * 1024;
+
+fn is_googlevideo(url: &str) -> bool {
+    url.strip_prefix("https://").and_then(|r| r.split('/').next()).is_some_and(|h| h.ends_with(".googlevideo.com") || h.ends_with(".youtube.com"))
+}
+
+/// "bytes=a-b" limited to CHUNK bytes; a missing or open-ended range becomes the first/next chunk
+pub fn chunk_range(r: Option<&str>) -> String {
+    let (a, b) = r
+        .and_then(|r| r.strip_prefix("bytes="))
+        .and_then(|r| r.split_once('-'))
+        .map(|(a, b)| (a.parse::<u64>().ok(), b.parse::<u64>().ok()))
+        .unwrap_or((Some(0), None));
+    match (a, b) {
+        (Some(a), Some(b)) => format!("bytes={a}-{}", b.min(a + CHUNK - 1)),
+        (Some(a), None) => format!("bytes={a}-{}", a + CHUNK - 1),
+        (None, Some(n)) => format!("bytes=-{n}"), // suffix range: passed on
+        (None, None) => format!("bytes=0-{}", CHUNK - 1),
+    }
+}
+
 /// Only our own address may be used as Host (blocks DNS-rebinding tricks from web pages)
 fn host_ok(host: Option<&str>) -> bool {
     match host {
@@ -176,21 +247,49 @@ fn handle(mut s: TcpStream) -> std::io::Result<()> {
     }
     let tok = req.path.strip_prefix("/s/").unwrap_or("");
     let found = registry().lock().ok().and_then(|r| r.get(tok).map(|e| (e.url.clone(), e.headers.clone())));
-    let Some((url, headers)) = found else { return status_only(&mut s, 404, "Not Found") };
+    let Some((mut url, mut headers)) = found else { return status_only(&mut s, 404, "Not Found") };
+    let range = req.header("range").and_then(clean_range);
 
-    let mut up = upstream_agent().get(&url);
-    for (k, v) in &headers {
-        up = up.set(k, v);
-    }
-    if let Some(r) = req.header("range").and_then(clean_range) {
-        up = up.set("Range", &r);
-    }
-    let resp = match up.call() {
-        Ok(r) => r,
-        Err(ureq::Error::Status(_, r)) => r,
-        Err(_) => return status_only(&mut s, 502, "Bad Gateway"),
+    // up to three tries: when YouTube refuses the stream (403 / 404 / 410) or the connection breaks, a fresh stream from another
+    // client identity (or yt-dlp) replaces it and the very same range is asked again, so playback just continues
+    let mut tries = 0;
+    let resp = loop {
+        let mut up = upstream_agent().get(&url);
+        for (k, v) in &headers {
+            up = up.set(k, v);
+        }
+        if is_googlevideo(&url) {
+            // googlevideo answers open-ended ranges with 403 / throttles them for several client identities: ask in bounded chunks
+            up = up.set("Range", &chunk_range(range.as_deref()));
+        } else if let Some(r) = &range {
+            up = up.set("Range", r);
+        }
+        let (retry, r) = match up.call() {
+            Ok(r) => (false, Some(r)),
+            Err(ureq::Error::Status(c, r)) => (matches!(c, 403 | 404 | 410 | 500..=599), Some(r)),
+            Err(e) => {
+                note(format!("proxy: {e}"));
+                (true, None)
+            }
+        };
+        if let Some(r) = &r {
+            note(format!("upstream {} {}", r.status(), r.header("Content-Type").unwrap_or("")));
+        }
+        if retry && tries < 2 {
+            if let Some((u, h)) = refresh(tok, &url) {
+                tries += 1;
+                url = u;
+                headers = h;
+                continue;
+            }
+        }
+        match r {
+            Some(r) => break r,
+            None => return status_only(&mut s, 502, "Bad Gateway"),
+        }
     };
     let code = resp.status();
+    note(format!("upstream {code} {}", resp.header("Content-Type").unwrap_or("")));
     let mut out = format!("HTTP/1.1 {} {}\r\n{CORS}Accept-Ranges: bytes\r\n", code, resp.status_text());
     for name in ["Content-Type", "Content-Length", "Content-Range"] {
         if let Some(v) = resp.header(name) {
@@ -231,6 +330,17 @@ mod tests {
         assert_eq!(clean_range("bytes=-"), None);
         assert_eq!(clean_range("items=1-2"), None);
         assert_eq!(clean_range("bytes=1\r\nX: y-"), None);
+    }
+
+    #[test]
+    fn chunks_are_bounded() {
+        assert_eq!(chunk_range(None), "bytes=0-8388607");
+        assert_eq!(chunk_range(Some("bytes=100-")), "bytes=100-8388707");
+        assert_eq!(chunk_range(Some("bytes=0-9")), "bytes=0-9");
+        assert_eq!(chunk_range(Some("bytes=0-99999999")), "bytes=0-8388607");
+        assert_eq!(chunk_range(Some("bytes=-500")), "bytes=-500");
+        assert!(is_googlevideo("https://rr1---sn-x.googlevideo.com/videoplayback?a=b"));
+        assert!(!is_googlevideo("http://127.0.0.1:1/x"));
     }
 
     #[test]

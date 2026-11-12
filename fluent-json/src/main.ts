@@ -60,20 +60,28 @@ const NAV: { id: ViewName; icon: IconName; key: Key }[] = [
 ];
 const rail = $('#nav');
 const appEl = $('#app');
-function paintRail() {
+function paintRail(full = true) {
+  if (!full && rail.querySelector('.nav-inner')) { rail.querySelectorAll<HTMLElement>('[data-view]').forEach((b) => b.setAttribute('aria-current', String(b.dataset.view === currentView()))); return; }
   const open = settings.navOpen;
   appEl.dataset.nav = open ? 'open' : 'compact';
   const item = (n: { id: ViewName; icon: IconName; key: Key }) =>
     `<button class="nav-item" data-view="${n.id}" aria-current="${currentView() === n.id}" ${open ? '' : `title="${esc(t(n.key))}"`}>${icon(n.icon)}<span class="nav-label">${esc(t(n.key))}</span></button>`;
-  rail.innerHTML = `<div class="nav-main"><button class="nav-item hamburger" data-nav-toggle="1" aria-expanded="${open}" title="${esc(t('nav.menu'))}">${icon('menu')}<span class="nav-label">${esc(t('nav.menu'))}</span></button>${NAV.map(item).join('')}</div><div class="nav-end">${item({ id: 'settings', icon: 'settings', key: 'nav.settings' })}</div>`;
+  rail.innerHTML = `<div class="nav-inner"><div class="nav-main"><button class="nav-item hamburger" data-nav-toggle="1" aria-expanded="${open}" title="${esc(t('nav.menu'))}">${icon('menu')}<span class="nav-label">${esc(t('nav.menu'))}</span></button>${NAV.map(item).join('')}</div><div class="nav-end">${item({ id: 'settings', icon: 'settings', key: 'nav.settings' })}</div></div>`;
 }
 rail.addEventListener('click', (e) => {
   const tg = e.target as HTMLElement;
-  if (tg.closest('[data-nav-toggle]')) { update({ navOpen: !settings.navOpen }); paintRail(); return; }
+  if (tg.closest('[data-nav-toggle]')) {
+    const open = !settings.navOpen;
+    update({ navOpen: open });
+    appEl.dataset.nav = open ? 'open' : 'compact';
+    rail.querySelectorAll<HTMLElement>('.nav-item:not(.hamburger)').forEach((n) => { const l = n.querySelector('.nav-label')?.textContent ?? ''; if (open) n.removeAttribute('title'); else n.title = l; });
+    rail.querySelector('.hamburger')?.setAttribute('aria-expanded', String(open));
+    return;
+  }
   const b = tg.closest<HTMLElement>('[data-view]'); if (b) setView(b.dataset.view as ViewName);
 });
 bus.on('view', (v: ViewName) => {
-  paintRail();
+  paintRail(false);
   for (const name of VIEWS) {
     const s = $(`#view-${name}`);
     const on = name === v;

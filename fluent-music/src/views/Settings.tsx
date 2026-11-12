@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { getActiveLang, tr } from '../lib/i18n';
 import { AuthorCredit, Button, Chip, Icon, Logo, Segmented, Select, Switch } from '../components/ui';
 import { engine } from '../lib/audio';
@@ -9,16 +9,14 @@ import { ACCENT_COLORS, FONT_OPTIONS, SYSTEM_ACCENT, resolveAccent } from '../li
 import { BACKDROPS, type BackdropKind } from '../lib/types';
 import { useDerived, useStore } from '../lib/store';
 import { fmtSize } from '../lib/utils';
+import { ScrollPage } from '../components/ScrollPage';
 
 /* ───────────── building blocks ───────────── */
 
 function Section({ id, title, icon, children }: { id: string; title: string; icon: string; children: ReactNode }) {
   return (
-    <section id={`set-${id}`} className="mb-6 scroll-mt-16">
-      <h2 className="flex items-center gap-2 px-1 mb-2 text-title-sm">
-        <Icon name={icon} size={16} className="text-on-surface-variant" />
-        {title}
-      </h2>
+    <section id={`set-${id}`} className="mb-6">
+      <h2 className="flex items-center gap-2 px-1 mb-3 text-title-md"><Icon name={icon} size={20} className="text-primary" />{title}</h2>
       <div className="fl-card overflow-hidden divide-y divide-card-stroke">{children}</div>
     </section>
   );
@@ -27,7 +25,7 @@ function Section({ id, title, icon, children }: { id: string; title: string; ico
 /** A settings row: title + description on the left, control on the right (wraps below on narrow windows) */
 function Row({ title, desc, children, tone }: { title: string; desc?: string; children?: ReactNode; tone?: 'danger' }) {
   return (
-    <div className={`flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 min-h-[64px] ${tone === 'danger' ? 'bg-error-container/40' : ''}`}>
+    <div className={`flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-2.5 min-h-[56px] ${tone === 'danger' ? 'bg-error-container/40' : ''}`}>
       <div className="flex-1 min-w-[220px]">
         <div className={`text-body-lg ${tone === 'danger' ? 'text-error' : 'text-on-surface'}`}>{title}</div>
         {desc && <div className="text-body-md text-on-surface-variant mt-0.5">{desc}</div>}
@@ -49,7 +47,7 @@ function ToggleRow({ title, desc, checked, onChange }: { title: string; desc?: s
   return (
     <div
       role="switch" aria-checked={checked} aria-label={title} tabIndex={0} onClick={() => onChange(!checked)} onKeyDown={onKey}
-      className="flex items-center gap-6 px-4 py-3 min-h-[64px] cursor-default select-none outline-none transition-colors duration-fast hover:bg-subtle active:bg-subtle-2 focus-visible:bg-subtle"
+      className="flex items-center gap-6 px-4 py-2.5 min-h-[56px] cursor-default select-none outline-none transition-colors duration-fast hover:bg-subtle active:bg-subtle-2 focus-visible:bg-subtle"
     >
       <div className="flex-1 min-w-0">
         <div className="text-body-lg text-on-surface">{title}</div>
@@ -280,34 +278,38 @@ const JUMPS: { id: string; icon: string; label: () => string }[] = [
   { id: 'about', icon: 'info', label: () => tr('aboutSection') },
 ];
 
-/** Sticky chip bar: jump to a section and see which one you are reading */
-function JumpBar({ scroller }: { scroller: React.RefObject<HTMLDivElement> }) {
-  const [active, setActive] = useState('general');
-  useEffect(() => {
-    const root = scroller.current;
-    if (!root || !('IntersectionObserver' in window)) return;
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id.replace('set-', ''))),
-      { root, rootMargin: '-90px 0px -65% 0px' },
-    );
-    JUMPS.forEach((j) => { const el = document.getElementById(`set-${j.id}`); if (el) io.observe(el); });
-    return () => io.disconnect();
-  }, [scroller]);
-  const go = (id: string) => {
-    setActive(id);
-    document.getElementById(`set-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+const TAB_KEY = 'fm-settings-tab';
+const loadTab = () => { try { const v = localStorage.getItem(TAB_KEY); return JUMPS.some((j) => j.id === v) ? (v as string) : 'general'; } catch { return 'general'; } };
+
+/** Category list (left on wide windows, a chip row on narrow ones) */
+function SettingsNav({ tab, onTab }: { tab: string; onTab: (id: string) => void }) {
   return (
-    <nav aria-label={tr('navSettings')} className="sticky top-0 z-20 -mx-6 px-6 py-3 bg-surface-bright/80 backdrop-blur-xl">
-      <div className="flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none]">
-        {JUMPS.map((j) => <Chip key={j.id} icon={j.icon} selected={active === j.id} onClick={() => go(j.id)}>{j.label()}</Chip>)}
-      </div>
-    </nav>
+    <>
+      <nav aria-label={tr('navSettings')} className="hidden md:flex w-56 shrink-0 flex-col gap-0.5 pt-1">
+        {JUMPS.map((j) => {
+          const on = tab === j.id;
+          return (
+            <button
+              key={j.id} type="button" aria-current={on ? 'page' : undefined} onClick={() => onTab(j.id)}
+              className={`relative h-10 px-3 rounded-lg flex items-center gap-3 text-body-lg text-left transition-colors duration-fast focus-ring ${on ? 'bg-subtle text-on-surface font-medium' : 'text-on-surface hover:bg-subtle'}`}
+            >
+              {on && <span className="absolute left-0 top-2.5 bottom-2.5 w-[3px] rounded-full bg-primary" />}
+              <Icon name={j.icon} size={18} className={on ? 'text-primary' : 'text-on-surface-variant'} />
+              <span className="truncate">{j.label()}</span>
+            </button>
+          );
+        })}
+      </nav>
+      <nav aria-label={tr('navSettings')} className="md:hidden flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none]">
+        {JUMPS.map((j) => <Chip key={j.id} icon={j.icon} selected={tab === j.id} onClick={() => onTab(j.id)}>{j.label()}</Chip>)}
+      </nav>
+    </>
   );
 }
 
 export function SettingsView() {
-  const scroller = useRef<HTMLDivElement>(null);
+  const [tab, setTabState] = useState(loadTab);
+  const setTab = (id: string) => { setTabState(id); try { localStorage.setItem(TAB_KEY, id); } catch { /* ignore */ } };
   const s = useStore((st) => st.settings);
   const update = useStore((st) => st.updateSettings);
   const st = useStore.getState();
@@ -321,16 +323,19 @@ export function SettingsView() {
   const vi = getActiveLang() === 'vi';
 
   return (
-    <div ref={scroller} className="h-full overflow-y-auto scroll-smooth">
-      <div className="mx-auto w-full max-w-3xl px-6 pb-10 animate-fade-in">
-        <div className="pt-8 pb-2 px-2">
-          <h1 className="text-headline-lg">{tr('navSettings')}</h1>
-          <p className="text-body-lg text-on-surface-variant mt-1">{tr('settingsSub')}</p>
-        </div>
-        <JumpBar scroller={scroller} />
+    <div className="h-full flex flex-col">
+      <div className="px-8 pt-7 pb-3 shrink-0">
+        <h1 className="text-headline-lg">{tr('navSettings')}</h1>
+        <p className="text-body-md text-on-surface-variant mt-0.5">{tr('settingsSub')}</p>
+      </div>
+      <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-x-6 px-8 pb-2">
+        <SettingsNav tab={tab} onTab={setTab} />
+        <div className="flex-1 min-w-0 min-h-0">
+        <ScrollPage className="pr-2">
+      <div key={tab} className="max-w-3xl pb-10 animate-fade-in">
 
         {/* General */}
-        <Section id="general" title={tr('generalSection')} icon="settings">
+        {tab === 'general' && <Section id="general" title={tr('generalSection')} icon="settings">
           <Row title={tr('language')} desc={tr('languageDesc')}>
             <Segmented value={s.language} onChange={(v) => update({ language: v })} options={[{ value: 'auto', label: tr('langAuto') }, { value: 'en', label: 'English' }, { value: 'vi', label: 'Tiếng Việt' }]} />
           </Row>
@@ -339,10 +344,10 @@ export function SettingsView() {
           </Row>
           <ToggleRow title={tr('closeToTray')} desc={tr('closeToTrayDesc')} checked={s.closeToTray} onChange={(v) => update({ closeToTray: v })} />
           <ToggleRow title={tr('alwaysOnTop')} desc={tr('alwaysOnTopDesc')} checked={s.alwaysOnTop} onChange={(v) => update({ alwaysOnTop: v })} />
-        </Section>
+        </Section>}
 
         {/* Appearance */}
-        <Section id="appearance" title={tr('appearance')} icon="palette">
+        {tab === 'appearance' && <Section id="appearance" title={tr('appearance')} icon="palette">
           <BackdropRow />
           <Row title={tr('colorMode')} desc={tr('themeModeDesc')}>
             <Segmented value={s.themeMode} onChange={(v) => update({ themeMode: v })} options={[{ value: 'system', label: tr('themeSystem'), icon: 'brightness_auto' }, { value: 'light', label: tr('themeLight'), icon: 'light_mode' }, { value: 'dark', label: tr('themeDark'), icon: 'dark_mode' }]} />
@@ -392,30 +397,17 @@ export function SettingsView() {
 
           <ToggleRow title={tr('dynamicColor')} desc={tr('dynamicColorDesc')} checked={s.dynamicColor} onChange={(v) => update({ dynamicColor: v })} />
 
-          <BlockRow title={tr('fontFamily')} desc={tr('fontDesc')}>
-            <div className="grid gap-2 grid-cols-[repeat(auto-fill,minmax(150px,1fr))]">
-              {FONT_OPTIONS.map((f) => {
-                const on = f.id === font.id;
-                return (
-                  <button
-                    key={f.id} type="button" aria-pressed={on} onClick={() => update({ fontFamily: f.id })} style={{ fontFamily: f.stack }}
-                    className={`h-10 px-3 rounded-lg border flex items-center justify-between gap-2 text-body-lg transition-colors duration-fast focus-ring ${on ? 'bg-primary-container border-primary/50 font-semibold' : 'bg-ctl border-card-stroke hover:bg-ctl-hover'}`}
-                  >
-                    <span className="truncate">{f.id === 'system' ? tr('fontSystem') : f.label}</span>
-                    {on && <Icon name="check" size={18} className="animate-pop shrink-0" />}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="mt-3 rounded-lg bg-ctl border border-card-stroke px-4 py-3" style={{ fontFamily: font.stack }}>
-              <div className="text-title-lg truncate">{tr('fontPreview')}</div>
-              <div className="text-body-md text-on-surface-variant mt-0.5">Aa Bb Cc 0123456789 — ă â ê ô ơ ư đ</div>
-            </div>
-          </BlockRow>
-        </Section>
+          <Row title={tr('fontFamily')} desc={tr('fontDesc')}>
+            <Select label={tr('fontFamily')} icon="font" value={font.id} onChange={(v) => update({ fontFamily: v })} options={FONT_OPTIONS.map((f) => ({ value: f.id, label: f.id === 'system' ? tr('fontSystem') : f.label }))} minWidth={200} />
+          </Row>
+          <div className="px-4 py-3" style={{ fontFamily: font.stack }}>
+            <div className="text-title-md truncate">{tr('fontPreview')}</div>
+            <div className="text-body-md text-on-surface-variant mt-0.5">Aa Bb Cc 0123456789 — ă â ê ô ơ ư đ</div>
+          </div>
+        </Section>}
 
         {/* Playback */}
-        <Section id="playback" title={tr('playbackSection')} icon="graphic_eq">
+        {tab === 'playback' && <Section id="playback" title={tr('playbackSection')} icon="graphic_eq">
           <ToggleRow title={tr('restoreSession')} desc={tr('restoreSessionDesc')} checked={s.restoreSession} onChange={(v) => update({ restoreSession: v })} />
           <ToggleRow title={tr('gapless')} desc={tr('gaplessDesc')} checked={s.gapless} onChange={(v) => update({ gapless: v })} />
           <Row title={tr('crossfade')} desc={tr('crossfadeDesc')}>
@@ -436,10 +428,10 @@ export function SettingsView() {
           <Row title={tr('sleepTitle')} desc={tr('sleepDesc')}>
             <Button variant="tonal" icon="bedtime" onClick={() => st.openDialog({ type: 'sleep' })}>{tr('setTimer')}</Button>
           </Row>
-        </Section>
+        </Section>}
 
         {/* Library */}
-        <Section id="library" title={tr('librarySection')} icon="library_music">
+        {tab === 'library' && <Section id="library" title={tr('librarySection')} icon="library_music">
           <div className="px-4 py-3 grid gap-2 grid-cols-[repeat(auto-fit,minmax(130px,1fr))]">
             <Stat icon="music_note" value={all.length} label={tr('songsTitle')} />
             <Stat icon="album" value={albums.length} label="Album" />
@@ -472,10 +464,10 @@ export function SettingsView() {
             <Button icon="download" variant="outlined" onClick={st.backup}>{tr('backup')}</Button>
             <Button icon="upload" variant="outlined" onClick={st.restore}>{tr('restore')}</Button>
           </Row>
-        </Section>
+        </Section>}
 
         {/* Online music */}
-        <Section id="music-online" title={tr('onlineMusicSection')} icon="public">
+        {tab === 'music-online' && <Section id="music-online" title={tr('onlineMusicSection')} icon="public">
           <Row title={tr('onlineMusicInfoTitle')} desc={tr('onlineMusicInfoDesc')}>
             <span className="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center"><Icon name="play_arrow" fill size={18} /></span>
           </Row>
@@ -486,19 +478,19 @@ export function SettingsView() {
           <BlockRow title={tr('ytTitle')} desc={tr('ytDesc')}>
             <div className="-mx-4 -mb-3"><YtdlpPanel /></div>
           </BlockRow>
-        </Section>
+        </Section>}
 
         {/* Online */}
-        <Section id="online" title={tr('scrobbleSection')} icon="radio">
+        {tab === 'online' && <Section id="online" title={tr('scrobbleSection')} icon="radio">
           <ToggleRow title={tr('autoLyrics')} desc={tr('autoLyricsDesc')} checked={s.autoLyrics} onChange={(v) => update({ autoLyrics: v })} />
           <ToggleRow title={tr('scrobbleTitle')} desc={tr('scrobbleDesc')} checked={s.scrobble} onChange={(v) => update({ scrobble: v })} />
           <Row title={tr('scrobbleToken')} desc={tr('scrobbleTokenDesc')}>
             <ScrobbleToken />
           </Row>
-        </Section>
+        </Section>}
 
         {/* About */}
-        <Section id="about" title={tr('aboutSection')} icon="info">
+        {tab === 'about' && <Section id="about" title={tr('aboutSection')} icon="info">
           <div className="px-4 py-4 flex flex-wrap items-center gap-x-5 gap-y-3">
             <Logo size={64} />
             <div className="min-w-0 flex-1">
@@ -513,7 +505,10 @@ export function SettingsView() {
           <Row title={tr('shortcutsBtn')} desc={tr('shortcutsDesc')}>
             <Button variant="tonal" icon="keyboard" onClick={() => st.openDialog({ type: 'shortcuts' })}>{tr('open')}</Button>
           </Row>
-        </Section>
+        </Section>}
+      </div>
+        </ScrollPage>
+        </div>
       </div>
     </div>
   );

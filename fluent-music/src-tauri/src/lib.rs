@@ -190,6 +190,7 @@ pub fn run() {
             lyrics::fetch_lyrics_online,
             online::online_search,
             online::online_resolve,
+            online::online_diag,
             online::online_image,
             online::online_ytdlp_configure,
             online::online_ytdlp_status,

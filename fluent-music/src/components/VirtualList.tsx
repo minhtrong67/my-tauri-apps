@@ -1,3 +1,4 @@
+import { ScrollTop } from './ScrollTop';
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 
 /** Danh sách ảo hoá, hàng cao cố định, cuộn cả phần header */
@@ -37,7 +38,8 @@ export function VirtualList<T>({
   const end = Math.min(items.length, Math.ceil((rel + height) / rowHeight) + overscan);
 
   return (
-    <div ref={ref} className={`overflow-y-auto overflow-x-hidden ${className}`} onScroll={(e) => setScrollTop((e.target as HTMLDivElement).scrollTop)}>
+    <div className={`relative min-h-0 ${className}`}>
+    <div ref={ref} className="h-full overflow-y-auto overflow-x-hidden" onScroll={(e) => setScrollTop((e.target as HTMLDivElement).scrollTop)}>
       {header && <div ref={headRef}>{header}</div>}
       <div style={{ height: items.length * rowHeight, position: 'relative' }}>
         {items.slice(start, end).map((it, k) => (
@@ -47,6 +49,8 @@ export function VirtualList<T>({
         ))}
       </div>
       {footer}
+    </div>
+    <ScrollTop target={ref} />
     </div>
   );
 }

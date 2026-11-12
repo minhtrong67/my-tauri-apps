@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { tr } from '../lib/i18n';
 import { Cover } from './Cover';
 import { Button, Icon, IconButton, Segmented } from './ui';
@@ -7,7 +7,6 @@ import { SeekBar, TransportControls } from './PlayerControls';
 import { QueuePanel } from './QueuePanel';
 import { WindowControls } from './TitleBar';
 import { useCurrent, useStore } from '../lib/store';
-import { useCover } from '../lib/cover';
 import { engine } from '../lib/audio';
 import { fetchLyricsOnline, lyricsCacheGet, lyricsCachePut, readLyrics, writeTextFile, type OnlineLyrics } from '../lib/tauri';
 import { SOURCE_LABEL } from '../lib/online';
@@ -26,14 +25,21 @@ export function Visualizer({ mode }: { mode: VizStyle }) {
     const ctx = c.getContext('2d')!;
     let raf = 0;
     let phase = 0;
-    const draw = () => {
+    let rgb = '';
+    let rgbAt = 0;
+    let last = 0;
+    const draw = (now = 0) => {
+      raf = requestAnimationFrame(draw);
+      // 30 fps is plenty for a spectrum, and nothing is drawn while the window is hidden
+      if (document.hidden || now - last < 32) return;
+      last = now;
       const dpr = window.devicePixelRatio || 1;
       const w = c.clientWidth, h = c.clientHeight;
       const cw = Math.round(w * dpr), ch = Math.round(h * dpr);
       if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
-      const rgb = getComputedStyle(document.documentElement).getPropertyValue('--fl-primary').trim().split(' ').join(',');
+      if (!rgb || now - rgbAt > 400) { rgb = getComputedStyle(document.documentElement).getPropertyValue('--fl-primary').trim().split(' ').join(','); rgbAt = now; }
       const spec = engine.getSpectrum();
       const playing = !engine.audio.paused;
       phase += 0.06;
@@ -89,7 +95,6 @@ export function Visualizer({ mode }: { mode: VizStyle }) {
           ctx.stroke();
         }
       }
-      raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
@@ -116,6 +121,20 @@ function OffsetControl({ id }: { id: string }) {
 /** Lyrics found online during this session (null = looked up, nothing found); `autoTried` stops automatic lookups from repeating */
 const lyricsCache = new Map<string, OnlineLyrics | null>();
 const autoTried = new Set<string>();
+
+/** One lyric line. Memoised: while a song plays only the lines whose distance to the sung line changed are re-rendered.
+ *  Only opacity and transform animate (both run on the GPU); a blur filter on every line was the cause of the choppy, washed-out look. */
+const LyricLine = memo(function LyricLine({ text, synced, focus, dist, current, onClick, setRef }: { text: string; synced: boolean; focus: boolean; dist: number; current: boolean; onClick: () => void; setRef: (el: HTMLDivElement | null) => void }) {
+  const style = focus ? { opacity: current ? 1 : Math.max(0.42, 0.8 - dist * 0.12), transform: current ? 'scale(1.08)' : 'scale(1)' } : undefined;
+  return (
+    <div
+      ref={setRef} style={style} onClick={onClick}
+      className={`py-2 origin-center will-change-transform transition-[opacity,transform,color] duration-slower ease-decel ${synced ? 'cursor-pointer text-title-lg hover:!opacity-100' : 'text-body-lg text-on-surface'} ${current ? 'text-primary font-semibold' : synced ? 'text-on-surface' : ''}`}
+    >
+      {text || '♪'}
+    </div>
+  );
+});
 
 function LyricsPane() {
   const t = useCurrent();
@@ -253,22 +272,13 @@ function LyricsPane() {
         </div>
       )}
       <div className="px-10 pt-16 pb-[60vh]">
-      {lyrics.lines.map((l, i) => {
-        // synced lyrics: the further a line is from the one being sung, the softer it gets (focus effect)
-        const d = lyrics.synced && active >= 0 ? Math.abs(i - active) : 0;
-        const style = lyrics.synced && active >= 0
-          ? { opacity: d === 0 ? 1 : Math.max(0.16, 0.72 - d * 0.14), filter: d === 0 ? 'none' : `blur(${Math.min(2.5, d * 0.55).toFixed(2)}px)`, transform: d === 0 ? 'scale(1.1)' : 'scale(1)' }
-          : undefined;
-        return (
-          <div
-            key={i} ref={(el) => (refs.current[i] = el)} style={style}
-            onClick={() => lyrics.synced && seek(l.time)}
-            className={`py-2 origin-center transition-[opacity,filter,transform,color] duration-slower ease-decel ${lyrics.synced ? 'cursor-pointer text-title-lg hover:!opacity-100 hover:!blur-none' : 'text-body-lg text-on-surface'} ${i === active ? 'text-primary font-medium lyric-glow' : lyrics.synced ? 'text-on-surface-variant' : ''}`}
-          >
-            {l.text || '♪'}
-          </div>
-        );
-      })}
+      {lyrics.lines.map((l, i) => (
+        <LyricLine
+          key={i} text={l.text} synced={lyrics.synced} focus={lyrics.synced && active >= 0}
+          dist={lyrics.synced && active >= 0 ? Math.abs(i - active) : 0} current={i === active}
+          onClick={() => lyrics.synced && seek(l.time)} setRef={(el) => (refs.current[i] = el)}
+        />
+      ))}
       </div>
     </div>
   );
@@ -319,16 +329,15 @@ export function NowPlaying({ open = true, onClosed }: { open?: boolean; onClosed
     void playClose(tg).then(() => onClosed?.());
      
   }, [open]);
-  const cover = useCover(t);
   const liked = useStore((s) => (t ? !!s.liked[t.id] : false));
   const [tab, setTab] = useState<'lyrics' | 'viz' | 'queue'>('lyrics');
   const playing = useStore((s) => s.isPlaying);
   const st = useStore.getState();
   if (!t) return null;
   return (
-    <div ref={rootRef} className="fixed inset-0 z-40 bg-layer backdrop-blur-2xl overflow-clip flex flex-col" style={{ pointerEvents: open ? undefined : 'none' }}>
-      {cover && <img src={cover} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30 blur-3xl scale-125 pointer-events-none" />}
-      <div className="absolute inset-0 bg-layer pointer-events-none" />
+    <div ref={rootRef} className="fixed inset-0 z-40 bg-surface overflow-clip flex flex-col" style={{ pointerEvents: open ? undefined : 'none' }}>
+      {/* opaque base + a soft glow in the accent (which follows the cover): no full-screen blur to repaint */}
+      <div className="absolute inset-0 pointer-events-none np-glow" />
       <div data-np data-tauri-drag-region className="relative h-12 shrink-0 flex items-center justify-between pl-2">
         <IconButton icon="expand_more" title={`${tr('collapse')} (Esc)`} onClick={() => st.set({ showNowPlaying: false })} />
         <div className="text-title-sm text-on-surface-variant pointer-events-none">{tr('nowPlaying')}</div>
@@ -349,7 +358,7 @@ export function NowPlaying({ open = true, onClosed }: { open?: boolean; onClosed
             <div className="flex justify-center mt-2"><TransportControls size="lg" /></div>
           </div>
         </div>
-        <div data-np className="min-h-0 flex flex-col rounded-2xl fl-card !shadow-none backdrop-blur-xl overflow-hidden">
+        <div data-np className="min-h-0 flex flex-col rounded-2xl fl-card !shadow-none !bg-surface-container-low overflow-hidden">
           <div className="p-4 flex justify-center shrink-0">
             <Segmented value={tab} onChange={setTab} options={[{ value: 'lyrics', label: tr('tabLyrics'), icon: 'lyrics' }, { value: 'viz', label: tr('tabEffects'), icon: 'equalizer' }, { value: 'queue', label: tr('tabQueue'), icon: 'queue_music' }]} />
           </div>

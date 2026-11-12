@@ -235,7 +235,7 @@ pub fn resolve(id: &str) -> Result<(String, Vec<(String, String)>), String> {
     let exe_path = need_ytdlp()?;
     let _g = RESOLVE_LOCK.lock().map_err(|_| "E_INTERNAL".to_string())?;
     let mut args: Vec<String> = [
-        "-f", "bestaudio[protocol=https][ext=m4a]/bestaudio[protocol=https]/bestaudio", "--no-playlist", "--no-warnings",
+        "-f", "bestaudio[protocol=https][ext=m4a]/bestaudio[protocol=https]/bestaudio", "--no-playlist", "--no-warnings", "--socket-timeout", "10",
         "--print", "url", "--print", "%(http_headers)j",
     ]
     .iter()
@@ -244,7 +244,7 @@ pub fn resolve(id: &str) -> Result<(String, Vec<(String, String)>), String> {
     args.extend(runtime_args());
     args.push("--".into());
     args.push(format!("https://www.youtube.com/watch?v={id}"));
-    let out = run(&exe_path, &args, Duration::from_secs(60))?;
+    let out = run(&exe_path, &args, Duration::from_secs(40))?;
     parse_resolved(&out)
 }
 
