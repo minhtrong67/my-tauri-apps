@@ -1,7 +1,8 @@
 import { Cover } from './Cover';
 import { tr } from '../lib/i18n';
 import { IconButton, Slider } from './ui';
-import { SeekBar, TransportControls } from './PlayerControls';
+import { SeekBar, TransportControls, useLoadingStatus } from './PlayerControls';
+import { ProgressRing } from './Fluent';
 import { useCurrent, useStore } from '../lib/store';
 
 /** loads the (lazy) full-screen view ahead of time so it opens with no delay */
@@ -17,15 +18,21 @@ export function PlayerBar() {
   const st = useStore.getState();
   const volIcon = muted || volume === 0 ? 'volume_off' : volume < 0.4 ? 'volume_down' : 'volume_up';
 
+  const status = useLoadingStatus(t?.remoteId);
+  const loading = status.loading;
   return (
-    <div data-player-bar className="win-bar h-[84px] shrink-0 flex items-center px-4 gap-4">
+    <div data-player-bar className="win-bar h-[84px] shrink-0 flex items-center px-4 gap-4 relative">
+      {loading && <div className="absolute top-0 left-0 right-0 h-[2px] overflow-hidden" aria-hidden><div className="indet-bar h-full w-1/3 rounded-full bg-primary" /></div>}
       <div className="w-[28%] min-w-0 flex items-center gap-3">
         <button data-np-thumb className="shrink-0 group relative focus-ring rounded-xl" onPointerEnter={preloadNowPlaying} onClick={() => t && st.set({ showNowPlaying: true })} aria-label={tr('openNowPlaying')} disabled={!t}>
           <Cover track={t} eager className="w-14 h-14 rounded-xl" iconSize={28} />
+          {loading && <span className="absolute inset-0 rounded-xl bg-black/50 flex items-center justify-center animate-fade-in"><ProgressRing size={26} color="#fff" /></span>}
         </button>
         <div key={t?.id} className="min-w-0 title-in">
           <div className="truncate text-title-sm text-on-surface">{t?.title ?? tr('nothingPlaying')}</div>
-          <div className="truncate text-body-sm text-on-surface-variant">{t ? `${t.artist} • ${t.album}` : tr('pickSong')}</div>
+          {loading
+            ? <div className="truncate text-body-sm text-primary animate-fade-in" aria-live="polite">{status.text}{status.sec >= 2 ? ` · ${status.sec}s` : ''}</div>
+            : <div className="truncate text-body-sm text-on-surface-variant">{t ? `${t.artist} • ${t.album}` : tr('pickSong')}</div>}
         </div>
         {t && <IconButton icon="favorite" title={`${tr('favorite')} (L)`} active={liked} fill={liked} pop onClick={() => st.toggleLike(t.id)} />}
       </div>

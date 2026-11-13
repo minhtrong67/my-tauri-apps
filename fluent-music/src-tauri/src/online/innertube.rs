@@ -222,6 +222,8 @@ pub struct Stream {
     pub ua: String,
     /// name of the client identity that produced it
     pub client: &'static str,
+    /// e.g. "audio/webm"
+    pub mime: String,
     #[allow(dead_code)]
     pub bitrate: u64,
 }
@@ -250,7 +252,7 @@ fn player_body(c: &Client, id: &str) -> Value {
     })
 }
 
-/// best audio-only stream that has a plain URL: AAC (plays in every web view) first, then Opus; higher bitrate wins
+/// best audio-only stream that has a plain URL: Opus / WebM first, then AAC; higher bitrate wins
 pub fn pick_audio(v: &Value) -> Option<Stream> {
     let status = v.pointer("/playabilityStatus/status").and_then(Value::as_str).unwrap_or("OK");
     if status != "OK" {
@@ -268,13 +270,13 @@ pub fn pick_audio(v: &Value) -> Option<Stream> {
         if f.pointer("/audioTrack/audioIsDefault") == Some(&Value::Bool(false)) {
             continue; // dubbed track
         }
-        let rank = if mime.starts_with("audio/mp4") { 2 } else { 1 };
+        let rank = if mime.starts_with("audio/webm") { 2 } else { 1 }; // Opus / WebM: has a seek index and plays everywhere
         let br = f.get("bitrate").and_then(Value::as_u64).unwrap_or(0);
         if best.as_ref().is_none_or(|(r, b, _, _)| (rank, br) > (*r, *b)) {
             best = Some((rank, br, url.to_string(), mime.split(';').next().unwrap_or(mime).to_string()));
         }
     }
-    best.map(|(_, bitrate, url, _)| Stream { url, ua: String::new(), client: "", bitrate })
+    best.map(|(_, bitrate, url, mime)| Stream { url, ua: String::new(), client: "", mime, bitrate })
 }
 
 fn fetch_stream(c: &Client, id: &str) -> Result<Stream, String> {
@@ -483,7 +485,7 @@ mod tests {
     }
 
     #[test]
-    fn picks_aac_first_and_skips_ciphered_formats() {
+    fn picks_opus_first_and_skips_ciphered_formats() {
         let v = json!({"playabilityStatus": {"status": "OK"}, "streamingData": {"adaptiveFormats": [
             {"mimeType": "video/mp4; codecs=\"avc1\"", "url": "https://v", "bitrate": 9},
             {"mimeType": "audio/webm; codecs=\"opus\"", "url": "https://opus", "bitrate": 160000},
@@ -491,7 +493,7 @@ mod tests {
             {"mimeType": "audio/mp4; codecs=\"mp4a.40.2\"", "url": "https://aac", "bitrate": 130000},
             {"mimeType": "audio/mp4; codecs=\"mp4a.40.2\"", "signatureCipher": "s=x", "bitrate": 999999}]}});
         let s = pick_audio(&v).unwrap();
-        assert_eq!((s.url.as_str(), s.bitrate), ("https://aac", 130000));
+        assert_eq!((s.url.as_str(), s.bitrate), ("https://opus", 160000));
         let bad = json!({"playabilityStatus": {"status": "LOGIN_REQUIRED"}, "streamingData": {"adaptiveFormats": []}});
         assert!(pick_audio(&bad).is_none());
     }

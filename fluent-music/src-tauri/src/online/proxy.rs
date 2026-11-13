@@ -23,6 +23,14 @@ struct Entry {
     id: Option<String>,
     /// client identities whose streams already failed for this video
     skip: Vec<String>,
+    /// a finished local file (served with Range support) instead of an upstream URL
+    file: Option<Served>,
+}
+
+#[derive(Clone)]
+enum Served {
+    File(std::path::PathBuf, &'static str),
+    Live(std::sync::Arc<super::fetch::Live>),
 }
 
 fn registry() -> &'static Mutex<HashMap<String, Entry>> {
@@ -33,7 +41,7 @@ fn registry() -> &'static Mutex<HashMap<String, Entry>> {
 static PORT: Mutex<Option<u16>> = Mutex::new(None);
 static LAST: Mutex<String> = Mutex::new(String::new());
 
-fn note(msg: String) {
+pub fn note(msg: String) {
     if let Ok(mut g) = LAST.lock() {
         *g = msg;
     }
@@ -66,6 +74,38 @@ fn token() -> String {
 }
 
 /// Registers an upstream URL and returns the local URL the audio element should use
+/// Registers a file that is still being downloaded (served as it grows)
+pub fn register_live(live: std::sync::Arc<super::fetch::Live>) -> Result<String, String> {
+    let port = start()?;
+    let tok = token();
+    let mut reg = registry().lock().map_err(|_| "E_INTERNAL".to_string())?;
+    let now = Instant::now();
+    reg.retain(|_, e| now.duration_since(e.at) < ENTRY_TTL);
+    if reg.len() >= MAX_ENTRIES {
+        if let Some(oldest) = reg.iter().min_by_key(|(_, e)| e.at).map(|(k, _)| k.clone()) {
+            reg.remove(&oldest);
+        }
+    }
+    reg.insert(tok.clone(), Entry { url: String::new(), headers: vec![], at: now, id: None, skip: vec![], file: Some(Served::Live(live)) });
+    Ok(format!("http://127.0.0.1:{port}/s/{tok}"))
+}
+
+/// Registers a local audio file; returns the local URL the audio element should use
+pub fn register_file(path: std::path::PathBuf, mime: &'static str) -> Result<String, String> {
+    let port = start()?;
+    let tok = token();
+    let mut reg = registry().lock().map_err(|_| "E_INTERNAL".to_string())?;
+    let now = Instant::now();
+    reg.retain(|_, e| now.duration_since(e.at) < ENTRY_TTL);
+    if reg.len() >= MAX_ENTRIES {
+        if let Some(oldest) = reg.iter().min_by_key(|(_, e)| e.at).map(|(k, _)| k.clone()) {
+            reg.remove(&oldest);
+        }
+    }
+    reg.insert(tok.clone(), Entry { url: String::new(), headers: vec![], at: now, id: None, skip: vec![], file: Some(Served::File(path, mime)) });
+    Ok(format!("http://127.0.0.1:{port}/s/{tok}"))
+}
+
 pub fn register(url: &str, headers: Vec<(String, String)>) -> Result<String, String> {
     register_for(url, headers, None, "")
 }
@@ -85,7 +125,7 @@ pub fn register_for(url: &str, headers: Vec<(String, String)>, id: Option<String
             reg.remove(&oldest);
         }
     }
-    reg.insert(tok.clone(), Entry { url: url.to_string(), headers, at: now, id, skip: if client.is_empty() { vec![] } else { vec![client.to_string()] } });
+    reg.insert(tok.clone(), Entry { url: url.to_string(), headers, at: now, id, skip: if client.is_empty() { vec![] } else { vec![client.to_string()] }, file: None });
     Ok(format!("http://127.0.0.1:{port}/s/{tok}"))
 }
 
@@ -145,6 +185,99 @@ pub fn clean_range(r: &str) -> Option<String> {
     let (a, b) = rest.split_once('-')?;
     let ok = |s: &str| s.is_empty() || (s.len() <= 15 && s.chars().all(|c| c.is_ascii_digit()));
     (ok(a) && ok(b) && !(a.is_empty() && b.is_empty())).then(|| format!("bytes={a}-{b}"))
+}
+
+/// (start, end) of a "bytes=a-b" / "bytes=a-" / "bytes=-n" range inside a file of `len` bytes
+pub fn file_range(r: Option<&str>, len: u64) -> Option<(u64, u64)> {
+    let r = r.and_then(clean_range)?;
+    let (a, b) = r.strip_prefix("bytes=")?.split_once('-')?;
+    let (start, end) = match (a.parse::<u64>().ok(), b.parse::<u64>().ok()) {
+        (Some(a), Some(b)) => (a, b.min(len.saturating_sub(1))),
+        (Some(a), None) => (a, len.saturating_sub(1)),
+        (None, Some(n)) => (len.saturating_sub(n), len.saturating_sub(1)),
+        (None, None) => return None,
+    };
+    (start <= end && start < len).then_some((start, end))
+}
+
+/// A file that is still downloading. From the start: stream the bytes as they arrive (no length is known yet). A request that
+/// wants a later position (a seek) waits for the download to finish, then gets a normal ranged answer.
+fn serve_live(s: &mut TcpStream, live: &super::fetch::Live, range: Option<&str>) -> std::io::Result<()> {
+    use std::io::{Seek, SeekFrom};
+    let start = range.and_then(clean_range).and_then(|r| r.strip_prefix("bytes=").and_then(|x| x.split('-').next().and_then(|a| a.parse::<u64>().ok()))).unwrap_or(0);
+    let (_, done, _, path, mime) = live.snapshot();
+    if done {
+        return serve_file(s, &path, mime, range);
+    }
+    if start > 0 {
+        let t0 = Instant::now();
+        loop {
+            let (w, done, err, path, mime) = live.snapshot();
+            if done {
+                return serve_file(s, &path, mime, range);
+            }
+            if err.is_some() {
+                return status_only(s, 502, "Bad Gateway");
+            }
+            if t0.elapsed() > Duration::from_secs(90) {
+                return status_only(s, 504, "Gateway Timeout");
+            }
+            live.wait_change(w, 300);
+        }
+    }
+    write!(s, "HTTP/1.1 200 OK\r\n{CORS}Accept-Ranges: none\r\nContent-Type: {mime}\r\n\r\n")?;
+    let mut pos: u64 = 0;
+    let mut file: Option<std::fs::File> = None;
+    let mut buf = vec![0u8; 64 * 1024];
+    let t0 = Instant::now();
+    loop {
+        let (w, done, err, path, _) = live.snapshot();
+        if err.is_some() {
+            return Ok(()); // closing early makes the player report the failure (and the app retries)
+        }
+        if file.is_none() {
+            file = std::fs::File::open(&path).ok();
+        }
+        if pos < w {
+            if let Some(f) = file.as_mut() {
+                f.seek(SeekFrom::Start(pos))?;
+                let want = (w - pos).min(buf.len() as u64) as usize;
+                let n = f.read(&mut buf[..want])?;
+                if n > 0 {
+                    s.write_all(&buf[..n])?;
+                    pos += n as u64;
+                    continue;
+                }
+            } else {
+                std::thread::sleep(Duration::from_millis(50)); // the file was just renamed: reopen
+                continue;
+            }
+        }
+        if done && pos >= w {
+            return s.flush();
+        }
+        if t0.elapsed() > Duration::from_secs(600) {
+            return Ok(());
+        }
+        live.wait_change(pos, 300);
+    }
+}
+
+fn serve_file(s: &mut TcpStream, path: &std::path::Path, mime: &str, range: Option<&str>) -> std::io::Result<()> {
+    use std::io::{Seek, SeekFrom};
+    let Ok(mut f) = std::fs::File::open(path) else { return status_only(s, 404, "Not Found") };
+    let len = f.metadata()?.len();
+    let (code, start, end, head) = match (range.is_some(), file_range(range, len)) {
+        (true, Some((a, b))) => (206, a, b, format!("Content-Range: bytes {a}-{b}/{len}\r\n")),
+        (true, None) if len > 0 => return write!(s, "HTTP/1.1 416 Range Not Satisfiable\r\n{CORS}Content-Range: bytes */{len}\r\nContent-Length: 0\r\n\r\n"),
+        _ => (200, 0, len.saturating_sub(1), String::new()),
+    };
+    let n = if len == 0 { 0 } else { end - start + 1 };
+    let reason = if code == 206 { "Partial Content" } else { "OK" };
+    write!(s, "HTTP/1.1 {code} {reason}\r\n{CORS}Accept-Ranges: bytes\r\nContent-Type: {mime}\r\nContent-Length: {n}\r\n{head}\r\n")?;
+    f.seek(SeekFrom::Start(start))?;
+    std::io::copy(&mut f.take(n), s)?;
+    s.flush()
 }
 
 static REFRESH: Mutex<()> = Mutex::new(());
@@ -246,6 +379,12 @@ fn handle(mut s: TcpStream) -> std::io::Result<()> {
         return status_only(&mut s, 405, "Method Not Allowed");
     }
     let tok = req.path.strip_prefix("/s/").unwrap_or("");
+    let file = registry().lock().ok().and_then(|r| r.get(tok).and_then(|e| e.file.clone()));
+    match file {
+        Some(Served::File(path, mime)) => return serve_file(&mut s, &path, mime, req.header("range")),
+        Some(Served::Live(live)) => return serve_live(&mut s, &live, req.header("range")),
+        None => {}
+    }
     let found = registry().lock().ok().and_then(|r| r.get(tok).map(|e| (e.url.clone(), e.headers.clone())));
     let Some((mut url, mut headers)) = found else { return status_only(&mut s, 404, "Not Found") };
     let range = req.header("range").and_then(clean_range);
@@ -330,6 +469,41 @@ mod tests {
         assert_eq!(clean_range("bytes=-"), None);
         assert_eq!(clean_range("items=1-2"), None);
         assert_eq!(clean_range("bytes=1\r\nX: y-"), None);
+    }
+
+    #[test]
+    fn file_ranges() {
+        assert_eq!(file_range(Some("bytes=0-"), 100), Some((0, 99)));
+        assert_eq!(file_range(Some("bytes=10-19"), 100), Some((10, 19)));
+        assert_eq!(file_range(Some("bytes=90-500"), 100), Some((90, 99)));
+        assert_eq!(file_range(Some("bytes=-10"), 100), Some((90, 99)));
+        assert_eq!(file_range(Some("bytes=100-"), 100), None);
+        assert_eq!(file_range(None, 100), None);
+    }
+
+    #[test]
+    fn serves_a_local_file_with_ranges() {
+        let dir = std::env::temp_dir().join(format!("fm-proxy-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let f = dir.join("a.webm");
+        std::fs::write(&f, b"0123456789").unwrap();
+        let local = register_file(f, "audio/webm").unwrap();
+        let port: u16 = local.split(':').nth(2).unwrap().split('/').next().unwrap().parse().unwrap();
+        let path = local.split_once(&format!(":{port}")).unwrap().1.to_string();
+        let get = |extra: &str| {
+            let mut c = TcpStream::connect(("127.0.0.1", port)).unwrap();
+            write!(c, "GET {path} HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\n{extra}\r\n").unwrap();
+            let mut out = String::new();
+            c.read_to_string(&mut out).unwrap();
+            out
+        };
+        let part = get("Range: bytes=2-5\r\n");
+        assert!(part.starts_with("HTTP/1.1 206"), "{part}");
+        assert!(part.contains("Content-Range: bytes 2-5/10"));
+        assert!(part.ends_with("2345"));
+        let all = get("");
+        assert!(all.starts_with("HTTP/1.1 200") && all.ends_with("0123456789"), "{all}");
+        let _ = std::fs::remove_dir_all(dir);
     }
 
     #[test]

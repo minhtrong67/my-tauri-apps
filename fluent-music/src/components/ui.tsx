@@ -43,7 +43,7 @@ export function IconButton({
       type="button" title={title} aria-label={title} aria-pressed={active} disabled={disabled} onClick={onClick} onContextMenu={onContextMenu}
       className={`fl-ibtn fl-ibtn-${size} ${v} focus-ring shrink-0 ${active && variant === 'standard' ? '!text-on-primary-container' : ''} ${className}`}
     >
-      {busy ? <ProgressRing size={isz} /> : pop ? <span key={`${icon}${active ? 1 : 0}`} className="pop-heart inline-flex"><Icon name={icon} fill={fill || active} size={isz} /></span> : <Icon name={icon} fill={fill || active} size={isz} />}
+      {busy ? <ProgressRing size={isz} color={variant === 'filled' ? 'rgb(var(--fl-on-primary))' : undefined} /> : pop ? <span key={`${icon}${active ? 1 : 0}`} className="pop-heart inline-flex"><Icon name={icon} fill={fill || active} size={isz} /></span> : <Icon name={icon} fill={fill || active} size={isz} />}
     </button>
   );
 }

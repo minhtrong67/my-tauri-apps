@@ -76,7 +76,7 @@ fn find_runtime() -> Option<(&'static str, Option<PathBuf>)> {
     None
 }
 
-fn runtime_args() -> Vec<String> {
+pub(crate) fn runtime_args() -> Vec<String> {
     match find_runtime() {
         Some(("deno", Some(p))) => vec!["--js-runtimes".into(), format!("deno:{}", p.display())],
         Some(("node", _)) => vec!["--js-runtimes".into(), "node".into()],
@@ -246,6 +246,145 @@ pub fn resolve(id: &str) -> Result<(String, Vec<(String, String)>), String> {
     args.push(format!("https://www.youtube.com/watch?v={id}"));
     let out = run(&exe_path, &args, Duration::from_secs(40))?;
     parse_resolved(&out)
+}
+
+/// Lets yt-dlp download the audio itself (its downloader knows YouTube's chunking, headers and tokens, which plain links do not).
+/// Returns the finished file and its MIME type. Opus / WebM is preferred: it has a seek index and plays in every web view.
+pub fn download_audio(id: &str, dir: &Path) -> Result<(PathBuf, &'static str), String> {
+    if !valid_id(id) {
+        return Err("E_BAD_ID".into());
+    }
+    let exe_path = need_ytdlp()?;
+    let _ = fs::create_dir_all(dir);
+    let template = dir.join(format!("{id}.yt.%(ext)s")).to_string_lossy().into_owned();
+    let run_once = |fast: bool| -> Result<(PathBuf, &'static str), String> {
+        let mut args: Vec<String> = [
+            "-f", "bestaudio[ext=webm]/bestaudio[ext=m4a]/bestaudio", "--no-playlist", "--no-warnings", "--socket-timeout", "10", "--retries", "3",
+            "--no-part", "--no-mtime", "--print", "after_move:filepath", "-o",
+        ]
+        .iter()
+        .map(|s| s.to_string())
+        .collect();
+        args.push(template.clone());
+        if fast {
+            // the VR identity needs neither a JavaScript runtime nor a token: no challenge solving, which is the slow part
+            args.extend(["--extractor-args".to_string(), "youtube:player_client=android_vr".to_string()]);
+        } else {
+            args.extend(runtime_args());
+        }
+        args.push("--".into());
+        args.push(format!("https://www.youtube.com/watch?v={id}"));
+        let out = run(&exe_path, &args, Duration::from_secs(if fast { 45 } else { 150 }))?;
+        let path = out.lines().map(str::trim).filter(|l| !l.is_empty()).last().map(PathBuf::from).ok_or("E_FORMAT")?;
+        if !path.is_file() || fs::metadata(&path).map(|m| m.len()).unwrap_or(0) < 4096 {
+            return Err("E_FORMAT".into());
+        }
+        let mime = mime_of(&path);
+        Ok((path, mime))
+    };
+    match run_once(true) {
+        Ok(r) => Ok(r),
+        Err(e) if e == "E_UNAVAILABLE" => Err(e),
+        // the quick identity was refused: the full default (with the JavaScript runtime) is slower but more thorough
+        Err(_) => run_once(false),
+    }
+}
+
+/// Streams the audio of `id` through yt-dlp's stdout into `sink` while it downloads (so playback can start at once).
+/// `fast`: the VR identity (no JavaScript runtime, no token). Returns Ok when yt-dlp finished the whole download.
+pub fn stream_audio(id: &str, fast: bool, sink: &mut dyn FnMut(&[u8]) -> Result<(), String>) -> Result<(), String> {
+    use std::sync::atomic::{AtomicBool, Ordering};
+    use std::sync::Arc;
+    if !valid_id(id) {
+        return Err("E_BAD_ID".into());
+    }
+    let exe_path = need_ytdlp()?;
+    let mut args: Vec<String> = [
+        "-f", "bestaudio[ext=webm]/bestaudio", "--no-playlist", "--no-warnings", "--quiet", "--no-progress", "--socket-timeout", "10", "--retries", "3",
+        "--no-part", "-o", "-",
+    ]
+    .iter()
+    .map(|s| s.to_string())
+    .collect();
+    if fast {
+        args.extend(["--extractor-args".to_string(), "youtube:player_client=android_vr".to_string()]);
+    } else {
+        args.extend(runtime_args());
+    }
+    args.push("--".into());
+    args.push(format!("https://www.youtube.com/watch?v={id}"));
+    let mut cmd = Command::new(&exe_path);
+    cmd.args(&args).stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped());
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        cmd.creation_flags(0x0800_0000); // CREATE_NO_WINDOW
+    }
+    let mut child = cmd.spawn().map_err(|e| format!("E_SPAWN: {e}"))?;
+    let mut so = child.stdout.take().ok_or("E_SPAWN")?;
+    let mut se = child.stderr.take().ok_or("E_SPAWN")?;
+    let t_err = std::thread::spawn(move || {
+        let mut b = Vec::new();
+        let _ = se.by_ref().take(256 * 1024).read_to_end(&mut b);
+        b
+    });
+    let child = Arc::new(Mutex::new(child));
+    let finished = Arc::new(AtomicBool::new(false));
+    {
+        // watchdog: a stuck download must not hang forever
+        let (child, finished) = (child.clone(), finished.clone());
+        let limit = Duration::from_secs(if fast { 240 } else { 300 });
+        std::thread::spawn(move || {
+            let t0 = Instant::now();
+            while !finished.load(Ordering::Relaxed) {
+                if t0.elapsed() > limit {
+                    if let Ok(mut c) = child.lock() {
+                        let _ = c.kill();
+                    }
+                    return;
+                }
+                std::thread::sleep(Duration::from_millis(250));
+            }
+        });
+    }
+    let mut buf = vec![0u8; 64 * 1024];
+    let mut sink_err: Option<String> = None;
+    loop {
+        match so.read(&mut buf) {
+            Ok(0) => break,
+            Ok(n) => {
+                if let Err(e) = sink(&buf[..n]) {
+                    sink_err = Some(e);
+                    if let Ok(mut c) = child.lock() {
+                        let _ = c.kill();
+                    }
+                    break;
+                }
+            }
+            Err(_) => break,
+        }
+    }
+    let status = child.lock().map_err(|_| "E_INTERNAL".to_string())?.wait();
+    finished.store(true, Ordering::Relaxed);
+    let err = String::from_utf8_lossy(&t_err.join().unwrap_or_default()).into_owned();
+    if let Some(e) = sink_err {
+        return Err(e);
+    }
+    match status {
+        Ok(s) if s.success() => Ok(()),
+        Ok(_) => Err(classify(&err)),
+        Err(e) => Err(format!("E_SPAWN: {e}")),
+    }
+}
+
+pub fn mime_of(p: &Path) -> &'static str {
+    match p.extension().and_then(|e| e.to_str()).unwrap_or("") {
+        "webm" | "weba" => "audio/webm",
+        "m4a" | "mp4" => "audio/mp4",
+        "ogg" | "opus" => "audio/ogg",
+        "mp3" => "audio/mpeg",
+        _ => "application/octet-stream",
+    }
 }
 
 pub fn parse_resolved(out: &str) -> Result<(String, Vec<(String, String)>), String> {

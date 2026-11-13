@@ -27,6 +27,7 @@ import { engine } from './lib/audio';
 import { applyBackdropAttr, applyFont, applyTheme, isDarkMode, tweenTheme } from './lib/theme';
 import { runThemeTransition } from './lib/themeTransition';
 import { seedFromCover } from './lib/cover';
+import { keepOnlineOffline } from './lib/offline';
 import { launchArgs, setBackdrop, setCloseToTray } from './lib/tauri';
 import { enterMini, exitMini, win } from './lib/window';
 import { comboFromEvent, matchAction } from './lib/keymap';
@@ -105,6 +106,9 @@ export default function App() {
       st.syncLibrary(true); // auto-scan the Music folder + imported folders
     });
   }, []);
+
+  // liked / saved online songs are kept in the audio cache (and downloaded when they are liked), so they play at once
+  useEffect(() => keepOnlineOffline(), []);
 
   // Fluent theme (system / custom accent, or the accent taken from the cover art)
   useEffect(() => {

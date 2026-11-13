@@ -1,7 +1,7 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { tr } from '../lib/i18n';
 import { Button, Chip, Icon, IconButton, openMenuAt, openMenuBelow } from '../components/ui';
-import { LoadingIndicator } from '../components/Fluent';
+import { LoadingIndicator, ProgressRing } from '../components/Fluent';
 import { Cover } from '../components/Cover';
 import { ScrollTop } from '../components/ScrollTop';
 import { useStore } from '../lib/store';
@@ -52,12 +52,10 @@ const ResultRow = memo(function ResultRow({ o, index, onPlay }: { o: OnlineTrack
   const key = onlineKey(o.source, o.id);
   const isCurrent = useStore((s) => s.queue[s.index] === key);
   const playing = useStore((s) => s.isPlaying);
+  const busy = useStore((s) => s.loadingTrack) && isCurrent;
   const liked = useStore((s) => !!s.liked[key]);
   const t = useMemo(() => toTrack(o), [o]);
   // look the stream up while the pointer rests on the row, so pressing play starts at once
-  const warm = useRef<number | undefined>(undefined);
-  const warmOn = () => { warm.current = window.setTimeout(() => void resolveStream(key).catch(() => undefined), 180); };
-  const warmOff = () => window.clearTimeout(warm.current);
   const menu = () => {
     const st = useStore.getState();
     st.ensureOnline([o]);
@@ -70,15 +68,16 @@ const ResultRow = memo(function ResultRow({ o, index, onPlay }: { o: OnlineTrack
   };
   return (
     <div
-      onMouseEnter={warmOn} onMouseLeave={warmOff} onDoubleClick={onPlay} onContextMenu={(e) => openMenuAt(e, menu())}
+      onDoubleClick={onPlay} onContextMenu={(e) => openMenuAt(e, menu())}
       style={{ animationDelay: `${Math.min(index, 12) * 28}ms` }}
       className={`group h-16 mx-2 px-2 rounded-lg flex items-center gap-3 animate-slide-up transition-colors duration-fast hover:bg-subtle ${isCurrent ? 'bg-secondary-container/50' : ''}`}
     >
       <button onClick={onPlay} aria-label={tr('play')} className="relative shrink-0 rounded-xl overflow-hidden focus-ring">
         <Cover track={t} className="w-12 h-12 rounded-xl" iconSize={22} />
-        <span className={`absolute inset-0 flex items-center justify-center bg-black/45 text-white transition-opacity ${isCurrent && playing ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+        <span className={`absolute inset-0 flex items-center justify-center bg-black/45 text-white transition-opacity ${isCurrent && (playing || busy) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
           <Icon name={isCurrent && playing ? 'graphic_eq' : 'play_arrow'} fill size={22} />
         </span>
+        {busy && <span className="absolute inset-0 flex items-center justify-center bg-black/55 animate-fade-in"><ProgressRing size={24} color="#fff" /></span>}
       </button>
       <div className="min-w-0 flex-1">
         <div className={`truncate text-body-lg ${isCurrent ? 'text-primary font-medium' : 'text-on-surface'}`}>{o.title}</div>
@@ -131,7 +130,8 @@ export function DiscoverView() {
         last = { q, results: r };
         setHistory((h) => { const next = [q, ...h.filter((x) => x.toLowerCase() !== q.toLowerCase())].slice(0, 8); saveHistory(next); return next; });
         scroller.current?.scrollTo({ top: 0 });
-        if (r[0]) void resolveStream(onlineKey(r[0].source, r[0].id)).catch(() => undefined); // the first song is ready before it is clicked
+        // the first two songs are downloaded in the background, one after the other (parallel downloads only slow each other down)
+        void r.slice(0, 2).reduce((p, o) => p.then(() => (id === reqId.current ? resolveStream(onlineKey(o.source, o.id)).then(() => undefined, () => undefined) : undefined)), Promise.resolve());
       })
       .catch((e) => {
         if (id !== reqId.current) return;

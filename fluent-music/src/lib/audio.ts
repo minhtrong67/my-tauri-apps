@@ -191,7 +191,7 @@ class Engine {
         window.clearTimeout(d.watch);
         d.watch = window.setTimeout(() => {
           if (d.seq === seq && d.path === path && d.audio.readyState < 3 && (isMain() ? this.wantPlay : true)) this.handleError(d);
-        }, 12000);
+        }, 25000);
       })
       .catch((e) => {
         if (d.seq !== seq || d.path !== path) return;

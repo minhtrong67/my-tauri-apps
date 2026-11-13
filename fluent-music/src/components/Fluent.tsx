@@ -2,12 +2,12 @@ import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { fmtTime } from '../lib/utils';
 
 /** Fluent ProgressRing (indeterminate) */
-export function ProgressRing({ size = 32, className = '', stroke }: { size?: number; className?: string; stroke?: number }) {
+export function ProgressRing({ size = 32, className = '', stroke, color }: { size?: number; className?: string; stroke?: number; color?: string }) {
   const sw = stroke ?? (size <= 20 ? 2 : size <= 40 ? 3 : 4);
   const r = (size - sw) / 2;
   const calm = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   return (
-    <svg role="progressbar" aria-busy="true" width={size} height={size} viewBox={`0 0 ${size} ${size}`} className={`shrink-0 ${calm ? '' : 'ring-spin'} ${className}`} style={{ color: 'rgb(var(--fl-primary))' }}>
+    <svg role="progressbar" aria-busy="true" width={size} height={size} viewBox={`0 0 ${size} ${size}`} className={`shrink-0 ${calm ? '' : 'ring-spin'} ${className}`} style={{ color: color ?? 'rgb(var(--fl-primary))' }}>
       <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="currentColor" strokeOpacity={0.18} strokeWidth={sw} />
       <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" pathLength={100}
         strokeDasharray="40 100" className={calm ? '' : 'ring-arc'} transform={`rotate(-90 ${size / 2} ${size / 2})`} />

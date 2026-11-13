@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { listen } from '@tauri-apps/api/event';
 import { tr } from '../lib/i18n';
 import { IconButton } from './ui';
 import { SeekSlider } from './Fluent';
@@ -36,4 +37,30 @@ export function TransportControls({ size = 'md' }: { size?: 'md' | 'lg' }) {
       <IconButton icon={repeat === 'one' ? 'repeat_one' : 'repeat'} title={`${tr('repeat')} (R)`} active={repeat !== 'off'} onClick={st.cycleRepeat} />
     </div>
   );
+}
+
+/** While an online song is being fetched: seconds waited, the stage the backend reports, and a message that fits */
+export function useLoadingStatus(remoteId?: string) {
+  const loading = useStore((s) => s.loadingTrack);
+  const [sec, setSec] = useState(0);
+  const [stage, setStage] = useState<{ stage: string; bytes: number } | null>(null);
+  useEffect(() => {
+    if (!loading) { setSec(0); setStage(null); return; }
+    const t0 = Date.now();
+    const i = window.setInterval(() => setSec(Math.floor((Date.now() - t0) / 1000)), 1000);
+    return () => clearInterval(i);
+  }, [loading]);
+  useEffect(() => {
+    const un = listen<{ id: string; stage: string; bytes: number }>('online-load', (e) => {
+      if (remoteId && e.payload.id === remoteId) setStage({ stage: e.payload.stage, bytes: e.payload.bytes });
+    });
+    return () => { void un.then((f) => f()).catch(() => undefined); };
+  }, [remoteId]);
+  let text = '';
+  if (loading) {
+    if (stage?.stage === 'downloading') text = tr('loadingDownload', { mb: (stage.bytes / 1048576).toFixed(1) });
+    else if (stage?.stage === 'resolving' || sec < 4) text = tr('loadingResolve');
+    else text = sec < 15 ? tr('loadingSongSlow') : tr('loadingSongSlower');
+  }
+  return { loading, sec, text };
 }

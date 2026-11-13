@@ -2,6 +2,7 @@
 //! faster and more reliable than starting a helper program. yt-dlp is only an optional last resort for videos the direct lookup cannot
 //! play. Streams are served to the player through a local CORS proxy (see `proxy`). Lyrics reuse the LRCLIB lookup in `lyrics.rs`;
 //! this module only adds a small on-disk cache for them.
+mod fetch;
 mod http;
 pub mod innertube;
 pub mod proxy;
@@ -33,9 +34,28 @@ pub struct Resolved {
     pub url: String,
 }
 
+static APP: std::sync::OnceLock<AppHandle> = std::sync::OnceLock::new();
+
+/// progress of an online song's download for the interface: stage = "resolving" | "downloading" | "ready" | "failed"
+pub(crate) fn emit_load(id: &str, stage: &str, bytes: u64) {
+    if let Some(app) = APP.get() {
+        let _ = app.emit("online-load", serde_json::json!({ "id": id, "stage": stage, "bytes": bytes }));
+    }
+}
+
+/// the songs the user keeps (liked / saved): their cached audio is never deleted
+#[tauri::command]
+pub fn online_pin(ids: Vec<String>) {
+    fetch::set_pinned(ids);
+}
+
 pub fn init(app: &AppHandle) {
+    let _ = APP.set(app.clone());
     if let Ok(dir) = app.path().app_data_dir() {
         youtube::set_bin_dir(dir.join("bin"));
+    }
+    if let Ok(dir) = app.path().app_cache_dir() {
+        fetch::set_dir(dir.join("audio"));
     }
 }
 
@@ -81,9 +101,9 @@ pub async fn online_search(query: String, limit: Option<usize>) -> Result<Vec<On
     tauri::async_runtime::spawn_blocking(move || search_blocking(&q, limit)).await.map_err(|e| e.to_string())?
 }
 
-/// finished lookups. Stream URLs are valid for hours, but 25 minutes keeps them safely fresh
+/// finished lookups: the local address of a cached file stays valid as long as the file does
 static RESOLVED: Mutex<Option<HashMap<String, (Instant, String)>>> = Mutex::new(None);
-const RESOLVE_TTL: Duration = Duration::from_secs(25 * 60);
+const RESOLVE_TTL: Duration = Duration::from_secs(8 * 3600);
 
 fn resolve_blocking(id: &str, fresh: bool) -> Result<Resolved, String> {
     if !innertube::valid_id(id) {
@@ -96,24 +116,10 @@ fn resolve_blocking(id: &str, fresh: bool) -> Result<Resolved, String> {
             }
         }
     }
-    // yt-dlp first when it is installed: it follows YouTube's changes (challenges, tokens) and its links keep working for the whole
-    // song. The direct lookup below is the quick path for machines without it, and the fallback when yt-dlp fails.
-    let mut ytdlp_err: Option<String> = None;
-    let mut local: Option<String> = None;
-    if youtube::find_ytdlp().is_some() {
-        match youtube::resolve(id) {
-            Ok((u, h)) => local = Some(proxy::register_for(&u, h, Some(id.to_string()), "yt-dlp")?),
-            Err(e) => ytdlp_err = Some(e),
-        }
-    }
-    let local = match local {
-        Some(l) => l,
-        None => match innertube::resolve(id) {
-            Ok(s) => proxy::register_for(&s.url, vec![("User-Agent".into(), s.ua)], Some(id.to_string()), s.client)?,
-            Err(e) if e == "E_BAD_ID" => return Err(e),
-            // when yt-dlp was tried and failed, its reason is the more useful one
-            Err(e) => return Err(ytdlp_err.unwrap_or(e)),
-        },
+    // the audio is downloaded into the cache first and played from there (see `fetch`)
+    let local = match fetch::ensure(id, fresh)? {
+        fetch::Ready::File(path, mime) => proxy::register_file(path, mime)?,
+        fetch::Ready::Live(live) => proxy::register_live(live)?,
     };
     if let Ok(mut g) = RESOLVED.lock() {
         let m = g.get_or_insert_with(HashMap::new);

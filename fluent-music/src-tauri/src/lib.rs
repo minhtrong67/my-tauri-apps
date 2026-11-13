@@ -191,6 +191,7 @@ pub fn run() {
             online::online_search,
             online::online_resolve,
             online::online_diag,
+            online::online_pin,
             online::online_image,
             online::online_ytdlp_configure,
             online::online_ytdlp_status,

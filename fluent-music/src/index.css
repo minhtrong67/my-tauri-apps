@@ -443,3 +443,8 @@ html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
     radial-gradient(ellipse 70% 60% at 22% 30%, rgb(var(--fl-primary) / 0.22), transparent 70%),
     radial-gradient(ellipse 60% 60% at 85% 85%, rgb(var(--fl-primary) / 0.12), transparent 70%);
 }
+
+/* indeterminate bar on top of the player bar while a song is being fetched */
+@keyframes indet { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
+.indet-bar { animation: indet 1.2s var(--ease-std) infinite; }
+@media (prefers-reduced-motion: reduce) { .indet-bar { animation: none; width: 100%; opacity: 0.5; } }

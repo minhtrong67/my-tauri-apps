@@ -102,6 +102,7 @@ export const onlineResolve = (id: string, fresh = false) => invoke<{ url: string
 /** cover bytes fetched by the backend (the web view cannot read pixels of a cross-origin image) */
 export const onlineImage = (url: string) => invoke<ArrayBuffer>('online_image', { url });
 export const ytdlpConfigure = (path: string) => invoke<YtdlpStatus>('online_ytdlp_configure', { path });
+export const onlinePin = (ids: string[]) => invoke<void>('online_pin', { ids });
 export const onlineDiag = () => invoke<string>('online_diag');
 export const ytdlpStatus = () => invoke<YtdlpStatus>('online_ytdlp_status');
 export const ytdlpInstall = (runtime: boolean) => invoke<YtdlpStatus>('online_ytdlp_install', { runtime });
