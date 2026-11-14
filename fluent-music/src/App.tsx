@@ -132,6 +132,9 @@ export default function App() {
     return () => { alive = false; mq.removeEventListener('change', onChange); };
   }, [settings.themeMode, settings.seedColor, settings.dynamicColor, current?.id]);
 
+  // the colour of the song also washes the window background (see .ambient in index.css)
+  useEffect(() => { document.documentElement.dataset.ambient = settings.dynamicColor && current ? 'on' : 'off'; }, [settings.dynamicColor, !!current]);
+
   // Windows material (Mica / Acrylic / Mica Alt): re-applied when the choice or the light / dark mode changes
   useEffect(() => {
     let alive = true;
@@ -314,7 +317,8 @@ export default function App() {
   if (mini) return (<div key={lang} className="h-full"><MiniPlayer /><ContextMenu /><Snackbar /></div>);
 
   return (
-    <div key={lang} className="h-full flex flex-col text-on-surface">
+    <div key={lang} className="h-full flex flex-col text-on-surface relative isolate">
+      <div className="ambient" aria-hidden />
       <TitleBar />
       <div className="flex-1 min-h-0 flex">
         <NavDrawer />
@@ -337,7 +341,7 @@ export default function App() {
       {dragOver && (
         <div className="fixed inset-0 z-[90] fl-smoke flex items-center justify-center pointer-events-none animate-fade-in">
           <div className="fl-dialog text-on-surface px-12 py-10 text-center border-2 border-dashed !border-primary">
-            <Icon name="library_add" size={48} className="mx-auto text-primary-container" />
+            <Icon name="library_add" size={48} className="mx-auto text-primary" />
             <div className="text-title-lg mt-2">{tr('dropTitle')}</div>
             <div className="text-body-md">{tr('dropSub')}</div>
           </div>

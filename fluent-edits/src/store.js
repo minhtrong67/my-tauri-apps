@@ -23,7 +23,7 @@ export const TRANSITIONS = ['none', 'fade', 'slide', 'slideup', 'wipe', 'zoom', 
 export const defaultFilters = () => ({ brightness: 100, contrast: 100, saturate: 100, hue: 0, blur: 0, gray: 0, sepia: 0, vignette: 0, preset: 'none' });
 
 export const state = {
-  id: uid(), cover: null, name: '', aspect: '16:9', fps: 60, bg: '#000000',
+  id: uid(), cover: null, name: '', aspect: '16:9', fps: 30, bg: '#000000',
   media: [], main: [], overlay: [], text: [], audio: [], markers: [],
   sel: null, multi: [], t: 0, playing: false, pps: 80, snap: true, dirty: false, projectPath: null,
 };
@@ -300,7 +300,7 @@ export function toProject(extra = {}) {
 }
 
 export function resetProject() {
-  Object.assign(state, { id: uid(), name: '', aspect: '16:9', fps: 60, bg: '#000000', media: [], main: [], overlay: [], text: [], audio: [], markers: [], sel: null, multi: [], t: 0, playing: false, projectPath: null });
+  Object.assign(state, { id: uid(), name: '', aspect: '16:9', fps: 30, bg: '#000000', media: [], main: [], overlay: [], text: [], audio: [], markers: [], sel: null, multi: [], t: 0, playing: false, projectPath: null });
   layout();
   resetHistory();
   markDirty(false);

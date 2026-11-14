@@ -440,9 +440,29 @@ html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
 /* Now Playing backdrop: a soft accent glow on an opaque base (no full-screen blur) */
 .np-glow {
   background:
-    radial-gradient(ellipse 70% 60% at 22% 30%, rgb(var(--fl-primary) / 0.22), transparent 70%),
-    radial-gradient(ellipse 60% 60% at 85% 85%, rgb(var(--fl-primary) / 0.12), transparent 70%);
+    radial-gradient(ellipse 75% 65% at 20% 28%, rgb(var(--fl-ambient) / 0.42), transparent 70%),
+    radial-gradient(ellipse 65% 65% at 88% 88%, rgb(var(--fl-ambient) / 0.26), transparent 70%);
 }
+
+/* The colour of the playing song washes the whole window (behind the translucent layers), and the layers get a little more
+   see-through so it shows. Only while "colour from the cover" is on. */
+.ambient {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
+  transition: opacity 700ms var(--ease-std);
+  background:
+    radial-gradient(1000px 700px at 6% -8%, rgb(var(--fl-ambient) / 0.75), transparent 72%),
+    radial-gradient(900px 640px at 104% 108%, rgb(var(--fl-ambient) / 0.6), transparent 72%),
+    radial-gradient(700px 520px at 62% 38%, rgb(var(--fl-ambient) / 0.22), transparent 72%);
+}
+html:not(.dark) .ambient {
+  background:
+    radial-gradient(1000px 700px at 6% -8%, rgb(var(--fl-ambient) / 0.42), transparent 70%),
+    radial-gradient(900px 640px at 104% 108%, rgb(var(--fl-ambient) / 0.32), transparent 70%),
+    radial-gradient(700px 520px at 62% 38%, rgb(var(--fl-ambient) / 0.12), transparent 72%);
+}
+html[data-ambient='on'] .ambient { opacity: 1; }
+html[data-ambient='on'] { --fl-layer: rgba(28, 28, 28, 0.4); --fl-bar: rgba(20, 20, 20, 0.5); }
+html[data-ambient='on']:not(.dark) { --fl-layer: rgba(255, 255, 255, 0.5); --fl-bar: rgba(255, 255, 255, 0.6); }
 
 /* indeterminate bar on top of the player bar while a song is being fetched */
 @keyframes indet { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }

@@ -10,6 +10,15 @@ import { clamp, yieldNow } from './util.js';
 
 const SR = 48000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+/** Resolves as soon as the encoder's queue has drained to `limit` (or after a short safety timeout). Falls back to polling where 'dequeue' is missing. */
+const waitDequeue = (enc, limit) => new Promise((res) => {
+  if (!('ondequeue' in enc)) { setTimeout(res, 4); return; }
+  let tm = 0;
+  const done = () => { enc.removeEventListener('dequeue', on); clearTimeout(tm); res(); };
+  const on = () => { if (enc.encodeQueueSize <= limit) done(); };
+  tm = setTimeout(done, 50);
+  enc.addEventListener('dequeue', on);
+});
 const abortErr = () => new DOMException('Export cancelled', 'AbortError');
 
 /** Container / codec combinations the fast path can produce. */
@@ -44,7 +53,11 @@ export async function pickVideoConfig(fmt, w, h, fps, bitrate, safe = false) {
   }
   return null;
 }
-const audioConfig = (fmt) => ({ codec: fmt.acodec === 'aac' ? 'mp4a.40.2' : 'opus', sampleRate: SR, numberOfChannels: 2, bitrate: 192000 });
+const audioConfig = (fmt) => (fmt.acodec === 'aac'
+  ? { codec: 'mp4a.40.2', sampleRate: SR, numberOfChannels: 2, bitrate: 192000, aac: { format: 'aac' } }
+  : { codec: 'opus', sampleRate: SR, numberOfChannels: 2, bitrate: 192000 });
+/** AudioSpecificConfig for AAC-LC, 48 kHz, stereo — used when the encoder does not report its own decoder config. */
+const AAC_ASC = new Uint8Array([0x11, 0x90]);
 
 /** Which formats can the fast path write here? */
 export async function fastFormats(w = 1920, h = 1080, fps = 30) {
@@ -203,12 +216,49 @@ export class FrameSource {
 /* ------------------------------------------------------------------ */
 const audioClips = () => allMediaClips().filter((c) => c.kind !== 'image' && !c.muted && c.volume > 0 && getMedia(c.mediaId)?.url);
 
+/** Decodes a whole file with the browser's decoder (fallback for files that cannot be streamed). → { rate, start, data[] } */
+async function decodeWhole(m) {
+  const res = await fetch(m.url);
+  if ((+res.headers.get('content-length') || 0) > 200e6) throw new Error('memory');
+  const ctx = new OfflineAudioContext(2, 1, SR);
+  const b = await ctx.decodeAudioData(await res.arrayBuffer());
+  return { rate: b.sampleRate, start: 0, data: Array.from({ length: b.numberOfChannels }, (_, k) => b.getChannelData(k)) };
+}
+
 /**
- * Prepares one audio source per distinct media file.
- *  - MP4/MOV (AAC / Opus): streamed — only the second being mixed is ever decoded, so RAM stays flat for any length.
- *  - anything else: decoded once with decodeAudioData, only if the file is small enough.
+ * One decoded audio file. Streamed sources decode a few seconds at a time (RAM stays flat for any length);
+ * if streaming ever fails the whole file is decoded once instead, so a bad stream never turns into silence.
  */
-async function openAudio(signal) {
+class AudioSrc {
+  constructor(m, stream, whole) {
+    this.m = m; this.stream = stream; this.pcm = whole || null; this.whole = !!whole; this.cover = null; this.dead = '';
+    this.note = stream ? 'stream' : 'decoded';
+  }
+
+  /** PCM covering [a, b] seconds of the source (null = nothing there / unreadable). */
+  async range(a, b) {
+    if (this.whole) return this.pcm;
+    if (this.cover && a >= this.cover[0] - 1e-6 && b <= this.cover[1] + 1e-6) return this.pcm;
+    const wa = Math.max(0, a - 0.05), wb = Math.max(b, a) + 6; // decode ahead: far fewer decoder restarts
+    try {
+      this.pcm = await withTimeout(this.stream.window(wa, wb), 30000, 'audio decode');
+      this.cover = [wa, wb];
+      return this.pcm;
+    } catch (e) {
+      const why = String((e && e.message) || e);
+      try { this.stream.close(); } catch { /* ignore */ }
+      this.stream = null; this.whole = true;
+      try { this.pcm = await decodeWhole(this.m); this.note = `decoded (stream failed: ${why.slice(0, 80)})`; }
+      catch (e2) { this.pcm = null; this.dead = String((e2 && e2.message) || e2); this.note = `FAILED (${why.slice(0, 60)} / ${this.dead.slice(0, 60)})`; }
+      return this.pcm;
+    }
+  }
+
+  close() { if (this.stream) { try { this.stream.close(); } catch { /* ignore */ } } }
+}
+
+/** Opens every distinct audio file once. Unreadable ones are reported through `warn` instead of aborting the export. */
+async function openAudio(signal, warn) {
   const srcs = new Map();
   const ids = [...new Set(audioClips().map((c) => c.mediaId))];
   let used = 0;
@@ -223,59 +273,81 @@ async function openAudio(signal) {
         if (info === undefined) info = await parseMp3Audio(reader);
         if (info && (await AudioStream.supported(info))) {
           const stream = new AudioStream(reader, info);
-          try { if (await stream.window(0, 0.3)) { srcs.set(id, { stream }); continue; } } catch { /* decoder rejects this stream → full decode below */ }
+          try { if (await stream.window(0, 0.3)) { srcs.set(id, new AudioSrc(m, stream)); continue; } } catch { /* decoder rejects this stream → full decode below */ }
           stream.close();
         }
       }
     } catch { /* fall through to full decode */ }
     const est = (m.duration || 0) * SR * 2 * 4;
     if (used + est > 600e6) throw new Error('memory');
-    const res = await fetch(m.url);
-    if ((+res.headers.get('content-length') || 0) > 200e6) throw new Error('memory');
     try {
-      const ctx = new OfflineAudioContext(2, 1, SR);
-      const buf = await ctx.decodeAudioData(await res.arrayBuffer());
-      srcs.set(id, { buf });
-      used += buf.length * buf.numberOfChannels * 4;
-    } catch { /* no audio track → silent */ }
+      const pcm = await decodeWhole(m);
+      srcs.set(id, new AudioSrc(m, null, pcm));
+      used += pcm.data.length * pcm.data[0].length * 4;
+    } catch (e) {
+      if (e && e.message === 'memory') throw e;
+      // a video without an audio track lands here too; only audio files are expected to have sound
+      if (audioClips().some((c) => c.mediaId === id && c.kind === 'audio')) warn(m.name || 'audio');
+    }
   }
   return srcs;
 }
 
-async function renderAudio(srcs, from, frames) {
-  const ctx = new OfflineAudioContext(2, frames, SR);
+/**
+ * Mixes [from, from + frames/SR) of every audio clip into stereo — plain JS, no Web Audio: linear resampling
+ * (rate conversion and clip speed in one step) and piecewise-linear gain for volume and fades.
+ */
+async function mixBlock(srcs, from, frames, st) {
+  const L = new Float32Array(frames), R = new Float32Array(frames);
   const to = from + frames / SR;
   for (const c of audioClips()) {
     const a = srcs.get(c.mediaId);
     const end = c.start + c.dur;
     if (!a || end <= from || c.start >= to) continue;
-    const lt0 = Math.max(from, c.start) - c.start, lt1 = Math.min(to, end) - c.start;
-    const when = c.start + lt0 - from;
+    const t0 = Math.max(from, c.start), t1 = Math.min(to, end);
+    const lt0 = t0 - c.start, lt1 = t1 - c.start;
     const speed = clamp(c.speed || 1, 0.0625, 16);
-    const offset = c.in + lt0 * speed;
-    let buf = a.buf, bufStart = 0;
-    if (a.stream) {
-      const w = await a.stream.window(offset, offset + (lt1 - lt0) * speed + 0.05);
-      if (!w) continue;
-      buf = ctx.createBuffer(w.data.length, w.data[0].length, w.rate);
-      w.data.forEach((ch, k) => buf.copyToChannel(ch, k));
-      bufStart = w.start;
+    const p = await a.range(c.in + lt0 * speed, c.in + lt1 * speed + 0.05);
+    if (!p || !p.data.length || !p.data[0].length) continue;
+    const k0 = Math.round((t0 - from) * SR), k1 = Math.min(frames, Math.round((t1 - from) * SR));
+    const n = p.data[0].length, step = (speed * p.rate) / SR;
+    const ch = p.data, d0 = ch[0], d1 = ch.length > 1 ? ch[1] : ch[0];
+    const surround = ch.length >= 6;
+    const vol = clamp(c.volume, 0, 4), fi = c.fadeIn || 0, fo = c.fadeOut || 0;
+    const fading = (fi > 0 && lt0 < fi) || (fo > 0 && c.dur - lt1 < fo);
+    let pos = (c.in + lt0 * speed - p.start) * p.rate;
+    for (let k = k0; k < k1; k++, pos += step) {
+      if (pos < 0) continue;
+      const i0 = pos | 0;
+      if (i0 >= n) break;
+      const i1 = i0 + 1 < n ? i0 + 1 : i0, fr = pos - i0;
+      let g = vol;
+      if (fading) {
+        const lt = lt0 + (k - k0) / SR;
+        let f = 1;
+        if (fi > 0 && lt < fi) f *= lt / fi;
+        const rem = c.dur - lt;
+        if (fo > 0 && rem < fo) f *= rem > 0 ? rem / fo : 0;
+        g = vol * (f < 0 ? 0 : f > 1 ? 1 : f);
+      }
+      let l = d0[i0] + (d0[i1] - d0[i0]) * fr, r = d1[i0] + (d1[i1] - d1[i0]) * fr;
+      if (surround) { // 5.1 → stereo: FL FR FC LFE SL SR
+        const cc = ch[2][i0] * 0.707, sl = ch[4][i0] * 0.707, sr = ch[5][i0] * 0.707;
+        l += cc + sl; r += cc + sr;
+      }
+      L[k] += l * g; R[k] += r * g;
     }
-    if (!buf || offset >= bufStart + buf.duration) continue;
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-    src.playbackRate.value = speed;
-    const gain = ctx.createGain();
-    const vol = clamp(c.volume, 0, 4);
-    const gv = (lt) => vol * fadeFactor(c, lt);
-    gain.gain.setValueAtTime(gv(lt0), when);
-    for (const bp of [c.fadeIn, c.dur - c.fadeOut]) if (bp > lt0 && bp < lt1) gain.gain.linearRampToValueAtTime(gv(bp), when + (bp - lt0));
-    gain.gain.linearRampToValueAtTime(gv(lt1), when + (lt1 - lt0));
-    src.connect(gain).connect(ctx.destination);
-    const off = offset - bufStart;
-    src.start(when + Math.max(0, -off) / speed, Math.max(0, off), (lt1 - lt0) * speed);
   }
-  return ctx.startRendering();
+  let peak = 0;
+  for (let k = 0; k < frames; k++) {
+    const l = L[k], r = R[k];
+    if (l > 1) L[k] = 1; else if (l < -1) L[k] = -1;
+    if (r > 1) R[k] = 1; else if (r < -1) R[k] = -1;
+    const m = Math.max(Math.abs(L[k]), Math.abs(R[k]));
+    if (m > peak) peak = m;
+  }
+  if (peak > st.apeak) st.apeak = peak;
+  return [L, R];
 }
 
 /* ------------------------------------------------------------------ */
@@ -291,7 +363,7 @@ function diagText(st, sources, started) {
   const all = Math.max(1, performance.now() - started);
   const pc = (k) => Math.round((st[k] / all) * 100);
   const modes = [...new Set([...sources.values()].map((s) => s.mode + (s.why && s.mode !== 'hardware' ? ` (${s.why.slice(0, 200)})` : '')))].join(', ') || '–';
-  return `encoder: ${st.hw || '?'} · ${st.reused ? `reused ${st.reused}/${st.frames} frames · ` : ''}decode ${pc('prep')}% · draw ${pc('draw')}% · encode ${pc('enc') + pc('wait')}% · audio ${pc('audio')}% · decoder: ${modes}`;
+  return `encoder: ${st.hw || '?'} · ${st.reused ? `reused ${st.reused}/${st.frames} frames · ` : ''}decode ${pc('prep')}% · draw ${pc('draw')}% · encode ${pc('enc') + pc('wait')}% · audio ${pc('audio')}%${st.anote ? ` (${st.anote})` : ''}${st.skipped ? ` · skipped ${st.skipped} still frames` : ''} · decoder: ${modes}`;
 }
 
 export async function exportFast(o) {
@@ -305,7 +377,9 @@ export async function exportFast(o) {
   const acfg = audioConfig(fmt);
   if (!(await AudioEncoder.isConfigSupported(acfg)).supported) throw new Error('unsupported');
 
-  const bufs = await openAudio(signal);
+  const st = o.stats || (o.stats = {});
+  st.warn = [];
+  const bufs = await openAudio(signal, (name) => st.warn.push(name));
   const writer = createFileWriter(o.path, fmt.container === 'mp4' ? 'video/mp4' : 'video/webm');
   const onData = (data, pos) => writer.write(pos, data);
   const hasAudio = true;
@@ -330,7 +404,18 @@ export async function exportFast(o) {
   let fail = null;
   const venc = new VideoEncoder({ output: (c, m) => muxer.addVideoChunk(c, m), error: (e) => { fail = e; } });
   venc.configure(vcfg);
-  const aenc = new AudioEncoder({ output: (c, m) => muxer.addAudioChunk(c, m), error: (e) => { fail = e; } });
+  let audioCfgSent = false;
+  const aenc = new AudioEncoder({
+    output: (c, m) => {
+      // MP4 needs the AAC decoder config on the first chunk; without it players show a silent track
+      if (!audioCfgSent && fmt.acodec === 'aac' && !(m && m.decoderConfig && m.decoderConfig.description)) {
+        m = { ...(m || {}), decoderConfig: { codec: 'mp4a.40.2', sampleRate: SR, numberOfChannels: 2, ...((m && m.decoderConfig) || {}), description: AAC_ASC } };
+      }
+      audioCfgSent = true; st.achunks = (st.achunks || 0) + 1;
+      muxer.addAudioChunk(c, m);
+    },
+    error: (e) => { fail = e; },
+  });
   aenc.configure(acfg);
 
   const cv = document.createElement('canvas');
@@ -340,37 +425,42 @@ export async function exportFast(o) {
   const videoClips = () => [...state.main, ...state.overlay].filter((c) => c.kind === 'video' && getMedia(c.mediaId)?.url);
   setFrameResolver((c, m) => { const s = sources.get(c.id); return s && s.cur ? s.cur : (c.kind === 'image' ? null : { src: null, w: 0, h: 0, m }); });
 
-  const st = o.stats || (o.stats = {});
-  Object.assign(st, { prep: 0, draw: 0, enc: 0, audio: 0, wait: 0, frames: 0, hw: vcfg.hardwareAcceleration || 'no-preference' });
+  Object.assign(st, { achunks: 0, prep: 0, draw: 0, enc: 0, audio: 0, wait: 0, frames: 0, apeak: 0, skipped: 0, hw: vcfg.hardwareAcceleration || 'no-preference' });
   const lap = (k, t0) => { st[k] += performance.now() - t0; };
   const total = Math.max(1, Math.ceil(duration * fps));
   const started = performance.now();
   const keyEvery = Math.round(fps * 2);
   let base = null, lastKey = null; // last composited picture (re-used while nothing changes)
   let audioDone = 0; // seconds already encoded
-  const ABLK = 4; // seconds per audio block (fewer OfflineAudioContext / AudioDecoder instances over long exports)
+  const ABLK = 1; // seconds mixed per block
 
+  // Audio is produced in the background, a block at a time, so it never stalls the video loop
   const pushAudio = async (upTo) => {
     while (audioDone < upTo - 1e-6 && audioDone < duration) {
+      if (signal.aborted) throw abortErr();
       const frames = Math.min(Math.round(ABLK * SR), Math.round((duration - audioDone) * SR));
       if (frames <= 0) break;
-      let ab = null;
-      for (let attempt = 0; attempt < 3 && !ab; attempt++) {
-        try { ab = await withTimeout(renderAudio(bufs, audioDone, frames), 20000, 'audio render'); } catch (e) {
-          if (signal.aborted) throw abortErr();
-          console.warn('audio block failed, retrying', e);
-          for (const a of bufs.values()) if (a.stream) { try { a.stream.close(); } catch { /* ignore */ } } // next window reopens a fresh decoder
-          await sleep(100);
-        }
+      const a0 = performance.now();
+      let ch;
+      try { ch = await mixBlock(bufs, audioDone, frames, st); } catch (e) {
+        if (signal.aborted) throw abortErr();
+        console.warn('audio block failed', e);
+        ch = [new Float32Array(frames), new Float32Array(frames)]; // never freeze the export over one block
       }
-      const planar = new Float32Array(frames * 2); // a block that keeps failing becomes silence instead of freezing the export
-      if (ab) { planar.set(ab.getChannelData(0), 0); planar.set(ab.getChannelData(1), frames); }
+      const planar = new Float32Array(frames * 2);
+      planar.set(ch[0], 0); planar.set(ch[1], frames);
       const ad = new AudioData({ format: 'f32-planar', sampleRate: SR, numberOfFrames: frames, numberOfChannels: 2, timestamp: Math.round(audioDone * 1e6), data: planar });
       aenc.encode(ad);
       ad.close();
       audioDone += frames / SR;
+      st.audio += performance.now() - a0;
+      while (aenc.encodeQueueSize > 16) { if (fail || signal.aborted) break; await waitDequeue(aenc, 6); }
     }
   };
+  let audioChain = Promise.resolve(), audioErr = null;
+  const queueAudio = (upTo) => { audioChain = audioChain.then(() => pushAudio(upTo)).catch((e) => { audioErr = e; }); };
+  const checkAudio = () => { if (audioErr) { const e = audioErr; audioErr = null; throw e; } };
+  let lastEnc = -1, lastKeyI = -1e9, still = 0; // frames identical to the previous one are not re-encoded (see below)
 
   try {
     for (let i = 0; i < total; i++) {
@@ -406,12 +496,25 @@ export async function exportFast(o) {
         lastKey = key;
       } else st.reused = (st.reused || 0) + 1;
       lap('draw', q0); q0 = performance.now();
-      const frame = new VideoFrame(base, { timestamp: Math.round((i * 1e6) / fps), duration: Math.round(1e6 / fps) });
-      venc.encode(frame, { keyFrame: i % keyEvery === 0 });
-      frame.close();
+      // A picture that has not changed for a few frames (title card, still image, paused video) is encoded about once a
+      // second instead of every frame: the file stays valid (variable frame rate) and long stills export in a fraction of the time.
+      still = dirty ? 0 : still + 1;
+      const last = i === total - 1;
+      if (still >= 3 && !last && i - lastEnc < fps) {
+        st.skipped++;
+      } else {
+        const frame = new VideoFrame(base, { timestamp: Math.round((i * 1e6) / fps), duration: Math.round(1e6 / fps) });
+        const kf = i - lastKeyI >= keyEvery;
+        venc.encode(frame, { keyFrame: kf });
+        frame.close();
+        lastEnc = i; if (kf) lastKeyI = i;
+      }
       lap('enc', q0); st.frames++;
       for (const [id, s] of sources) if (!active.some((c) => c.id === id) && t > s.clip.start + s.clip.dur) { s.close(); sources.delete(id); }
-      if ((i + 1) % fps === 0 || i === total - 1) { const a0 = performance.now(); await race(pushAudio(i === total - 1 ? duration : (i + 1) / fps)); lap('audio', a0); }
+      if ((i + 1) % fps === 0 || i === total - 1) queueAudio(i === total - 1 ? duration : (i + 1) / fps);
+      checkAudio();
+      // audio runs alongside the video; only wait for it if it falls more than a few seconds behind
+      if (audioDone < t - 4) { const a0 = performance.now(); await race(audioChain); lap('wait', a0); checkAudio(); }
       // back-pressure keeps encoder queues and pending disk writes bounded
       const w0 = performance.now();
       let lastQ = venc.encodeQueueSize + aenc.encodeQueueSize + writer.pending, lastMove = w0;
@@ -421,7 +524,9 @@ export async function exportFast(o) {
         if (q !== lastQ) { lastQ = q; lastMove = performance.now(); }
         // encoder / disk made no progress for 45 s → fail loudly so the caller retries in safe mode instead of hanging
         else if (performance.now() - lastMove > 45000) throw new Error(`encoder stalled (video queue ${venc.encodeQueueSize}, audio queue ${aenc.encodeQueueSize}, pending ${writer.pending})`);
-        await sleep(4);
+        // Wake exactly when the encoder frees room instead of polling: a 4 ms timer is rounded up to ~15 ms on Windows,
+        // which alone capped the export at roughly 65 frames per second whatever the GPU could do.
+        if (venc.encodeQueueSize > 24) await waitDequeue(venc, 10); else await sleep(4);
       }
       lap('wait', w0);
       if (i % 4 === 0) {
@@ -431,6 +536,7 @@ export async function exportFast(o) {
       }
       await yieldNow(); // keep the window responsive (Cancel, dragging, repaint)
     }
+    await race(audioChain); checkAudio();
     if (o.onPhase) o.onPhase('finishing');
     await race(withTimeout(venc.flush(), 120000, 'video encoder flush'));
     await race(withTimeout(aenc.flush(), 60000, 'audio encoder flush'));
@@ -453,6 +559,10 @@ export async function exportFast(o) {
       for (const e of [venc, aenc]) { try { if (e.state !== 'closed') e.close(); } catch { /* ignore */ } }
     }, 0);
   }
+  st.anote = [...bufs.values()].map((a) => a.note).join(', ');
+  for (const a of bufs.values()) if (a.dead && !st.warn.includes(a.m.name || 'audio')) st.warn.push(a.m.name || 'audio');
+  const expectSound = audioClips().some((c) => c.kind === 'audio');
+  if (!st.warn.length && expectSound && (st.apeak < 1e-5 || !st.achunks)) st.warn.push('audio');
   st.report = diagText(st, sources, started);
   o.onProgress(1, { speed: duration / Math.max((performance.now() - started) / 1000, 0.001), eta: 0 });
   return o.path ? null : writer.blob();

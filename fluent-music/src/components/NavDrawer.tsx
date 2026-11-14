@@ -34,7 +34,7 @@ export function NavDrawer() {
       key={label + icon} onClick={onClick} onContextMenu={onContext} title={collapsed ? label : undefined} aria-current={active ? 'page' : undefined}
       className={`nav-item h-10 flex items-center gap-3 focus-ring ${collapsed ? 'w-10 justify-center' : 'px-3 w-full'}`}
     >
-      <Icon name={icon} size={20} fill={active} className={active ? 'text-primary-container' : ''} />
+      <Icon name={icon} size={20} fill={active} className={active ? 'text-primary' : ''} />
       {!collapsed && <span className={`truncate text-body-lg flex-1 text-left ${active ? 'font-semibold' : ''}`}>{label}</span>}
       {!collapsed && extra}
     </button>

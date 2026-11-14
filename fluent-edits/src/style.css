@@ -721,3 +721,5 @@ html[data-fx] .top-bar { background: transparent; }
 
 /* The project library is a full-screen page: with a translucent window material the editor must not show through behind it. */
 body:has(#home:not([hidden]):not(.leaving)) #app { visibility: hidden; }
+.banner.warn { background: var(--warn-bg); border-left-color: var(--warn); }
+.banner.warn .i { color: var(--warn); }

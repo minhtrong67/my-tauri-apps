@@ -110,7 +110,7 @@ function render(fmts) {
     sel('ex-f', t('export.format'), fmts.map((f) => [f.id, f.label || t(f.labelKey)]), defFmt.id),
     h('div', { class: 'f-grid' },
       sel('ex-r', t('export.resolution'), RES.map(([v, l]) => [String(v), l]), '1080'),
-      sel('ex-fps', t('export.fps'), FPS.map((v) => [String(v), v + ' fps']), '60')),
+      sel('ex-fps', t('export.fps'), FPS.map((v) => [String(v), v + ' fps']), String(FPS.includes(state.fps) ? state.fps : 30))),
     sel('ex-q', t('export.quality'), QUALITY.map(([k]) => [k, t('export.q.' + k)]), S.q),
     h('div', { class: 'insp-info', id: 'ex-info' }),
     h('p', { class: 'hint', id: 'ex-note' }),
@@ -281,7 +281,7 @@ async function runExport(p) {
       }
     }
     chime();
-    finish(t('export.done'), t('export.savedTo', { path: target }), stats.report ? `${fmtTime((performance.now() - started) / 1000, false)} · ${stats.report}` : '');
+    finish(t('export.done'), t('export.savedTo', { path: target }), stats.report ? `${fmtTime((performance.now() - started) / 1000, false)} · ${stats.report}` : '', stats.warn || []);
   } catch (err) {
     if (err && err.name === 'AbortError') { if (!cancelled) { dlg.close(); toast(t('export.cancelled')); } }
     else finish(t('export.failed'), String((err && err.message) || err), stats.report || diagEl.textContent);
@@ -299,8 +299,9 @@ function saveBlobBrowser(blob, name) {
   setTimeout(() => URL.revokeObjectURL(a.href), 10000);
 }
 
-function finish(title, msg, diag = '') {
+function finish(title, msg, diag = '', warn = []) {
   dlg.classList.remove('exporting');
-  bodyEl.replaceChildren(h('h3', { text: title }), h('p', { class: 'path', text: msg }), diag ? h('p', { class: 'hint diag', text: diag }) : h('span'));
+  const w = warn.length ? h('div', { class: 'banner warn' }, icon('alert'), h('span', { text: t('export.audioWarn', { names: [...new Set(warn)].join(', ') }) })) : h('span');
+  bodyEl.replaceChildren(h('h3', { text: title }), h('p', { class: 'path', text: msg }), w, diag ? h('p', { class: 'hint diag', text: diag }) : h('span'));
   actionsEl.replaceChildren(h('span', { class: 'spacer' }), h('button', { class: 'btn filled', onclick: () => dlg.close() }, icon('check'), t('btn.done')));
 }

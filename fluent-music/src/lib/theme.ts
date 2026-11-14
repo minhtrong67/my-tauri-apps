@@ -183,6 +183,7 @@ export function buildTokens(seedHex: string, dark: boolean): Record<string, stri
 
   const n = neutral as unknown as Record<string, RGB>;
   return {
+    ambient: trip(seed),
     primary: trip(accent),
     'on-primary': trip(onAccent),
     'primary-container': trip(tint(dark ? 0.28 : 0.12)),

@@ -62,6 +62,9 @@ Build the installer with `pnpm build` (see below); it appears in `target/release
 
 ## Export
 
+Audio is mixed in plain JavaScript (no Web Audio) and runs alongside the video, still pictures are encoded about once per second (variable frame rate), and new projects default to 30 fps. If a sound file cannot be read, the export finishes and shows a warning instead of silently dropping the sound.
+
+
 The export window always opens preset to **MP4 · 1080p · 60 fps** (format, resolution, frame rate and quality can still be changed; Quality = 17 / 25 / 37 Mbps at 1080p60) (H.264 + AAC; a VP9 MP4 is used only if the machine has no H.264 encoder). Pipeline: frame-exact decode (WebCodecs, MP4/MOV incl. fragmented MP4; sequential `<video>` playback as a fallback) → canvas composition → hardware encode (WebCodecs) → streaming muxer → file on disk.
 
 - **Fast:** the decoder runs ahead while the previous frame is drawn/encoded, and unchanged frames (e.g. 30 fps footage at 60 fps) are not redrawn.

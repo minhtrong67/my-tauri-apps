@@ -13,92 +13,103 @@ import { SOURCE_LABEL } from '../lib/online';
 import { activeLine, parseLyrics, type Lyrics } from '../lib/lrc';
 import { playClose, playOpen, prefersReducedMotion, type MorphTargets } from '../lib/morph';
 
-type VizStyle = 'bars' | 'wave' | 'circle';
-
 /** Spectrum -> 0..1 level for band i of n (log-ish spread so the bass does not hog the whole width) */
-const band = (spec: Uint8Array, i: number, n: number) => spec[Math.min(spec.length - 1, Math.floor(Math.pow(i / n, 1.4) * spec.length * 0.85))] / 255;
+const band = (spec: Uint8Array, i: number, n: number) => spec[Math.min(spec.length - 1, Math.floor(Math.pow(i / n, 1.35) * spec.length * 0.8))] / 255;
 
-export function Visualizer({ mode }: { mode: VizStyle }) {
+const toRgb = (v: string): [number, number, number] => {
+  const p = v.trim().split(/\s+/).map(Number);
+  return p.length === 3 && p.every((x) => Number.isFinite(x)) ? [p[0], p[1], p[2]] : [96, 165, 250];
+};
+
+/**
+ * Spectrum bars: smoothed (quick attack, slow fall), colour sliding from the accent to its partner colour across the width,
+ * a falling peak cap above every bar and a soft reflection under the baseline. Drawn at 30 fps, and not at all while hidden.
+ */
+export function Visualizer() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const c = ref.current!;
     const ctx = c.getContext('2d')!;
+    const N = 56;
+    const vals = new Float32Array(N);
+    const peaks = new Float32Array(N);
+    const fall = new Float32Array(N);
     let raf = 0;
     let phase = 0;
-    let rgb = '';
-    let rgbAt = 0;
     let last = 0;
+    let colA: [number, number, number] = [96, 165, 250];
+    let colB: [number, number, number] = [96, 165, 250];
+    let colAt = -1e9;
+    const mix = (a: number[], b: number[], t: number) => a.map((x, i) => Math.round(x + (b[i] - x) * t));
     const draw = (now = 0) => {
       raf = requestAnimationFrame(draw);
-      // 30 fps is plenty for a spectrum, and nothing is drawn while the window is hidden
       if (document.hidden || now - last < 32) return;
       last = now;
       const dpr = window.devicePixelRatio || 1;
       const w = c.clientWidth, h = c.clientHeight;
+      if (w < 10 || h < 10) return;
       const cw = Math.round(w * dpr), ch = Math.round(h * dpr);
       if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
-      if (!rgb || now - rgbAt > 400) { rgb = getComputedStyle(document.documentElement).getPropertyValue('--fl-primary').trim().split(' ').join(','); rgbAt = now; }
+      if (now - colAt > 400) {
+        const st = getComputedStyle(document.documentElement);
+        colA = toRgb(st.getPropertyValue('--fl-primary'));
+        colB = toRgb(st.getPropertyValue('--fl-tertiary'));
+        colAt = now;
+      }
       const spec = engine.getSpectrum();
       const playing = !engine.audio.paused;
-      phase += 0.06;
-      // without Web Audio data the bars idle with a soft sine so the screen is never frozen
-      const level = (i: number, n: number) => (spec ? band(spec, i, n) : playing ? 0.25 + 0.2 * Math.sin(phase + i * 0.5) + 0.15 * Math.sin(phase * 1.7 + i * 0.2) : 0.04);
-      if (mode === 'bars') {
-        const n = 48, gap = 6;
-        const bw = (w - gap * (n - 1)) / n;
-        for (let i = 0; i < n; i++) {
-          const v = level(i, n);
-          const bh = Math.max(6, v * h);
-          ctx.fillStyle = `rgba(${rgb}, ${0.35 + v * 0.65})`;
-          ctx.beginPath();
-          ctx.roundRect(i * (bw + gap), h - bh, bw, bh, Math.min(bw / 2, 6));
-          ctx.fill();
-        }
-      } else if (mode === 'wave') {
-        const data = engine.getWave();
-        const n = 96;
-        ctx.lineWidth = 4;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.strokeStyle = `rgba(${rgb}, 0.95)`;
-        ctx.shadowColor = `rgba(${rgb}, 0.55)`;
-        ctx.shadowBlur = 0;
+      phase += 0.05;
+      const gap = Math.max(3, Math.round(w * 0.006));
+      const bw = (w - gap * (N - 1)) / N;
+      const base = h * 0.76;
+      const maxH = base - 12;
+      const refl = Math.min(h - base - 6, maxH * 0.42);
+      for (let i = 0; i < N; i++) {
+        // without Web Audio data the bars idle with a soft wave so the screen is never frozen
+        const target = spec ? band(spec, i, N) : playing ? 0.3 + 0.22 * Math.sin(phase + i * 0.35) + 0.12 * Math.sin(phase * 1.7 + i * 0.17) : 0.03;
+        vals[i] += (target - vals[i]) * (target > vals[i] ? 0.6 : 0.16);
+        if (vals[i] >= peaks[i]) { peaks[i] = vals[i]; fall[i] = 0; }
+        else { fall[i] += 0.0012; peaks[i] = Math.max(vals[i], peaks[i] - fall[i]); }
+      }
+      // baseline
+      ctx.fillStyle = `rgba(${colA.join(',')},0.25)`;
+      ctx.fillRect(0, base + 1, w, 1);
+      for (let i = 0; i < N; i++) {
+        const x = i * (bw + gap);
+        const v = vals[i];
+        const bh = Math.max(4, v * maxH);
+        const col = mix(colA, colB, i / (N - 1)).join(',');
+        const g = ctx.createLinearGradient(0, base - bh, 0, base);
+        g.addColorStop(0, `rgba(${col},1)`);
+        g.addColorStop(1, `rgba(${col},${0.45 + v * 0.3})`);
+        ctx.fillStyle = g;
         ctx.beginPath();
-        for (let i = 0; i <= n; i++) {
-          const x = (i / n) * w;
-          const v = data ? (data[Math.min(data.length - 1, Math.floor((i / n) * data.length))] - 128) / 128 : playing ? 0.35 * Math.sin(phase + i * 0.18) * Math.sin(phase * 0.5 + i * 0.05) : 0;
-          const y = h / 2 + v * h * 0.42;
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-      } else {
-        const n = 72;
-        const cx = w / 2, cy = h / 2;
-        const r0 = Math.min(w, h) * 0.22;
-        const rMax = Math.min(w, h) * 0.5 - 6;
-        ctx.lineCap = 'round';
-        ctx.lineWidth = Math.max(3, (2 * Math.PI * r0) / n - 3);
-        for (let i = 0; i < n; i++) {
-          // mirror the spectrum so the ring is symmetric
-          const k = i < n / 2 ? i : n - 1 - i;
-          const v = level(k, n / 2);
-          const a = (i / n) * Math.PI * 2 - Math.PI / 2 + phase * 0.02;
-          const r1 = r0 + 4 + v * (rMax - r0);
-          ctx.strokeStyle = `rgba(${rgb}, ${0.35 + v * 0.65})`;
+        ctx.roundRect(x, base - bh, bw, bh, [bw / 2, bw / 2, 2, 2]);
+        ctx.fill();
+        // peak cap
+        const py = base - Math.max(bh, peaks[i] * maxH) - 7;
+        ctx.fillStyle = `rgba(${col},0.9)`;
+        ctx.beginPath();
+        ctx.roundRect(x, py, bw, 3, 1.5);
+        ctx.fill();
+        // reflection
+        if (refl > 8) {
+          const rh = Math.min(refl, bh * 0.42);
+          const rg = ctx.createLinearGradient(0, base + 3, 0, base + 3 + rh);
+          rg.addColorStop(0, `rgba(${col},0.3)`);
+          rg.addColorStop(1, `rgba(${col},0)`);
+          ctx.fillStyle = rg;
           ctx.beginPath();
-          ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
-          ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
-          ctx.stroke();
+          ctx.roundRect(x, base + 3, bw, rh, [2, 2, bw / 2, bw / 2]);
+          ctx.fill();
         }
       }
     };
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, [mode]);
+  }, []);
   return <canvas ref={ref} className="w-full h-full" />;
 }
 
@@ -285,16 +296,7 @@ function LyricsPane() {
 }
 
 function VizTab() {
-  const mode = useStore((s) => s.settings.visualizer);
-  const update = useStore((s) => s.updateSettings);
-  return (
-    <div className="h-full p-8 flex flex-col gap-6">
-      <div className="flex justify-center">
-        <Segmented value={mode} onChange={(v) => update({ visualizer: v })} options={[{ value: 'bars', label: tr('vizBars'), icon: 'bar_chart' }, { value: 'wave', label: tr('vizWave'), icon: 'waves' }, { value: 'circle', label: tr('vizCircle'), icon: 'circle' }]} />
-      </div>
-      <div className="flex-1 min-h-0 flex items-end"><div className={`w-full ${mode === 'bars' ? 'h-[70%]' : 'h-full'}`}><Visualizer mode={mode} /></div></div>
-    </div>
-  );
+  return <div className="h-full px-8 pb-6 pt-2"><Visualizer /></div>;
 }
 
 export function NowPlaying({ open = true, onClosed }: { open?: boolean; onClosed?: () => void }) {
