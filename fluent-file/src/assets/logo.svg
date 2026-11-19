@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="512" height="512" role="img" aria-label="Fluent File">
+<defs>
+<linearGradient id="back_tab" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8A21A"/><stop offset="1" stop-color="#C88008"/></linearGradient>
+<linearGradient id="back" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8A21A"/><stop offset="1" stop-color="#C88008"/></linearGradient>
+<linearGradient id="paper" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DDE6F1"/></linearGradient>
+<linearGradient id="line1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#96BEEC"/><stop offset="1" stop-color="#96BEEC"/></linearGradient>
+<linearGradient id="line2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#96BEEC"/><stop offset="1" stop-color="#96BEEC"/></linearGradient>
+<linearGradient id="front" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFDA62"/><stop offset="1" stop-color="#F7B729"/></linearGradient>
+<filter id="soft" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur stdDeviation="26"/></filter>
+</defs>
+<rect x="96" y="282" width="832" height="624" rx="64" fill="#5A3200" opacity=".28" filter="url(#soft)"/>
+<rect x="96" y="168" width="372" height="252" rx="64" fill="url(#back_tab)"/>
+<rect x="96" y="252" width="832" height="596" rx="64" fill="url(#back)"/>
+<rect x="176" y="312" width="672" height="348" rx="28" fill="url(#paper)"/>
+<rect x="252" y="392" width="360" height="32" rx="16" fill="url(#line1)"/>
+<rect x="252" y="472" width="248" height="32" rx="16" fill="url(#line2)"/>
+<rect x="80" y="408" width="864" height="468" rx="72" fill="#5A3200" opacity=".22" filter="url(#soft)" transform="translate(0 -6)"/>
+<rect x="80" y="408" width="864" height="468" rx="72" fill="url(#front)"/>
+</svg>

@@ -1,0 +1,296 @@
+@import "tailwindcss";
+@import "./fonts/fonts.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   Fluent Photos: Microsoft Fluent Design tokens (WinUI 3 / Windows 11)
+   Colours keep the semantic names the components already use, but the values
+   are Fluent: neutral layers, a single accent colour, 4 px controls, 8 px surfaces.
+   ========================================================================== */
+@theme inline {
+  --color-primary: var(--c-accent);
+  --color-on-primary: var(--c-on-accent);
+  --color-primary-container: var(--c-accent-subtle);
+  --color-on-primary-container: var(--c-accent-text);
+  --color-secondary-container: var(--c-subtle-selected);
+  --color-on-secondary-container: var(--c-text);
+  --color-tertiary-container: var(--c-caution-bg);
+  --color-on-tertiary-container: var(--c-caution-fg);
+  --color-error: var(--c-critical);
+  --color-on-error: var(--c-on-critical);
+  --color-error-container: var(--c-critical-bg);
+  --color-on-error-container: var(--c-critical);
+  --color-app: var(--app-bg);
+  --color-surface: var(--c-surface);
+  --color-surface-dim: var(--c-stage);
+  --color-layer: var(--c-layer);
+  --color-surface-low: var(--c-card);
+  --color-surface-container: var(--c-flyout);
+  --color-surface-high: var(--c-control);
+  --color-surface-highest: var(--c-control-hover);
+  --color-on-surface: var(--c-text);
+  --color-on-surface-variant: var(--c-text-2);
+  --color-outline: var(--c-stroke-strong);
+  --color-outline-variant: var(--c-stroke);
+  --color-inverse-surface: var(--c-inverse);
+  --color-inverse-on-surface: var(--c-on-inverse);
+  --color-scrim: #000;
+  --color-info: var(--c-info-bg);
+  --color-on-info: var(--c-text);
+  --color-success: var(--c-success-bg);
+  --color-on-success: var(--c-success-fg);
+  --color-warning: var(--c-caution-bg);
+  --color-on-warning: var(--c-caution-fg);
+  --font-sans: var(--app-font);
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+  --radius-2xl: 8px;
+  --ease-fluent: cubic-bezier(0, 0, 0, 1);
+  --ease-spring: cubic-bezier(0, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0, 0, 0, 1);
+  --shadow-e1: 0 0 2px rgb(0 0 0 / 0.12), 0 1px 2px rgb(0 0 0 / 0.14);
+  --shadow-e2: 0 0 2px rgb(0 0 0 / 0.12), 0 2px 4px rgb(0 0 0 / 0.14);
+  --shadow-e3: 0 0 8px rgb(0 0 0 / 0.12), 0 8px 16px rgb(0 0 0 / 0.14);
+  --shadow-e4: 0 0 8px rgb(0 0 0 / 0.2), 0 32px 64px rgb(0 0 0 / 0.28);
+}
+
+:root {
+  --app-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --nav-w: 280px;
+  --nav-w-compact: 48px;
+
+  /* accent (overwritten by theme.ts from the chosen colour) */
+  --c-accent: #005fb8; --c-accent-hover: #0a6cc4; --c-accent-press: #1d77c9; --c-accent-text: #003e92; --c-on-accent: #fff;
+  --c-accent-subtle: color-mix(in srgb, var(--c-accent) 14%, transparent);
+
+  /* neutrals: light */
+  --c-surface: #f3f3f3;          /* base layer, solid fallback for Mica */
+  --c-layer: #fbfbfb;            /* content layer */
+  --c-stage: #ececec;            /* behind a photo: always solid so nothing shows through the picture area */
+  --c-card: rgb(255 255 255 / 0.7);
+  --c-control: rgb(255 255 255 / 0.7);
+  --c-control-hover: rgb(249 249 249 / 0.9);
+  --c-flyout: rgb(252 252 252 / 0.9);
+  --c-text: #1a1a1a;
+  --c-text-2: rgb(0 0 0 / 0.606);
+  --c-stroke: rgb(0 0 0 / 0.08);
+  --c-stroke-strong: rgb(0 0 0 / 0.45);
+  --c-stroke-control: rgb(0 0 0 / 0.058);
+  --c-stroke-control-bottom: rgb(0 0 0 / 0.162);
+  --c-subtle-hover: rgb(0 0 0 / 0.037);
+  --c-subtle-press: rgb(0 0 0 / 0.024);
+  --c-subtle-selected: rgb(0 0 0 / 0.06);
+  --c-inverse: #1f1f1f; --c-on-inverse: #fff;
+  --c-critical: #c42b1c; --c-on-critical: #fff; --c-critical-bg: #fde7e9;
+  --c-caution-bg: #fff4ce; --c-caution-fg: #5d4100;
+  --c-success-bg: #dff6dd; --c-success-fg: #0e5c0e;
+  --c-info-bg: #f6f6f6;
+  --c-dialog-smoke: rgb(0 0 0 / 0.3);
+  --c-seg-on: #fff;
+  --app-bg: var(--c-surface);
+}
+:root.dark {
+  --c-surface: #202020;
+  --c-layer: #2a2a2a;
+  --c-stage: #161616;
+  --c-card: rgb(255 255 255 / 0.052);
+  --c-control: rgb(255 255 255 / 0.061);
+  --c-control-hover: rgb(255 255 255 / 0.084);
+  --c-flyout: rgb(44 44 44 / 0.92);
+  --c-text: #fff;
+  --c-text-2: rgb(255 255 255 / 0.786);
+  --c-stroke: rgb(255 255 255 / 0.084);
+  --c-stroke-strong: rgb(255 255 255 / 0.545);
+  --c-stroke-control: rgb(255 255 255 / 0.07);
+  --c-stroke-control-bottom: rgb(255 255 255 / 0.07);
+  --c-subtle-hover: rgb(255 255 255 / 0.061);
+  --c-subtle-press: rgb(255 255 255 / 0.042);
+  --c-subtle-selected: rgb(255 255 255 / 0.09);
+  --c-inverse: #f3f3f3; --c-on-inverse: #1a1a1a;
+  --c-critical: #ff99a4; --c-on-critical: #000; --c-critical-bg: #442726;
+  --c-caution-bg: #433519; --c-caution-fg: #fce100;
+  --c-success-bg: #393d1b; --c-success-fg: #6ccb5f;
+  --c-info-bg: #2b2b2b;
+  --c-dialog-smoke: rgb(0 0 0 / 0.5);
+  --c-seg-on: #5c5c5c;
+}
+
+/* ---------- Window materials ----------
+   mica / mica-alt / acrylic are drawn by Windows behind the (transparent) web view; the interface only adds
+   Fluent's semi-transparent layers on top. "acrylic-alt" is a calmer, thicker acrylic with an extra tint. */
+:root[data-material="mica"], :root[data-material="mica-alt"], :root[data-material="acrylic"], :root[data-material="acrylic-alt"] { --app-bg: transparent; }
+:root[data-material="mica"] { --c-layer: rgb(255 255 255 / 0.5); }
+:root.dark[data-material="mica"] { --c-layer: rgb(58 58 58 / 0.3); }
+:root[data-material="mica-alt"] { --c-layer: rgb(255 255 255 / 0.62); }
+:root.dark[data-material="mica-alt"] { --c-layer: rgb(58 58 58 / 0.42); }
+:root[data-material="acrylic"] { --c-layer: rgb(255 255 255 / 0.42); }
+:root.dark[data-material="acrylic"] { --c-layer: rgb(255 255 255 / 0.045); }
+:root[data-material="acrylic-alt"] { --app-bg: rgb(243 243 243 / 0.62); --c-layer: rgb(255 255 255 / 0.5); }
+:root.dark[data-material="acrylic-alt"] { --app-bg: rgb(32 32 32 / 0.66); --c-layer: rgb(255 255 255 / 0.05); }
+/* the flyouts, menus and dialogs are Fluent "in-app acrylic" */
+.acrylic { backdrop-filter: blur(30px) saturate(1.25); -webkit-backdrop-filter: blur(30px) saturate(1.25); }
+
+html, body, #root { height: 100%; }
+html { background: transparent; }
+body {
+  margin: 0; font-family: var(--app-font); font-size: .875rem; line-height: 1.43; background: transparent; color: var(--c-text);
+  overflow: hidden; -webkit-font-smoothing: antialiased; user-select: none; -webkit-user-select: none; text-rendering: optimizeLegibility;
+}
+input, textarea { user-select: text; -webkit-user-select: text; }
+img { -webkit-user-drag: none; }
+@layer base { button { font: inherit; color: inherit; cursor: default; background: none; border: 0; padding: 0; } }
+:focus-visible { outline: 2px solid var(--c-text); outline-offset: 1px; border-radius: 4px; }
+::selection { background: color-mix(in srgb, var(--c-accent) 35%, transparent); }
+
+/* Fluent scrollbars: a thin line that grows on hover */
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--c-text) 38%, transparent) transparent; }
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--c-text) 38%, transparent); border-radius: 6px; border: 4px solid transparent; background-clip: content-box; transition: border-width .15s; }
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--c-text) 55%, transparent); background-clip: content-box; border-width: 3px; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+@layer components {
+/* ---------- Buttons ---------- */
+.btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; flex-shrink: 0;
+  height: 2rem; padding: 0 .75rem; min-width: 2rem; border-radius: 4px; font-weight: 400; font-size: .875rem; white-space: nowrap;
+  border: 1px solid transparent; transition: background-color .083s linear, color .083s linear, border-color .083s linear, opacity .083s linear;
+}
+.btn svg { flex-shrink: 0; }
+.btn[disabled] { opacity: .45; pointer-events: none; }
+/* standard */
+.btn-tonal, .btn-outlined { background: var(--c-control); border-color: var(--c-stroke-control); border-bottom-color: var(--c-stroke-control-bottom); color: var(--c-text); }
+.btn-tonal:hover, .btn-outlined:hover { background: var(--c-control-hover); }
+.btn-tonal:active, .btn-outlined:active { background: var(--c-subtle-press); color: var(--c-text-2); border-bottom-color: var(--c-stroke-control); }
+/* accent */
+.btn-filled { background: var(--c-accent); color: var(--c-on-accent); border-color: rgb(255 255 255 / 0.08); border-bottom-color: rgb(0 0 0 / 0.22); }
+.btn-filled:hover { background: var(--c-accent-hover); }
+.btn-filled:active { background: var(--c-accent-press); color: color-mix(in srgb, var(--c-on-accent) 78%, transparent); border-bottom-color: rgb(255 255 255 / 0.08); }
+/* subtle (text) */
+.btn-text { color: var(--c-accent-text); }
+.btn-text:hover { background: var(--c-subtle-hover); }
+.btn-text:active { background: var(--c-subtle-press); }
+.btn-danger { background: var(--c-critical); color: var(--c-on-critical); border-color: rgb(255 255 255 / 0.08); border-bottom-color: rgb(0 0 0 / 0.22); }
+.btn-danger:hover { filter: brightness(1.08); }
+.btn-danger:active { filter: brightness(.92); }
+.btn-lg { height: 2.5rem; padding: 0 1.25rem; font-size: .9375rem; }
+.btn-sm { height: 1.75rem; padding: 0 .625rem; font-size: .8125rem; }
+/* icon-only subtle button */
+.btn-icon { width: 2rem; height: 2rem; min-width: 0; padding: 0; color: var(--c-text); }
+.btn-icon:hover { background: var(--c-subtle-hover); }
+.btn-icon:active { background: var(--c-subtle-press); color: var(--c-text-2); }
+.btn-icon.sm { width: 1.75rem; height: 1.75rem; }
+.btn-icon.on { background: var(--c-subtle-selected); }
+.btn-icon.filled { background: var(--c-accent); color: var(--c-on-accent); }
+.btn-icon.tonal { background: var(--c-control); border-color: var(--c-stroke-control); }
+.btn-icon.tonal:hover { background: var(--c-control-hover); }
+
+/* ---------- Surfaces ---------- */
+.glass { background: var(--c-flyout); backdrop-filter: blur(30px) saturate(1.25); -webkit-backdrop-filter: blur(30px) saturate(1.25); }
+.scrim-bg { background: var(--c-dialog-smoke); }
+.chip { display: inline-flex; align-items: center; gap: .375rem; height: 2rem; padding: 0 .75rem; border-radius: 4px; border: 1px solid var(--c-stroke-control); border-bottom-color: var(--c-stroke-control-bottom); background: var(--c-control); font-size: .8125rem; color: var(--c-text); transition: background-color .083s linear; }
+.chip:hover { background: var(--c-control-hover); }
+.chip.on { background: var(--c-accent); border-color: transparent; color: var(--c-on-accent); }
+.chip.on:hover { background: var(--c-accent-hover); }
+.field { height: 2rem; border-radius: 4px; background: var(--c-control); border: 1px solid var(--c-stroke-control); border-bottom-color: var(--c-stroke-strong); padding: 0 .75rem; width: 100%; outline: none; color: var(--c-text); transition: background-color .083s linear; }
+.field:hover { background: var(--c-control-hover); }
+.field:focus { background: var(--c-layer); border-bottom-color: var(--c-accent); box-shadow: inset 0 -1px 0 0 var(--c-accent); }
+.field::placeholder { color: var(--c-text-2); opacity: .9; }
+.divider { height: 1px; background: var(--c-stroke); }
+
+/* Settings cards (Windows 11 settings look) */
+.scard { background: var(--c-card); border: 1px solid var(--c-stroke); border-radius: 4px; }
+
+/* segmented control */
+.seg { display: inline-flex; padding: 2px; gap: 2px; border-radius: 4px; background: var(--c-subtle-selected); }
+.seg > button { position: relative; display: flex; flex: 1; align-items: center; justify-content: center; gap: .4rem; height: 1.75rem; padding: 0 .85rem; border-radius: 3px; font-size: .8125rem; color: var(--c-text-2); transition: background-color .083s linear; }
+.seg > button:hover { background: var(--c-subtle-hover); color: var(--c-text); }
+.seg > button[aria-checked="true"] { background: var(--c-seg-on); color: var(--c-text); box-shadow: 0 1px 2px rgb(0 0 0 / 0.16); }
+
+/* range slider: 4 px track, 20 px thumb with an accent dot */
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 1.25rem; background: transparent; cursor: default; --p: 50%; }
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--c-stroke-strong) var(--a, 0%), var(--c-accent) var(--a, 0%) var(--b, var(--p)), var(--c-stroke-strong) var(--b, var(--p))); opacity: 1; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -8px; border-radius: 50%; background: radial-gradient(circle, var(--c-accent) 0 5px, var(--c-seg-on) 5.5px); border: 1px solid var(--c-stroke); box-shadow: 0 1px 3px rgb(0 0 0 / 0.25); transition: background .12s; }
+input[type="range"]:hover::-webkit-slider-thumb { background: radial-gradient(circle, var(--c-accent) 0 6px, var(--c-seg-on) 6.5px); }
+input[type="range"]:active::-webkit-slider-thumb { background: radial-gradient(circle, var(--c-accent) 0 4px, var(--c-seg-on) 4.5px); }
+
+/* toggle switch: 40 x 20 */
+.switch { position: relative; width: 2.5rem; height: 1.25rem; border-radius: 10px; background: transparent; border: 1px solid var(--c-stroke-strong); transition: background-color .167s, border-color .167s; flex-shrink: 0; }
+.switch:hover { background: var(--c-subtle-hover); }
+.switch::after { content: ""; position: absolute; top: 50%; left: 4px; width: 12px; height: 12px; border-radius: 9999px; background: var(--c-text-2); transform: translateY(-50%); transition: left .167s var(--ease-fluent), width .1s, background-color .167s; }
+.switch:hover::after { width: 14px; height: 14px; }
+.switch.on { background: var(--c-accent); border-color: var(--c-accent); }
+.switch.on:hover { background: var(--c-accent-hover); }
+.switch.on::after { left: 22px; background: var(--c-on-accent); }
+.switch.on:hover::after { left: 21px; }
+
+/* ---------- Navigation view items ---------- */
+.nav-item { position: relative; display: flex; align-items: center; gap: .75rem; width: 100%; height: 2.5rem; padding: 0 .75rem; border-radius: 4px; color: var(--c-text); transition: background-color .083s linear; }
+.nav-item:hover { background: var(--c-subtle-hover); }
+.nav-item:active { background: var(--c-subtle-press); }
+.nav-item.on { background: var(--c-subtle-selected); }
+.nav-item.on::before { content: ""; position: absolute; left: 0; top: 50%; width: 3px; height: 16px; margin-top: -8px; border-radius: 2px; background: var(--c-accent); animation: indicator .25s var(--ease-fluent) both; }
+@keyframes indicator { from { transform: scaleY(.3); } to { transform: none; } }
+
+/* ---------- Motion (Fluent: short, decelerating, no overshoot) ---------- */
+@keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
+@keyframes scale-in { from { opacity: 0; transform: scale(.97) translateY(4px) } to { opacity: 1; transform: none } }
+@keyframes dialog-in { from { opacity: 0; transform: scale(.96) } to { opacity: 1; transform: none } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(2px) } to { opacity: 1; transform: none } }
+@keyframes slide-in-right { from { opacity: 0; transform: translateX(16px) } to { opacity: 1; transform: none } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: none } }
+@keyframes shimmer { 0% { background-position: -200% 0 } 100% { background-position: 200% 0 } }
+@keyframes float-up { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+@keyframes spin { to { transform: rotate(360deg) } }
+@keyframes progress { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+.anim-fade { animation: fade-in .167s linear both; }
+.anim-scale { animation: scale-in .167s var(--ease-fluent) both; }
+.anim-dialog { animation: dialog-in .25s var(--ease-fluent) both; }
+.anim-sheet { animation: dialog-in .25s var(--ease-fluent) both; }
+.anim-pop { animation: pop-in .167s var(--ease-fluent) both; }
+.anim-right { animation: slide-in-right .25s var(--ease-fluent) both; }
+.anim-toast { animation: toast-in .25s var(--ease-fluent) both; }
+.anim-float { animation: float-up .25s var(--ease-fluent) both; }
+.anim-spin { animation: spin 1s linear infinite; }
+.anim-breathe { animation: none; }
+.skeleton { background: linear-gradient(100deg, var(--c-control) 30%, var(--c-control-hover) 50%, var(--c-control) 70%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+.stagger > * { animation: float-up .25s var(--ease-fluent) both; animation-delay: calc(var(--i, 0) * 30ms); }
+
+/* ---------- Gallery tile ---------- */
+.tile { position: relative; overflow: hidden; border-radius: 4px; background: var(--c-control); cursor: default; outline: 1px solid var(--c-stroke); outline-offset: -1px; transition: box-shadow .167s; }
+.tile:hover { box-shadow: var(--shadow-e3); z-index: 2; }
+.tile img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .25s; }
+.tile.sel { outline: 2px solid var(--c-accent); outline-offset: -2px; }
+.tile .check { position: absolute; top: 8px; left: 8px; width: 20px; height: 20px; border-radius: 4px; display: grid; place-items: center; background: rgb(0 0 0 / 0.35); border: 1px solid rgb(255 255 255 / 0.9); color: transparent; opacity: 0; transition: opacity .12s; backdrop-filter: blur(6px); }
+.tile:hover .check, .selecting .tile .check { opacity: 1; }
+.tile.sel .check { opacity: 1; background: var(--c-accent); border-color: var(--c-accent); color: var(--c-on-accent); }
+.tile .fav { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 4px; display: grid; place-items: center; color: #fff; background: rgb(0 0 0 / 0.35); backdrop-filter: blur(6px); opacity: 0; transition: opacity .12s; }
+.tile .fav:hover { background: rgb(0 0 0 / 0.55); }
+.tile:hover .fav, .tile .fav.on { opacity: 1; }
+.tile .fav.on { color: #ff6b81; }
+.tile .cap { position: absolute; inset: auto 0 0 0; padding: 22px 10px 7px; font-size: .75rem; color: #fff; background: linear-gradient(transparent, rgb(0 0 0 / .6)); opacity: 0; transition: opacity .15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile:hover .cap { opacity: 1; }
+
+/* drag-over drop zone */
+.dropzone { position: fixed; inset: 8px; z-index: 90; border-radius: 8px; border: 2px dashed var(--c-accent); background: color-mix(in srgb, var(--c-accent) 10%, transparent); backdrop-filter: blur(6px); display: grid; place-items: center; pointer-events: none; animation: fade-in .167s both; }
+
+.checker { background-image: conic-gradient(#8883 25%, transparent 0 50%, #8883 0 75%, transparent 0); background-size: 16px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}
+.reduce-motion *, .reduce-motion *::before, .reduce-motion *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+
+:root { --toast-bottom: 24px; }
+#print-root { display: none; }
+@media print {
+  html, body { overflow: visible !important; height: auto !important; background: #fff !important; }
+  body > *:not(#print-root) { display: none !important; }
+  #print-root { display: block; text-align: center; }
+  #print-root img { max-width: 100%; max-height: 98vh; }
+}

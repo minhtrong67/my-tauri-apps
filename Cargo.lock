@@ -1446,6 +1446,40 @@ dependencies = [
 ]
 
 [[package]]
+name = "fluent-file"
+version = "1.1.0"
+dependencies = [
+ "dirs 6.0.0",
+ "image",
+ "notify 8.2.1",
+ "open",
+ "regex",
+ "serde",
+ "serde_json",
+ "sysinfo",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-global-shortcut",
+ "trash",
+]
+
+[[package]]
+name = "fluent-folder-icon"
+version = "1.0.0"
+dependencies = [
+ "base64 0.22.1",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-single-instance",
+ "tauri-plugin-window-state",
+ "windows-sys 0.59.0",
+ "winreg 0.52.0",
+]
+
+[[package]]
 name = "fluent-json"
 version = "2.0.0"
 dependencies = [
@@ -1530,6 +1564,25 @@ dependencies = [
  "tauri-plugin-single-instance",
  "window-vibrancy 0.6.0",
  "winreg 0.55.0",
+]
+
+[[package]]
+name = "fluent-photos"
+version = "2.0.0"
+dependencies = [
+ "image",
+ "kamadak-exif",
+ "notify 6.1.1",
+ "percent-encoding",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-opener",
+ "tauri-plugin-single-instance",
+ "tauri-plugin-window-state",
+ "trash",
 ]
 
 [[package]]
