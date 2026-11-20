@@ -19,7 +19,6 @@ export const ACCENTS: { id: string; hex: string; vi: string; en: string }[] = [
   { id: "orange", hex: "#F7630C", vi: "Cam", en: "Orange" },
   { id: "gold", hex: "#FF8C00", vi: "Vàng đậm", en: "Gold" },
   { id: "steel", hex: "#68768A", vi: "Xám thép", en: "Steel" },
-  { id: "graphite", hex: "#515C6B", vi: "Xám than", en: "Graphite" },
 ];
 
 export const prefersDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -62,6 +61,9 @@ export function accentShades(hex: string, dark: boolean) {
 
 /* ---------- window material (Mica / Acrylic) ---------- */
 let materialRun = 0;
+let markReady: () => void = () => {};
+/** Resolves once the first window material is in place, so the window is not shown before its backdrop exists. */
+export const themeReady = new Promise<void>((res) => { markReady = res; });
 /**
  * Applies the window backdrop. Returns false when this Windows version cannot draw it (Mica needs Windows 11),
  * in which case the interface falls back to solid colours.
@@ -69,7 +71,7 @@ let materialRun = 0;
 export async function applyMaterial(mode: ThemeMode, material: Material, dark: boolean): Promise<boolean> {
   const root = document.documentElement;
   const run = ++materialRun;
-  const finish = (effective: Material, ok: boolean) => { if (run === materialRun) root.dataset.material = effective; return ok; };
+  const finish = (effective: Material, ok: boolean) => { if (run === materialRun) root.dataset.material = effective; markReady(); return ok; };
   if (!isTauri || material === "none") {
     if (isTauri) { try { await getCurrentWindow().clearEffects(); } catch { /* ignore */ } }
     return finish("none", true);

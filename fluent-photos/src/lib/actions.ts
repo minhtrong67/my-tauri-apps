@@ -2,7 +2,7 @@ import { Trash2, Pencil } from "lucide-react";
 import { api, isTauri, onEvent, pickFolder, src } from "./tauri";
 import { app, settings, t, toast, userData, confirmDialog, promptDialog } from "./store";
 import type { Entry, Opened, Scope } from "./types";
-import { baseName, dirName, debounce, stem, uid } from "./utils";
+import { baseName, dirName, stem, uid } from "./utils";
 
 let libraryDir = "";
 let isLibrary = false;
@@ -11,14 +11,12 @@ function apply(o: Opened, library: boolean) {
   isLibrary = library;
   libraryDir = o.dir;
   app.set({ dir: o.dir, entries: o.entries, loading: false, loaded: true, selection: [], selecting: false, folder: "", format: "", search: "" });
-  if (settings.get().watch && isTauri) api.watch([o.dir], library).catch(() => {});
-  else if (isTauri) api.unwatch().catch(() => {});
 }
 
 export async function loadLibrary() {
-  app.set({ loading: true });
+  app.set({ loading: true, scope: { kind: "all" }, view: "gallery" });
   try {
-    apply(await api.library(), true);
+    apply(await api.library(settings.get().libraryPath), true);
   } catch (e) { app.set({ loading: false, loaded: true }); toast("error", t("toast.error", { msg: String(e) })); }
 }
 
@@ -31,7 +29,7 @@ export async function openPath(path: string) {
     apply(o, false);
     app.set({ scope: { kind: "all" } });
     if (o.current) openViewer(o.current, sortList(o.entries).map((e) => e.path));
-    else { app.set({ view: "gallery" }); toast("info", t("toast.opened", { n: o.entries.length })); }
+    else app.set({ view: "gallery" });
   } catch (e) { app.set({ loading: false }); toast("error", t("toast.error", { msg: String(e) })); }
 }
 
@@ -44,10 +42,9 @@ export async function refresh(quiet = false) {
   const { dir } = app.get();
   if (!dir) return;
   try {
-    const o = isLibrary ? await api.library() : await api.openTarget(dir);
+    const o = isLibrary ? await api.library(settings.get().libraryPath) : await api.openTarget(dir);
     app.set({ entries: o.entries, dir: o.dir });
     await loadScopeEntries();
-    if (!quiet) toast("success", t("toast.refreshed"));
   } catch (e) { toast("error", t("toast.error", { msg: String(e) })); }
 }
 
@@ -183,9 +180,17 @@ export async function refreshEntry(path: string) {
   } catch { /* ignore */ }
 }
 
-export async function rotateFile(path: string, deg: number) {
-  try { await api.rotate(path, deg); await refreshEntry(path); toast("success", t("toast.rotated")); }
-  catch (e) { toast(String(e).includes("unsupported") ? "warning" : "error", String(e).includes("unsupported") ? t("toast.unsupported") : t("toast.error", { msg: String(e) })); }
+const rotating = new Map<string, Promise<unknown>>();
+/** Rotates a picture on disk. Quick repeated clicks are queued per file, and no toast is shown for a success (the picture visibly turns). */
+export function rotateFile(path: string, deg: number) {
+  const run = async () => {
+    try { await api.rotate(path, deg); await refreshEntry(path); }
+    catch (e) { toast(String(e).includes("unsupported") ? "warning" : "error", String(e).includes("unsupported") ? t("toast.unsupported") : t("toast.error", { msg: String(e) })); }
+  };
+  const next = (rotating.get(path) ?? Promise.resolve()).then(run);
+  rotating.set(path, next);
+  next.finally(() => { if (rotating.get(path) === next) rotating.delete(path); });
+  return next;
 }
 
 export async function renameOne(path: string, newName: string): Promise<string | null> {
@@ -195,7 +200,6 @@ export async function renameOne(path: string, newName: string): Promise<string |
     const s = app.get();
     app.set({ current: s.current === path ? np : s.current, ctx: s.ctx.map((p) => (p === path ? np : p)) });
     await refresh(true);
-    toast("success", t("toast.renamed"));
     return np;
   } catch { toast("error", t("toast.renameFail")); return null; }
 }
@@ -264,8 +268,6 @@ export function printImage(path: string) {
 /* ---------------- Boot ---------------- */
 export async function boot() {
   if (!isTauri) { app.set({ loaded: true }); return; }
-  const refreshSoon = debounce(() => { if (app.get().view !== "editor") refresh(true); }, 400);
-  onEvent("fs-changed", () => refreshSoon());
   onEvent<string>("open-path", (p) => openPath(p));
   const start = await api.startupPath().catch(() => null);
   if (start) await openPath(start);

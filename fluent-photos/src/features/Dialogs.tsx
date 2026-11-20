@@ -52,7 +52,7 @@ export function DuplicatesDialog() {
   useEffect(() => {
     if (!open) return;
     setGroups(null);
-    api.duplicates(entries.map((e) => e.path)).then((g) => { setGroups(g); toast(g.length ? "info" : "success", g.length ? t("toast.found.n", { n: g.length }) : t("toast.noDup")); }).catch((e) => { setGroups([]); toast("error", t("toast.error", { msg: String(e) })); });
+    api.duplicates(entries.map((e) => e.path)).then((g) => { setGroups(g); }).catch((e) => { setGroups([]); toast("error", t("toast.error", { msg: String(e) })); });
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
   const extras = (groups ?? []).flatMap((g) => g.slice(1));
   const saved = extras.reduce((a, p) => a + (findEntry(p)?.size ?? 0), 0);

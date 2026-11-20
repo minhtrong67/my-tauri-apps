@@ -79,3 +79,19 @@ export async function applyStartup(mode: Settings["startup"]) {
     console.warn(e);
   }
 }
+
+let shown = false;
+/** Show the (initially hidden) window after the first paint, so it never flashes at a wrong position. */
+export async function showWindow() {
+  if (!inTauri || shown) return;
+  shown = true;
+  try {
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const w = getCurrentWindow();
+    await w.show();
+    await w.setFocus();
+  } catch (e) {
+    shown = false;
+    console.warn(e);
+  }
+}

@@ -288,7 +288,7 @@ export function Viewer() {
       {/* bottom: filmstrip row, slideshow progress, zoom bar (all in their own rows, below the picture) */}
       {!full && (
         <>
-          {strip && ctx.length > 1 && <div className="shrink-0 h-[5.25rem] px-3 items-center justify-center hidden sm:flex"><Filmstrip ctx={ctx} idx={idx} onPick={(i) => go(i, i > idx ? 1 : -1)} /></div>}
+          {strip && ctx.length > 1 && <div className="shrink-0 h-[5.25rem] px-3 items-center justify-center hidden md:flex"><Filmstrip ctx={ctx} idx={idx} onPick={(i) => go(i, i > idx ? 1 : -1)} /></div>}
           {playing && <div className="shrink-0 h-0.5 bg-on-surface/10 overflow-hidden"><div key={current} className="h-full bg-primary origin-left" style={{ animation: `progress ${slide.interval}s linear both` }} /></div>}
           <footer className="shrink-0 h-14 relative flex items-center justify-center gap-0.5 px-3">
             {showMini && nat && <Minimap nat={nat} box={box} tf={tf} url={url} />}
@@ -298,7 +298,7 @@ export function Viewer() {
             <div className="w-px h-5 bg-outline-variant mx-1.5" />
             <IconBtn sm icon={isFit ? ScanSearch : Expand} label={isFit ? tt("act.actual") : tt("act.fit")} onClick={() => (isFit ? zoomTo(1) : resetView(true))} />
             <IconBtn sm icon={full ? Minimize : Maximize} label={full ? tt("act.exitFullscreen") : tt("act.fullscreen")} kbd="F" onClick={toggleFull} />
-            <IconBtn sm icon={Film} label={tt("view.filmstrip")} on={strip} onClick={() => setStrip((v) => !v)} className="hidden sm:grid" />
+            <IconBtn sm icon={Film} label={tt("view.filmstrip")} on={strip} onClick={() => setStrip((v) => !v)} className="hidden md:grid" />
             {playing && <><div className="w-px h-5 bg-outline-variant mx-1.5" /><IconBtn sm icon={SlidersHorizontal} label={tt("view.slideshow.settings")} onClick={() => setSlideOpts(true)} /></>}
           </footer>
         </>
@@ -372,14 +372,14 @@ function InfoPanel({ path, nat, onClose }: { path: string; nat: { w: number; h: 
   const cams: [string, string | undefined][] = [[tt("info.camera"), cam], [tt("info.lens"), ex?.lens], [tt("info.iso"), ex?.iso], [tt("info.aperture"), ex?.f_number], [tt("info.shutter"), ex?.exposure], [tt("info.focal"), ex?.focal], [tt("info.software"), ex?.software]];
   const hasCam = cams.some(([, v]) => v);
   return (
-    <aside className="w-[21rem] max-w-[46%] shrink-0 overflow-y-auto bg-layer border-l border-outline-variant text-on-surface anim-right">
+    <aside className="w-[21rem] max-w-[42%] shrink-0 overflow-y-auto bg-layer border-l border-outline-variant text-on-surface anim-right">
       <div className="sticky top-0 z-10 flex items-center gap-2 pl-5 pr-2 h-12 bg-layer border-b border-outline-variant"><Info size={16} className="text-primary" /><h3 className="flex-1 font-semibold">{tt("info.title")}</h3><IconBtn sm icon={X} label={tt("close")} onClick={onClose} /></div>
       <div className="px-5 py-4 space-y-4">
         <dl className="space-y-2.5">{rows.filter(([, v]) => v).map(([k, v]) => (<div key={k}><dt className="text-xs text-on-surface-variant">{k}</dt><dd className="text-sm break-all">{v}</dd></div>))}</dl>
         <div className="divider" />
         <div className="flex items-center gap-2 font-semibold text-sm"><Camera size={16} className="text-primary" />{tt("info.camera")}</div>
         {!ex ? <div className="skeleton h-16 rounded-lg" /> : hasCam ? (
-          <div className="grid grid-cols-2 gap-2">{cams.filter(([, v]) => v).map(([k, v]) => (<div key={k} className="rounded bg-surface-low border border-outline-variant px-3 py-2 min-w-0 first:col-span-2"><div className="text-xs text-on-surface-variant">{k}</div><div className="text-sm truncate">{v}</div></div>))}</div>
+          <div className="grid grid-cols-2 gap-2">{cams.filter(([, v]) => v).map(([k, v]) => (<div key={k} className="rounded bg-surface-low border border-outline-variant px-3 py-2 min-w-0 first:col-span-2 data-[w=lens]:col-span-2" data-w={k === tt("info.lens") ? "lens" : undefined}><div className="text-xs text-on-surface-variant">{k}</div><div className="text-sm truncate">{v}</div></div>))}</div>
         ) : <p className="text-sm text-on-surface-variant">{tt("info.noExif")}</p>}
         {ex?.lat != null && ex?.lon != null && (
           <Btn kind="tonal" icon={MapPin} className="w-full" onClick={() => window.open(`https://www.openstreetmap.org/?mlat=${ex.lat}&mlon=${ex.lon}#map=15/${ex.lat}/${ex.lon}`, "_blank")}>{tt("info.openMap")} ({ex.lat.toFixed(4)}, {ex.lon.toFixed(4)})</Btn>

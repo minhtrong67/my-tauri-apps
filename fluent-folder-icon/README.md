@@ -24,7 +24,7 @@ Built with **Tauri 2 · React · TailwindCSS 4 · Vite · pnpm** in Microsoft **
 - **Icons (8,000+)** – solid Material Design icons (7,000+), solid Font Awesome (1,900+), **app logos** (TikTok, Facebook, GitHub, YouTube… 3,000+ brands), 1,500+ searchable emoji in 8 categories, outline Lucide icons, or your own image. Optional circle / rounded backdrop, opacity, offset, shadow and Multiply / Screen / Overlay blending.
 - **Text on folders** – font, color, size, letter spacing, line height, opacity, outline and shadow.
 - **Icons that stick** – applied with Windows' native `desktop.ini`, so they survive reboots and travel with the folder.
-- **Customized folders memory** – every folder you apply an icon to is remembered in a "Customized" tab, so you can select many and restyle, restore or re-add them to the list in one click.
+- **Customized folders memory** – every folder you apply an icon to stays in the folder list (and is remembered between launches), so you can select many and restyle or restore them in one click. Folders deleted from disk are removed automatically.
 - **Batch apply** – select many folders (drag & drop supported) and apply one design to all of them.
 - **Presets** – 28 built-in presets (Work, Documents, Downloads, GitHub, TikTok…); save the whole design, reapply with one click, export / import as JSON.
 - **Right-click launch** – optional "Customize with Fluent Folder Icon" entry in the folder context menu.

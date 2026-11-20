@@ -7,7 +7,7 @@ import type { Entry, ExifInfo, Opened } from "./types";
 export const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
 export const api = {
-  library: () => invoke<Opened>("library"),
+  library: (path?: string) => invoke<Opened>("library", { path: path || null }),
   openTarget: (path: string) => invoke<Opened>("open_target", { path }),
   startupPath: () => invoke<string | null>("startup_path"),
   statPaths: (paths: string[]) => invoke<Entry[]>("stat_paths", { paths }),
@@ -20,8 +20,6 @@ export const api = {
   rename: (path: string, newName: string) => invoke<string>("rename_file", { path, newName }),
   duplicates: (paths: string[]) => invoke<string[][]>("find_duplicates", { paths }),
   wallpaper: (path: string) => invoke<void>("set_wallpaper", { path }),
-  watch: (dirs: string[], recursive: boolean) => invoke<void>("watch_dirs", { dirs, recursive }),
-  unwatch: () => invoke<void>("unwatch"),
   getWindowMode: () => invoke<string>("get_window_mode"),
   setWindowMode: (mode: string) => invoke<void>("set_window_mode", { mode }),
   showWindow: () => invoke<void>("show_window"),

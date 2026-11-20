@@ -166,6 +166,11 @@ const en = {
   noCustomizedHint: "Folders you apply an icon to are remembered here, so you can restyle or restore many at once.",
   addToList: "Add to list",
   removeIcon: "Remove icon",
+  restartExplorer: "Restart Explorer",
+  restartExplorerTitle: "Icons not updating?",
+  restartExplorerDesc: "Icons refresh automatically after Apply. If one still looks stale, restart the Explorer shell. Open Explorer windows close briefly.",
+  explorerRestarting: "Restarting File Explorer…",
+  removedMissing: "Removed {n} folder(s) that no longer exist.",
 } as const;
 
 export type Key = keyof typeof en;
@@ -336,6 +341,11 @@ const vi: Record<Key, string> = {
   noCustomizedHint: "Các thư mục đã áp dụng icon sẽ được lưu lại ở đây để bạn đổi kiểu hoặc khôi phục hàng loạt.",
   addToList: "Thêm vào danh sách",
   removeIcon: "Xoá icon",
+  restartExplorer: "Khởi động lại Explorer",
+  restartExplorerTitle: "Icon chưa cập nhật?",
+  restartExplorerDesc: "Icon tự làm mới sau khi Áp dụng. Nếu vẫn còn cũ, hãy khởi động lại Explorer. Các cửa sổ Explorer đang mở sẽ đóng trong giây lát.",
+  explorerRestarting: "Đang khởi động lại File Explorer…",
+  removedMissing: "Đã loại {n} thư mục không còn tồn tại.",
 };
 
 export const dict = { en, vi };

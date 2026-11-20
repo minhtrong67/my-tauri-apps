@@ -145,9 +145,14 @@ export default function SettingsDialog({ settings, onChange, onClose }: { settin
             )}
 
             {sec === "shell" && (
-              <Row title={t("shellMenu")} desc={`${t("contextMenu")}. ${t("contextMenuHint")}`}>
-                <Switch checked={menu} onChange={toggleMenu} />
-              </Row>
+              <>
+                <Row title={t("shellMenu")} desc={`${t("contextMenu")}. ${t("contextMenuHint")}`}>
+                  <Switch checked={menu} onChange={toggleMenu} />
+                </Row>
+                <Row title={t("restartExplorerTitle")} desc={t("restartExplorerDesc")}>
+                  <button className="btn" onClick={() => api.restartExplorer().catch((e) => alert(String(e)))}>{t("restartExplorer")}</button>
+                </Row>
+              </>
             )}
 
             {sec === "about" && (

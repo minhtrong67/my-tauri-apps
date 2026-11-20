@@ -11,6 +11,7 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 use tauri::{AppHandle, Emitter, Manager};
+use tauri_plugin_window_state::StateFlags;
 
 const ICO_PREFIX: &str = "fluent-folder-icon-";
 const ATTR_READONLY: u32 = 0x1;
@@ -40,16 +41,25 @@ mod win {
         }
     }
 
-    /// Ask Explorer to redraw the folder (and its parent) immediately.
+    const FLUSHED_PATH: u32 = 0x1005; // SHCNF_PATHW | SHCNF_FLUSH
+
+    /// Ask Explorer to redraw one folder (and its parent) right now.
     pub fn notify(p: &Path) {
         unsafe {
             let w = wide(p);
-            SHChangeNotify(0x0000_2000, 0x0005, w.as_ptr() as *const _, ptr::null());
+            SHChangeNotify(0x0000_0800, FLUSHED_PATH, w.as_ptr() as *const _, ptr::null()); // SHCNE_ATTRIBUTES
+            SHChangeNotify(0x0000_2000, FLUSHED_PATH, w.as_ptr() as *const _, ptr::null()); // SHCNE_UPDATEITEM
             if let Some(parent) = p.parent() {
                 let pw = wide(parent);
-                SHChangeNotify(0x0000_1000, 0x0005, pw.as_ptr() as *const _, ptr::null());
+                SHChangeNotify(0x0000_1000, FLUSHED_PATH, pw.as_ptr() as *const _, ptr::null()); // SHCNE_UPDATEDIR
             }
-            SHChangeNotify(0x0800_0000, 0, ptr::null(), ptr::null());
+        }
+    }
+
+    /// Global "associations changed" broadcast: makes every Explorer window reload its icons.
+    pub fn notify_assoc() {
+        unsafe {
+            SHChangeNotify(0x0800_0000, 0x1000, ptr::null(), ptr::null()); // SHCNE_ASSOCCHANGED | SHCNF_FLUSH
         }
     }
 }
@@ -62,6 +72,7 @@ mod win {
     }
     pub fn set_attrs(_: &Path, _: u32) {}
     pub fn notify(_: &Path) {}
+    pub fn notify_assoc() {}
 }
 
 fn add_attrs(p: &Path, flags: u32) {
@@ -106,6 +117,9 @@ fn write_ini(p: &Path, lines: &[String]) -> Result<(), String> {
         bytes.extend_from_slice(&u.to_le_bytes());
     }
     remove_attrs(p, ATTR_READONLY | ATTR_HIDDEN | ATTR_SYSTEM);
+    // Delete first, then recreate: this also drops any "Mark of the Web" stream the old file carried,
+    // which recent Windows 11 updates use to decide whether to ignore a desktop.ini.
+    let _ = fs::remove_file(p);
     fs::write(p, bytes).map_err(|e| format!("desktop.ini: {e}"))?;
     win::set_attrs(p, ATTR_HIDDEN | ATTR_SYSTEM);
     Ok(())
@@ -203,6 +217,9 @@ fn apply_icon(path: String, data: String) -> Result<(), String> {
     lines.insert(header_at + 1, format!("IconResource={ico_name},0"));
     write_ini(&ini, &lines)?;
 
+    // Toggle the attribute with a notification in between so Explorer re-reads desktop.ini.
+    remove_attrs(&dir, ATTR_READONLY);
+    win::notify(&dir);
     add_attrs(&dir, ATTR_READONLY);
     win::notify(&dir);
     Ok(())
@@ -229,6 +246,38 @@ fn restore_icon(path: String) -> Result<(), String> {
     }
     win::notify(&dir);
     Ok(())
+}
+
+/// Call once after a batch: refreshes the shell icon cache so changes show without restarting Explorer.
+#[tauri::command]
+fn refresh_shell() {
+    win::notify_assoc();
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        // "ie4uinit -show" rebuilds the icon cache; hidden window, fire and forget.
+        let _ = std::process::Command::new("ie4uinit.exe")
+            .arg("-show")
+            .creation_flags(0x0800_0000)
+            .spawn();
+    }
+}
+
+/// Last resort when icons still look stale: restart the Explorer shell (Windows relaunches it by itself).
+#[tauri::command]
+fn restart_explorer() -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        std::process::Command::new("taskkill")
+            .args(["/f", "/im", "explorer.exe"])
+            .creation_flags(0x0800_0000)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+        return Ok(());
+    }
+    #[cfg(not(windows))]
+    Err("Windows only.".into())
 }
 
 #[tauri::command]
@@ -322,11 +371,18 @@ pub fn run() {
             let _ = app.emit("open-paths", paths);
         }))
         .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_window_state::Builder::default().build())
+        // The frontend shows the window once it has painted; the plugin must only restore size/position.
+        .plugin(
+            tauri_plugin_window_state::Builder::default()
+                .with_state_flags(StateFlags::all() & !StateFlags::VISIBLE)
+                .build(),
+        )
         .invoke_handler(tauri::generate_handler![
             inspect_folders,
             apply_icon,
             restore_icon,
+            refresh_shell,
+            restart_explorer,
             save_bytes,
             read_text,
             write_text,

@@ -129,7 +129,7 @@ export function Gallery() {
     return () => ro.disconnect();
   }, [loaded, list.length === 0]);
 
-  const gap = 10, pad = 16;
+  const gap = 8, pad = 20;
   const cols = Math.max(width < 640 ? 2 : 1, Math.floor((width - pad * 2 + gap) / (tile + gap)));
   const cell = Math.floor((width - pad * 2 - gap * (cols - 1)) / cols);
   const rowH = cell + gap, headH = 52;
@@ -268,7 +268,7 @@ export function Gallery() {
               <input className="field pl-9 pr-8" value={search} placeholder={tt("gal.search")} onChange={(e) => app.set({ search: e.target.value })} />
               {search && <button aria-label={tt("close")} className="absolute right-2 top-1/2 -translate-y-1/2 size-6 grid place-items-center rounded-md hover:bg-on-surface/10" onClick={() => app.set({ search: "" })}><X size={16} /></button>}
             </label>
-            <div className="hidden md:flex items-center gap-0.5">
+            <div className="flex items-center gap-0.5">
               <IconBtn icon={ListChecks} label={tt("gal.selectMode")} onClick={() => app.set({ selecting: true })} />
               {isTauri && <IconBtn icon={RefreshCw} label={tt("gal.refresh")} kbd="F5" onClick={() => refresh()} />}
               <IconBtn icon={FolderOpen} label={tt("gal.openFolder")} onClick={chooseFolder} />
@@ -277,11 +277,11 @@ export function Gallery() {
           </div>
         )}
         {/* filter row */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-          <Select value={sort} onChange={(v) => setSetting("sort", v)} options={sortOpts} className="w-52 shrink-0 !h-9 !text-[.8rem]" label={tt("gal.sort")} icon={<ArrowUpDown size={15} className="text-on-surface-variant" />} />
-          <Select value={folder} onChange={(v) => app.set({ folder: v })} className="w-52 shrink-0 !h-9 !text-[.8rem]" label={tt("gal.folder")} icon={<Folder size={15} className="text-on-surface-variant" />}
+        <div className="flex items-center gap-2 flex-wrap">
+          <Select value={sort} onChange={(v) => setSetting("sort", v)} options={sortOpts} className="w-44 shrink-0 !text-[.8rem]" label={tt("gal.sort")} icon={<ArrowUpDown size={15} className="text-on-surface-variant" />} />
+          <Select value={folder} onChange={(v) => app.set({ folder: v })} className="w-44 shrink-0 !text-[.8rem]" label={tt("gal.folder")} icon={<Folder size={15} className="text-on-surface-variant" />}
             options={[{ value: "", label: tt("gal.allFolders") }, ...folders.map((f) => ({ value: f, label: f.split(/[\\/]/).filter(Boolean).pop() || f, hint: String(base.filter((e) => e.folder === f).length) }))]} />
-          <Select value={format} onChange={(v) => app.set({ format: v })} className="w-44 shrink-0 !h-9 !text-[.8rem]" label={tt("gal.format")} icon={<FileType size={15} className="text-on-surface-variant" />}
+          <Select value={format} onChange={(v) => app.set({ format: v })} className="w-44 shrink-0 !text-[.8rem]" label={tt("gal.format")} icon={<FileType size={15} className="text-on-surface-variant" />}
             options={[{ value: "", label: tt("gal.allFormats") }, ...formats.map((f) => ({ value: f, label: f.toUpperCase() }))]} />
           <Chip icon={Layers} on={group && sort.startsWith("date")} onClick={() => setSetting("group", !group)}>{tt("gal.group")}</Chip>
           <div className="hidden sm:flex items-center gap-2 ml-auto pl-2 shrink-0">
@@ -306,7 +306,7 @@ export function Gallery() {
         ) : (
           <div ref={box} className="relative" style={{ height: offsets.total }}>
             {visible.map(({ r, y }) => r.kind === "head" ? (
-              <div key={r.key} className="absolute left-0 right-0 flex items-end gap-3 px-5 pb-2" style={{ top: y, height: headH }}>
+              <div key={r.key} className="absolute left-0 right-0 flex items-end gap-3 pb-2" style={{ top: y, height: headH, paddingLeft: pad }}>
                 <h2 className="text-lg font-semibold leading-6">{r.label}</h2><span className="text-xs text-on-surface-variant font-semibold pb-0.5">{r.count}</span>
               </div>
             ) : (

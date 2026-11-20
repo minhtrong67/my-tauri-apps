@@ -2,7 +2,7 @@ import { Component, useCallback, useEffect, useState, type ReactNode } from "rea
 import { Files, FolderHeart, Heart, Images, Settings as Gear, Image as ImageIcon, Upload, RefreshCw, PanelLeft } from "lucide-react";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { app, confirmDialog, settings, setSetting, useApp, useSettings, useT, t } from "./lib/store";
-import { applyMaterial, applyTheme, FONTS } from "./lib/theme";
+import { applyMaterial, applyTheme, FONTS, themeReady } from "./lib/theme";
 import { api, isTauri } from "./lib/tauri";
 import { boot, openPath, setScope } from "./lib/actions";
 import { cx } from "./lib/utils";
@@ -108,7 +108,8 @@ function Shell() {
 
   useEffect(() => {
     boot();
-    const raf = requestAnimationFrame(() => requestAnimationFrame(() => { if (isTauri) api.showWindow().catch(() => {}); }));
+    let raf = 0;
+    Promise.race([themeReady, new Promise((r) => setTimeout(r, 900))]).then(() => { raf = requestAnimationFrame(() => requestAnimationFrame(() => { if (isTauri) api.showWindow().catch(() => {}); })); });
     const noCtx = (e: MouseEvent) => { const el = e.target as HTMLElement; if (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA") e.preventDefault(); };
     window.addEventListener("contextmenu", noCtx);
     let un: (() => void) | undefined;

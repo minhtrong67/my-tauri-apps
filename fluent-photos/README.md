@@ -43,7 +43,6 @@ Fluent Photos giúp bạn lướt xem, sắp xếp và chỉnh sửa ảnh trên
 - **Yêu thích** và **Album** tự tạo (ảnh có thể ở nhiều thư mục khác nhau).
 - Chọn nhiều ảnh (Ctrl/Shift/ô chọn): yêu thích, thêm vào album, sao chép/di chuyển tới thư mục, **đổi tên hàng loạt**, xoá.
 - **Tìm ảnh trùng** (so sánh nội dung) và chuyển bản thừa vào Thùng rác.
-- Tự cập nhật khi thư mục thay đổi (file watcher, có thể tắt).
 
 **Trình xem**
 - Zoom theo con trỏ, kéo để di chuyển, pinch trên màn hình cảm ứng, bản đồ thu nhỏ, dải ảnh, vuốt chuyển ảnh.
@@ -61,13 +60,14 @@ Fluent Photos giúp bạn lướt xem, sắp xếp và chỉnh sửa ảnh trên
 - Xuất PNG/JPEG/WebP, đổi kích thước và chất lượng, giữ dữ liệu EXIF của JPEG, lưu bản sao, lưu đè (có xác nhận) hoặc sao chép vào clipboard.
 
 **Cài đặt**
-- Chế độ sáng / tối / theo hệ thống, 16 màu chủ đề Material hoặc màu tùy chọn, 3 cỡ chữ, tiếng Việt / English, 7 phông chữ (gồm Roboto), giảm chuyển động.
+- Chế độ sáng / tối / theo hệ thống, 15 màu nhấn Windows hoặc màu tùy chọn, 3 cỡ chữ, tiếng Việt / English, font hệ thống (cùng 7 phông chữ đóng gói sẵn), giảm chuyển động.
+- **Thư mục thư viện** tùy chọn (ví dụ `D:\Pictures`), tự quét cả thư mục con.
 - Tùy chọn cửa sổ khi mở app: **ghi nhớ kích thước** hoặc **luôn phóng to tối đa**.
-- Tìm kiếm trong cài đặt, bảng phím tắt, thông tin tác giả.
+- Trang cài đặt chia nhóm (Giao diện, Cửa sổ, Thư viện, Trình xem, Phím tắt, Giới thiệu) và có ô tìm kiếm.
 
 ## Cài đặt
 
-1. Tải tệp `Fluent Photos_1.1.0_x64-setup.exe` trong thư mục [`downloads`](downloads) (hoặc tự build, xem bên dưới).
+1. Build bộ cài (xem bên dưới) và lấy tệp `Fluent Photos_2.0.0_x64-setup.exe`.
 2. Chạy tệp cài đặt và làm theo hướng dẫn (cài cho người dùng hiện tại, không cần quyền quản trị).
 3. Mở **Fluent Photos** từ Start Menu.
 
@@ -79,7 +79,7 @@ Yêu cầu: Windows 10 / 11 (64-bit) với WebView2 Runtime (có sẵn trên Win
 |---|---|
 | Khung ứng dụng | [Tauri 2](https://tauri.app) (Rust) |
 | Giao diện | React 18, TypeScript, Vite 6, Tailwind CSS 4 |
-| Thiết kế | Microsoft Fluent Design, `@material/material-color-utilities` |
+| Thiết kế | Microsoft Fluent Design (Mica / Acrylic, màu nhấn Windows), Lucide icons |
 | Icon | [Lucide](https://lucide.dev) |
 | Xử lý ảnh | Canvas (trình chỉnh sửa), crate `image`, `kamadak-exif` (Rust) |
 
@@ -88,43 +88,41 @@ Yêu cầu: Windows 10 / 11 (64-bit) với WebView2 Runtime (có sẵn trên Win
 Yêu cầu: [Node.js](https://nodejs.org) 18+, [Rust](https://rustup.rs) và [điều kiện tiên quyết của Tauri](https://tauri.app/start/prerequisites/).
 
 ```bash
-npm install     # cài thư viện
-npm run dev     # chạy ứng dụng ở chế độ phát triển (tauri dev + Vite)
-npm run build   # build bộ cài Windows
+pnpm install    # cài thư viện
+pnpm dev         # chạy ứng dụng ở chế độ phát triển (tauri dev + Vite)
+pnpm build       # build bộ cài Windows
 ```
 
-Các lệnh bổ sung: `npm run web` (chỉ chạy giao diện Vite ở trình duyệt) và `npm run typecheck`.
+Các lệnh bổ sung: `pnpm web` (chỉ chạy giao diện Vite ở trình duyệt) và `pnpm typecheck`.
 
 Dự án nằm trong Cargo workspace dùng chung (`members = ["*/src-tauri"]`) nên mọi project dùng chung thư mục `target`.
 
 ## Build
 
 ```bash
-npm run build
+pnpm build
 ```
 
-Bộ cài NSIS được tạo trong `target/release/bundle/nsis/` của workspace (hoặc `src-tauri/target/...` nếu chạy độc lập). Chép tệp `Fluent Photos_1.1.0_x64-setup.exe` vào thư mục [`downloads`](downloads) để nút tải trên landing page hoạt động.
+Bộ cài NSIS được tạo trong `target/release/bundle/nsis/` của workspace (hoặc `src-tauri/target/...` nếu chạy độc lập).
 
 ## Cấu trúc project
 
 ```
 fluent-photos/
-├── index.html            # Landing page (một tệp, SEO, sáng/tối, EN/VI, màu chủ đề)
-├── favicon.svg, *.png    # Icon cho landing page
-├── downloads/            # Đặt tệp cài đặt .exe vào đây
 ├── screenshots/          # image01.png ... image04.png
+├── icon-512.png          # Icon dùng trong README
 ├── package.json, vite.config.ts, tsconfig.json
 ├── src/                  # Giao diện (Vite root)
 │   ├── index.html, main.tsx, App.tsx, index.css
 │   ├── components/       # ui, Overlays (tooltip, menu, toast, modal), Select
 │   ├── features/         # Gallery, Viewer, Editor, EditorPanels, SettingsDialog, Dialogs
-│   ├── lib/              # store, i18n, theme, tauri, actions, editorEngine
+│   ├── lib/              # store, i18n, theme (accent + Mica/Acrylic), tauri, actions, editorEngine
 │   ├── fonts/            # Phông chữ đóng gói sẵn (Roboto, Inter, ...)
 │   └── public/           # Icon của app
 └── src-tauri/            # Ứng dụng Tauri (Rust)
-    ├── src/lib.rs        # Lệnh: thumbnail, EXIF, ghi ảnh, Thùng rác, watcher...
+    ├── src/lib.rs        # Lệnh: thumbnail, EXIF, ghi ảnh, Thùng rác, quét thư mục...
     ├── src/exif_util.rs  # Đọc EXIF, giữ EXIF khi lưu JPEG
-    ├── icons/, installer/  # Bộ icon app, setup, uninstall (Microsoft Fluent Design, màu indigo)
+    ├── icons/, installer/  # Bộ icon app (ICO 16-256 px), setup, uninstall
     └── tauri.conf.json
 ```
 

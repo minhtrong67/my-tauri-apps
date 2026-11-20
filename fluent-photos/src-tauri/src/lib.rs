@@ -4,10 +4,8 @@ use serde::{Deserialize, Serialize};
 use std::hash::{Hash, Hasher};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
-use std::sync::Mutex;
 use tauri::{Emitter, Manager};
 use tauri_plugin_dialog::DialogExt;
-use notify::{RecursiveMode, Watcher};
 use tauri_plugin_window_state::StateFlags;
 
 const EXTS: [&str; 10] = ["png", "jpg", "jpeg", "jfif", "gif", "webp", "bmp", "ico", "avif", "svg"];
@@ -133,7 +131,7 @@ fn scan(dir: &Path) -> Vec<Entry> {
     v
 }
 
-/// Scans a folder and all of its sub folders (up to 8 levels deep).
+/// Scans a folder and all of its sub folders (up to 32 levels deep).
 fn scan_deep(root: &Path) -> Vec<Entry> {
     let mut out = Vec::new();
     let mut stack = vec![(root.to_path_buf(), 0usize)];
@@ -146,7 +144,7 @@ fn scan_deep(root: &Path) -> Vec<Entry> {
                 }
                 let p = e.path();
                 if p.is_dir() {
-                    if depth < 8 {
+                    if depth < 32 {
                         stack.push((p, depth + 1));
                     }
                 } else if is_img(&p) {
@@ -169,10 +167,20 @@ fn scan_deep(root: &Path) -> Vec<Entry> {
     out
 }
 
-/// Scans the user's Pictures folder (including sub folders) so it can be imported automatically.
+/// Scans the library folder and every sub folder inside it. `path` is the folder chosen in Settings;
+/// when it is empty the user's Pictures folder is used.
 #[tauri::command]
-async fn library(app: tauri::AppHandle) -> Result<Opened, String> {
-    let dir = app.path().picture_dir().map_err(|e| e.to_string())?;
+async fn library(app: tauri::AppHandle, path: Option<String>) -> Result<Opened, String> {
+    let dir = match path.as_deref().map(str::trim).filter(|p| !p.is_empty()) {
+        Some(p) => {
+            let d = PathBuf::from(p);
+            if !d.is_dir() {
+                return Err("not found".into());
+            }
+            d
+        }
+        None => app.path().picture_dir().map_err(|e| e.to_string())?,
+    };
     allow_dir(&app, &dir, true);
     blocking(move || Ok(Opened { dir: dir.to_string_lossy().into_owned(), entries: scan_deep(&dir), current: None })).await
 }
@@ -519,43 +527,6 @@ async fn set_wallpaper(path: String) -> Result<(), String> {
     .await
 }
 
-struct Watch(Mutex<Option<notify::RecommendedWatcher>>);
-
-/// Watches folders and emits "fs-changed" (debounced) when pictures are added, removed or modified.
-#[tauri::command]
-fn watch_dirs(app: tauri::AppHandle, state: tauri::State<Watch>, dirs: Vec<String>, recursive: bool) -> Result<(), String> {
-    let (tx, rx) = std::sync::mpsc::channel::<()>();
-    let mut w = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
-        if let Ok(ev) = res {
-            let relevant = matches!(ev.kind, notify::EventKind::Create(_) | notify::EventKind::Remove(_) | notify::EventKind::Modify(_));
-            if relevant && ev.paths.iter().any(|p| is_img(p) || p.extension().is_none()) {
-                let _ = tx.send(());
-            }
-        }
-    })
-    .map_err(|e| e.to_string())?;
-    for d in dirs {
-        let mode = if recursive { RecursiveMode::Recursive } else { RecursiveMode::NonRecursive };
-        let _ = w.watch(Path::new(&d), mode);
-    }
-    std::thread::spawn(move || {
-        // Ends by itself when the watcher (and its sender) is dropped.
-        while rx.recv().is_ok() {
-            while rx.recv_timeout(Duration::from_millis(700)).is_ok() {}
-            let _ = app.emit("fs-changed", ());
-        }
-    });
-    *state.0.lock().map_err(|e| e.to_string())? = Some(w);
-    Ok(())
-}
-
-#[tauri::command]
-fn unwatch(state: tauri::State<Watch>) {
-    if let Ok(mut g) = state.0.lock() {
-        *g = None;
-    }
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -577,7 +548,6 @@ pub fn run() {
         )
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .manage(Watch(Mutex::new(None)))
         .setup(|app| {
             if let Some(w) = app.get_webview_window("main") {
                 // The window is created hidden. Saved size and position are already restored by the window state plugin.
@@ -600,7 +570,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             thumb, library, open_target, startup_path, stat_paths, exif_info, write_image, pick_save_path, rotate_file,
-            delete_file, restore_file, transfer_files, rename_file, find_duplicates, set_wallpaper, watch_dirs, unwatch,
+            delete_file, restore_file, transfer_files, rename_file, find_duplicates, set_wallpaper, 
             get_window_mode, set_window_mode, show_window
         ])
         .run(tauri::generate_context!())

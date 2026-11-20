@@ -6,7 +6,7 @@ import type { Entry, Lang, Material, Scope, SortKey, ThemeMode, FontSize, View }
 /* ------------------------------ Settings (persisted) ------------------------------ */
 export interface Settings {
   theme: ThemeMode; accent: string; material: Material; navCompact: boolean; fontSize: FontSize; lang: Lang; font: string;
-  autoLoad: boolean; watch: boolean; tile: number; sort: SortKey; group: boolean;
+  autoLoad: boolean; libraryPath: string; tile: number; sort: SortKey; group: boolean;
   confirmDelete: boolean; keepExif: boolean; quality: number; reduceMotion: boolean;
   slide: { interval: number; transition: "fade" | "slide" | "zoom"; shuffle: boolean; loop: boolean };
   windowMode: "remember" | "maximized";
@@ -14,7 +14,7 @@ export interface Settings {
 export const DEFAULTS: Settings = {
   theme: "system", accent: "#0078D4", material: "mica", navCompact: false, fontSize: "md",
   lang: typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("vi") ? "vi" : "en",
-  font: "system", autoLoad: true, watch: true, tile: 190, sort: "date-desc", group: true,
+  font: "system", autoLoad: true, libraryPath: "", tile: 190, sort: "date-desc", group: true,
   confirmDelete: true, keepExif: true, quality: 95, reduceMotion: false,
   slide: { interval: 4, transition: "fade", shuffle: false, loop: true }, windowMode: "remember",
 };
@@ -75,7 +75,8 @@ export function toast(kind: ToastKind, msg: string, opts: { action?: ToastItem["
   // Full-screen viewing: nothing may cover the picture, so only errors are shown.
   if (app.get().viewerFull && app.get().view === "viewer" && kind !== "error") return 0;
   const item: ToastItem = { id: tid++, kind, msg, action: opts.action, ms: opts.ms ?? (opts.action ? 6500 : 3600) };
-  toasts.set((s) => ({ list: [...s.list.slice(-3), item] }));
+  // The same message never stacks; at most two toasts are on screen.
+  toasts.set((s) => ({ list: [...s.list.filter((x) => x.msg !== msg).slice(-1), item] }));
   return item.id;
 }
 export const dismissToast = (id: number) => toasts.set((s) => ({ list: s.list.filter((x) => x.id !== id) }));

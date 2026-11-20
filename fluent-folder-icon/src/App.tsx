@@ -2,15 +2,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { open, save } from "@tauri-apps/plugin-dialog";
-import { AlertCircle, CheckCircle2, FolderPlus, Download, RotateCcw, Settings as Gear, Wand2, X, Eraser, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { AlertCircle, CheckCircle2, FolderPlus, Download, RefreshCw, RotateCcw, Settings as Gear, Wand2, X, Eraser, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { api, type Item } from "./lib/api";
 import { buildIco, downscale, toBase64 } from "./lib/ico";
 import { luminance, renderDesign } from "./lib/render";
-import { applyEffect, applyNativeTheme, applyStartup, inTauri, loadSettings, saveSettings, type Settings } from "./lib/settings";
+import { applyEffect, applyNativeTheme, applyStartup, inTauri, loadSettings, saveSettings, showWindow, type Settings } from "./lib/settings";
 import { loadPresets, normalizeDesign, savePresets } from "./lib/presets";
 import { defaultDesign, type Design, type Preset } from "./lib/types";
 import { LangCtx, Segmented, useT } from "./components/ui";
-import FolderSidebar, { type SideTab } from "./components/FolderSidebar";
+import FolderSidebar from "./components/FolderSidebar";
 import FolderPanel from "./components/FolderPanel";
 import IconPanel from "./components/IconPanel";
 import TextPanel from "./components/TextPanel";
@@ -41,9 +41,9 @@ export default function App() {
 function Shell({ settings, setSettings }: { settings: Settings; setSettings: (s: Settings) => void }) {
   const t = useT();
   const [design, setDesign] = useState<Design>(defaultDesign);
-  const [items, setItems] = useState<Item[]>([]);
-  const [hist, setHist] = useState<Item[]>(loadHist);
-  const [sideTab, setSideTab] = useState<SideTab>("list");
+  const [items, setItems] = useState<Item[]>(loadHist);
+  const itemsRef = useRef<Item[]>([]);
+  itemsRef.current = items;
   const [tab, setTab] = useState<Tab>("folder");
   const [showSettings, setShowSettings] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -57,7 +57,7 @@ function Shell({ settings, setSettings }: { settings: Settings; setSettings: (s:
   const [sysDark, setSysDark] = useState(() => matchMedia("(prefers-color-scheme: dark)").matches);
 
   const dark = settings.theme === "dark" || (settings.theme === "system" && sysDark);
-  const selected = useMemo(() => (sideTab === "list" ? items : hist).filter((i) => i.sel), [items, hist, sideTab]);
+  const selected = useMemo(() => items.filter((i) => i.sel), [items]);
 
   // ---- theme / accent / backdrop
   useEffect(() => {
@@ -75,10 +75,22 @@ function Shell({ settings, setSettings }: { settings: Settings; setSettings: (s:
     saveSettings(settings);
   }, [settings, dark]);
   useEffect(() => { applyNativeTheme(settings.theme); }, [settings.theme]);
+  const booted = useRef(false);
   useEffect(() => {
-    applyEffect(settings.effect, dark).then((err) => err && setToast({ kind: "err", text: t("effectFailed", { name: settings.effect, err }) }));
+    applyEffect(settings.effect, dark).then(async (err) => {
+      if (err) setToast({ kind: "err", text: t("effectFailed", { name: settings.effect, err }) });
+      if (!booted.current) {
+        // first launch: backdrop + startup size are ready, so reveal the window in one clean step
+        booted.current = true;
+        await applyStartup(settings.startup);
+        await showWindow();
+      }
+    });
   }, [settings.effect, dark]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { applyStartup(settings.startup); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const id = setTimeout(showWindow, 2500); // safety net: never leave the window hidden
+    return () => clearTimeout(id);
+  }, []);
   useEffect(() => { savePresets(presets); }, [presets]);
 
   // ---- live preview: drawn straight onto canvases (no PNG encoding), one render per frame
@@ -120,16 +132,17 @@ function Shell({ settings, setSettings }: { settings: Settings; setSettings: (s:
     return () => { removeEventListener("focus", set); removeEventListener("blur", set); document.removeEventListener("visibilitychange", set); };
   }, []);
 
-  // ---- remember customized folders
+  // ---- remember customized folders (only those carrying a custom icon are persisted)
   useEffect(() => {
-    localStorage.setItem(HIST_KEY, JSON.stringify(hist.map((h) => ({ path: h.path, name: h.name }))));
-  }, [hist]);
+    localStorage.setItem(HIST_KEY, JSON.stringify(items.filter((i) => i.customized).map((i) => ({ path: i.path, name: i.name }))));
+  }, [items]);
   useEffect(() => {
-    if (!inTauri || !hist.length) return;
-    api.inspect(hist.map((h) => h.path)).then((info) =>
-      setHist((prev) => prev.filter((p) => { const i = info.find((x) => x.path === p.path); return !!i && i.isDir && i.customized; })),
+    // on launch, drop remembered folders that were deleted or no longer carry a custom icon
+    if (!inTauri || !itemsRef.current.length) return;
+    api.inspect(itemsRef.current.map((i) => i.path)).then((info) =>
+      setItems((prev) => prev.filter((p) => { const i = info.find((x) => x.path === p.path); return !!i && i.isDir && i.customized; })),
     ).catch(() => {});
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // ---- toast auto-hide
   useEffect(() => {
@@ -173,30 +186,30 @@ function Shell({ settings, setSettings }: { settings: Settings; setSettings: (s:
     if (r) await addPaths(Array.isArray(r) ? r : [r]);
   };
 
-  /** Re-read the real state from disk for every folder we track; drops history entries that are no longer customized. */
-  const refreshAll = async () => {
-    const paths = [...new Set([...items, ...hist].map((i) => i.path))];
-    if (!paths.length) return;
-    const info = await api.inspect(paths);
+  /** Re-read the real state from disk: update icon status and auto-remove folders that no longer exist. */
+  const refreshAll = async (announce = false) => {
+    const cur = itemsRef.current;
+    if (!inTauri || !cur.length) return;
+    const info = await api.inspect(cur.map((i) => i.path));
     const by = new Map(info.map((i) => [i.path, i]));
-    setItems((prev) => prev.map((p) => ({ ...p, customized: by.get(p.path)?.customized ?? p.customized })));
-    setHist((prev) => prev.filter((p) => { const i = by.get(p.path); return !!i && i.isDir && i.customized; }));
+    const gone = cur.filter((i) => by.has(i.path) && !by.get(i.path)!.isDir).length;
+    setItems((prev) => prev.filter((p) => by.get(p.path)?.isDir ?? true).map((p) => ({ ...p, customized: by.get(p.path)?.customized ?? p.customized })));
+    if (announce && gone) setToast({ kind: "ok", text: t("removedMissing", { n: gone }) });
   };
 
-  const changeSideTab = (v: SideTab) => {
-    setSideTab(v);
-    if (v === "history") refreshAll().catch(() => {});
-  };
+  // coming back from File Explorer: folders may have been deleted, renamed or reset meanwhile
+  useEffect(() => {
+    const check = () => refreshAll(true).catch(() => {});
+    addEventListener("focus", check);
+    return () => removeEventListener("focus", check);
+  }); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const addHistToList = () => {
-    const pick = hist.filter((h) => h.sel);
-    setItems((prev) => {
-      const have = new Set(prev.map((i) => i.path.toLowerCase()));
-      return [...prev, ...pick.filter((h) => !have.has(h.path.toLowerCase())).map((h) => ({ ...h, sel: true }))];
+  const restartExplorer = () =>
+    run(async () => {
+      if (!inTauri) return setToast({ kind: "err", text: t("winOnly") });
+      await api.restartExplorer();
+      setToast({ kind: "ok", text: t("explorerRestarting") });
     });
-    setHist((prev) => prev.map((h) => ({ ...h, sel: false })));
-    setSideTab("list");
-  };
 
   // ---- actions
   const run = async (fn: () => Promise<void>) => {
@@ -211,15 +224,10 @@ function Shell({ settings, setSettings }: { settings: Settings; setSettings: (s:
       const b64 = toBase64(await buildIco(await renderDesign(d, 512)));
       let ok = 0;
       const errs: string[] = [];
-      const done: Item[] = [];
       for (const f of selected) {
-        try { await api.apply(f.path, b64); ok++; done.push(f); } catch (e) { errs.push(`${f.name}: ${e}`); }
+        try { await api.apply(f.path, b64); ok++; } catch (e) { errs.push(`${f.name}: ${e}`); }
       }
-      // remember every folder that now carries a custom icon
-      setHist((prev) => {
-        const have = new Set(prev.map((h) => h.path.toLowerCase()));
-        return [...prev, ...done.filter((f) => !have.has(f.path.toLowerCase())).map((f) => ({ ...f, customized: true, sel: false }))];
-      });
+      await api.refreshShell().catch(() => {});
       await refreshAll();
       setToast(errs.length ? { kind: "err", text: t("failedN", { n: errs.length, err: errs[0] }) } : { kind: "ok", text: t("appliedN", { n: ok }) });
     });
@@ -233,6 +241,7 @@ function Shell({ settings, setSettings }: { settings: Settings; setSettings: (s:
       for (const f of selected) {
         try { await api.restore(f.path); ok++; } catch (e) { errs.push(`${f.name}: ${e}`); }
       }
+      await api.refreshShell().catch(() => {});
       await refreshAll();
       setToast(errs.length ? { kind: "err", text: t("failedN", { n: errs.length, err: errs[0] }) } : { kind: "ok", text: t("restoredN", { n: ok }) });
     });
@@ -298,13 +307,14 @@ function Shell({ settings, setSettings }: { settings: Settings; setSettings: (s:
         <button className="btn" onClick={() => { setDesign(defaultDesign); setToast({ kind: "ok", text: t("designReset") }); }} title={t("resetAll")}><Eraser size={16} />{t("resetAll")}</button>
         <button className="btn" disabled={busy} onClick={exportIco}><Download size={16} />{t("exportIco")}</button>
         <div className="flex-1" />
+        <button className="btn" onClick={restartExplorer} title={`${t("restartExplorer")} — ${t("restartExplorerDesc")}`}><RefreshCw size={16} /><span className="hidden min-[1280px]:inline">{t("restartExplorer")}</span></button>
         <button className="btn btn-subtle btn-icon" title={t("settings")} aria-label={t("settings")} onClick={() => setShowSettings(true)}><Gear size={18} /></button>
       </header>
 
       <div className="flex min-h-0 flex-1 gap-3 px-3 pb-3">
         {/* folders */}
         <div className="flex-none overflow-hidden transition-all duration-300 ease-out" style={{ width: sidebar ? 280 : 0, marginRight: sidebar ? 0 : -12, opacity: sidebar ? 1 : 0 }}>
-          <FolderSidebar tab={sideTab} onTab={changeSideTab} items={items} hist={hist} setItems={setItems} setHist={setHist} dragging={dragging} onAddToList={addHistToList} />
+          <FolderSidebar items={items} setItems={setItems} dragging={dragging} />
         </div>
 
         {/* preview */}

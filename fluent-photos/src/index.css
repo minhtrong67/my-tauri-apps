@@ -207,7 +207,7 @@ img { -webkit-user-drag: none; }
 
 /* segmented control */
 .seg { display: inline-flex; padding: 2px; gap: 2px; border-radius: 4px; background: var(--c-subtle-selected); }
-.seg > button { position: relative; display: flex; flex: 1; align-items: center; justify-content: center; gap: .4rem; height: 1.75rem; padding: 0 .85rem; border-radius: 3px; font-size: .8125rem; color: var(--c-text-2); transition: background-color .083s linear; }
+.seg > button { position: relative; display: flex; white-space: nowrap; flex: 1; align-items: center; justify-content: center; gap: .4rem; height: 1.75rem; padding: 0 .85rem; border-radius: 3px; font-size: .8125rem; color: var(--c-text-2); transition: background-color .083s linear; }
 .seg > button:hover { background: var(--c-subtle-hover); color: var(--c-text); }
 .seg > button[aria-checked="true"] { background: var(--c-seg-on); color: var(--c-text); box-shadow: 0 1px 2px rgb(0 0 0 / 0.16); }
 
