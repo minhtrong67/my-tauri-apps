@@ -16,8 +16,8 @@ export interface ExifInfo {
 }
 export type ThemeMode = "system" | "light" | "dark";
 export type FontSize = "sm" | "md" | "lg";
-/** Window backdrop material. mica-alt is the Windows 11 "Mica Alt" (tabbed) backdrop. */
-export type Material = "none" | "mica" | "mica-alt" | "acrylic" | "acrylic-alt";
+/** Window backdrop material. mica-alt is the Windows 11 "Mica Alt" (tabbed) backdrop. frosted and liquid are CSS styles drawn on top of a system Acrylic backdrop. */
+export type Material = "none" | "mica" | "mica-alt" | "acrylic" | "acrylic-alt" | "frosted" | "liquid";
 export type Lang = "vi" | "en";
 export type SortKey = "date-desc" | "date-asc" | "name-asc" | "name-desc" | "size-desc" | "size-asc";
 export type View = "gallery" | "viewer" | "editor";

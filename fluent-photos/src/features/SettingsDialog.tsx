@@ -22,7 +22,8 @@ export const SHORTCUTS: [string, string[]][] = [
 import type { Key } from "../lib/i18n";
 const MATERIALS: [Material, Key, Key][] = [
   ["mica", "set.mat.mica", "set.mat.mica.d"], ["mica-alt", "set.mat.micaAlt", "set.mat.micaAlt.d"], ["acrylic", "set.mat.acrylic", "set.mat.acrylic.d"],
-  ["acrylic-alt", "set.mat.acrylicAlt", "set.mat.acrylicAlt.d"], ["none", "set.mat.none", "set.mat.none.d"],
+  ["acrylic-alt", "set.mat.acrylicAlt", "set.mat.acrylicAlt.d"],
+  ["frosted", "set.mat.frosted", "set.mat.frosted.d"], ["liquid", "set.mat.liquid", "set.mat.liquid.d"], ["none", "set.mat.none", "set.mat.none.d"],
 ];
 
 export function SettingsDialog() {
@@ -47,16 +48,16 @@ export function SettingsDialog() {
         note: (<>
           <p>{tt(MATERIALS.find((m) => m[0] === s.material)![2])}</p>
           {!materialOk && s.material !== "none" && <p className="flex items-start gap-2"><TriangleAlert size={14} className="shrink-0 mt-0.5 text-[#9d5d00] dark:text-[#fce100]" />{tt("set.material.unsupported")}</p>}
-          {(s.material === "acrylic" || s.material === "acrylic-alt") && <p>{tt("set.material.perf")}</p>}
+          {(s.material === "acrylic" || s.material === "acrylic-alt" || s.material === "frosted" || s.material === "liquid") && <p>{tt("set.material.perf")}</p>}
         </>) },
       { label: tt("set.color"), icon: Palette, stack: true, control: (
-        <div className="grid grid-cols-8 gap-2 w-max max-w-full">
+        <div className="grid grid-cols-8 gap-2 w-full">
           {ACCENTS.map((c) => {
             const on = s.accent.toLowerCase() === c.hex.toLowerCase();
             return <button key={c.id} aria-label={lang === "vi" ? c.vi : c.en} title={lang === "vi" ? c.vi : c.en} onClick={() => setSetting("accent", c.hex)} style={{ background: c.hex }}
-              className={cx("size-8 grid place-items-center rounded-md transition-shadow duration-150", on ? "ring-2 ring-offset-2 ring-offset-surface-container ring-on-surface" : "hover:ring-2 hover:ring-on-surface/30")}>{on && <Check size={16} color="#fff" strokeWidth={3} />}</button>;
+              className={cx("h-9 w-full grid place-items-center rounded-md transition-shadow duration-150", on ? "ring-2 ring-offset-2 ring-offset-surface-container ring-on-surface" : "hover:ring-2 hover:ring-on-surface/30")}>{on && <Check size={16} color="#fff" strokeWidth={3} />}</button>;
           })}
-          <label className="size-8 rounded-md overflow-hidden relative cursor-pointer ring-1 ring-outline-variant hover:ring-2 hover:ring-on-surface/30" style={{ background: "conic-gradient(red,yellow,lime,aqua,blue,magenta,red)" }} title={tt("set.color.custom")}>
+          <label className="h-9 w-full rounded-md overflow-hidden relative cursor-pointer ring-1 ring-outline-variant hover:ring-2 hover:ring-on-surface/30" style={{ background: "conic-gradient(red,yellow,lime,aqua,blue,magenta,red)" }} title={tt("set.color.custom")}>
             <input type="color" value={s.accent} onChange={(e) => setSetting("accent", e.target.value)} className="absolute inset-0 opacity-0 cursor-pointer" aria-label={tt("set.color.custom")} />
           </label>
         </div>) },
@@ -127,7 +128,7 @@ export function SettingsDialog() {
         <Btn kind="tonal" icon={RotateCcw} onClick={() => { Object.entries(DEFAULTS).forEach(([k, v]) => settings.set({ [k]: v } as never)); setWin("remember"); toast("success", t("set.resetDone")); }}>{tt("set.resetAll")}</Btn>
       </>}>
       <div className="h-full flex flex-col sm:flex-row min-h-0">
-        <aside className="sm:w-56 shrink-0 p-3 sm:pr-2 flex flex-col gap-2 sm:border-r border-outline-variant sm:overflow-y-auto">
+        <aside className="sm:w-56 shrink-0 p-3 flex flex-col gap-2 sm:border-r border-outline-variant bg-on-surface/[.03] sm:overflow-y-auto">
           <label className="relative block"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" />
             <input className="field pl-9" placeholder={tt("set.search")} value={q} onChange={(e) => setQ(e.target.value)} /></label>
           <nav className="flex sm:flex-col gap-0.5 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0" aria-label={tt("set.title")}>
@@ -143,13 +144,13 @@ export function SettingsDialog() {
             {!ql && <h3 className="text-xl font-semibold leading-7">{nav.find((n) => n.id === tab)?.title}</h3>}
             {shown.map((sec) => (
               <section key={sec.id} className="space-y-0.5">
-                {ql && <h4 className="flex items-center gap-2 mb-2 text-sm font-semibold"><sec.icon size={16} strokeWidth={1.75} className="text-primary" />{sec.title}</h4>}
+                {ql && <h4 className="flex items-center gap-2 mb-2 text-sm font-semibold"><sec.icon size={16} strokeWidth={1.75} className="text-accent" />{sec.title}</h4>}
                 <div className="flex flex-col gap-0.5">{sec.rows.map((r) => renderRow(sec, r))}</div>
               </section>
             ))}
             {aboutMatch && (
               <section>
-                {ql && <h4 className="flex items-center gap-2 mb-2 text-sm font-semibold"><Info size={16} strokeWidth={1.75} className="text-primary" />{tt("set.about")}</h4>}
+                {ql && <h4 className="flex items-center gap-2 mb-2 text-sm font-semibold"><Info size={16} strokeWidth={1.75} className="text-accent" />{tt("set.about")}</h4>}
                 <div className="scard p-5 flex gap-4 items-center">
                   <img src="/icon.svg" alt="" className="size-16 shrink-0" />
                   <div className="min-w-0"><div className="font-semibold text-lg">Fluent Photos</div><div className="text-sm text-on-surface-variant">{tt("about.version", { v: "2.0.0" })}</div>

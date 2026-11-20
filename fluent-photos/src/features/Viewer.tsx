@@ -38,7 +38,7 @@ export function Viewer() {
   const [info, setInfo] = useState(false);
   const [idleCursor, setIdleCursor] = useState(false);
   const [full, setFull] = useState(false);
-  const [strip, setStrip] = useState(true);
+  const [strip, setStrip] = useState(false); // the picture strip only appears when asked for
   const [playing, setPlaying] = useState(false);
   const [slideOpts, setSlideOpts] = useState(false);
   const [tick, setTick] = useState(0);
@@ -85,10 +85,7 @@ export function Viewer() {
   const next = useCallback(() => go(idx + 1, 1), [go, idx]);
   const prev = useCallback(() => go(idx - 1, -1), [go, idx]);
 
-  /* preload neighbours */
-  useEffect(() => {
-    [ctx[idx + 1], ctx[idx - 1]].forEach((p) => { if (p) { const i = new Image(); i.src = src(p, findEntry(p)?.mtime); } });
-  }, [idx, ctx]);
+  /* No pre-loading of neighbours: a decoded full-size photo can take 50-100 MB, so only the picture on screen is kept in memory. */
 
   /* ---- slideshow ---- */
   useEffect(() => {
@@ -271,9 +268,9 @@ export function Viewer() {
           ) : (
             <>
               {!nat && <div className="absolute inset-0 grid place-items-center"><Spinner size={32} /></div>}
-              <div key={current} className={cx("absolute inset-0 pointer-events-none", imgAnim)}><img ref={img} src={url} alt={baseName(current)} draggable={false} className="absolute left-1/2 top-1/2 max-w-none select-none will-change-transform"
+              <div key={current} className={cx("absolute inset-0 pointer-events-none", imgAnim)}><img ref={img} src={url} alt={baseName(current)} draggable={false} className="absolute left-1/2 top-1/2 max-w-none select-none"
                 style={{
-                  width: nat?.w, height: nat?.h, opacity: nat ? 1 : 0,
+                  width: nat?.w, height: nat?.h, opacity: nat ? 1 : 0, willChange: dragging || smooth ? "transform" : "auto",
                   transform: `translate(-50%,-50%) translate(${tf.x}px,${tf.y}px) scale(${tf.z})`,
                   transition: smooth ? "transform .25s cubic-bezier(0,0,0,1)" : "none", imageRendering: tf.z > 3 ? "pixelated" : "auto",
                 }}
@@ -323,7 +320,7 @@ function Filmstrip({ ctx, idx, onPick }: { ctx: string[]; idx: number; onPick: (
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => { ref.current?.querySelector<HTMLElement>("[data-cur]")?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }); }, [idx]);
   return (
-    <div ref={ref} className="max-w-[min(52rem,100%)] flex gap-1.5 overflow-x-auto p-1.5 rounded-lg">
+    <div ref={ref} className="max-w-[min(52rem,100%)] flex gap-1.5 overflow-x-auto no-scrollbar p-1.5 rounded-lg">
       {ctx.slice(from, to).map((p, k) => {
         const i = from + k, on = i === idx, e = findEntry(p);
         return (
@@ -373,11 +370,11 @@ function InfoPanel({ path, nat, onClose }: { path: string; nat: { w: number; h: 
   const hasCam = cams.some(([, v]) => v);
   return (
     <aside className="w-[21rem] max-w-[42%] shrink-0 overflow-y-auto bg-layer border-l border-outline-variant text-on-surface anim-right">
-      <div className="sticky top-0 z-10 flex items-center gap-2 pl-5 pr-2 h-12 bg-layer border-b border-outline-variant"><Info size={16} className="text-primary" /><h3 className="flex-1 font-semibold">{tt("info.title")}</h3><IconBtn sm icon={X} label={tt("close")} onClick={onClose} /></div>
+      <div className="sticky top-0 z-10 flex items-center gap-2 pl-5 pr-2 h-12 bg-layer border-b border-outline-variant"><Info size={16} className="text-accent" /><h3 className="flex-1 font-semibold">{tt("info.title")}</h3><IconBtn sm icon={X} label={tt("close")} onClick={onClose} /></div>
       <div className="px-5 py-4 space-y-4">
         <dl className="space-y-2.5">{rows.filter(([, v]) => v).map(([k, v]) => (<div key={k}><dt className="text-xs text-on-surface-variant">{k}</dt><dd className="text-sm break-all">{v}</dd></div>))}</dl>
         <div className="divider" />
-        <div className="flex items-center gap-2 font-semibold text-sm"><Camera size={16} className="text-primary" />{tt("info.camera")}</div>
+        <div className="flex items-center gap-2 font-semibold text-sm"><Camera size={16} className="text-accent" />{tt("info.camera")}</div>
         {!ex ? <div className="skeleton h-16 rounded-lg" /> : hasCam ? (
           <div className="grid grid-cols-2 gap-2">{cams.filter(([, v]) => v).map(([k, v]) => (<div key={k} className="rounded bg-surface-low border border-outline-variant px-3 py-2 min-w-0 first:col-span-2 data-[w=lens]:col-span-2" data-w={k === tt("info.lens") ? "lens" : undefined}><div className="text-xs text-on-surface-variant">{k}</div><div className="text-sm truncate">{v}</div></div>))}</div>
         ) : <p className="text-sm text-on-surface-variant">{tt("info.noExif")}</p>}

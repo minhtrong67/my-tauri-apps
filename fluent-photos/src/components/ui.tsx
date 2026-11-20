@@ -93,7 +93,7 @@ export function SliderRow({ label, value, min, max, step = 1, onChange, onCommit
 }
 
 export function Spinner({ size = 28 }: { size?: number }) {
-  return <Loader2 size={size} className="anim-spin text-primary" />;
+  return <Loader2 size={size} className="anim-spin text-accent" />;
 }
 
 export function EmptyState({ icon: Icon, title, desc, children }: { icon: LucideIcon; title: string; desc?: string; children?: ReactNode }) {

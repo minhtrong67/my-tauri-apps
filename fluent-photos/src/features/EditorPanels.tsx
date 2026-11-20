@@ -138,7 +138,7 @@ export function FiltersPanel({ st, commit, live, commitDraft, filterThumbs }: Pa
             <div className={cx("aspect-square overflow-hidden bg-surface-high transition-all duration-150 ease-spring", st.filter === f.id ? "rounded-lg ring-[3px] ring-primary" : "rounded-md")}>
               {filterThumbs[i] ? <img src={filterThumbs[i]} alt="" className="size-full object-cover" draggable={false} /> : <div className="skeleton size-full" />}
             </div>
-            <div className={cx("mt-1 text-xs font-semibold", st.filter === f.id ? "text-primary" : "text-on-surface-variant")}>{tt(`flt.${f.id}` as never)}</div>
+            <div className={cx("mt-1 text-xs font-semibold", st.filter === f.id ? "text-accent" : "text-on-surface-variant")}>{tt(`flt.${f.id}` as never)}</div>
           </button>
         ))}
       </div>

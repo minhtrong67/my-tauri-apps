@@ -69,7 +69,7 @@ export function Select<T extends string | number>({ value, options, onChange, cl
                 {o.leading}
                 <span className="flex-1 truncate" style={o.style}>{o.label}</span>
                 {o.hint && <span className="text-xs text-on-surface-variant">{o.hint}</span>}
-                {o.value === value && <Check size={14} className="shrink-0 text-primary" />}
+                {o.value === value && <Check size={14} className="shrink-0 text-accent" />}
               </button>
             ))}
           </div>

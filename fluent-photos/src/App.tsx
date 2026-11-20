@@ -1,4 +1,4 @@
-import { Component, useCallback, useEffect, useState, type ReactNode } from "react";
+import { Component, useCallback, useEffect, useState, type ReactNode, lazy, Suspense } from "react";
 import { Files, FolderHeart, Heart, Images, Settings as Gear, Image as ImageIcon, Upload, RefreshCw, PanelLeft } from "lucide-react";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { app, confirmDialog, settings, setSetting, useApp, useSettings, useT, t } from "./lib/store";
@@ -8,9 +8,10 @@ import { boot, openPath, setScope } from "./lib/actions";
 import { cx } from "./lib/utils";
 import { Gallery } from "./features/Gallery";
 import { Viewer } from "./features/Viewer";
-import { Editor } from "./features/Editor";
-import { SettingsDialog } from "./features/SettingsDialog";
-import { BatchRenameDialog, DuplicatesDialog } from "./features/Dialogs";
+const Editor = lazy(() => import("./features/Editor").then((m) => ({ default: m.Editor })));
+const SettingsDialog = lazy(() => import("./features/SettingsDialog").then((m) => ({ default: m.SettingsDialog })));
+const BatchRenameDialog = lazy(() => import("./features/Dialogs").then((m) => ({ default: m.BatchRenameDialog })));
+const DuplicatesDialog = lazy(() => import("./features/Dialogs").then((m) => ({ default: m.DuplicatesDialog })));
 import { ConfirmHost, MenuHost, PromptHost, ToastHost, TooltipHost } from "./components/Overlays";
 import { Btn, Tip } from "./components/ui";
 import type { Scope } from "./lib/types";
@@ -60,6 +61,12 @@ function Nav() {
   const [w, setW] = useState(window.innerWidth);
   useEffect(() => { const f = () => setW(window.innerWidth); window.addEventListener("resize", f); return () => window.removeEventListener("resize", f); }, []);
   const compact = pref || w < 960;
+  const toggleNav = () => {
+    const root = document.documentElement;
+    root.dataset.navAnim = "1";
+    setSetting("navCompact", !pref);
+    window.setTimeout(() => { delete root.dataset.navAnim; window.dispatchEvent(new Event("fp-relayout")); }, 230);
+  };
   const go = useCallback(async (sc: Scope) => { if (await canLeave()) { app.set({ editorDirty: false }); setScope(sc); } }, []);
   const items: { id: string; icon: typeof Images; label: string; on: boolean; run: () => void }[] = [
     { id: "all", icon: Images, label: tt("nav.gallery"), on: view === "gallery" && scope.kind === "all", run: () => go({ kind: "all" }) },
@@ -75,18 +82,18 @@ function Nav() {
   const Item = ({ it, row }: { it: It; row: boolean }) => (
     <Tip label={it.label} side={row ? "right" : "top"} disabled={row && !compact}>
       <button onClick={it.run} aria-current={it.on} aria-label={it.label}
-        className={row ? cx("nav-item", it.on && "on", compact && "!px-0 justify-center") : cx("flex flex-col items-center gap-0.5 flex-1 py-1.5 rounded-md", it.on ? "text-primary" : "text-on-surface-variant")}>
+        className={row ? cx("nav-item", it.on && "on") : cx("flex flex-col items-center gap-0.5 flex-1 py-1.5 rounded-md", it.on ? "text-accent" : "text-on-surface-variant")}>
         <it.icon size={row ? 18 : 20} strokeWidth={1.75} fill={it.on && it.id === "fav" ? "currentColor" : "none"} className="shrink-0" />
-        {row ? !compact && <span className="truncate">{it.label}</span> : <span className="text-[.7rem] leading-3 truncate max-w-full">{it.label}</span>}
+        {row ? <span className={cx("truncate whitespace-nowrap transition-opacity duration-150", compact && "opacity-0")}>{it.label}</span> : <span className="text-[.7rem] leading-3 truncate max-w-full">{it.label}</span>}
       </button>
     </Tip>
   );
   return (
     <>
-      <nav className="hidden md:flex flex-col shrink-0 px-1 pb-2 pt-1 gap-0.5 transition-[width] duration-200 ease-fluent" style={{ width: compact ? "var(--nav-w-compact)" : "var(--nav-w)", paddingInline: compact ? 3 : 4 }} aria-label="main">
-        <div className={cx("flex items-center h-10 mb-1", compact ? "justify-center" : "gap-1 pl-1")}>
-          <Tip label={tt("nav.toggle")} side="right"><button onClick={() => setSetting("navCompact", !pref)} aria-label={tt("nav.toggle")} disabled={w < 960} className="btn btn-icon shrink-0"><PanelLeft size={18} strokeWidth={1.75} /></button></Tip>
-          {!compact && <><img src="/icon.svg" alt="" className="size-5 ml-1 shrink-0" draggable={false} /><span className="font-semibold truncate">{tt("app")}</span></>}
+      <nav className="hidden md:flex flex-col shrink-0 overflow-hidden pb-2 pt-1 gap-0.5 transition-[width] duration-200 ease-fluent" style={{ width: compact ? "var(--nav-w-compact)" : "var(--nav-w)", paddingInline: 3 }} aria-label="main">
+        <div className="flex items-center h-10 mb-1 gap-1 pl-[5px]">
+          <Tip label={tt("nav.toggle")} side="right"><button onClick={toggleNav} aria-label={tt("nav.toggle")} disabled={w < 960} className="btn btn-icon shrink-0"><PanelLeft size={18} strokeWidth={1.75} /></button></Tip>
+          <img src="/icon.svg" alt="" className={cx("size-5 ml-1 shrink-0 transition-opacity duration-150", compact && "opacity-0")} draggable={false} /><span className={cx("font-semibold truncate whitespace-nowrap transition-opacity duration-150", compact && "opacity-0")}>{tt("app")}</span>
         </div>
         <div className="flex flex-col gap-0.5">{items.map((it) => <Item key={it.id} it={it} row />)}</div>
         <div className="flex-1" />
@@ -105,11 +112,21 @@ function Shell() {
   const view = useApp((s) => s.view);
   const current = useApp((s) => s.current);
   const [drop, setDrop] = useState(false);
+  /* Settings, rename and duplicate dialogs and the editor are separate chunks: loaded when the app is idle (or on first use), never during start-up */
+  const [late, setLate] = useState(false);
+  const settingsOpen = useApp((s) => s.settingsOpen), dupOpen = useApp((s) => s.dupOpen), selecting = useApp((s) => s.selecting);
+  const dialogsMounted = late || settingsOpen || dupOpen || selecting;
+  useEffect(() => {
+    const idle = (window as unknown as { requestIdleCallback?: (f: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+    const go = () => { setLate(true); import("./features/Editor"); };
+    const id = idle ? idle(go, { timeout: 3000 }) : window.setTimeout(go, 1500);
+    return () => { if (!idle) clearTimeout(id); };
+  }, []);
 
   useEffect(() => {
     boot();
     let raf = 0;
-    Promise.race([themeReady, new Promise((r) => setTimeout(r, 900))]).then(() => { raf = requestAnimationFrame(() => requestAnimationFrame(() => { if (isTauri) api.showWindow().catch(() => {}); })); });
+    Promise.race([themeReady, new Promise((r) => setTimeout(r, 500))]).then(() => { raf = requestAnimationFrame(() => requestAnimationFrame(() => { if (isTauri) api.showWindow().catch(() => {}); })); });
     const noCtx = (e: MouseEvent) => { const el = e.target as HTMLElement; if (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA") e.preventDefault(); };
     window.addEventListener("contextmenu", noCtx);
     let un: (() => void) | undefined;
@@ -128,13 +145,13 @@ function Shell() {
   return (
     <div className="h-full flex flex-col md:flex-row bg-app text-on-surface" style={{ ["--toast-bottom" as string]: view === "viewer" ? "10px" : "24px" }}>
       {view === "gallery" && <Nav />}
-      <main className={cx("flex-1 min-w-0 min-h-0 relative", view === "gallery" ? "overflow-hidden bg-layer border-t border-outline-variant md:border-l md:rounded-tl-lg" : "")}>
+      <main data-layer={view === "gallery" ? "" : undefined} className={cx("flex-1 min-w-0 min-h-0 relative", view === "gallery" ? "overflow-hidden bg-layer border-t border-outline-variant md:border-l md:rounded-tl-lg" : "")}>
         {view === "gallery" && <div key="g" className="h-full anim-fade"><Gallery /></div>}
         {view === "viewer" && current && <div key="v" className="h-full anim-fade"><Viewer /></div>}
-        {view === "editor" && current && <div key="e" className="h-full anim-fade"><Editor /></div>}
+        {view === "editor" && current && <div key="e" className="h-full anim-fade"><Suspense fallback={null}><Editor /></Suspense></div>}
       </main>
-      {drop && <div className="dropzone"><div className="flex flex-col items-center gap-3 text-primary anim-pop"><Upload size={48} strokeWidth={1.5} /><div className="text-2xl font-semibold">{tt("gal.drop")}</div></div></div>}
-      <SettingsDialog /><BatchRenameDialog /><DuplicatesDialog /><ConfirmHost /><PromptHost /><MenuHost /><TooltipHost /><ToastHost />
+      {drop && <div className="dropzone"><div className="flex flex-col items-center gap-3 text-accent anim-pop"><Upload size={48} strokeWidth={1.5} /><div className="text-2xl font-semibold">{tt("gal.drop")}</div></div></div>}
+      <Suspense fallback={null}>{dialogsMounted && <><SettingsDialog /><BatchRenameDialog /><DuplicatesDialog /></>}</Suspense><ConfirmHost /><PromptHost /><MenuHost /><TooltipHost /><ToastHost />
     </div>
   );
 }

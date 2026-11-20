@@ -1,0 +1,5 @@
+# Allow esbuild's install script (pnpm blocks dependency build scripts by default).
+onlyBuiltDependencies:
+  - esbuild
+allowBuilds:
+  esbuild: true

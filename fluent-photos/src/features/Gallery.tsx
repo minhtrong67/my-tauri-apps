@@ -19,7 +19,7 @@ const cache = new Map<string, string>();
 const queue: (() => void)[] = [];
 let running = 0;
 const pump = () => {
-  while (running < 5 && queue.length) { running++; const job = queue.pop()!; job(); }
+  while (running < 3 && queue.length) { running++; const job = queue.pop()!; job(); }
 };
 function useThumb(e: Entry, size: number) {
   const key = `${e.path}|${e.mtime}|${size}`;
@@ -53,7 +53,7 @@ const Tile = memo(function Tile({ e, size, sel, fav, onClick, onCtx, onToggle, o
     <div className={cx("tile", sel && "sel")} style={{ width: w, height: h, animationDelay: `${(i % 24) * 18}ms` }}
       onClick={(ev) => onClick(e, ev)} onContextMenu={(ev) => onCtx(e, ev)} role="button" tabIndex={0}
       onKeyDown={(ev) => { if (ev.key === "Enter") onClick(e, ev as unknown as React.MouseEvent); if (ev.key === " ") { ev.preventDefault(); onToggle(e, ev.shiftKey); } }}>
-      {url ? <img src={url} alt={e.name} loading="lazy" draggable={false} onLoad={(ev) => (ev.currentTarget.style.opacity = "1")} style={{ opacity: 0 }} /> : <div className="skeleton absolute inset-0" />}
+      {url ? <img src={url} alt={e.name} loading="lazy" decoding="async" draggable={false} onLoad={(ev) => (ev.currentTarget.style.opacity = "1")} style={{ opacity: 0 }} /> : <div className="skeleton absolute inset-0" />}
       <button className="check" aria-label="select" onClick={(ev) => { ev.stopPropagation(); onToggle(e, ev.shiftKey); }}><Check size={16} strokeWidth={3} /></button>
       <button className={cx("fav", fav && "on")} aria-label={tt(fav ? "fav.remove" : "fav.add")} onClick={(ev) => { ev.stopPropagation(); onFav(e); }}><Heart size={16} fill={fav ? "currentColor" : "none"} /></button>
       <div className="cap">{e.name}</div>
@@ -62,15 +62,25 @@ const Tile = memo(function Tile({ e, size, sel, fav, onClick, onCtx, onToggle, o
 });
 
 /* ---------------- date grouping ---------------- */
-function groupLabel(ms: number, lang: string): string {
-  const d = new Date(ms), now = new Date();
-  const day = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
-  const diff = Math.round((day(now) - day(d)) / 864e5);
+const monthFmt = new Map<string, Intl.DateTimeFormat>();
+const labelCache = new Map<string, string>();
+/** Day-group heading for a timestamp. Cheap on purpose: it runs once per picture whenever the list is regrouped. */
+function groupLabel(ms: number, lang: string, today: number, now: Date): string {
+  const d = new Date(ms);
+  const dayMs = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  const diff = Math.round((today - dayMs) / 864e5);
   if (diff <= 0) return t("date.today");
   if (diff === 1) return t("date.yesterday");
   if (diff < 7) return t("date.week");
   if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) return t("date.month");
-  return d.toLocaleDateString(lang === "vi" ? "vi-VN" : "en-US", { month: "long", year: "numeric" });
+  const key = `${lang}|${d.getFullYear()}-${d.getMonth()}`;
+  let l = labelCache.get(key);
+  if (!l) {
+    let f = monthFmt.get(lang);
+    if (!f) { f = new Intl.DateTimeFormat(lang === "vi" ? "vi-VN" : "en-US", { month: "long", year: "numeric" }); monthFmt.set(lang, f); }
+    l = f.format(d); labelCache.set(key, l);
+  }
+  return l;
 }
 
 type Row = { kind: "head"; label: string; count: number; key: string } | { kind: "row"; items: Entry[]; key: string; start: number };
@@ -124,9 +134,13 @@ export function Gallery() {
   const [top, setTop] = useState(0);
   useEffect(() => {
     const el = scroller.current; if (!el) return;
-    const ro = new ResizeObserver(() => { setWidth(el.clientWidth); setHeight(el.clientHeight); });
+    let raf = 0;
+    const measure = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { setWidth(el.clientWidth); setHeight(el.clientHeight); }); };
+    // while the navigation pane animates, the grid keeps its layout and is measured once afterwards
+    const ro = new ResizeObserver(() => { if (!document.documentElement.dataset.navAnim) measure(); });
     ro.observe(el); setWidth(el.clientWidth); setHeight(el.clientHeight);
-    return () => ro.disconnect();
+    window.addEventListener("fp-relayout", measure);
+    return () => { ro.disconnect(); cancelAnimationFrame(raf); window.removeEventListener("fp-relayout", measure); };
   }, [loaded, list.length === 0]);
 
   const gap = 8, pad = 20;
@@ -134,22 +148,29 @@ export function Gallery() {
   const cell = Math.floor((width - pad * 2 - gap * (cols - 1)) / cols);
   const rowH = cell + gap, headH = 52;
 
+  /* grouping depends on the list only; the column count (window / sidebar width) must not trigger it again */
+  const groups = useMemo(() => {
+    if (!group || !sort.startsWith("date")) return [{ label: "", items: list, start: 0 }];
+    const now = new Date(), today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    const out: { label: string; items: Entry[]; start: number }[] = [];
+    let cur = "";
+    list.forEach((e, i) => {
+      const l = groupLabel(e.mtime, lang, today, now);
+      if (!out.length || l !== cur) { cur = l; out.push({ label: l, items: [], start: i }); }
+      out[out.length - 1].items.push(e);
+    });
+    return out;
+  }, [list, group, sort, lang]);
+
   const rows = useMemo<Row[]>(() => {
     const out: Row[] = [];
-    const push = (items: Entry[], start: number, key: string) => {
-      for (let i = 0; i < items.length; i += cols) out.push({ kind: "row", items: items.slice(i, i + cols), key: `${key}-${i}`, start: start + i });
-    };
-    if (!group || !sort.startsWith("date")) { push(list, 0, "all"); return out; }
-    let cur = "", bucket: Entry[] = [], start = 0;
-    const flush = () => { if (bucket.length) { out.push({ kind: "head", label: cur, count: bucket.length, key: `h-${cur}-${start}` }); push(bucket, start, `r-${cur}-${start}`); } };
-    list.forEach((e, i) => {
-      const l = groupLabel(e.mtime, lang);
-      if (l !== cur) { flush(); cur = l; bucket = []; start = i; }
-      bucket.push(e);
-    });
-    flush();
+    const flat = !group || !sort.startsWith("date");
+    for (const gr of groups) {
+      if (!flat) out.push({ kind: "head", label: gr.label, count: gr.items.length, key: `h-${gr.label}-${gr.start}` });
+      for (let i = 0; i < gr.items.length; i += cols) out.push({ kind: "row", items: gr.items.slice(i, i + cols), key: `${flat ? "all" : `r-${gr.label}-${gr.start}`}-${i}`, start: gr.start + i });
+    }
     return out;
-  }, [list, cols, group, sort, lang]);
+  }, [groups, cols, group, sort]);
 
   const offsets = useMemo(() => {
     const o: number[] = []; let y = pad;

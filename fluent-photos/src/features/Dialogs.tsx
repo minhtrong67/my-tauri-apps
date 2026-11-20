@@ -71,8 +71,8 @@ export function DuplicatesDialog() {
         : groups.length === 0 ? <EmptyState icon={Search} title={tt("dup.none")} desc={tt("dup.none.d")} />
         : (<div className="space-y-4 pt-1"><p className="text-sm text-on-surface-variant font-medium">{tt("dup.found", { n: groups.length })} · {tt("dup.recover", { size: fmtSize(saved) })}</p>
           {groups.map((g, i) => (
-            <div key={i} className="rounded-lg bg-surface-low p-3"><div className="text-xs font-semibold text-primary mb-2 px-1">{tt("dup.group", { n: i + 1 })}</div>
-              <div className="flex gap-2 overflow-x-auto">{g.map((p, k) => (<div key={p} className="shrink-0 w-28"><div className={`aspect-square rounded-2xl overflow-hidden bg-surface-high ${k === 0 ? "ring-2 ring-primary" : "opacity-80"}`}><img src={src(p)} className="size-full object-cover" loading="lazy" alt="" /></div><div className="text-[.7rem] mt-1 truncate font-medium">{baseName(p)}</div>{k === 0 && <div className="text-[.65rem] font-semibold text-primary">{tt("dup.keepFirst")}</div>}</div>))}</div></div>
+            <div key={i} className="rounded-lg bg-surface-low p-3"><div className="text-xs font-semibold text-accent mb-2 px-1">{tt("dup.group", { n: i + 1 })}</div>
+              <div className="flex gap-2 overflow-x-auto">{g.map((p, k) => (<div key={p} className="shrink-0 w-28"><div className={`aspect-square rounded-2xl overflow-hidden bg-surface-high ${k === 0 ? "ring-2 ring-primary" : "opacity-80"}`}><img src={src(p)} className="size-full object-cover" loading="lazy" alt="" /></div><div className="text-[.7rem] mt-1 truncate font-medium">{baseName(p)}</div>{k === 0 && <div className="text-[.65rem] font-semibold text-accent">{tt("dup.keepFirst")}</div>}</div>))}</div></div>
           ))}</div>)}
     </Modal>
   );

@@ -45,13 +45,13 @@ const lum = (hex: string) => {
   return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
 };
 /** Text colour that stays readable on top of an accent fill. */
-const onAccent = (fill: string) => (1.05 / (lum(fill) + 0.05) >= 4.5 ? "#ffffff" : "#000000");
+const onAccent = (fill: string) => (1.05 / (lum(fill) + 0.05) >= 4.4 ? "#ffffff" : "#000000");
 
 /** Fluent derives its accent shades from the base colour: darker fills in light mode, lighter fills in dark mode. */
 export function accentShades(hex: string, dark: boolean) {
   const [h, s, l] = hexToHsl(hex);
-  const base = dark ? Math.max(l, 0.62) : Math.min(l, 0.4);
-  const step = dark ? [0.05, -0.05] : [-0.05, 0.06];
+  const base = dark ? Math.min(Math.max(l, 0.38), 0.44) : Math.min(l, 0.4);
+  const step = dark ? [0.045, -0.04] : [-0.05, 0.06];
   const fill = hsl(h, s, base);
   const hover = hsl(h, s, Math.min(0.92, Math.max(0.1, base + step[0])));
   const press = hsl(h, s, Math.min(0.92, Math.max(0.1, base + step[0] * 2 + (dark ? -0.02 : 0))));
@@ -83,7 +83,7 @@ export async function applyMaterial(mode: ThemeMode, material: Material, dark: b
     const tint: [number, number, number, number] = dark ? [32, 32, 32, 70] : [243, 243, 243, 70];
     if (material === "mica") await win.setEffects({ effects: [Effect.Mica] });
     else if (material === "mica-alt") await win.setEffects({ effects: [dark ? Effect.TabbedDark : Effect.TabbedLight] });
-    else await win.setEffects({ effects: [Effect.Acrylic], color: tint });
+    else await win.setEffects({ effects: [Effect.Acrylic], color: tint }); // acrylic, acrylic-alt, frosted and liquid all sit on the system Acrylic
     return finish(material, true);
   } catch {
     try { await win.clearEffects(); } catch { /* ignore */ }

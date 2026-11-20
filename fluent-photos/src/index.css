@@ -11,6 +11,7 @@
 @theme inline {
   --color-primary: var(--c-accent);
   --color-on-primary: var(--c-on-accent);
+  --color-accent: var(--c-accent-text);
   --color-primary-container: var(--c-accent-subtle);
   --color-on-primary-container: var(--c-accent-text);
   --color-secondary-container: var(--c-subtle-selected);
@@ -74,7 +75,8 @@
   --c-card: rgb(255 255 255 / 0.7);
   --c-control: rgb(255 255 255 / 0.7);
   --c-control-hover: rgb(249 249 249 / 0.9);
-  --c-flyout: rgb(252 252 252 / 0.9);
+  --c-flyout: rgb(252 252 252 / 0.96);
+  --c-dialog: #f9f9f9;
   --c-text: #1a1a1a;
   --c-text-2: rgb(0 0 0 / 0.606);
   --c-stroke: rgb(0 0 0 / 0.08);
@@ -97,10 +99,11 @@
   --c-surface: #202020;
   --c-layer: #2a2a2a;
   --c-stage: #161616;
-  --c-card: rgb(255 255 255 / 0.052);
+  --c-card: rgb(255 255 255 / 0.06);
   --c-control: rgb(255 255 255 / 0.061);
   --c-control-hover: rgb(255 255 255 / 0.084);
-  --c-flyout: rgb(44 44 44 / 0.92);
+  --c-flyout: rgb(44 44 44 / 0.97);
+  --c-dialog: #2b2b2b;
   --c-text: #fff;
   --c-text-2: rgb(255 255 255 / 0.786);
   --c-stroke: rgb(255 255 255 / 0.084);
@@ -131,8 +134,41 @@
 :root.dark[data-material="acrylic"] { --c-layer: rgb(255 255 255 / 0.045); }
 :root[data-material="acrylic-alt"] { --app-bg: rgb(243 243 243 / 0.62); --c-layer: rgb(255 255 255 / 0.5); }
 :root.dark[data-material="acrylic-alt"] { --app-bg: rgb(32 32 32 / 0.66); --c-layer: rgb(255 255 255 / 0.05); }
+/* the picture area follows the material instead of being a black box: tinted, never see-through to the desktop */
+:root[data-material="mica"], :root[data-material="mica-alt"] { --c-stage: rgb(0 0 0 / 0.05); }
+:root.dark[data-material="mica"], :root.dark[data-material="mica-alt"] { --c-stage: rgb(0 0 0 / 0.3); }
+:root[data-material="acrylic"], :root[data-material="acrylic-alt"], :root[data-material="frosted"], :root[data-material="liquid"] { --c-stage: rgb(0 0 0 / 0.08); }
+:root.dark[data-material="acrylic"], :root.dark[data-material="acrylic-alt"], :root.dark[data-material="frosted"], :root.dark[data-material="liquid"] { --c-stage: rgb(0 0 0 / 0.38); }
+
+/* Frosted glass: heavy milky tint with fine grain on top of the system acrylic */
+:root[data-material="frosted"] { --app-bg: rgb(248 249 252 / 0.5); --c-layer: rgb(255 255 255 / 0.4); --c-card: rgb(255 255 255 / 0.5); --c-dialog: rgb(250 251 253 / 0.8); --c-flyout: rgb(250 251 253 / 0.88); }
+:root.dark[data-material="frosted"] { --app-bg: rgb(26 27 34 / 0.55); --c-layer: rgb(255 255 255 / 0.07); --c-dialog: rgb(40 41 50 / 0.82); --c-flyout: rgb(40 41 50 / 0.9); }
+:root[data-material="frosted"] body { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E"); }
+:root[data-material="frosted"] [data-layer] { border-radius: 12px; margin: 0 8px 8px 0; border: 1px solid rgb(255 255 255 / 0.45); box-shadow: 0 2px 12px rgb(0 0 0 / 0.06); }
+:root.dark[data-material="frosted"] [data-layer] { border-color: rgb(255 255 255 / 0.1); }
+
+/* Liquid glass: clear, bright, rounded; light rims and soft sheen; capsule controls */
+:root[data-material="liquid"] { --app-bg: transparent; --c-layer: rgb(255 255 255 / 0.3); --c-card: rgb(255 255 255 / 0.4); --c-control: rgb(255 255 255 / 0.5); --c-control-hover: rgb(255 255 255 / 0.7); --c-dialog: rgb(255 255 255 / 0.62); --c-flyout: rgb(255 255 255 / 0.72); }
+:root.dark[data-material="liquid"] { --c-layer: rgb(255 255 255 / 0.06); --c-card: rgb(255 255 255 / 0.07); --c-control: rgb(255 255 255 / 0.1); --c-control-hover: rgb(255 255 255 / 0.15); --c-dialog: rgb(38 40 52 / 0.66); --c-flyout: rgb(38 40 52 / 0.78); }
+:root[data-material="liquid"] body { background-image: radial-gradient(900px 520px at 8% -8%, rgb(255 255 255 / 0.5), transparent 65%), radial-gradient(800px 480px at 100% 110%, rgb(130 190 255 / 0.28), transparent 65%); }
+:root.dark[data-material="liquid"] body { background-image: radial-gradient(900px 520px at 8% -8%, rgb(255 255 255 / 0.1), transparent 65%), radial-gradient(800px 480px at 100% 110%, rgb(90 150 255 / 0.16), transparent 65%); }
+:root[data-material="liquid"] [data-layer] { border-radius: 24px; margin: 8px 8px 8px 0; border: 1px solid rgb(255 255 255 / 0.65); background-image: linear-gradient(135deg, rgb(255 255 255 / 0.35), rgb(255 255 255 / 0) 45%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.8), inset 0 -1px 0 rgb(255 255 255 / 0.15), 0 12px 40px rgb(0 0 0 / 0.1); }
+:root.dark[data-material="liquid"] [data-layer] { border-color: rgb(255 255 255 / 0.16); background-image: linear-gradient(135deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0) 45%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), inset 0 -1px 0 rgb(255 255 255 / 0.04), 0 12px 40px rgb(0 0 0 / 0.35); }
+:root[data-material="liquid"] .btn, :root[data-material="liquid"] .chip, :root[data-material="liquid"] .seg, :root[data-material="liquid"] .seg > button { border-radius: 9999px; }
+:root[data-material="liquid"] .btn-icon { border-radius: 9999px; }
+:root[data-material="liquid"] .field { border-radius: 9999px; }
+:root[data-material="liquid"] .nav-item, :root[data-material="liquid"] .tile { border-radius: 14px; }
+:root[data-material="liquid"] .scard { border-radius: 16px; border-color: rgb(255 255 255 / 0.5); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5); }
+:root.dark[data-material="liquid"] .scard { border-color: rgb(255 255 255 / 0.1); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12); }
+:root[data-material="liquid"] .btn-tonal, :root[data-material="liquid"] .btn-outlined, :root[data-material="liquid"] .chip, :root[data-material="liquid"] .btn-icon.tonal { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.55), 0 1px 3px rgb(0 0 0 / 0.08); }
+:root[data-material="liquid"] .btn-filled { background-image: linear-gradient(180deg, rgb(255 255 255 / 0.28), rgb(255 255 255 / 0) 55%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5), 0 4px 14px color-mix(in srgb, var(--c-accent) 35%, transparent); }
+:root[data-material="liquid"] [role="dialog"], :root[data-material="liquid"] [role="menu"] { border-radius: 24px; border-color: rgb(255 255 255 / 0.6); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), var(--shadow-e4); }
+:root.dark[data-material="liquid"] [role="dialog"], :root.dark[data-material="liquid"] [role="menu"] { border-color: rgb(255 255 255 / 0.16); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), var(--shadow-e4); }
+:root[data-material="frosted"] [role="dialog"] { border-radius: 14px; }
+:root[data-material="liquid"] .acrylic, :root[data-material="frosted"] .acrylic { backdrop-filter: blur(40px) saturate(1.7); -webkit-backdrop-filter: blur(40px) saturate(1.7); }
+
 /* the flyouts, menus and dialogs are Fluent "in-app acrylic" */
-.acrylic { backdrop-filter: blur(30px) saturate(1.25); -webkit-backdrop-filter: blur(30px) saturate(1.25); }
+.acrylic { /* blur is only applied by the frosted and liquid materials (below): menus and dialogs are near-opaque otherwise */ }
 
 html, body, #root { height: 100%; }
 html { background: transparent; }
@@ -190,7 +226,7 @@ img { -webkit-user-drag: none; }
 .btn-icon.tonal:hover { background: var(--c-control-hover); }
 
 /* ---------- Surfaces ---------- */
-.glass { background: var(--c-flyout); backdrop-filter: blur(30px) saturate(1.25); -webkit-backdrop-filter: blur(30px) saturate(1.25); }
+.glass { background: var(--c-flyout); }
 .scrim-bg { background: var(--c-dialog-smoke); }
 .chip { display: inline-flex; align-items: center; gap: .375rem; height: 2rem; padding: 0 .75rem; border-radius: 4px; border: 1px solid var(--c-stroke-control); border-bottom-color: var(--c-stroke-control-bottom); background: var(--c-control); font-size: .8125rem; color: var(--c-text); transition: background-color .083s linear; }
 .chip:hover { background: var(--c-control-hover); }
@@ -257,18 +293,19 @@ input[type="range"]:active::-webkit-slider-thumb { background: radial-gradient(c
 .anim-float { animation: float-up .25s var(--ease-fluent) both; }
 .anim-spin { animation: spin 1s linear infinite; }
 .anim-breathe { animation: none; }
-.skeleton { background: linear-gradient(100deg, var(--c-control) 30%, var(--c-control-hover) 50%, var(--c-control) 70%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+.skeleton { background: var(--c-control-hover); animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: .45 } 50% { opacity: 1 } }
 .stagger > * { animation: float-up .25s var(--ease-fluent) both; animation-delay: calc(var(--i, 0) * 30ms); }
 
 /* ---------- Gallery tile ---------- */
-.tile { position: relative; overflow: hidden; border-radius: 4px; background: var(--c-control); cursor: default; outline: 1px solid var(--c-stroke); outline-offset: -1px; transition: box-shadow .167s; }
-.tile:hover { box-shadow: var(--shadow-e3); z-index: 2; }
+.tile { position: relative; overflow: hidden; border-radius: 4px; background: var(--c-control); cursor: default; outline: 1px solid var(--c-stroke); outline-offset: -1px; contain: layout paint; content-visibility: auto; }
+.tile:hover { outline-color: var(--c-stroke-strong); }
 .tile img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity .25s; }
 .tile.sel { outline: 2px solid var(--c-accent); outline-offset: -2px; }
-.tile .check { position: absolute; top: 8px; left: 8px; width: 20px; height: 20px; border-radius: 4px; display: grid; place-items: center; background: rgb(0 0 0 / 0.35); border: 1px solid rgb(255 255 255 / 0.9); color: transparent; opacity: 0; transition: opacity .12s; backdrop-filter: blur(6px); }
+.tile .check { position: absolute; top: 8px; left: 8px; width: 20px; height: 20px; border-radius: 4px; display: grid; place-items: center; background: rgb(0 0 0 / 0.5); border: 1px solid rgb(255 255 255 / 0.9); color: transparent; opacity: 0; transition: opacity .12s; }
 .tile:hover .check, .selecting .tile .check { opacity: 1; }
 .tile.sel .check { opacity: 1; background: var(--c-accent); border-color: var(--c-accent); color: var(--c-on-accent); }
-.tile .fav { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 4px; display: grid; place-items: center; color: #fff; background: rgb(0 0 0 / 0.35); backdrop-filter: blur(6px); opacity: 0; transition: opacity .12s; }
+.tile .fav { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 4px; display: grid; place-items: center; color: #fff; background: rgb(0 0 0 / 0.5); opacity: 0; transition: opacity .12s; }
 .tile .fav:hover { background: rgb(0 0 0 / 0.55); }
 .tile:hover .fav, .tile .fav.on { opacity: 1; }
 .tile .fav.on { color: #ff6b81; }
@@ -276,8 +313,10 @@ input[type="range"]:active::-webkit-slider-thumb { background: radial-gradient(c
 .tile:hover .cap { opacity: 1; }
 
 /* drag-over drop zone */
-.dropzone { position: fixed; inset: 8px; z-index: 90; border-radius: 8px; border: 2px dashed var(--c-accent); background: color-mix(in srgb, var(--c-accent) 10%, transparent); backdrop-filter: blur(6px); display: grid; place-items: center; pointer-events: none; animation: fade-in .167s both; }
+.dropzone { position: fixed; inset: 8px; z-index: 90; border-radius: 8px; border: 2px dashed var(--c-accent); background: color-mix(in srgb, var(--c-accent) 14%, var(--c-surface)); display: grid; place-items: center; pointer-events: none; animation: fade-in .167s both; }
 
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 .checker { background-image: conic-gradient(#8883 25%, transparent 0 50%, #8883 0 75%, transparent 0); background-size: 16px 16px; }
 }
 
@@ -294,3 +333,6 @@ input[type="range"]:active::-webkit-slider-thumb { background: radial-gradient(c
   #print-root { display: block; text-align: center; }
   #print-root img { max-width: 100%; max-height: 98vh; }
 }
+
+/* the content layer is laid out on its own, so the sidebar animation never re-lays-out the picture grid */
+main[data-layer] { contain: layout style; }

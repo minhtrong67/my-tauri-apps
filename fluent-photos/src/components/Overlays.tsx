@@ -74,7 +74,7 @@ export function MenuHost() {
 
 /* ---------- Toasts: Fluent InfoBar look ---------- */
 const TOAST: Record<string, { icon: LucideIcon; bar: string; cls: string }> = {
-  info: { icon: Info, bar: "text-primary", cls: "bg-info text-on-info" },
+  info: { icon: Info, bar: "text-accent", cls: "bg-info text-on-info" },
   success: { icon: CheckCircle2, bar: "text-[#0f7b0f] dark:text-[#6ccb5f]", cls: "bg-success text-on-surface" },
   warning: { icon: AlertTriangle, bar: "text-[#9d5d00] dark:text-[#fce100]", cls: "bg-warning text-on-surface" },
   error: { icon: XCircle, bar: "text-error", cls: "bg-error-container text-on-surface" },
@@ -94,7 +94,7 @@ function ToastCard({ id, kind, msg, action, ms }: { id: number; kind: string; ms
       className={cx("relative overflow-hidden pointer-events-auto flex items-center gap-3 pl-4 pr-1.5 py-1.5 min-h-[2.75rem] rounded-lg shadow-e3 border border-outline-variant max-w-[min(34rem,calc(100vw-24px))] anim-toast", cls)}>
       <Icon size={18} strokeWidth={2} className={cx("shrink-0", bar)} />
       <span className="text-sm leading-snug py-1">{msg}</span>
-      {action && <button onClick={() => { action.run(); dismissToast(id); }} className="ml-1 h-8 px-3 rounded-md text-sm text-primary hover:bg-on-surface/[.06] transition-colors shrink-0"><span className="text-inherit">{action.label}</span></button>}
+      {action && <button onClick={() => { action.run(); dismissToast(id); }} className="ml-1 h-8 px-3 rounded-md text-sm text-accent hover:bg-on-surface/[.06] transition-colors shrink-0"><span className="text-inherit">{action.label}</span></button>}
       <button onClick={() => dismissToast(id)} aria-label="close" className="size-8 grid place-items-center rounded-md hover:bg-on-surface/[.06] shrink-0"><X size={16} /></button>
       <span className="absolute left-0 bottom-0 h-0.5 w-full bg-primary/60 origin-left" style={{ animation: `progress ${ms}ms linear reverse both`, animationPlayState: paused ? "paused" : "running" }} />
     </div>
@@ -142,10 +142,10 @@ export function Modal({ open, onClose, title, icon: Icon, children, actions, wid
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
       <div className={cx("absolute inset-0 scrim-bg", closing ? "opacity-0 transition-opacity duration-150" : "anim-fade")} onMouseDown={onClose} />
       <div ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-label={title} style={{ ["--w" as string]: `${width}px` }}
-        className={cx("relative w-[min(var(--w),100%)] outline-none acrylic bg-surface-container text-on-surface shadow-e4 border border-outline-variant flex flex-col overflow-hidden rounded-lg max-h-[92vh]",
+        className={cx("relative w-[min(var(--w),100%)] outline-none acrylic bg-[var(--c-dialog)] text-on-surface shadow-e4 border border-outline-variant flex flex-col overflow-hidden rounded-lg max-h-[92vh]",
           tall && "h-[min(46rem,92vh)]", closing ? "opacity-0 scale-[.97] transition-all duration-150" : "anim-dialog")}>
         <header className="flex items-center gap-3 pl-6 pr-3 pt-4 pb-3 shrink-0">
-          {Icon && <Icon size={20} strokeWidth={1.75} className="text-primary shrink-0" />}
+          {Icon && <Icon size={20} strokeWidth={1.75} className="text-accent shrink-0" />}
           <h2 className="flex-1 text-xl font-semibold leading-7 truncate">{title}</h2>
           <button onClick={onClose} aria-label={t("close")} className="btn btn-icon sm"><X size={16} /></button>
         </header>
