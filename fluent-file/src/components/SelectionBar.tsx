@@ -1,4 +1,4 @@
-import { ClipboardCopy, Copy, Pencil, Scissors, Trash2, X } from 'lucide-react';
+import { ClipboardCopy, Copy, Pencil, Scissors, Trash2, X } from '../lib/icons';
 import { useExplorer, clearSelection, copyToClipboard, copyPaths, deleteSelection, renameSelection } from '../store/explorer';
 import { useT } from '../lib/i18n';
 import { IconButton } from './ui/Buttons';

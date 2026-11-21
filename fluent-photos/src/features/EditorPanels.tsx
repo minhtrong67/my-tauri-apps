@@ -35,7 +35,7 @@ export function Swatches({ value, onChange }: { value: string; onChange: (c: str
     <div className="flex flex-wrap gap-2">
       {COLORS.map((c) => (
         <button key={c} aria-label={c} onClick={() => onChange(c)} style={{ background: c }}
-          className={cx("size-8 rounded-md border border-outline-variant transition-all duration-150 ease-spring grid place-items-center", value.toLowerCase() === c ? "scale-110 ring-2 ring-primary ring-offset-2 ring-offset-surface-container rounded-md" : "hover:scale-110")}>
+          className={cx("size-8 rounded-md border border-outline-variant transition-shadow duration-150 grid place-items-center", value.toLowerCase() === c ? "ring-2 ring-primary ring-offset-2 ring-offset-surface-container rounded-md" : "hover:scale-110")}>
           {value.toLowerCase() === c && <Check size={14} color={c === "#ffffff" || c === "#ffeb3b" ? "#000" : "#fff"} strokeWidth={3} />}
         </button>
       ))}
@@ -135,7 +135,7 @@ export function FiltersPanel({ st, commit, live, commitDraft, filterThumbs }: Pa
       <div className="grid grid-cols-3 gap-2.5">
         {FILTERS.map((f, i) => (
           <button key={f.id} onClick={() => commit(tt(`flt.${f.id}` as never), (s) => ({ ...s, filter: f.id, filterAmt: f.id === "none" ? 100 : s.filterAmt }))} className="group text-center">
-            <div className={cx("aspect-square overflow-hidden bg-surface-high transition-all duration-150 ease-spring", st.filter === f.id ? "rounded-lg ring-[3px] ring-primary" : "rounded-md")}>
+            <div className={cx("aspect-square overflow-hidden bg-surface-high transition-shadow duration-150", st.filter === f.id ? "rounded-lg ring-[3px] ring-primary" : "rounded-md")}>
               {filterThumbs[i] ? <img src={filterThumbs[i]} alt="" className="size-full object-cover" draggable={false} /> : <div className="skeleton size-full" />}
             </div>
             <div className={cx("mt-1 text-xs font-semibold", st.filter === f.id ? "text-accent" : "text-on-surface-variant")}>{tt(`flt.${f.id}` as never)}</div>
@@ -211,7 +211,7 @@ export function StickersPanel({ st, sel, setSel, commit, live, commitDraft }: Pa
     <div className="space-y-5">
       <Section title={tt("st.emoji")}>
         <p className="text-xs text-on-surface-variant -mt-1">{tt("st.tapToAdd")}</p>
-        <div className="grid grid-cols-6 gap-1.5">{EMOJI.map((e) => <button key={e} onClick={() => add(e)} className="aspect-square grid place-items-center text-2xl rounded-md hover:bg-secondary-container active:scale-90 transition-all duration-150 ease-spring">{e}</button>)}</div>
+        <div className="grid grid-cols-6 gap-1.5">{EMOJI.map((e) => <button key={e} onClick={() => add(e)} className="aspect-square grid place-items-center text-2xl rounded-md hover:bg-secondary-container active:scale-90 transition-shadow duration-150">{e}</button>)}</div>
       </Section>
       <Btn kind="tonal" icon={Stamp} className="w-full" onClick={mark}>{tt("st.watermark")}</Btn>
       {cur?.type === "emoji" && (

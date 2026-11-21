@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, Info, X, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Info, X, XCircle } from '../../lib/icons';
 import { dismissToast, useUI, type ToastKind } from '../../store/ui';
 
 const KIND: Record<ToastKind, { icon: typeof Info; cls: string }> = {

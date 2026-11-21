@@ -168,13 +168,74 @@ fn cache_dir(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(dir)
 }
 
-/// Returns the path of a cached thumbnail (max `size` px) for an image, creating it on demand.
+/// Asks the Windows shell for an image of `path` (its real thumbnail, or its icon when `icon_only`), exactly like Explorer does.
+/// This uses the system thumbnail cache, so it is fast and also works for videos, PDFs, Office files, shortcuts and executables.
+#[cfg(windows)]
+fn shell_image(path: &str, px: i32, icon_only: bool) -> Result<image::RgbaImage, String> {
+    use windows::{
+        core::HSTRING,
+        Win32::{
+            Foundation::SIZE,
+            Graphics::Gdi::{
+                CreateCompatibleDC, DeleteDC, DeleteObject, GetDIBits, GetObjectW, BITMAP, BITMAPINFO, BITMAPINFOHEADER, BI_RGB, DIB_RGB_COLORS, HGDIOBJ,
+            },
+            System::Com::{CoInitializeEx, COINIT_MULTITHREADED},
+            UI::Shell::{IShellItemImageFactory, SHCreateItemFromParsingName, SIIGBF_BIGGERSIZEOK, SIIGBF_ICONONLY, SIIGBF_THUMBNAILONLY},
+        },
+    };
+    unsafe {
+        let _ = CoInitializeEx(None, COINIT_MULTITHREADED);
+        let wide = HSTRING::from(path);
+        let factory: IShellItemImageFactory = SHCreateItemFromParsingName(&wide, None).map_err(|e| e.to_string())?;
+        let flags = if icon_only { SIIGBF_ICONONLY | SIIGBF_BIGGERSIZEOK } else { SIIGBF_THUMBNAILONLY | SIIGBF_BIGGERSIZEOK };
+        let hbmp = factory.GetImage(SIZE { cx: px, cy: px }, flags).map_err(|e| e.to_string())?;
+        let mut bm = BITMAP::default();
+        let got = GetObjectW(HGDIOBJ(hbmp.0), std::mem::size_of::<BITMAP>() as i32, Some(&mut bm as *mut BITMAP as *mut std::ffi::c_void));
+        if got == 0 || bm.bmWidth <= 0 || bm.bmHeight <= 0 {
+            let _ = DeleteObject(HGDIOBJ(hbmp.0));
+            return Err("bad-bitmap".into());
+        }
+        let (w, h) = (bm.bmWidth, bm.bmHeight);
+        let mut bi = BITMAPINFO::default();
+        bi.bmiHeader = BITMAPINFOHEADER {
+            biSize: std::mem::size_of::<BITMAPINFOHEADER>() as u32,
+            biWidth: w,
+            biHeight: -h,
+            biPlanes: 1,
+            biBitCount: 32,
+            biCompression: BI_RGB.0,
+            ..Default::default()
+        };
+        let mut buf = vec![0u8; (w as usize) * (h as usize) * 4];
+        let hdc = CreateCompatibleDC(None);
+        let lines = GetDIBits(hdc, hbmp, 0, h as u32, Some(buf.as_mut_ptr() as *mut std::ffi::c_void), &mut bi, DIB_RGB_COLORS);
+        let _ = DeleteDC(hdc);
+        let _ = DeleteObject(HGDIOBJ(hbmp.0));
+        if lines == 0 {
+            return Err("no-bits".into());
+        }
+        for px in buf.chunks_exact_mut(4) {
+            let (b, g, r, a) = (px[0], px[1], px[2], px[3]);
+            // the shell returns premultiplied alpha
+            let un = |c: u8| if a == 0 || a == 255 { c } else { ((c as u32 * 255 + a as u32 / 2) / a as u32).min(255) as u8 };
+            px[0] = un(r);
+            px[1] = un(g);
+            px[2] = un(b);
+            px[3] = a;
+        }
+        image::RgbaImage::from_raw(w as u32, h as u32, buf).ok_or_else(|| "bad-size".to_string())
+    }
+}
+
+/// Returns the path of a cached thumbnail (max `size` px) for a file, creating it on demand.
+/// `kind`: "thumb" (real content thumbnail) or "icon" (the file's shell icon, e.g. for .lnk / .exe).
 #[tauri::command]
-pub async fn get_thumbnail(app: AppHandle, path: String, size: u32) -> Result<String, String> {
+pub async fn get_thumbnail(app: AppHandle, path: String, size: u32, kind: Option<String>) -> Result<String, String> {
     tauri::async_runtime::spawn_blocking(move || {
         let src = PathBuf::from(&path);
         let md = fs::metadata(&src).map_err(|e| e.to_string())?;
-        if md.len() > 64 * 1024 * 1024 {
+        let icon_only = kind.as_deref() == Some("icon");
+        if !icon_only && md.len() > 256 * 1024 * 1024 {
             return Err("too-large".to_string());
         }
         let mut h = DefaultHasher::new();
@@ -182,6 +243,7 @@ pub async fn get_thumbnail(app: AppHandle, path: String, size: u32) -> Result<St
         md.len().hash(&mut h);
         ms(md.modified()).hash(&mut h);
         size.hash(&mut h);
+        icon_only.hash(&mut h);
         let stem = format!("{:016x}", h.finish());
         let dir = cache_dir(&app)?;
         for ext in ["jpg", "png"] {
@@ -189,6 +251,23 @@ pub async fn get_thumbnail(app: AppHandle, path: String, size: u32) -> Result<St
             if c.exists() {
                 return Ok(c.to_string_lossy().into_owned());
             }
+        }
+        #[cfg(windows)]
+        {
+            if let Ok(img) = shell_image(&path, size as i32, icon_only) {
+                let target = dir.join(format!("{stem}.png"));
+                let t = image::DynamicImage::ImageRgba8(img);
+                let t = if t.width() > size || t.height() > size { t.thumbnail(size, size) } else { t };
+                if t.save_with_format(&target, image::ImageFormat::Png).is_ok() {
+                    return Ok(target.to_string_lossy().into_owned());
+                }
+            }
+            if icon_only {
+                return Err("no-icon".into());
+            }
+        }
+        if icon_only {
+            return Err("unsupported".into());
         }
         let img = image::open(&src).map_err(|e| e.to_string())?;
         let thumb = img.thumbnail(size, size);
@@ -208,6 +287,43 @@ pub async fn get_thumbnail(app: AppHandle, path: String, size: u32) -> Result<St
     })
     .await
     .map_err(|e| e.to_string())?
+}
+
+/// Starts a user-defined context-menu command (program + arguments, no shell involved).
+#[tauri::command]
+pub fn run_custom(program: String, args: Vec<String>) -> Result<(), String> {
+    if program.trim().is_empty() {
+        return Err("empty-program".into());
+    }
+    let mut cmd = std::process::Command::new(program.trim());
+    cmd.args(args);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        cmd.creation_flags(0x0800_0000);
+    }
+    cmd.spawn().map(|_| ()).map_err(|e| e.to_string())
+}
+
+/// The Windows accent colour ("#RRGGBB"), read from the registry; None on other systems.
+#[tauri::command]
+pub fn get_accent_color() -> Option<String> {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        let out = std::process::Command::new("reg")
+            .args(["query", r"HKCU\Software\Microsoft\Windows\DWM", "/v", "AccentColor"])
+            .creation_flags(0x0800_0000)
+            .output()
+            .ok()?;
+        let text = String::from_utf8_lossy(&out.stdout).into_owned();
+        let hex = text.split_whitespace().find(|w| w.starts_with("0x"))?;
+        let v = u32::from_str_radix(&hex[2..], 16).ok()?;
+        // DWORD is 0xAABBGGRR
+        return Some(format!("#{:02X}{:02X}{:02X}", v & 0xff, (v >> 8) & 0xff, (v >> 16) & 0xff));
+    }
+    #[allow(unreachable_code)]
+    None
 }
 
 /// Deletes every cached thumbnail and returns the number of bytes freed.
@@ -401,6 +517,74 @@ pub async fn folder_sizes(path: String) -> Result<Vec<SizeItem>, String> {
     })
     .await
     .map_err(|e| e.to_string())?
+}
+
+/* ------------------------------------------------ folder sizes for the Size column */
+
+/// one cancellation token per caller slot (each file list asks for its own sizes)
+const TOKEN_ZERO: AtomicU64 = AtomicU64::new(0);
+static SIZE_TOKENS: [AtomicU64; 64] = [TOKEN_ZERO; 64];
+
+#[derive(Serialize, Clone)]
+struct DirSize {
+    path: String,
+    size: u64,
+    partial: bool,
+}
+
+/// Total size of a folder tree (links are not followed). Stops early when a newer request supersedes `token` or the deadline passes.
+fn walk_size(root: &Path, slot: &AtomicU64, token: u64, deadline: std::time::Instant) -> (u64, bool) {
+    let mut total = 0u64;
+    let mut stack = vec![root.to_path_buf()];
+    let mut n = 0u32;
+    while let Some(dir) = stack.pop() {
+        let Ok(rd) = fs::read_dir(&dir) else { continue };
+        for e in rd.flatten() {
+            n += 1;
+            if n % 256 == 0 && (slot.load(Ordering::Relaxed) != token || std::time::Instant::now() > deadline) {
+                return (total, true);
+            }
+            let Ok(ft) = e.file_type() else { continue };
+            if ft.is_symlink() {
+                continue;
+            }
+            if ft.is_dir() {
+                stack.push(e.path());
+            } else if let Ok(m) = e.metadata() {
+                total += m.len();
+            }
+        }
+    }
+    (total, false)
+}
+
+/// Measures several folders in the background and emits a `dir-size` event as each one finishes. A newer call (higher
+/// `token` for the same `slot`) cancels the work of older ones, so navigating away never leaves threads busy.
+#[tauri::command]
+pub async fn dir_sizes(app: AppHandle, paths: Vec<String>, slot: u32, token: u64) -> Result<(), String> {
+    let slot = (slot % 64) as usize;
+    SIZE_TOKENS[slot].store(token, Ordering::Relaxed);
+    tauri::async_runtime::spawn_blocking(move || {
+        let next = std::sync::atomic::AtomicUsize::new(0);
+        std::thread::scope(|s| {
+            for _ in 0..3 {
+                s.spawn(|| loop {
+                    if SIZE_TOKENS[slot].load(Ordering::Relaxed) != token {
+                        break;
+                    }
+                    let i = next.fetch_add(1, Ordering::Relaxed);
+                    let Some(p) = paths.get(i) else { break };
+                    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(8);
+                    let (size, partial) = walk_size(Path::new(p), &SIZE_TOKENS[slot], token, deadline);
+                    if SIZE_TOKENS[slot].load(Ordering::Relaxed) == token {
+                        let _ = app.emit("dir-size", DirSize { path: p.clone(), size, partial });
+                    }
+                });
+            }
+        });
+    })
+    .await
+    .map_err(|e| e.to_string())
 }
 
 /* ------------------------------------------- tray + global shortcut (optional) */

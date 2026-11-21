@@ -1,7 +1,7 @@
-import { ArrowDownUp, ChevronDown, ClipboardPaste, Copy, FolderInput, FolderOutput, LayoutGrid, List, MoreHorizontal, Pencil, Plus, Scissors, Trash2, Undo2, Filter as FilterIcon } from 'lucide-react';
+import { ArrowDownUp, ChevronDown, ClipboardPaste, Copy, FolderInput, FolderOutput, LayoutGrid, List, MoreHorizontal, Pencil, Plus, Scissors, Settings, Trash2, Undo2, Filter as FilterIcon } from '../lib/icons';
 import { useExplorer, copyToClipboard, pasteClipboard, renameSelection, deleteSelection, undoLast, copyToOtherPane } from '../store/explorer';
 import { useSettings } from '../store/settings';
-import { showMenu } from '../store/ui';
+import { openModal, showMenu } from '../store/ui';
 import { useT } from '../lib/i18n';
 import { isVirtual } from '../lib/paths';
 import { CmdButton } from './ui/Buttons';
@@ -34,6 +34,7 @@ export function CommandBar() {
       <CmdButton icon={ArrowDownUp} label={t('cmd.sort')} disabled={!real} onClick={menuAt(sortMenuItems(id))} extra={chev} />
       <CmdButton icon={L.view === 'details' ? List : LayoutGrid} label={t('cmd.view')} onClick={menuAt(viewMenuItems(id))} extra={chev} />
       <CmdButton icon={FilterIcon} label={t('cmd.filter')} disabled={!real} onClick={menuAt(filterMenuItems(id))} extra={chev} className={kind !== 'all' ? '!bg-primary/15 !text-primary [&_svg]:!text-primary' : ''} />
+      <CmdButton icon={Settings} label={t('toolbar.settings')} hideLabel onClick={() => openModal('settings')} />
       <CmdButton icon={MoreHorizontal} label={t('cmd.more')} hideLabel onClick={menuAt(moreMenuItems(id))} />
     </div></div>
   );

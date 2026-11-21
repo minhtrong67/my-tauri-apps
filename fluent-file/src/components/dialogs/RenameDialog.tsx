@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, ArrowRight, Check, Pencil, X } from 'lucide-react';
+import { AlertCircle, ArrowRight, Check, Pencil, X } from '../../lib/icons';
 import { closeModal, toast, useUI } from '../../store/ui';
 import { useT } from '../../lib/i18n';
 import { api } from '../../lib/api';

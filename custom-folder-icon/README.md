@@ -70,10 +70,7 @@ pnpm build      # tauri build → NSIS installer in target/release/bundle
 ## How icons are applied
 
 1. The design is drawn on a canvas and encoded as a multi-size `.ico`.
-2. The backend writes `custom-folder-icon-<timestamp>.ico` (older builds used `fluent-folder-icon-…`, still recognised) (hidden + system) into the folder and sets `IconResource` in `desktop.ini`. A fresh file name each time defeats Explorer's icon cache.
-3. The folder gets the read-only attribute (required by Windows to honor `desktop.ini`) and Explorer is notified, so no restart is needed.
-4. **Restore** removes the icon file and the icon keys; `desktop.ini` is deleted when nothing else remains in it.
-
-## Credits
-
-Made by **minhtrong67** (vibe coder: ideas, direction and prompts) with **Claude** (AI) writing the code.
+2. The backend writes `custom-folder-icon-<timestamp>.ico` (hidden + system) into the folder (older builds used `fluent-folder-icon-…`, still recognised) and updates `desktop.ini` in place. A fresh file name each time defeats Explorer's icon cache, and nothing is deleted at that moment, so the folder never shows the default icon in between.
+3. The folder keeps the read-only attribute (required by Windows to honor `desktop.ini`) and a harmless attribute flips on every apply, so Explorer always sees a real change. Explorer is notified immediately and again after about 1, 2.5 and 6 seconds.
+4. Old icon files are deleted about 15 seconds later, only if `desktop.ini` no longer references them.
+5. **Restore** removes the icon keys from `desktop.ini` (the file is deleted when nothing else remains in it) and then the icon file.

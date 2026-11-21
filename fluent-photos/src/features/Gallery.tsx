@@ -172,6 +172,13 @@ export function Gallery() {
     return out;
   }, [groups, cols, group, sort]);
 
+  /* folder filter options: one pass over the list, and only when the list or language changes (not on every scroll step) */
+  const folderOpts = useMemo(() => {
+    const count = new Map<string, number>();
+    for (const e of base) count.set(e.folder, (count.get(e.folder) ?? 0) + 1);
+    return [{ value: "", label: tt("gal.allFolders") }, ...folders.map((f) => ({ value: f, label: f.split(/[\\/]/).filter(Boolean).pop() || f, hint: String(count.get(f) ?? 0) }))];
+  }, [base, folders, lang]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const offsets = useMemo(() => {
     const o: number[] = []; let y = pad;
     for (const r of rows) { o.push(y); y += r.kind === "head" ? headH : rowH; }
@@ -301,7 +308,7 @@ export function Gallery() {
         <div className="flex items-center gap-2 flex-wrap">
           <Select value={sort} onChange={(v) => setSetting("sort", v)} options={sortOpts} className="w-44 shrink-0 !text-[.8rem]" label={tt("gal.sort")} icon={<ArrowUpDown size={15} className="text-on-surface-variant" />} />
           <Select value={folder} onChange={(v) => app.set({ folder: v })} className="w-44 shrink-0 !text-[.8rem]" label={tt("gal.folder")} icon={<Folder size={15} className="text-on-surface-variant" />}
-            options={[{ value: "", label: tt("gal.allFolders") }, ...folders.map((f) => ({ value: f, label: f.split(/[\\/]/).filter(Boolean).pop() || f, hint: String(base.filter((e) => e.folder === f).length) }))]} />
+            options={folderOpts} />
           <Select value={format} onChange={(v) => app.set({ format: v })} className="w-44 shrink-0 !text-[.8rem]" label={tt("gal.format")} icon={<FileType size={15} className="text-on-surface-variant" />}
             options={[{ value: "", label: tt("gal.allFormats") }, ...formats.map((f) => ({ value: f, label: f.toUpperCase() }))]} />
           <Chip icon={Layers} on={group && sort.startsWith("date")} onClick={() => setSetting("group", !group)}>{tt("gal.group")}</Chip>

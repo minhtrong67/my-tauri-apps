@@ -1,5 +1,5 @@
 import { FolderIcon } from './FolderIcon';
-import { Clock, Command, FolderOpen, HardDrive, History, Home, Pin, Star, Tag, Trash2, Download, FileText, Image as ImageIcon, Music, Video, Monitor, X } from 'lucide-react';
+import { Clock, Command, FolderOpen, HardDrive, History, Home, Pin, Star, Tag, Trash2, Download, FileText, Image as ImageIcon, Music, Video, Monitor, X } from '../lib/icons';
 import { useExplorer, navigate, openRecent, setActivePane } from '../store/explorer';
 import { useSettings } from '../store/settings';
 import { openModal, showMenu } from '../store/ui';
@@ -14,7 +14,7 @@ import { FileIcon } from './FileIcon';
 import { sidebarMenuItems, tagLabel, TAGS } from '../lib/menus';
 import { EmptyState } from './EmptyState';
 import { Button, IconButton } from './ui/Buttons';
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '../lib/icons';
 
 export const PLACE_ICON: Record<string, LucideIcon> = { home: Home, desktop: Monitor, documents: FileText, downloads: Download, pictures: ImageIcon, music: Music, videos: Video };
 export const driveLabel = (d: Drive, t: (k: string) => string) => `${d.name || t('drive.local')} (${d.path.replace(/[\\/]+$/, '')})`;
@@ -24,8 +24,8 @@ export function DriveCard({ id, d, i = 0 }: { id: PaneId; d: Drive; i?: number }
   const used = d.total ? Math.round(((d.total - d.free) / d.total) * 100) : 0;
   const full = used >= 90;
   return (
-    <button type="button" data-drop-path={d.path} onClick={() => { setActivePane(id); void navigate(id, d.path); }} onContextMenu={(e) => { e.preventDefault(); showMenu(sidebarMenuItems(id, d.path, d), e.clientX, e.clientY); }} title={d.path}
-      className="ripple anim-item card flex items-center gap-4 p-4 text-left transition-colors duration-100 hover:bg-surface-container-low" style={{ animationDelay: i * 30 + 'ms' }}>
+    <button type="button" data-drop-path={d.path} onClick={() => setActivePane(id)} onDoubleClick={() => void navigate(id, d.path)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void navigate(id, d.path); } }} onContextMenu={(e) => { e.preventDefault(); showMenu(sidebarMenuItems(id, d.path, d), e.clientX, e.clientY); }} title={d.path}
+      className="ripple anim-item card flex items-center gap-4 p-4 text-left transition-colors duration-100 hover:bg-surface-container-low focus:border-primary focus:bg-primary/10 focus:outline-none" style={{ animationDelay: i * 30 + 'ms' }}>
       <HardDrive className="size-9 flex-none text-primary" strokeWidth={1.25} />
       <span className="min-w-0 flex-1">
         <span className="block truncate">{driveLabel(d, t)}</span>

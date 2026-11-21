@@ -143,7 +143,7 @@ export function Modal({ open, onClose, title, icon: Icon, children, actions, wid
       <div className={cx("absolute inset-0 scrim-bg", closing ? "opacity-0 transition-opacity duration-150" : "anim-fade")} onMouseDown={onClose} />
       <div ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-label={title} style={{ ["--w" as string]: `${width}px` }}
         className={cx("relative w-[min(var(--w),100%)] outline-none acrylic bg-[var(--c-dialog)] text-on-surface shadow-e4 border border-outline-variant flex flex-col overflow-hidden rounded-lg max-h-[92vh]",
-          tall && "h-[min(46rem,92vh)]", closing ? "opacity-0 scale-[.97] transition-all duration-150" : "anim-dialog")}>
+          tall && "h-[min(46rem,92vh)]", closing ? "opacity-0 scale-[.97] transition-[opacity,transform] duration-150" : "anim-dialog")}>
         <header className="flex items-center gap-3 pl-6 pr-3 pt-4 pb-3 shrink-0">
           {Icon && <Icon size={20} strokeWidth={1.75} className="text-accent shrink-0" />}
           <h2 className="flex-1 text-xl font-semibold leading-7 truncate">{title}</h2>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import type { LucideIcon } from 'lucide-react';
-import { X } from 'lucide-react';
+import type { LucideIcon } from '../../lib/icons';
+import { X } from '../../lib/icons';
 import { IconButton } from './Buttons';
 import { useT } from '../../lib/i18n';
 

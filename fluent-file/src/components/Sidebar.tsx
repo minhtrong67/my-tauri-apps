@@ -1,6 +1,6 @@
 import { FolderIcon } from './FolderIcon';
 import { memo } from 'react';
-import { ChevronRight, HardDrive, Home, Monitor, Pin, Trash2 } from 'lucide-react';
+import { ChevronRight, HardDrive, Home, Monitor, Pin, Trash2 } from '../lib/icons';
 import { useExplorer, navigate, toggleTree, openRecycle, setActivePane } from '../store/explorer';
 import { useSettings } from '../store/settings';
 import { showMenu } from '../store/ui';
@@ -9,7 +9,7 @@ import { baseName, HOME, parentOf, pk, samePath } from '../lib/paths';
 import type { Drive, PaneId } from '../lib/types';
 import { PLACE_ICON, driveLabel } from './Pages';
 import { sidebarMenuItems } from '../lib/menus';
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '../lib/icons';
 
 function NavItem({ icon: Icon, label, path, active, onClick, drive, id, depth = 0, folder, trailing }: { icon?: LucideIcon; label: string; path: string; active: boolean; onClick: () => void; drive?: Drive; id: PaneId; depth?: number; folder?: boolean; trailing?: React.ReactNode }) {
   return (

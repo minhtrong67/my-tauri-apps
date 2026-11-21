@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown } from '../../lib/icons';
 
 export interface Option<T extends string> { value: T; label: string; hint?: string; style?: React.CSSProperties }
 /** Custom dropdown (no native <select>), themed for light/dark, limited height with scrolling. */

@@ -1,6 +1,6 @@
 import { FolderIcon } from './FolderIcon';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, ArrowUp, ChevronRight, Copy, Filter, History, FolderClosed, HardDrive, Home, LayoutGrid, List, Monitor, PanelRight, Columns2, Plus, RefreshCw, Search, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUp, ChevronRight, Copy, Filter, History, FolderClosed, HardDrive, Home, LayoutGrid, List, Monitor, PanelRight, Columns2, Plus, RefreshCw, Search, X } from '../lib/icons';
 import { useExplorer, moveTab, activeTab, goBack, goForward, goUp, refresh, navigate, newTab, closeTab, switchTab, setFilter, deepSearch, clearSearch, copyText, getView, setLayout, setActivePane } from '../store/explorer';
 import { useSettings } from '../store/settings';
 import { openModal, showMenu } from '../store/ui';

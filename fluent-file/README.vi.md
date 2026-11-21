@@ -39,17 +39,17 @@ Fluent File giữ lại những phần của File Explorer mà mọi người d�
 | Thao tác tệp | Sao chép / di chuyển / đổi tên với hộp thoại trùng tên, tiến trình dạng sóng có nút huỷ, xoá vào Thùng rác, **hoàn tác đổi tên, di chuyển, tạo mới và xoá (khôi phục từ Thùng rác)**, **đổi tên hàng loạt có xem trước trực tiếp** (mẫu `{name} {n} {date}`, tìm & thay thế, regex, hoa/thường), kéo thả (kể cả **từ Explorer vào ứng dụng**), thông báo lỗi dễ hiểu |
 | Sắp xếp | **Thẻ màu và dấu sao** (đổi tên, lọc theo thẻ), thư mục ghim, thư mục hay dùng, tệp gần đây, **kéo thẻ để đổi thứ tự** |
 | Tìm kiếm | Lọc khi gõ, Enter tìm trong mọi thư mục con (có thể huỷ), **tìm nâng cao**: regex, loại tệp, kích thước, ngày, **lịch sử tìm kiếm** và **tìm kiếm đã lưu** |
-| Công cụ | **Tìm tệp trùng** (kích thước → băm một phần → băm đầy đủ), **bản đồ dung lượng treemap**, tệp nén (ZIP tích hợp, RAR / 7-Zip qua WinRAR / 7-Zip), đặt hình nền |
+| Công cụ | Tệp nén (ZIP tích hợp, RAR / 7-Zip qua WinRAR / 7-Zip), đặt hình nền, lệnh tùy chỉnh trong menu chuột phải |
 | Xem trước | Ngăn chi tiết có xem trước văn bản, **xem nhanh bằng Space** cho ảnh (zoom / kéo), video, âm thanh, PDF, Markdown và văn bản; **ảnh thu nhỏ** thật do Rust tạo và lưu đệm |
 | Trực tiếp | Danh sách **tự làm mới** khi tệp thay đổi (theo dõi tệp) |
 | Chạy nền | **Khay hệ thống** tuỳ chọn, phím tắt toàn cục **Ctrl+Alt+E**, khôi phục thẻ, menu chuột phải **"Open with Fluent File"** của Explorer (do bộ cài thêm) |
 | Giao diện | Sáng / tối / theo hệ thống, 22 màu nhấn của Windows + màu tuỳ chỉnh, **mặc định dùng phông hệ thống Windows** (có thể chọn phông đã cài khác), cỡ chữ (nhỏ / vừa / lớn), English & Tiếng Việt |
-| Nền cửa sổ | Mica (mặc định), Mica Alt, Acrylic, Làm mờ hoặc nền đặc - Cài đặt > Giao diện (Mica cần Windows 11) |
+| Nền cửa sổ | Mica (mặc định), Mica Alt, Acrylic, **Kính mờ**, **Kính lỏng** hoặc nền đặc - Cài đặt > Giao diện (Mica cần Windows 11) |
+| Tùy biến | Màu + icon / emoji / logo nền tảng riêng cho từng thư mục, dung lượng thư mục ở cột Kích thước, trang khởi động, cỡ chữ giao diện và danh sách, màu nhấn tự động theo Windows, trình chỉnh menu chuột phải, thanh tiêu đề tùy chỉnh |
 | Thư mục tùy chỉnh | Chuột phải thư mục > Tùy chỉnh thư mục: chọn màu và biểu tượng riêng cho từng thư mục |
 | Cột | Chuột phải tiêu đề cột (hoặc nhấp đúp cạnh cột) để tự vừa khít nội dung |
 | Cửa sổ | Ghi nhớ kích thước cửa sổ **hoặc** luôn mở phóng to tối đa |
-| Cập nhật | Thông báo bản mới từ GitHub Releases (mỗi ngày một lần, có thể tắt) |
-| Fluent Design | Phong cách Windows 11: bề mặt trung tính nhiều lớp, bo góc 4 px / 8 px, thanh nhấn khi chọn, nền hover tinh tế, icon Lucide, chuyển động ngắn, thanh và vòng tiến trình Fluent |
+| Fluent Design | Phong cách Windows 11: bề mặt trung tính nhiều lớp, bo góc 4 px / 8 px, thanh nhấn khi chọn, nền hover tinh tế, icon Fluent System Icons dạng đặc, chuyển động ngắn, thanh và vòng tiến trình Fluent |
 | Chi tiết UI | Tooltip tuỳ biến, dropdown tuỳ biến (không dùng `<select>` mặc định), toast (info / success / warning / error), hộp thoại có nút kèm biểu tượng, nhãn và màu theo hành động |
 
 ### Phím tắt
@@ -69,7 +69,7 @@ Fluent File giữ lại những phần của File Explorer mà mọi người d�
 
 ## Tải về
 
-Tải bộ cài mới nhất ở trang [Releases](https://github.com/minhtrong67/fluent-file/releases) hoặc nút **Tải về** trên landing page (`index.html`).
+Tải bộ cài mới nhất ở trang [Releases](https://github.com/minhtrong67/my-tauri-apps/releases) hoặc nút **Tải về** trên landing page (`index.html`).
 
 ## Cài đặt
 
@@ -86,7 +86,7 @@ Tải bộ cài mới nhất ở trang [Releases](https://github.com/minhtrong67
 | Build | Vite 6 |
 | Style | Tailwind CSS 4 + token màu Fluent (biến CSS, màu nhấn OKLCH) |
 | State | Zustand |
-| Biểu tượng | [Lucide](https://lucide.dev) (`lucide-react`) |
+| Biểu tượng | [Fluent System Icons](https://github.com/microsoft/fluentui-system-icons) (`@fluentui/react-icons`, dạng đặc) + [Simple Icons](https://simpleicons.org) cho logo nền tảng |
 | Xem trước | `marked` + `DOMPurify` (Markdown) |
 | Phông chữ | Mặc định dùng phông hệ thống (Segoe UI Variable trên Windows 11); có thể chọn phông đã cài trên máy trong Cài đặt |
 
@@ -126,13 +126,13 @@ fluent-file/
 │  ├─ assets/                 # logo.svg, phông chữ kèm theo
 │  ├─ components/             # FileList (ảo hoá), ngăn, sidebar, thanh lệnh, chi tiết…
 │  │  ├─ ui/                  # Tooltip, Select, Modal, Toaster, ContextMenu, Buttons, Controls
-│  │  └─ dialogs/             # Cài đặt, Thuộc tính, Tệp trùng, Bản đồ dung lượng, Tìm kiếm, Lightbox, Bảng lệnh, Cập nhật
+│  │  └─ dialogs/             # Cài đặt, Thuộc tính, Tìm kiếm, Lightbox, Bảng lệnh, Đổi tên, Tùy chỉnh thư mục
 │  ├─ store/                  # zustand: settings, explorer (ngăn/thẻ/thao tác), ui
 │  ├─ hooks/                  # phím tắt, hiệu ứng cửa sổ/theme/watcher/kéo thả/khay
-│  └─ lib/                    # api (cầu nối Tauri + mock trình duyệt), i18n (EN/VI), theme, menus, view, treemap
+│  └─ lib/                    # api (cầu nối Tauri + mock trình duyệt), i18n (EN/VI), theme, menus, view
 ├─ src-tauri/
 │  ├─ src/main.rs             # lệnh: liệt kê, sao chép/di chuyển có tiến trình, thùng rác, nén…
-│  ├─ src/extras.rs           # tìm kiếm, watcher, ảnh thu nhỏ, tệp trùng, dung lượng, khay, phím tắt
+│  ├─ src/extras.rs           # tìm kiếm, watcher, ảnh thu nhỏ & icon từ shell, dung lượng thư mục, khay, phím tắt
 │  ├─ icons/                  # icon ứng dụng + installer/ (setup, gỡ cài đặt, ảnh NSIS/WiX, hooks.nsh)
 │  └─ tauri.conf.json  capabilities/
 ├─ scripts/portable.mjs       # chép exe release vào download/ (bản portable)
@@ -145,13 +145,12 @@ fluent-file/
 ### Hạn chế
 
 - Ưu tiên Windows: lối tắt Thùng rác, tích hợp WinRAR / 7-Zip, hook nút bên chuột, hình nền và menu chuột phải Explorer là tính năng của Windows.
-- Kiểm tra cập nhật chỉ *thông báo* có bản phát hành mới trên GitHub, không tự cài đặt.
 - Bộ cài chưa ký số → SmartScreen cảnh báo ở lần chạy đầu.
 
 ## Ghi công
 
 Thiết kế và phát triển bởi **minhtrong67** với sự hỗ trợ của **Claude** (Anthropic).
-Biểu tượng của [Lucide](https://lucide.dev), phông chữ của [Fontsource](https://fontsource.org).
+Biểu tượng của [Fluent System Icons](https://github.com/microsoft/fluentui-system-icons) và [Simple Icons](https://simpleicons.org).
 
 ## Giấy phép
 

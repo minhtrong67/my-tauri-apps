@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FolderOpen, Info, X } from 'lucide-react';
+import { FolderOpen, Info, X } from '../../lib/icons';
 import { useUI, closeModal } from '../../store/ui';
 import { useT } from '../../lib/i18n';
 import { api } from '../../lib/api';

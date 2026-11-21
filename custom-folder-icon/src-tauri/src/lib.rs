@@ -5,6 +5,7 @@
 
 use base64::{engine::general_purpose::STANDARD, Engine};
 use serde::Serialize;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -20,6 +21,10 @@ const ATTR_READONLY: u32 = 0x1;
 const ATTR_HIDDEN: u32 = 0x2;
 const ATTR_SYSTEM: u32 = 0x4;
 const ATTR_NORMAL: u32 = 0x80;
+const ATTR_ARCHIVE: u32 = 0x20;
+
+/// Set when a folder got its very first custom icon in the current batch (needs one global shell refresh).
+static GLOBAL_NEEDED: AtomicBool = AtomicBool::new(false);
 
 // ---------------------------------------------------------------- Win32 glue
 
@@ -153,6 +158,25 @@ fn is_ours(name: &str) -> bool {
     (name.starts_with(ICO_PREFIX) || name.starts_with(LEGACY_PREFIX)) && name.ends_with(".ico")
 }
 
+/// Name of the icon file desktop.ini currently points at (the `IconFile=` line).
+fn referenced_icon(ini: &str) -> Option<String> {
+    ini.lines().find_map(|l| {
+        let l = l.trim();
+        // `get` (not slicing) so lines with non-ASCII text can never panic
+        match l.get(..9) {
+            Some(head) if head.eq_ignore_ascii_case("iconfile=") => Some(l[9..].trim().to_string()),
+            _ => None,
+        }
+    })
+}
+
+/// Remove every icon file of ours that desktop.ini no longer references. Run well after the switch,
+/// so Explorer can never be left holding a path to a file we already deleted.
+fn cleanup_icons(dir: &Path) {
+    let keep = referenced_icon(&read_ini(&ini_path(dir))).unwrap_or_default();
+    remove_icons_except(dir, &keep);
+}
+
 /// Delete our icon files except `keep`. Called only after desktop.ini points at `keep`,
 /// so desktop.ini never references a missing file.
 fn remove_icons_except(dir: &Path, keep: &str) {
@@ -220,9 +244,9 @@ fn apply_icon(path: String, data: String) -> Result<(), String> {
     }
     let bytes = STANDARD.decode(data).map_err(|e| e.to_string())?;
 
-    // A fresh file name each time defeats Explorer's icon cache.
-    // Order matters: write the new icon, point desktop.ini at it, notify, and only then delete the old icons.
-    // (Deleting first, or toggling attributes, briefly shows the default icon and Explorer can keep that.)
+    // Order matters and nothing is ever deleted here: write the new icon, point desktop.ini at it, notify.
+    // Old icons stay for a while (see `refresh_shell`), because Explorer may still read the previous path
+    // for a moment; deleting it right away made it fall back to the default icon on re-apply.
     let stamp = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_millis())
@@ -233,7 +257,11 @@ fn apply_icon(path: String, data: String) -> Result<(), String> {
     win::set_attrs(&ico, ATTR_HIDDEN | ATTR_SYSTEM);
 
     let ini = ini_path(&dir);
-    let mut lines = strip_icon_keys(&read_ini(&ini));
+    let existing = read_ini(&ini);
+    if !(existing.contains(ICO_PREFIX) || existing.contains(LEGACY_PREFIX)) {
+        GLOBAL_NEEDED.store(true, Ordering::SeqCst);
+    }
+    let mut lines = strip_icon_keys(&existing);
     let header_at = match lines.iter().position(|l| is_header(l)) {
         Some(i) => i,
         None => {
@@ -246,11 +274,15 @@ fn apply_icon(path: String, data: String) -> Result<(), String> {
     lines.insert(header_at + 1, format!("IconResource={ico_name},0"));
     write_ini(&ini, &lines)?;
 
-    // Required for Windows to honor desktop.ini; only added when missing, never toggled.
-    add_attrs(&dir, ATTR_READONLY);
+    // READONLY makes Windows honor desktop.ini. Flipping the harmless ARCHIVE bit gives Explorer a real
+    // attribute change to react to on every apply, not only the first one; READONLY itself is never removed.
+    let a = win::attrs(&dir);
+    if a != u32::MAX {
+        let mut n = a | ATTR_READONLY;
+        n = if n & ATTR_ARCHIVE != 0 { n & !ATTR_ARCHIVE } else { n | ATTR_ARCHIVE };
+        win::set_attrs(&dir, n);
+    }
     win::notify(&dir);
-
-    remove_icons_except(&dir, &ico_name);
 
     // make sure the change really landed
     if !read_ini(&ini).contains(&ico_name) {
@@ -285,15 +317,7 @@ fn restore_icon(path: String) -> Result<(), String> {
 
 /// Picks the ~128px image out of a folder's custom .ico and returns it as a data URL (small, ~10-20 KB).
 fn icon_data_url(dir: &Path) -> Option<String> {
-    let ini = read_ini(&ini_path(dir));
-    let referenced = ini.lines().find_map(|l| {
-        let l = l.trim();
-        // `get` (not slicing) so lines with non-ASCII text can never panic
-        match l.get(..9) {
-            Some(head) if head.eq_ignore_ascii_case("iconfile=") => Some(l[9..].trim().to_string()),
-            _ => None,
-        }
-    });
+    let referenced = referenced_icon(&read_ini(&ini_path(dir)));
     let name = referenced
         .filter(|n| is_ours(n) && dir.join(n).exists())
         .or_else(|| {
@@ -343,24 +367,42 @@ fn folder_icons(paths: Vec<String>) -> Vec<Option<String>> {
     paths.iter().map(|p| icon_data_url(Path::new(p))).collect()
 }
 
-/// Call once after a batch: refreshes the shell icon cache so changes show without restarting Explorer.
+/// Call once after a batch. Returns immediately; a background thread then
+///  - re-sends the "this folder changed" notifications a few times (Explorer sometimes misses the first ones),
+///  - does one global icon refresh, only when a folder got its first custom icon (re-applies do not need it,
+///    and the global refresh keeps Explorer busy for a few seconds),
+///  - finally deletes the old icon files, long after Explorer switched to the new one.
 #[tauri::command]
 fn refresh_shell(paths: Vec<String>) {
-    // second pass, after all writes finished, in case Explorer coalesced the first notifications
-    for p in &paths {
-        win::notify(Path::new(p));
-    }
-    std::thread::sleep(std::time::Duration::from_millis(150));
-    win::notify_assoc();
-    #[cfg(windows)]
-    {
-        use std::os::windows::process::CommandExt;
-        // "ie4uinit -show" rebuilds the icon cache; hidden window, fire and forget.
-        let _ = std::process::Command::new("ie4uinit.exe")
-            .arg("-show")
-            .creation_flags(0x0800_0000)
-            .spawn();
-    }
+    std::thread::spawn(move || {
+        let global = GLOBAL_NEEDED.swap(false, Ordering::SeqCst);
+        let mut elapsed = 0u64;
+        for (i, at) in [0u64, 900, 2500, 6000].iter().enumerate() {
+            std::thread::sleep(std::time::Duration::from_millis(at - elapsed));
+            elapsed = *at;
+            for p in &paths {
+                win::notify(Path::new(p));
+            }
+            if i == 1 && global {
+                win::notify_assoc();
+                #[cfg(windows)]
+                {
+                    use std::os::windows::process::CommandExt;
+                    let _ = std::process::Command::new("ie4uinit.exe")
+                        .arg("-show")
+                        .creation_flags(0x0800_0000)
+                        .spawn();
+                }
+            }
+        }
+        std::thread::sleep(std::time::Duration::from_secs(10));
+        for p in &paths {
+            let dir = Path::new(p);
+            if dir.is_dir() {
+                cleanup_icons(dir);
+            }
+        }
+    });
 }
 
 /// Restart the Explorer shell safely.

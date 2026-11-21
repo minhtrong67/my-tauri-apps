@@ -32,6 +32,7 @@ export function useShortcuts() {
       if (ctrl && e.shiftKey && k.toLowerCase() === 'n') { e.preventDefault(); if (real) void newItem(id, 'folder'); return; }
       if (ctrl && (k === '1' || k === '2')) { e.preventDefault(); if (real) setLayout(p.path, { view: k === '1' ? 'details' : 'grid' }); return; }
       if (ctrl && k === 'Tab') { e.preventDefault(); const n = p.tabs.length; if (n > 1) void switchTab(id, (p.active + (e.shiftKey ? -1 : 1) + n) % n); return; }
+      if (ctrl && k.toLowerCase() === 'b') { e.preventDefault(); const s = useSettings.getState(); s.set({ showNav: !s.showNav }); return; }
       if (e.altKey && k === 'p') { e.preventDefault(); const s = useSettings.getState(); s.set({ showDetails: !s.showDetails }); return; }
       if (e.altKey && k === 'ArrowLeft') { e.preventDefault(); void goBack(id); return; }
       if (e.altKey && k === 'ArrowRight') { e.preventDefault(); void goForward(id); return; }

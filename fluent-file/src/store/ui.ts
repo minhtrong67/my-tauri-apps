@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '../lib/icons';
 
 /* ----------------------------------------------------------------- toasts */
 export type ToastKind = 'info' | 'success' | 'warning' | 'error';
@@ -9,6 +9,8 @@ export interface ToastItem { id: number; kind: ToastKind; msg: string; leaving?:
 export interface MenuItem {
   label?: string; icon?: LucideIcon; kbd?: string; check?: boolean; disabled?: boolean; danger?: boolean;
   sep?: boolean; items?: MenuItem[]; run?: () => void; swatch?: string;
+  /** a row of icon-only quick actions (cut / copy / rename / delete) */
+  row?: MenuItem[];
 }
 
 /* ----------------------------------------------------------------- dialogs */
@@ -22,7 +24,7 @@ export interface DialogSpec {
   resolve: (v: { id: string; value?: string }) => void;
 }
 
-export type ModalName = 'settings' | 'about' | 'props' | 'dupes' | 'usage' | 'search' | 'palette' | 'lightbox' | 'update' | 'rename' | 'folderStyle';
+export type ModalName = 'settings' | 'about' | 'props' | 'search' | 'palette' | 'lightbox' | 'rename' | 'folderStyle';
 interface OpState { title: string; name: string; done: number; total: number; visible: boolean }
 
 interface UI {

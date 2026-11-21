@@ -11,8 +11,16 @@ export interface Settings {
   theme: 'light' | 'dark' | 'system';
   seed: string;
   font: string;
-  effect: 'mica' | 'tabbed' | 'acrylic' | 'blur' | 'none';
-  fontSize: 'sm' | 'md' | 'lg';
+  effect: 'mica' | 'tabbed' | 'acrylic' | 'frosted' | 'liquid' | 'none';
+  /** UI font size in px (scales the whole interface) and file-list text size in px */
+  uiFont: number;
+  listFont: number;
+  startTab: string;
+  startPath: string;
+  folderSizes: boolean;
+  /** context menu entries the user switched on / off (id -> visible); missing = the entry's default */
+  menu: Record<string, boolean>;
+  customMenu: { id: string; label: string; program: string; args: string; scope: 'file' | 'folder' | 'any' | 'bg' }[];
   density: 'comfortable' | 'compact';
   lang: 'en' | 'vi';
   view: ViewMode;
@@ -29,7 +37,6 @@ export interface Settings {
   thumbnails: boolean;
   rememberLayouts: boolean;
   restoreTabs: boolean;
-  checkUpdates: boolean;
   trayEnabled: boolean;
   globalShortcut: boolean;
   dualPane: boolean;
@@ -42,24 +49,23 @@ export interface Settings {
   frequent: Record<string, number>;
   tags: Record<string, TagId[]>;
   tagNames: Partial<Record<TagId, string>>;
-  folderStyles: Record<string, { color?: string; icon?: string }>;
+  folderStyles: Record<string, { color?: string; icon?: string; tone?: 'light' | 'dark' }>;
   searchHistory: string[];
   savedSearches: SavedSearch[];
   layouts: Record<string, Layout>;
   session: { a: { paths: string[]; active: number } | null };
-  lastUpdateCheck: number;
 }
 
 export const DEFAULTS: Settings = {
-  theme: 'system', seed: DEFAULT_SEED, font: 'system', effect: 'mica', fontSize: 'md', density: 'comfortable',
+  theme: 'system', seed: DEFAULT_SEED, font: 'system', effect: 'mica', uiFont: 14, listFont: 14, startTab: 'home', startPath: '', folderSizes: true, menu: {}, customMenu: [], density: 'comfortable',
   lang: (typeof navigator !== 'undefined' && (navigator.language || 'en').toLowerCase().startsWith('vi')) ? 'vi' : 'en',
   view: 'details', sortKey: 'name', sortDir: 'asc', groupBy: 'none',
   showHidden: false, showExt: true, showChecks: false, showNav: true, showDetails: false, autoExpandTree: false,
-  confirmDelete: true, thumbnails: true, rememberLayouts: true, restoreTabs: false, checkUpdates: true,
+  confirmDelete: true, thumbnails: true, rememberLayouts: true, restoreTabs: false,
   trayEnabled: false, globalShortcut: false, dualPane: false,
   windowMode: 'remember', winState: null,
   cols: ['modified', 'type', 'size'], colW: { modified: 170, created: 170, type: 160, size: 100 },
-  pinned: [], recent: [], frequent: {}, tags: {}, tagNames: {}, folderStyles: {}, searchHistory: [], savedSearches: [], layouts: {}, session: { a: null }, lastUpdateCheck: 0
+  pinned: [], recent: [], frequent: {}, tags: {}, tagNames: {}, folderStyles: {}, searchHistory: [], savedSearches: [], layouts: {}, session: { a: null }
 };
 
 const KEY = 'fluent-file.settings.v1';
@@ -69,6 +75,11 @@ function load(): Settings {
     const s = { ...DEFAULTS, ...raw } as Settings;
     s.colW = { ...DEFAULTS.colW, ...(raw.colW || {}) };
     if (!Array.isArray(s.cols)) s.cols = DEFAULTS.cols.slice();
+    if ((s.effect as string) === 'blur') s.effect = 'acrylic';
+    if (raw.uiFont === undefined && raw.fontSize) s.uiFont = ({ sm: 13, md: 14, lg: 15.5 } as Record<string, number>)[raw.fontSize as string] ?? 14;
+    s.uiFont = Math.max(11, Math.min(20, Number(s.uiFont) || 14)); s.listFont = Math.max(11, Math.min(22, Number(s.listFont) || 14));
+    s.menu = { ...(raw.menu || {}) };
+    if (!Array.isArray(s.customMenu)) s.customMenu = [];
     return s;
   } catch { return { ...DEFAULTS }; }
 }

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { AlertTriangle, Copy as CopyIcon, Trash2, X, Check, Replace, SkipForward } from 'lucide-react';
+import { AlertTriangle, Copy as CopyIcon, Trash2, X, Check, Replace, SkipForward } from '../lib/icons';
 import { api } from '../lib/api';
 import type { Drive, Entry, Kind, PaneId, Place, TagId, Tools } from '../lib/types';
 import { baseName, crumbsOf, HOME, isVirtual, parentOf, pk, samePath, stripExt } from '../lib/paths';
@@ -597,6 +597,8 @@ export async function initExplorer() {
   S.setState({ places, drives, tools });
   const s = getSettings();
   const sess = s.session.a;
+  // the folder a fresh start opens (Settings > General > Open on start)
+  const def = s.startTab === 'thispc' ? '' : s.startTab === 'custom' ? (s.startPath.trim() || HOME) : s.startTab === 'home' ? HOME : places.find((x) => x.id === s.startTab)?.path || HOME;
   if (!start && s.restoreTabs && sess && sess.paths.length) {
     const tabs = sess.paths.map((p) => newTabObj(p));
     const active = Math.min(sess.active, tabs.length - 1);
@@ -604,8 +606,9 @@ export async function initExplorer() {
     const ok = await navigate('a', tabs[active].path || HOME, { push: false });
     if (!ok) await navigate('a', HOME, { push: false });
   } else {
-    patch('a', { tabs: [newTabObj(start || HOME)], active: 0 });
-    const ok = await navigate('a', start || HOME, { push: false });
+    const first = start || def;
+    patch('a', { tabs: [newTabObj(first)], active: 0 });
+    const ok = await navigate('a', first, { push: false });
     if (!ok) await navigate('a', '', { push: false });
   }
   S.setState({ ready: true });

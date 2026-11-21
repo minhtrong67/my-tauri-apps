@@ -389,7 +389,7 @@ export function Editor() {
             {TABS.map((x) => (
               <Tip key={x.id} label={tt(x.label as never)}>
                 <button onClick={() => { setTab(x.id); if (x.id !== "text" && x.id !== "stickers" && x.id !== "blur") setSel(null); }} aria-pressed={tab === x.id}
-                  className={cx("h-9 w-full grid place-items-center transition-all duration-150 ease-spring",
+                  className={cx("h-9 w-full grid place-items-center transition-shadow duration-150",
                     tab === x.id ? "bg-primary text-on-primary rounded-md" : "rounded-md bg-surface-high text-on-surface-variant hover:bg-surface-highest")}>
                   <x.icon size={19} />
                 </button>

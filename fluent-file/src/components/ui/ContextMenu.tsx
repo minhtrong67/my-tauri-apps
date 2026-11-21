@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, ChevronRight } from 'lucide-react';
+import { Check, ChevronRight } from '../../lib/icons';
 import { closeMenu, useUI, type MenuItem } from '../../store/ui';
 
 function MenuList({ items, onClose, depth = 0 }: { items: MenuItem[]; onClose: () => void; depth?: number }) {
@@ -9,6 +9,11 @@ function MenuList({ items, onClose, depth = 0 }: { items: MenuItem[]; onClose: (
     <div role="menu" className="min-w-[13.5rem] max-w-[22rem] rounded-lg border border-outline-variant bg-surface-container-high p-1 shadow-[var(--shadow-3)]" style={{ maxHeight: 'calc(100vh - 16px)', overflowY: 'auto' }}>
       {items.map((it, i) => {
         if (it.sep) return <div key={i} className="mx-1 my-1 h-px bg-outline-variant" />;
+        if (it.row) return (
+          <div key={i} className="flex items-center justify-around gap-1 px-1 py-0.5">
+            {it.row.map((r, j) => { const RI = r.icon; return <button key={j} type="button" title={r.label} aria-label={r.label} disabled={r.disabled} onClick={() => { onClose(); r.run?.(); }} className={`ripple grid h-9 flex-1 place-items-center rounded-md disabled:opacity-40 ${r.danger ? 'text-error' : ''}`}>{RI && <RI className="size-[1.125rem]" strokeWidth={1.75} />}</button>; })}
+          </div>
+        );
         const Icon = it.icon;
         return (
           <button key={i} type="button" role="menuitem" disabled={it.disabled}

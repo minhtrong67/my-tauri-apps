@@ -39,17 +39,17 @@ Fluent File keeps the parts of File Explorer people use every day — quick acce
 | File operations | Copy / move / rename with conflict dialog, progress bar with cancel, Recycle Bin delete, **undo for rename, move, create and delete (restores from the Recycle Bin)**, **batch rename with live preview** (pattern `{name} {n} {date}`, find & replace, regex, letter case), drag & drop (also **from Explorer into the app**), friendly error messages |
 | Organise | **Colour tags and stars** (rename them, filter by tag), pinned folders, frequent folders, recent files, **drag tabs to reorder** |
 | Search | Filter as you type, Enter searches all sub-folders (cancellable), **advanced search**: regex, file type, size and date filters, **search history** and **saved searches** |
-| Tools | **Duplicate finder** (size → partial hash → full hash), **disk-usage treemap**, archives (ZIP built in, RAR / 7-Zip via WinRAR / 7-Zip), set wallpaper |
+| Tools | Archives (ZIP built in, RAR / 7-Zip via WinRAR / 7-Zip), set wallpaper, custom context-menu commands |
 | Preview | Details pane with text preview, **Space quick-look** for images (zoom / pan), video, audio, PDF, Markdown and text; real **image thumbnails** generated in Rust and cached |
 | Live | The list **refreshes by itself** when files change (file watcher) |
 | Background | Optional **system-tray** mode, global shortcut **Ctrl+Alt+E**, restore tabs, **"Open with Fluent File"** Explorer context menu (installed by the setup) |
 | Appearance | Light / dark / system, 22 Windows accent colours + custom colour, **Windows system font by default** (other installed fonts optional), text size (small / medium / large), English & Tiếng Việt |
-| Window material | Mica (default), Mica Alt, Acrylic, Blur or solid - Settings > Appearance (Mica needs Windows 11) |
+| Window material | Mica (default), Mica Alt, Acrylic, **Frosted glass**, **Liquid glass** or solid - Settings > Appearance (Mica needs Windows 11) |
+| Customization | Per-folder colour + icon / emoji / platform logo, folder sizes in the Size column, start page, UI and list font sizes, automatic (Windows) accent colour, context-menu editor, custom title bar |
 | Custom folders | Right-click a folder > Customize folder: pick a colour and a glyph per folder |
 | Columns | Right-click a column header (or double-click its edge) to auto fit it to its content |
 | Window | Remember the window size **or** always open maximised |
-| Updates | Gentle update notification from GitHub Releases (once a day, can be turned off) |
-| Fluent Design | Windows 11 look: neutral layered surfaces, 4 px / 8 px corners, accent indicator on selection, subtle hover fills, Lucide icons, short decelerating motion, Fluent progress bar and ring |
+| Fluent Design | Windows 11 look: neutral layered surfaces, 4 px / 8 px corners, accent indicator on selection, subtle hover fills, solid Fluent System Icons, short decelerating motion, Fluent progress bar and ring |
 | UI details | Custom tooltips, themed dropdowns (never the native `<select>`), toasts (info / success / warning / error), dialogs whose buttons carry an icon, a label and an intent colour |
 
 ### Keyboard shortcuts
@@ -69,7 +69,7 @@ Fluent File keeps the parts of File Explorer people use every day — quick acce
 
 ## Download
 
-Get the latest installer from the [Releases](https://github.com/minhtrong67/fluent-file/releases) page or from the landing page (`index.html`, button **Download**).
+Get the latest installer from the [Releases](https://github.com/minhtrong67/my-tauri-apps/releases) page or from the landing page (`index.html`, button **Download**).
 
 ## Installation
 
@@ -86,7 +86,7 @@ Get the latest installer from the [Releases](https://github.com/minhtrong67/flue
 | Build | Vite 6 |
 | Styling | Tailwind CSS 4 + Fluent colour tokens (CSS variables, OKLCH accent) |
 | State | Zustand |
-| Icons | [Lucide](https://lucide.dev) (`lucide-react`) |
+| Icons | [Fluent System Icons](https://github.com/microsoft/fluentui-system-icons) (`@fluentui/react-icons`, filled) + [Simple Icons](https://simpleicons.org) for platform logos |
 | Preview | `marked` + `DOMPurify` (Markdown) |
 | Fonts | System UI font (Segoe UI Variable on Windows 11) by default; fonts installed on the PC can be chosen in Settings |
 
@@ -126,13 +126,13 @@ fluent-file/
 │  ├─ assets/                 # logo.svg
 │  ├─ components/             # FileList (virtualised), panes, sidebar, command bar, details…
 │  │  ├─ ui/                  # Tooltip, Select, Modal, Toaster, ContextMenu, Buttons, Controls
-│  │  └─ dialogs/             # Settings, Properties, Duplicates, Usage map, Search, Lightbox, Palette, Update
+│  │  └─ dialogs/             # Settings, Properties, Search, Lightbox, Palette, Rename, Customize folder
 │  ├─ store/                  # zustand stores: settings, explorer (panes/tabs/ops), ui
 │  ├─ hooks/                  # shortcuts, window/theme/watcher/drop/tray effects
-│  └─ lib/                    # api (Tauri bridge + browser mock), i18n (EN/VI), theme, menus, view, treemap
+│  └─ lib/                    # api (Tauri bridge + browser mock), i18n (EN/VI), theme, menus, view
 ├─ src-tauri/
 │  ├─ src/main.rs             # commands: list, copy/move with progress, trash, archives…
-│  ├─ src/extras.rs           # search, watcher, thumbnails, duplicates, disk usage, tray, shortcut
+│  ├─ src/extras.rs           # search, watcher, shell thumbnails & icons, folder sizes, tray, shortcut
 │  ├─ icons/                  # app icons + installer/ (setup, uninstall, NSIS/WiX images, hooks.nsh)
 │  └─ tauri.conf.json  capabilities/
 ├─ scripts/portable.mjs       # copies the release exe to download/ (portable build)
@@ -145,13 +145,12 @@ fluent-file/
 ### Limitations
 
 - Windows-first: the Recycle Bin shortcut, WinRAR / 7-Zip integration, mouse side-button hook, wallpaper and Explorer context menu are Windows features.
-- The update check only *notifies* about a new GitHub release; it does not install it automatically.
 - Unsigned installer → SmartScreen warning on first run.
 
 ## Credits
 
 Designed and developed by **minhtrong67** with the support of **Claude** (Anthropic).
-Icons by [Lucide](https://lucide.dev), fonts by [Fontsource](https://fontsource.org).
+Icons by [Fluent System Icons](https://github.com/microsoft/fluentui-system-icons) and [Simple Icons](https://simpleicons.org).
 
 ## License
 

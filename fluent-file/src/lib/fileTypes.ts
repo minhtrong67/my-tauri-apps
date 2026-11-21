@@ -21,8 +21,12 @@ export const ARCHIVE_EXT = new Set(['zip', 'rar', '7z', 'tar', 'gz', 'tgz', 'bz2
 export const catOfExt = (ext: string): Cat | undefined => EXT2CAT[ext];
 export const catOf = (e: Pick<Entry, 'name' | 'isDir'>): Cat | 'folder' | 'file' => (e.isDir ? 'folder' : EXT2CAT[extOf(e.name)] || 'file');
 export const isArchive = (e: Pick<Entry, 'name' | 'isDir'>) => !e.isDir && ARCHIVE_EXT.has(extOf(e.name));
-export const THUMB_EXT = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'ico']);
+/** images decoded by the shell/Rust, plus video / PDF / Office files that the Windows shell can thumbnail */
+export const THUMB_EXT = new Set(['png', 'jpg', 'jpeg', 'jfif', 'gif', 'webp', 'bmp', 'ico', 'tif', 'tiff', 'heic', 'heif', 'avif', 'mp4', 'mkv', 'mov', 'avi', 'webm', 'wmv', 'm4v', 'pdf', 'docx', 'xlsx', 'pptx']);
 export const isRaster = (e: Entry) => !e.isDir && THUMB_EXT.has(extOf(e.name));
+/** files whose own icon (shortcuts, programs) should come from the Windows shell */
+export const NATIVE_ICON_EXT = new Set(['lnk', 'exe', 'url', 'msi', 'appref-ms', 'scr', 'cpl', 'msc', 'bat', 'cmd']);
+export const hasNativeIcon = (e: Pick<Entry, 'name' | 'isDir'>) => !e.isDir && NATIVE_ICON_EXT.has(extOf(e.name));
 export const isSvg = (e: Entry) => !e.isDir && extOf(e.name) === 'svg';
 
 export const KIND_CATS: Record<string, string[]> = {

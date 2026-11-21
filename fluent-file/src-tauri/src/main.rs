@@ -787,6 +787,8 @@ async fn new_window(app: AppHandle, state: State<'_, OpState>, path: Option<Stri
         .inner_size(1120.0, 720.0)
         .min_inner_size(720.0, 420.0)
         .center()
+        .decorations(false)
+        .transparent(true)
         .visible(false)
         .build()
         .map_err(|e| e.to_string())?;
@@ -924,6 +926,9 @@ fn main() {
             extras::clear_thumb_cache,
             extras::find_duplicates,
             extras::folder_sizes,
+            extras::get_accent_color,
+            extras::run_custom,
+            extras::dir_sizes,
             extras::set_tray,
             extras::set_global_shortcut,
             extras::restore_trashed,

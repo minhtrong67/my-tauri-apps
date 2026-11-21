@@ -1,51 +1,63 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { LogicalSize } from '@tauri-apps/api/dpi';
 import { Effect, EffectState } from '@tauri-apps/api/window';
 import { api, appWindow, IS_TAURI, listen, onFileDrop } from '../lib/api';
-import { applyTheme, isDark, onSystemSchemeChange } from '../lib/theme';
+import { applyTheme, AUTO_SEED, isDark, onSystemSchemeChange, setSystemAccent } from '../lib/theme';
 import { useSettings } from '../store/settings';
 import { t } from '../lib/i18n';
 import { onFileOp, refresh, runPaste, toggleTreeRefresh, useExplorer, openNewWindow } from '../store/explorer';
-import { openModal, useUI, toast } from '../store/ui';
-import { APP_VERSION } from '../lib/constants';
-import { fetchLatest, isNewer } from '../components/dialogs/UpdateDialog';
+import { useUI, toast } from '../store/ui';
 import { isVirtual } from '../lib/paths';
 import type { PaneId } from '../lib/types';
 
-/** Theme, language, window title/size, watcher events, native file drops, tray and update check. */
+/** Theme, language, window material, window title/size, watcher events, native file drops and tray. */
+let fxSeq = 0;
 export function useAppEffects() {
   const theme = useSettings((s) => s.theme); const seed = useSettings((s) => s.seed); const font = useSettings((s) => s.font);
-  const fontSize = useSettings((s) => s.fontSize); const density = useSettings((s) => s.density); const lang = useSettings((s) => s.lang);
+  const uiFont = useSettings((s) => s.uiFont); const density = useSettings((s) => s.density); const lang = useSettings((s) => s.lang);
+
+  // "Automatic" accent: follow the Windows accent colour (re-read when the window regains focus)
+  const [accentTick, setAccentTick] = useState(0);
+  useEffect(() => {
+    if (seed !== AUTO_SEED) return;
+    const read = () => api.getAccentColor().then((c) => { setSystemAccent(c); setAccentTick((n) => n + 1); }).catch(() => {});
+    void read(); window.addEventListener('focus', read);
+    return () => window.removeEventListener('focus', read);
+  }, [seed]);
 
   useEffect(() => {
-    const apply = () => { const dark = applyTheme({ theme, seed, font, fontSize, density }); if (appWindow) void appWindow.setTheme(theme === 'system' ? null : dark ? 'dark' : 'light').catch(() => {}); };
+    const apply = () => { const dark = applyTheme({ theme, seed, font, uiFont, density }); if (appWindow) void appWindow.setTheme(theme === 'system' ? null : dark ? 'dark' : 'light').catch(() => {}); };
     apply(); return onSystemSchemeChange(() => { if (theme === 'system') apply(); });
-  }, [theme, seed, font, fontSize, density]);
+  }, [theme, seed, font, uiFont, density, accentTick]);
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
 
-  // window material: Mica / Mica Alt / Acrylic / Blur (needs a transparent window; falls back to a solid window when the OS has no support)
+  // window material. Mica / Mica Alt / Acrylic are drawn by Windows; Frosted and Liquid glass are Acrylic plus CSS glass layers.
+  // The previous material is always cleared first (and given a moment to go away) so switching never leaves the old one behind.
   const effect = useSettings((s) => s.effect);
   useEffect(() => {
     const root = document.documentElement;
     const win = appWindow;
     if (!win) { root.dataset.fx = 'none'; return; }
-    let off = false;
+    const seq = ++fxSeq;
     const run = async () => {
       try {
-        if (effect === 'none') { await win.clearEffects(); if (!off) root.dataset.fx = 'none'; return; }
-        const kind = { mica: Effect.Mica, tabbed: Effect.Tabbed, acrylic: Effect.Acrylic, blur: Effect.Blur }[effect];
+        await win.clearEffects();
+        if (effect === 'none') { if (seq === fxSeq) root.dataset.fx = 'none'; return; }
+        await new Promise((r) => setTimeout(r, 80));
+        if (seq !== fxSeq) return;
+        const kind = { mica: Effect.Mica, tabbed: Effect.Tabbed, acrylic: Effect.Acrylic, frosted: Effect.Acrylic, liquid: Effect.Acrylic }[effect];
         const dark = isDark(useSettings.getState().theme);
         await win.setEffects({ effects: [kind], state: EffectState.Active, color: dark ? [32, 32, 32, 150] : [243, 243, 243, 150] });
-        if (!off) root.dataset.fx = effect;
+        if (seq === fxSeq) root.dataset.fx = effect;
       } catch {
-        if (off) return;
+        if (seq !== fxSeq) return;
         root.dataset.fx = 'none';
         if (effect !== 'mica') toast(t('settings.effectUnsupported'), 'warning');
       }
     };
     void run();
-    const un = onSystemSchemeChange(() => { if (useSettings.getState().theme === 'system' && (effect === 'acrylic' || effect === 'blur')) void run(); });
-    return () => { off = true; un(); };
+    const un = onSystemSchemeChange(() => { if (useSettings.getState().theme === 'system' && (effect === 'acrylic' || effect === 'frosted' || effect === 'liquid')) void run(); });
+    return () => { un(); };
   }, [effect, theme]);
 
   // window title follows the active folder
@@ -126,15 +138,4 @@ export function useAppEffects() {
   const tray = useSettings((s) => s.trayEnabled); const sc = useSettings((s) => s.globalShortcut);
   useEffect(() => { if (IS_TAURI) void api.setTray(tray, [t('tray.open'), t('tray.newWindow'), t('tray.quit')]).catch(() => {}); }, [tray, lang]);
   useEffect(() => { if (IS_TAURI) void api.setGlobalShortcut(sc).catch(() => { toast(t('err.shortcut'), 'warning'); useSettings.getState().set({ globalShortcut: false }); }); }, [sc]);
-
-  // gentle update notification (at most once a day)
-  useEffect(() => {
-    const s = useSettings.getState();
-    if (!IS_TAURI || !s.checkUpdates || Date.now() - s.lastUpdateCheck < 86400000) return;
-    const id = window.setTimeout(() => {
-      useSettings.getState().set({ lastUpdateCheck: Date.now() });
-      fetchLatest().then((r) => { if (r && isNewer(r.tag, APP_VERSION)) openModal('update', { release: r }); }).catch(() => {});
-    }, 4000);
-    return () => window.clearTimeout(id);
-  }, []);
 }

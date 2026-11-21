@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import { ChevronLeft, ChevronRight, ExternalLink, Minus, Plus, RotateCcw, X, FileQuestion } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, Minus, Plus, RotateCcw, X, FileQuestion } from '../../lib/icons';
 import { closeModal, openModal, useUI } from '../../store/ui';
 import { useT } from '../../lib/i18n';
 import { api, convertFileSrc } from '../../lib/api';

@@ -1,5 +1,5 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '../../lib/icons';
 import { Tooltip } from './Tooltip';
 
 type Tone = 'filled' | 'tonal' | 'text' | 'danger' | 'success' | 'outline';

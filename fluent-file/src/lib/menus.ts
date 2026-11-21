@@ -1,10 +1,10 @@
 import {
-  AppWindow, ArrowDownUp, CheckSquare, ClipboardCopy, ClipboardPaste, Columns2, Copy, CopyPlus, Eye, FileArchive, FilePlus, Filter, FolderInput, FolderOpen,
-  FolderPlus, FolderSearch, Image as ImageIcon, Info, LayoutGrid, List, Maximize, Pencil, Pin, PinOff, Plus, RefreshCw, Scissors, Settings as SettingsIcon, SquareArrowOutUpRight,
-  Tag, Terminal, Trash2, Undo2, Code2, FolderOutput, HardDrive, Home, Monitor, History, XCircle
-} from 'lucide-react';
-import type { MenuItem } from '../store/ui';
-import { Palette as PaletteIcon } from 'lucide-react';
+  AppWindow, ArrowDownUp, CheckSquare, ClipboardCopy, ClipboardPaste, Columns2, Copy, Eye, FileArchive, FilePlus, Filter, FolderInput, FolderOpen,
+  FolderPlus, FolderSearch, Image as ImageIcon, Info, LayoutGrid, List, Maximize, Pencil, Pin, PinOff, Plus, RefreshCw, Scissors, SquareArrowOutUpRight,
+  Tag, Terminal, Trash2, Undo2, Code2, FolderOutput, Home, Monitor, History, XCircle
+} from './icons';
+import { toast, type MenuItem } from '../store/ui';
+import { Palette as PaletteIcon } from './icons';
 import type { Drive, Entry, Kind, PaneId, TagId } from './types';
 import { getSettings, type ColId } from '../store/settings';
 import { t } from './i18n';
@@ -15,6 +15,7 @@ import { isArchive } from './fileTypes';
 import { openModal } from '../store/ui';
 import { useExplorer, activeTab, selectedEntries, selectAll, invertSelection, clearSelection, setLayout, setKind, copyToClipboard, copyPaths, copyText, pasteClipboard, deleteSelection, renameSelection, undoLast, newItem, newTab, navigate, jumpHistory, refresh, openNewWindow, openSelection, openWith, revealItem, showProperties, showDriveProperties, isPinned, togglePin, toggleTag, clearTags, setWallpaper, extractArchive, compressSelection, copyToOtherPane, previewEntry, openRecycle, ensureSecondPane } from '../store/explorer';
 import { pk } from './paths';
+import { menuOn, runCustomEntry } from './menuCatalog';
 
 const ex = () => useExplorer.getState();
 export const tagLabel = (id: TagId) => getSettings().tagNames[id]?.trim() || t(TAGS.find((x) => x.id === id)!.key);
@@ -93,16 +94,13 @@ export function moreMenuItems(id: PaneId): MenuItem[] {
     { label: t('cmd.newWindow'), icon: Plus, kbd: 'Ctrl+N', run: () => openNewWindow(ex().panes[id].path) },
     { label: t('cmd.palette'), icon: FolderSearch, kbd: 'Ctrl+K', run: () => openModal('palette') },
     { sep: true },
-    { label: t('cmd.dupes'), icon: CopyPlus, run: () => openModal('dupes') },
-    { label: t('cmd.usage'), icon: HardDrive, run: () => openModal('usage') },
     { label: t('cmd.advSearch'), icon: Filter, kbd: 'Ctrl+Shift+F', run: () => openModal('search') },
     { sep: true },
     { label: t('cmd.selectAll'), icon: CheckSquare, kbd: 'Ctrl+A', run: () => selectAll(id) },
     { label: t('cmd.selectNone'), icon: CheckSquare, run: () => clearSelection(id) },
     { label: t('cmd.invert'), icon: CheckSquare, run: () => invertSelection(id) },
     { sep: true },
-    { label: t('view.fullscreen'), icon: Maximize, kbd: 'F11', run: toggleFullscreen },
-    { label: t('toolbar.settings'), icon: SettingsIcon, kbd: 'Ctrl+,', run: () => openModal('settings') }
+    { label: t('view.fullscreen'), icon: Maximize, kbd: 'F11', run: toggleFullscreen }
   ];
 }
 function tagMenu(paths: string[]): MenuItem[] {
@@ -119,64 +117,91 @@ function toolItems(path: string): MenuItem[] {
   if (T.code) items.push({ label: t('cmd.openCode'), icon: Code2, run: () => openWith('code', path) });
   return items;
 }
+/** user-defined entries (Settings > Context menu) that apply to the given kind of target */
+function customItems(scope: 'file' | 'folder' | 'bg', paths: string[]): MenuItem[] {
+  const list = getSettings().customMenu.filter((c) => c.scope === 'any' ? scope !== 'bg' : c.scope === scope);
+  if (!list.length) return [];
+  return [{ sep: true }, ...list.map((c): MenuItem => ({ label: c.label, icon: AppWindow, run: () => { void runCustomEntry(c, paths).catch((e) => toast(String(e), 'error')); } }))];
+}
+
+/** Context menu of the selection: Windows 11 style quick-action row, then entries that fit files or folders. */
 export function itemMenuItems(id: PaneId): MenuItem[] {
   const sel = selectedEntries(id); const one: Entry | null = sel.length === 1 ? sel[0] : null; const T = ex().tools; const p = ex().panes[id];
-  const items: MenuItem[] = [{ label: t('cmd.open'), icon: FolderOpen, kbd: 'Enter', run: () => openSelection(id) }];
-  if (one && !one.isDir) items.push({ label: t('cmd.preview'), icon: Eye, kbd: 'Space', run: () => previewEntry(one) });
-  if (one?.isDir) items.push({ label: t('cmd.openNewTab'), icon: Plus, run: () => newTab(id, one.path) }, { label: t('cmd.openNewWindow'), icon: SquareArrowOutUpRight, run: () => openNewWindow(one.path) }, ...toolItems(one.path));
+  const dirs = sel.length > 0 && sel.every((e) => e.isDir); const g = dirs ? 'd' : 'f'; const on = (k: string) => menuOn(`${g}.${k}`);
+  const paths = sel.map((e) => e.path);
+  const items: MenuItem[] = [{ row: [
+    { label: t('cmd.cut') + ' (Ctrl+X)', icon: Scissors, run: () => copyToClipboard(id, true) },
+    { label: t('cmd.copy') + ' (Ctrl+C)', icon: Copy, run: () => copyToClipboard(id, false) },
+    { label: t('cmd.rename') + ' (F2)', icon: Pencil, run: () => renameSelection(id) },
+    { label: t('cmd.delete') + ' (Del)', icon: Trash2, danger: true, run: () => deleteSelection(id, false) }
+  ] }, { sep: true }];
+  if (on('open')) items.push({ label: t('cmd.open'), icon: FolderOpen, kbd: 'Enter', run: () => openSelection(id) });
+  if (one?.isDir) {
+    if (on('newTab')) items.push({ label: t('cmd.openNewTab'), icon: Plus, run: () => newTab(id, one.path) });
+    if (on('newWindow')) items.push({ label: t('cmd.openNewWindow'), icon: SquareArrowOutUpRight, run: () => openNewWindow(one.path) });
+    if (on('terminal')) items.push({ label: t('cmd.openTerminal'), icon: Terminal, run: () => openWith('terminal', one.path) });
+    if (on('code') && T.code) items.push({ label: t('cmd.openCode'), icon: Code2, run: () => openWith('code', one.path) });
+  }
   if (one && !one.isDir) {
-    const w: MenuItem[] = [];
-    if (T.code) w.push({ label: 'Visual Studio Code', icon: Code2, run: () => openWith('code', one.path) });
-    w.push({ label: t('cmd.openNotepad'), icon: AppWindow, run: () => openWith('notepad', one.path) });
-    if (T.winrar && isArchive(one)) w.push({ label: 'WinRAR', icon: FileArchive, run: () => openWith('winrar', one.path) });
-    items.push({ label: t('cmd.openWith'), icon: AppWindow, items: w });
-    if (['jpg', 'jpeg', 'png', 'bmp'].includes(extOf(one.name))) items.push({ label: t('cmd.setWallpaper'), icon: ImageIcon, run: () => setWallpaper(one.path) });
+    if (on('openWith')) {
+      const w: MenuItem[] = [];
+      if (T.code) w.push({ label: 'Visual Studio Code', icon: Code2, run: () => openWith('code', one.path) });
+      w.push({ label: t('cmd.openNotepad'), icon: AppWindow, run: () => openWith('notepad', one.path) });
+      if (T.winrar && isArchive(one)) w.push({ label: 'WinRAR', icon: FileArchive, run: () => openWith('winrar', one.path) });
+      items.push({ label: t('cmd.openWith'), icon: AppWindow, items: w });
+    }
+    if (on('preview')) items.push({ label: t('cmd.preview'), icon: Eye, kbd: 'Space', run: () => previewEntry(one) });
+    if (on('wallpaper') && ['jpg', 'jpeg', 'png', 'bmp'].includes(extOf(one.name))) items.push({ label: t('cmd.setWallpaper'), icon: ImageIcon, run: () => setWallpaper(one.path) });
   }
   if (one && p.search) items.push({ label: t('cmd.openLocation'), icon: FolderOpen, run: () => navigate(id, parentOf(one.path) || '', { select: [one.path] }) });
-  if (one) items.push({ label: t('cmd.reveal'), icon: Monitor, run: () => revealItem(one.path) });
-  if (one && isArchive(one)) items.push({ sep: true }, { label: t('cmd.extractHere'), icon: FileArchive, run: () => extractArchive(id, one, false) }, { label: t('cmd.extractTo', { name: stripExt(one.name) }), icon: FileArchive, run: () => extractArchive(id, one, true) });
-  if (p.path && !p.search) {
+  if (one && !one.isDir && on('reveal')) items.push({ label: t('cmd.reveal'), icon: Monitor, run: () => revealItem(one.path) });
+  if (one && isArchive(one) && on('extract')) items.push({ sep: true }, { label: t('cmd.extractHere'), icon: FileArchive, run: () => extractArchive(id, one, false) }, { label: t('cmd.extractTo', { name: stripExt(one.name) }), icon: FileArchive, run: () => extractArchive(id, one, true) });
+  items.push({ sep: true });
+  if (one?.isDir && on('pin')) items.push({ label: isPinned(one.path) ? t('cmd.unpin') : t('cmd.pin'), icon: isPinned(one.path) ? PinOff : Pin, run: () => togglePin(one.path) });
+  if (dirs && on('customize')) items.push({ label: t('cmd.customizeFolder'), icon: PaletteIcon, run: () => openModal('folderStyle', { paths }) });
+  if (p.path && !p.search && on('compress')) {
     const c: MenuItem[] = [{ label: t('cmd.zip'), icon: FileArchive, run: () => compressSelection(id, 'zip') }];
     if (T.winrar) c.push({ label: t('cmd.rar'), icon: FileArchive, run: () => compressSelection(id, 'rar') });
     items.push({ label: t('cmd.compress'), icon: FileArchive, items: c });
   }
-  if (one?.isDir) items.push({ label: isPinned(one.path) ? t('cmd.unpin') : t('cmd.pin'), icon: isPinned(one.path) ? PinOff : Pin, run: () => togglePin(one.path) });
-  if (sel.length && sel.every((e) => e.isDir)) items.push({ label: t('cmd.customizeFolder'), icon: PaletteIcon, run: () => openModal('folderStyle', { paths: sel.map((e) => e.path) }) });
-  items.push({ label: t('tag.title'), icon: Tag, items: tagMenu(sel.map((e) => e.path)) });
-  if (getSettings().dualPane) items.push({ label: t('cmd.copyOther'), icon: FolderInput, run: () => copyToOtherPane(id, false) }, { label: t('cmd.moveOther'), icon: FolderOutput, run: () => copyToOtherPane(id, true) });
-  items.push({ sep: true },
-    { label: t('cmd.cut'), icon: Scissors, kbd: 'Ctrl+X', run: () => copyToClipboard(id, true) },
-    { label: t('cmd.copy'), icon: Copy, kbd: 'Ctrl+C', run: () => copyToClipboard(id, false) },
-    { label: t('cmd.copyPath'), icon: ClipboardCopy, kbd: 'Ctrl+Shift+C', run: () => copyPaths(id) },
-    { sep: true },
-    { label: t('cmd.rename'), icon: Pencil, kbd: 'F2', run: () => renameSelection(id) },
-    { label: t('cmd.delete'), icon: Trash2, kbd: 'Del', danger: true, run: () => deleteSelection(id, false) },
-    { sep: true },
-    { label: t('cmd.properties'), icon: Info, kbd: 'Alt+Enter', run: () => showProperties(id) });
-  return items;
+  if (on('tag')) items.push({ label: t('tag.title'), icon: Tag, items: tagMenu(paths) });
+  if (getSettings().dualPane && on('otherPane')) items.push({ label: t('cmd.copyOther'), icon: FolderInput, run: () => copyToOtherPane(id, false) }, { label: t('cmd.moveOther'), icon: FolderOutput, run: () => copyToOtherPane(id, true) });
+  if (on('copyPath')) items.push({ label: t('cmd.copyPath'), icon: ClipboardCopy, kbd: 'Ctrl+Shift+C', run: () => copyPaths(id) });
+  items.push(...customItems(dirs ? 'folder' : 'file', paths));
+  if (on('properties')) items.push({ sep: true }, { label: t('cmd.properties'), icon: Info, kbd: 'Alt+Enter', run: () => showProperties(id) });
+  return tidyMenu(items);
 }
 export function backgroundMenuItems(id: PaneId): MenuItem[] {
-  const p = ex().panes[id]; const path = p.path as string;
+  const p = ex().panes[id]; const path = p.path as string; const on = (k: string) => menuOn('b.' + k); const T = ex().tools;
   if (isVirtual(path)) return [{ label: t('nav.refresh'), icon: RefreshCw, kbd: 'F5', run: () => refresh(id) }];
-  return [
-    { label: t('cmd.view'), icon: LayoutGrid, items: viewMenuItems(id, true) },
-    { label: t('cmd.sortBy'), icon: ArrowDownUp, items: sortMenuItems(id) },
-    { label: t('nav.refresh'), icon: RefreshCw, kbd: 'F5', run: () => refresh(id) },
-    { sep: true },
-    { label: t('cmd.new'), icon: Plus, items: newMenuItems(id) },
-    { sep: true },
-    { label: t('cmd.paste'), icon: ClipboardPaste, kbd: 'Ctrl+V', disabled: !ex().clip, run: () => pasteClipboard(id) },
-    { label: t('cmd.undo'), icon: Undo2, kbd: 'Ctrl+Z', disabled: ex().undo.length === 0, run: undoLast },
-    { sep: true },
-    ...toolItems(path),
-    { label: t('cmd.openNewTab'), icon: Plus, run: () => newTab(id, path) },
-    { label: t('cmd.openNewWindow'), icon: SquareArrowOutUpRight, run: () => openNewWindow(path) },
-    { label: isPinned(path) ? t('cmd.unpin') : t('cmd.pin'), icon: isPinned(path) ? PinOff : Pin, run: () => togglePin(path) },
-    { label: t('cmd.copyPathBtn'), icon: ClipboardCopy, run: () => copyText(path) },
-    { sep: true },
-    { label: t('cmd.selectAll'), icon: CheckSquare, kbd: 'Ctrl+A', run: () => selectAll(id) },
-    { label: t('cmd.properties'), icon: Info, run: () => showProperties(id) }
-  ];
+  const items: MenuItem[] = [];
+  if (on('view')) items.push({ label: t('cmd.view'), icon: LayoutGrid, items: viewMenuItems(id, true) });
+  if (on('sort')) items.push({ label: t('cmd.sortBy'), icon: ArrowDownUp, items: sortMenuItems(id) });
+  if (on('refresh')) items.push({ label: t('nav.refresh'), icon: RefreshCw, kbd: 'F5', run: () => refresh(id) });
+  items.push({ sep: true });
+  if (on('new')) items.push({ label: t('cmd.new'), icon: Plus, items: newMenuItems(id) });
+  if (on('paste')) items.push({ label: t('cmd.paste'), icon: ClipboardPaste, kbd: 'Ctrl+V', disabled: !ex().clip, run: () => pasteClipboard(id) });
+  if (on('undo')) items.push({ label: t('cmd.undo'), icon: Undo2, kbd: 'Ctrl+Z', disabled: ex().undo.length === 0, run: undoLast });
+  items.push({ sep: true });
+  if (on('terminal')) items.push({ label: t('cmd.openTerminal'), icon: Terminal, run: () => openWith('terminal', path) });
+  if (on('code') && T.code) items.push({ label: t('cmd.openCode'), icon: Code2, run: () => openWith('code', path) });
+  if (on('newTab')) items.push({ label: t('cmd.openNewTab'), icon: Plus, run: () => newTab(id, path) });
+  if (on('newWindow')) items.push({ label: t('cmd.openNewWindow'), icon: SquareArrowOutUpRight, run: () => openNewWindow(path) });
+  if (on('pin')) items.push({ label: isPinned(path) ? t('cmd.unpin') : t('cmd.pin'), icon: isPinned(path) ? PinOff : Pin, run: () => togglePin(path) });
+  if (on('customize') && parentOf(path) !== '') items.push({ label: t('cmd.customizeFolder'), icon: PaletteIcon, run: () => openModal('folderStyle', { paths: [path] }) });
+  if (on('copyPath')) items.push({ label: t('cmd.copyPathBtn'), icon: ClipboardCopy, run: () => copyText(path) });
+  items.push(...customItems('bg', [path]));
+  items.push({ sep: true });
+  if (on('selectAll')) items.push({ label: t('cmd.selectAll'), icon: CheckSquare, kbd: 'Ctrl+A', run: () => selectAll(id) });
+  if (on('properties')) items.push({ label: t('cmd.properties'), icon: Info, run: () => showProperties(id) });
+  return tidyMenu(items);
+}
+/** drops leading / trailing / doubled separators left behind when entries are switched off */
+function tidyMenu(items: MenuItem[]): MenuItem[] {
+  const out: MenuItem[] = [];
+  for (const it of items) { if (it.sep && (!out.length || out[out.length - 1].sep)) continue; out.push(it); }
+  while (out.length && out[out.length - 1].sep) out.pop();
+  return out;
 }
 export function sidebarMenuItems(id: PaneId, path: string, drive?: Drive): MenuItem[] {
   if (!path || path === HOME) return [{ label: t('cmd.open'), icon: path === HOME ? Home : Monitor, run: () => navigate(id, path || '') }];

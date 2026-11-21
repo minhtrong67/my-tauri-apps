@@ -35,9 +35,14 @@ export const FONTS: FontDef[] = [
 ];
 export const fontById = (id: string) => FONTS.find((f) => f.id === id) || FONTS[0];
 
-/** root font-size (px) per text-size option; every rem-based size in the UI follows it */
-export const FONT_SIZES = { sm: 14.5, md: 16, lg: 17.5 } as const;
-export type FontSize = keyof typeof FONT_SIZES;
+/** the UI font size (body text, px) the layout was designed for; rem-based sizes scale with the chosen value */
+export const BASE_UI_FONT = 14;
+export const uiScale = (uiFont: number) => (uiFont || BASE_UI_FONT) / BASE_UI_FONT;
+
+/** Windows accent colour, filled in by the app when the accent is set to "Automatic". */
+let systemAccent: string | null = null;
+export const setSystemAccent = (hex: string | null) => { systemAccent = hex && /^#[0-9a-f]{6}$/i.test(hex) ? hex : null; };
+export const AUTO_SEED = 'auto';
 
 /** The Windows 11 default blue uses the exact system accent values. */
 const EXACT: Record<string, { light: [string, string]; dark: [string, string] }> = {
@@ -71,20 +76,19 @@ export function accentFor(seed: string, dark: boolean): { primary: string; on: s
   return { primary: `oklch(${L.toFixed(3)} ${Math.min(0.2, c).toFixed(3)} ${h.toFixed(1)})`, on: dark ? '#000000' : '#FFFFFF' };
 }
 
-export interface ThemeInput { theme: string; seed: string; font: string; fontSize: string; density: string }
+export interface ThemeInput { theme: string; seed: string; font: string; uiFont: number; density: string }
 
-/** Applies mode, accent colour, font, text size and density to <html>. Returns true when dark. */
+/** Applies mode, accent colour, font, UI size and density to <html>. Returns true when dark. */
 export function applyTheme(s: ThemeInput): boolean {
   const root = document.documentElement;
-  const seed = validHex(s.seed) ? s.seed : DEFAULT_SEED;
+  const seed = s.seed === AUTO_SEED ? systemAccent || DEFAULT_SEED : validHex(s.seed) ? s.seed : DEFAULT_SEED;
   const dark = isDark(s.theme);
   root.dataset.scheme = dark ? 'dark' : 'light';
   const a = accentFor(seed, dark);
   root.style.setProperty('--primary', a.primary);
   root.style.setProperty('--on-primary', a.on);
   root.style.setProperty('--font', fontById(s.font).stack);
-  root.style.fontSize = (FONT_SIZES[s.fontSize as FontSize] || 16) + 'px';
+  root.style.fontSize = 16 * uiScale(s.uiFont) + 'px';
   root.dataset.density = s.density;
   return dark;
 }
-export const uiScale = (fontSize: string) => (FONT_SIZES[fontSize as FontSize] || 16) / 16;

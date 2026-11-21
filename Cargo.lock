@@ -1477,6 +1477,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-global-shortcut",
  "trash",
+ "windows 0.62.2",
 ]
 
 [[package]]

@@ -20,6 +20,7 @@
         "minWidth": 720,
         "minHeight": 420,
         "center": true,
+        "decorations": false,
         "transparent": true,
         "windowEffects": { "effects": ["mica"] },
         "visible": false,
@@ -27,7 +28,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: asset: http://asset.localhost; media-src 'self' asset: http://asset.localhost; frame-src asset: http://asset.localhost; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost https://api.github.com",
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: asset: http://asset.localhost; media-src 'self' asset: http://asset.localhost; frame-src asset: http://asset.localhost; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost",
       "devCsp": null,
       "dangerousDisableAssetCspModification": [
         "style-src"

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { CopyPlus, FileSearch, Filter, FolderPlus, HardDrive, Palette, Pin, Plus, RefreshCw, Search, Settings as Gear, Columns2, Folder, FilePlus, Home, Monitor, Terminal, Undo2, SquareArrowOutUpRight, Maximize } from 'lucide-react';
+import { FileSearch, Filter, FolderPlus, Palette, Pin, Plus, RefreshCw, Search, Settings as Gear, Columns2, Folder, FilePlus, Home, Monitor, Terminal, Undo2, SquareArrowOutUpRight, Maximize } from '../../lib/icons';
 import { closeModal, openModal, useUI } from '../../store/ui';
 import { useT } from '../../lib/i18n';
 import { Modal } from '../ui/Modal';
@@ -8,7 +8,7 @@ import { useSettings } from '../../store/settings';
 import { baseName, HOME, isVirtual, pk } from '../../lib/paths';
 import { toggleDual, toggleFullscreen } from '../../lib/menus';
 import { FileIcon } from '../FileIcon';
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '../../lib/icons';
 
 interface Cmd { key: string; label: string; hint?: string; icon?: LucideIcon; entry?: { name: string; isDir: boolean }; run: () => void }
 
@@ -29,8 +29,8 @@ export function CommandPalette() {
       { key: 'c-nt', label: t('tab.new'), icon: Plus, hint: 'Ctrl+T', run: () => newTab(id) }, { key: 'c-nw', label: t('cmd.newWindow'), icon: SquareArrowOutUpRight, hint: 'Ctrl+N', run: () => openNewWindow(path) },
       { key: 'c-ref', label: t('nav.refresh'), icon: RefreshCw, hint: 'F5', run: () => refresh(id) }, { key: 'c-undo', label: t('cmd.undo'), icon: Undo2, hint: 'Ctrl+Z', run: () => undoLast() },
       { key: 'c-dual', label: t('view.dual'), icon: Columns2, hint: 'F9', run: () => toggleDual() }, { key: 'c-det', label: t('view.detailsPane'), icon: FileSearch, hint: 'Alt+P', run: () => S.set({ showDetails: !S.showDetails }) },
-      { key: 'c-adv', label: t('cmd.advSearch'), icon: Filter, hint: 'Ctrl+Shift+F', run: () => openModal('search') }, { key: 'c-dup', label: t('cmd.dupes'), icon: CopyPlus, run: () => openModal('dupes') },
-      { key: 'c-use', label: t('cmd.usage'), icon: HardDrive, run: () => openModal('usage') }, { key: 'c-fs', label: t('view.fullscreen'), icon: Maximize, hint: 'F11', run: toggleFullscreen }
+      { key: 'c-adv', label: t('cmd.advSearch'), icon: Filter, hint: 'Ctrl+Shift+F', run: () => openModal('search') },
+      { key: 'c-fs', label: t('view.fullscreen'), icon: Maximize, hint: 'F11', run: toggleFullscreen }
     ];
     if (real) cmds.push({ key: 'c-nf', label: t('new.folder'), icon: FolderPlus, hint: 'Ctrl+Shift+N', run: () => newItem(id, 'folder') }, { key: 'c-nt2', label: t('new.text'), icon: FilePlus, run: () => newItem(id, 'text') }, { key: 'c-term', label: t('cmd.openTerminal'), icon: Terminal, run: () => openWith('terminal', path as string) });
     const dirs: Cmd[] = [];

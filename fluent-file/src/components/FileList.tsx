@@ -1,7 +1,8 @@
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeftRight, Check, ChevronUp, MoveHorizontal } from 'lucide-react';
+import { ArrowLeftRight, Check, ChevronUp, MoveHorizontal } from '../lib/icons';
 import { useExplorer, getView, selectIndex, selectGroup, clearSelection, setSelection, openEntry, newTab, setLayout, commitRename, cancelRename, setActivePane, runPaste } from '../store/explorer';
 import { useSettings, type ColId } from '../store/settings';
+import { api, listen } from '../lib/api';
 import { showMenu } from '../store/ui';
 import { layoutOf, shownName, typeLabel, type GroupInfo } from '../lib/view';
 import { fmtDate, fmtSize } from '../lib/format';
@@ -27,7 +28,12 @@ const TagDots = memo(function TagDots({ tags, className = '' }: { tags: TagId[];
   return <span className={`flex flex-none items-center gap-0.5 ${className}`}>{tags.map((tg) => <i key={tg} className="tag-dot" style={{ background: tagColor(tg) }} />)}</span>;
 });
 
-interface ItemProps { e: Entry; i: number; pos: Pos; sel: boolean; focus: boolean; cut: boolean; renaming: boolean; checks: boolean; showExt: boolean; tags: TagId[] | undefined; cols: ColId[]; lang: string; search: boolean; delay: number; tipSig: string; id: PaneId }
+/** folder sizes measured in the background (key: path + modified time) */
+const dirSizeCache = new Map<string, number>();
+const dsKey = (e: Entry) => `${pk(e.path)}|${e.modified}`;
+let sizeToken = 0;
+
+interface ItemProps { dsize?: number; e: Entry; i: number; pos: Pos; sel: boolean; focus: boolean; cut: boolean; renaming: boolean; checks: boolean; showExt: boolean; tags: TagId[] | undefined; cols: ColId[]; lang: string; search: boolean; delay: number; tipSig: string; id: PaneId }
 
 function RenameInput({ id, e }: { id: PaneId; e: Entry }) {
   const ref = useRef<HTMLInputElement>(null);
@@ -47,7 +53,7 @@ const Check_ = ({ on }: { on: boolean }) => (
   <span data-chk className={`grid size-5 flex-none place-items-center rounded border transition-all duration-100 ${on ? 'border-primary bg-primary text-on-primary' : 'border-outline opacity-0 group-hover/row:opacity-100'}`}>{on && <Check className="size-3.5" strokeWidth={2.5} />}</span>
 );
 
-const Row = memo(function Row({ e, i, pos, sel, focus, cut, renaming, checks, showExt, tags, cols, lang, search, delay, tipSig, id }: ItemProps) {
+const Row = memo(function Row({ dsize, e, i, pos, sel, focus, cut, renaming, checks, showExt, tags, cols, lang, search, delay, tipSig, id }: ItemProps) {
   const tip = tipSig;
   return (
     <div role="option" aria-selected={sel} data-i={i} data-drop-path={e.isDir ? e.path : undefined} title={tip}
@@ -59,7 +65,7 @@ const Row = memo(function Row({ e, i, pos, sel, focus, cut, renaming, checks, sh
         {renaming ? <RenameInput id={id} e={e} /> : <span className="truncate" data-nm>{shownName(e, showExt)}</span>}
         {tags && <TagDots tags={tags} />}
       </div>
-      {cols.map((c) => c === 'size' ? <div key={c} className="pr-4 text-right text-on-surface-variant tabular-nums">{e.isDir ? '' : fmtSize(e.size)}</div>
+      {cols.map((c) => c === 'size' ? <div key={c} className="pr-4 text-right text-on-surface-variant tabular-nums">{e.isDir ? (dsize === undefined ? '' : fmtSize(dsize)) : fmtSize(e.size)}</div>
         : c === 'type' && search ? <div key={c} className="truncate pr-3 text-on-surface-variant" title={parentOf(e.path) || ''}>{parentOf(e.path) || ''}</div>
         : <div key={c} className="truncate pr-3 text-on-surface-variant">{c === 'modified' ? fmtDate(e.modified, lang) : c === 'created' ? fmtDate(e.created, lang) : typeLabel(e, lang)}</div>)}
     </div>
@@ -74,7 +80,7 @@ const Tile = memo(function Tile({ e, i, pos, sel, focus, cut, renaming, checks, 
       style={{ left: pos.x, top: pos.y, width: pos.w, height: pos.h, animationDelay: delay > 0 ? delay + 'ms' : undefined }}>
       {checks && <span className="absolute top-2 left-2 z-10"><Check_ on={sel} /></span>}
       <div className="tile-thumb relative grid flex-none place-items-center overflow-hidden" style={{ width: T.thumb, height: Math.round(T.thumb * 0.9) }}>
-        {e.isDir ? <FileIcon entry={e} size={T.icon} /> : <Thumb entry={e} size={mode === 'large' ? 256 : 160} iconSize={T.icon} big={mode === 'large'} enabled={thumbs} />}
+        {e.isDir ? <FileIcon entry={e} size={T.icon} /> : <Thumb entry={e} size={mode === 'large' ? 256 : mode === 'grid' ? 128 : 96} iconSize={T.icon} big={mode === 'large'} enabled={thumbs} />}
         {tags && <TagDots tags={tags} className="absolute right-1.5 bottom-1.5" />}
       </div>
       <div className="mt-1.5 w-full px-0.5 text-center">
@@ -100,7 +106,7 @@ export function FileList({ id }: { id: PaneId }) {
   const S = useSettings();
   const L = layoutOf(S, path);
   const view = useMemo(() => getView(id), [id, entries, filter, kind, S.showHidden, L.sortKey, L.sortDir, L.groupBy, S.lang, S.tags]); // eslint-disable-line react-hooks/exhaustive-deps
-  const scale = uiScale(S.fontSize);
+  const scale = uiScale(S.listFont);
   const isGrid = L.view !== 'details';
   const mode = (L.view === 'details' ? 'grid' : L.view) as keyof typeof TILE;
 
@@ -133,9 +139,10 @@ export function FileList({ id }: { id: PaneId }) {
       });
       return { items, groups, total: y + 8, cols: 1 };
     }
-    const T = TILE[mode]; const tw = Math.round(T.w * scale), th = Math.round(T.h * scale), gh = Math.round(40 * scale);
-    const avail = Math.max(tw, vp.w - PAD * 2);
-    const nc = Math.max(1, Math.floor((avail + GAP) / (tw + GAP)));
+    const T = TILE[mode]; const tw0 = Math.round(T.w * scale), th = Math.round(T.h * scale), gh = Math.round(40 * scale);
+    const avail = Math.max(tw0, vp.w - PAD * 2);
+    const nc = Math.max(1, Math.floor((avail + GAP) / (tw0 + GAP)));
+    const tw = Math.floor((avail - (nc - 1) * GAP) / nc); // spread the spare width over the tiles instead of leaving a gap at the right
     let col = 0;
     view.list.forEach((_, i) => {
       const g = view.groups.get(i);
@@ -147,6 +154,26 @@ export function FileList({ id }: { id: PaneId }) {
     return { items, groups, total: y + 8, cols: nc };
   }, [view, isGrid, mode, scale, S.density, vp.w]);
   gridInfo[id].cols = geo.cols;
+
+  /* folder sizes for the Size column: measured in the background, cancelled when the list changes, cached per folder */
+  const [, setSizeTick] = useState(0);
+  const slot = useRef(Math.floor(Math.random() * 64));
+  const realDir = !!path && !isVirtual(path) && !search;
+  useEffect(() => {
+    if (!S.folderSizes || isGrid || !cols.includes('size') || !realDir) return;
+    const pend = new Map<string, string>();
+    for (const e of view.list) { if (e.isDir && !dirSizeCache.has(dsKey(e)) && pend.size < 400) pend.set(e.path, dsKey(e)); }
+    if (!pend.size) return;
+    if (dirSizeCache.size > 4000) dirSizeCache.clear();
+    let live = true; let un: (() => void) | undefined; let raf = 0;
+    void listen<{ path: string; size: number; partial: boolean }>('dir-size', (r) => {
+      const k = pend.get(r.path); if (!k) return;
+      dirSizeCache.set(k, r.size);
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; if (live) setSizeTick((n) => n + 1); });
+    }).then((f) => { if (live) un = f; else f(); });
+    void api.dirSizes([...pend.keys()], slot.current, ++sizeToken).catch(() => {});
+    return () => { live = false; un?.(); if (raf) cancelAnimationFrame(raf); };
+  }, [view, S.folderSizes, isGrid, cols, realDir]);
 
   /* visible window */
   const over = 320;
@@ -306,9 +333,9 @@ export function FileList({ id }: { id: PaneId }) {
     <div ref={scroller} tabIndex={0} role="listbox" aria-multiselectable aria-label={t('list.aria')} data-list={id} data-drop-path={dropPath}
       className="relative h-full overflow-auto outline-none" onScroll={onScroll}
       onPointerDown={onPointerDown} onPointerUp={onPointerUp} onClick={onClick} onDoubleClick={onDouble} onAuxClick={onAux} onContextMenu={onContext}
-      style={{ ['--cols' as string]: colsTemplate }}>
+      style={{ ['--cols' as string]: colsTemplate, fontSize: S.listFont + 'px' }}>
       {!isGrid && (
-        <div className="sticky top-0 z-20 grid items-center border-b border-outline-variant bg-surface px-[18px] backdrop-blur-xl" style={{ height: headH, gridTemplateColumns: 'var(--cols)', minWidth }}>
+        <div className="sticky top-0 z-20 grid items-center border-b border-outline-variant bg-[var(--surface-solid)] px-[18px]" style={{ height: headH, gridTemplateColumns: 'var(--cols)', minWidth }}>
           {headCell('name')}{cols.map(headCell)}
         </div>
       )}
@@ -323,7 +350,7 @@ export function FileList({ id }: { id: PaneId }) {
           const e = view.list[p.i];
           const props: ItemProps = {
             e, i: p.i, pos: p, sel: selected.has(e.path), focus: focusPath === e.path, cut: cutSet.has(e.path), renaming: renaming === e.path,
-            checks: S.showChecks, showExt: S.showExt, tags: S.tags[pk(e.path)], cols, lang: S.lang, search: !!search, delay: p.i < 18 ? p.i * 12 : -1, tipSig: tipOf(e), id
+            checks: S.showChecks, showExt: S.showExt, tags: S.tags[pk(e.path)], cols, lang: S.lang, search: !!search, delay: p.i < 18 ? p.i * 12 : -1, tipSig: tipOf(e), id, dsize: e.isDir && !isGrid ? dirSizeCache.get(dsKey(e)) : undefined
           };
           return isGrid ? <Tile key={e.path} {...props} mode={mode} thumbs={S.thumbnails} /> : <Row key={e.path} {...props} />;
         })}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AlertTriangle, HelpCircle, Info, Trash2 } from 'lucide-react';
+import { AlertTriangle, HelpCircle, Info, Trash2 } from '../lib/icons';
 import { closeDialog, useUI } from '../store/ui';
 import { Modal } from './ui/Modal';
 import { Button } from './ui/Buttons';

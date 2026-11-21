@@ -1,13 +1,14 @@
-import { useEffect } from 'react';
-import { FolderUp } from 'lucide-react';
+import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
+import { FolderUp } from './lib/icons';
 import { Loader } from './components/ui/Progress';
 import { useExplorer, initExplorer } from './store/explorer';
 import { useSettings } from './store/settings';
-import { useUI } from './store/ui';
+import { useUI, type ModalName } from './store/ui';
 import { useT } from './lib/i18n';
 import { useAppEffects } from './hooks/useAppEffects';
 import { useShortcuts } from './hooks/useShortcuts';
 import { CommandBar } from './components/CommandBar';
+import { TitleBar } from './components/TitleBar';
 import { Sidebar } from './components/Sidebar';
 import { FilePane } from './components/FilePane';
 import { DetailsPane } from './components/DetailsPane';
@@ -16,16 +17,22 @@ import { OperationCard } from './components/OperationCard';
 import { Toaster } from './components/ui/Toaster';
 import { ContextMenu } from './components/ui/ContextMenu';
 import { AppDialog } from './components/AppDialog';
-import { SettingsDialog } from './components/dialogs/SettingsDialog';
-import { PropertiesDialog } from './components/dialogs/PropertiesDialog';
-import { DupesDialog } from './components/dialogs/DupesDialog';
-import { UsageDialog } from './components/dialogs/UsageDialog';
-import { SearchDialog } from './components/dialogs/SearchDialog';
-import { Lightbox } from './components/dialogs/Lightbox';
-import { CommandPalette } from './components/dialogs/CommandPalette';
-import { UpdateDialog } from './components/dialogs/UpdateDialog';
-import { RenameDialog } from './components/dialogs/RenameDialog';
-import { FolderStyleDialog } from './components/dialogs/FolderStyleDialog';
+
+/* heavy dialogs are separate chunks: they load the first time they are opened, which keeps start-up light and memory low */
+const lazyDialog = <K extends string>(load: () => Promise<Record<K, React.ComponentType>>, key: K) => lazy(() => load().then((m) => ({ default: m[key] })));
+const SettingsDialog = lazyDialog(() => import('./components/dialogs/SettingsDialog'), 'SettingsDialog');
+const PropertiesDialog = lazyDialog(() => import('./components/dialogs/PropertiesDialog'), 'PropertiesDialog');
+const SearchDialog = lazyDialog(() => import('./components/dialogs/SearchDialog'), 'SearchDialog');
+const Lightbox = lazyDialog(() => import('./components/dialogs/Lightbox'), 'Lightbox');
+const CommandPalette = lazyDialog(() => import('./components/dialogs/CommandPalette'), 'CommandPalette');
+const RenameDialog = lazyDialog(() => import('./components/dialogs/RenameDialog'), 'RenameDialog');
+const FolderStyleDialog = lazyDialog(() => import('./components/dialogs/FolderStyleDialog'), 'FolderStyleDialog');
+function Gate({ name, children }: { name: ModalName; children: ReactNode }) {
+  const open = useUI((s) => s.modals[name] !== undefined);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => { if (open) setSeen(true); }, [open]);
+  return seen || open ? <Suspense fallback={null}>{children}</Suspense> : null;
+}
 
 function DragLayer() {
   const t = useT(); const d = useUI((s) => s.dragging); const ext = useUI((s) => s.extDrop.active);
@@ -46,6 +53,7 @@ export default function App() {
   return (
     <div className="flex h-full flex-col bg-surface-container">
       <div className={`h-0.5 flex-none overflow-hidden transition-opacity duration-150 ${busy ? 'indet bg-primary/15 opacity-100' : 'opacity-0'}`} role="progressbar" aria-hidden={!busy} aria-label={t('common.loading')} />
+      <TitleBar />
       <CommandBar />
       <div className={`flex min-h-0 flex-1 gap-2 pr-2 pb-2 ${nav ? '' : 'pl-2'}`}>
         {nav && <Sidebar />}
@@ -56,7 +64,9 @@ export default function App() {
         {details && <DetailsPane />}
       </div>
       <OperationCard /><Toaster /><ContextMenu /><DragLayer />
-      <AppDialog /><SettingsDialog /><PropertiesDialog /><DupesDialog /><UsageDialog /><SearchDialog /><Lightbox /><CommandPalette /><UpdateDialog /><RenameDialog /><FolderStyleDialog />
+      <AppDialog />
+      <Gate name="settings"><SettingsDialog /></Gate><Gate name="props"><PropertiesDialog /></Gate><Gate name="search"><SearchDialog /></Gate><Gate name="lightbox"><Lightbox /></Gate>
+      <Gate name="palette"><CommandPalette /></Gate><Gate name="rename"><RenameDialog /></Gate><Gate name="folderStyle"><FolderStyleDialog /></Gate>
     </div>
   );
 }

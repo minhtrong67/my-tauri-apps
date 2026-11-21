@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bookmark, BookmarkPlus, Regex, Search, X } from 'lucide-react';
+import { Bookmark, BookmarkPlus, Regex, Search, X } from '../../lib/icons';
 import { closeModal, useUI } from '../../store/ui';
 import { useT } from '../../lib/i18n';
 import { Modal } from '../ui/Modal';

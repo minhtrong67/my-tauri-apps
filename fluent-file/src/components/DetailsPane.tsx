@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { PanelRightClose } from 'lucide-react';
+import { PanelRightClose } from '../lib/icons';
 import { useExplorer, getView, previewEntry, selectedEntries } from '../store/explorer';
 import { useSettings } from '../store/settings';
 import { useT } from '../lib/i18n';
