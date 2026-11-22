@@ -1,5 +1,6 @@
+import { ScrollArea } from '../ui/ScrollTop';
 import { useState } from 'react';
-import { AppWindow, HardDrive, Plus, Layers, Check, Columns2, Eye, EyeOff, FileText, FolderTree, Globe, Heart, ImageIcon, Info, Languages, LayoutGrid, Maximize2, Monitor, Moon, Palette, Pipette, Rocket, RotateCcw, Ruler, Save, Settings as Gear, ShieldCheck, Sparkles, Sun, Trash2, Type, History, Keyboard, TextCursorInput, Rows3, Rows4, ListChecks, Check as CheckIcon, PanelRight, AppWindowMac, SquareArrowOutUpRight } from '../../lib/icons';
+import { AppWindow, Pin, HardDrive, Plus, Layers, Check, Columns2, Eye, EyeOff, FileText, FolderTree, Globe, Heart, ImageIcon, Info, Languages, LayoutGrid, Maximize2, Monitor, Moon, Palette, Pipette, Rocket, RotateCcw, Ruler, Save, Settings as Gear, ShieldCheck, Sparkles, Sun, Trash2, Type, History, Keyboard, TextCursorInput, Rows3, Rows4, ListChecks, Check as CheckIcon, PanelRight, AppWindowMac, SquareArrowOutUpRight } from '../../lib/icons';
 import { useSettings } from '../../store/settings';
 import { useUI, toast } from '../../store/ui';
 import { useT } from '../../lib/i18n';
@@ -57,6 +58,15 @@ function Appearance() {
           </div>
         </SettingRow>
       </SectionCard>
+      <SectionCard title={t('settings.iconStyle')}>
+        <SettingRow icon={Sparkles} title={t('settings.iconStyle')} desc={t('settings.d.iconStyle')}>
+          <Segmented ariaLabel={t('settings.iconStyle')} value={S.iconStyle} onChange={(v) => S.set({ iconStyle: v })}
+            options={[{ value: 'filled', label: t('iconStyle.filled') }, { value: 'regular', label: t('iconStyle.regular') }, { value: 'lucide', label: t('iconStyle.lucide') }]} />
+        </SettingRow>
+        <SettingRow icon={Palette} title={t('settings.colorIcons')} desc={t('settings.d.colorIcons')}>
+          <Switch label={t('settings.colorIcons')} checked={S.colorIcons} onChange={(v) => S.set({ colorIcons: v })} />
+        </SettingRow>
+      </SectionCard>
       <SectionCard title={t('settings.effect')}>
         <SettingRow icon={Layers} title={t('settings.effect')} desc={t('settings.d.effect')}>
           <Select ariaLabel={t('settings.effect')} value={S.effect} onChange={(v) => S.set({ effect: v as typeof S.effect })} width={190}
@@ -89,6 +99,11 @@ function General() {
       <SectionCard title={t('settings.language')}>
         <SettingRow icon={Languages} title={t('settings.language')} desc={t('settings.d.language')} stack>
           <Segmented ariaLabel={t('settings.language')} value={S.lang} onChange={(v) => S.set({ lang: v })} options={[{ value: 'en', label: t('settings.langEn'), icon: Globe }, { value: 'vi', label: t('settings.langVi'), icon: Globe }]} />
+        </SettingRow>
+      </SectionCard>
+      <SectionCard title={t('settings.quick')}>
+        <SettingRow icon={Pin} title={t('settings.quick')} desc={t('settings.d.quick')}>
+          <Button tone="tonal" small icon={RotateCcw} label={t('settings.quickRestore')} disabled={S.unpinned.length === 0} onClick={() => S.set({ unpinned: [] })} />
         </SettingRow>
       </SectionCard>
       <SectionCard title={t('settings.startTab')}>
@@ -272,9 +287,9 @@ export function SettingsDialog() {
             <div className="min-w-0 flex-1"><h2 className="truncate text-xl font-semibold">{cur.label}</h2><p className="truncate text-on-surface-variant">{cur.sub}</p></div>
             <Button tone="filled" icon={CheckIcon} label={t('common.done')} onClick={() => closeModal('settings')} data-autofocus />
           </header>
-          <div key={panel} className="anim-slide min-h-0 flex-1 overflow-y-auto px-5 pt-1 pb-6">
+          <ScrollArea key={panel} root="flex-1" className="anim-slide px-5 pt-1 pb-6">
             {panel === 'appearance' && <Appearance />}{panel === 'general' && <General />}{panel === 'files' && <Files />}{panel === 'menu' && <MenuPrefs />}{panel === 'about' && <About />}
-          </div>
+          </ScrollArea>
         </div>
       </div>
     </Modal>

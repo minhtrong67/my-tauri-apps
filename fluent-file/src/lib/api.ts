@@ -52,6 +52,8 @@ export const api = {
   watchDir: (id: string, path: string) => call<void>('watch_dir', { id, path }),
   getThumbnail: (path: string, size: number, kind: 'thumb' | 'icon' = 'thumb') => call<string>('get_thumbnail', { path, size, kind }),
   dirSizes: (paths: string[], slot: number, token: number) => call<void>('dir_sizes', { paths, slot, token }),
+  runSystem: (kind: string) => call<void>('run_system', { kind }),
+  cleanTemp: () => call<{ freed: number; files: number; skipped: number }>('clean_temp'),
   runCustom: (program: string, args: string[]) => call<void>('run_custom', { program, args }),
   getAccentColor: () => call<string | null>('get_accent_color'),
   clearThumbCache: () => call<number>('clear_thumb_cache'),

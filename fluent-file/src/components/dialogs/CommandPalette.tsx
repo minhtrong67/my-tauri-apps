@@ -6,7 +6,7 @@ import { Modal } from '../ui/Modal';
 import { getView, navigate, newItem, newTab, openEntry, openNewWindow, refresh, undoLast, useExplorer, openWith } from '../../store/explorer';
 import { useSettings } from '../../store/settings';
 import { baseName, HOME, isVirtual, pk } from '../../lib/paths';
-import { toggleDual, toggleFullscreen } from '../../lib/menus';
+import { systemToolsMenu, toggleDual, toggleFullscreen } from '../../lib/menus';
 import { FileIcon } from '../FileIcon';
 import type { LucideIcon } from '../../lib/icons';
 
@@ -30,7 +30,8 @@ export function CommandPalette() {
       { key: 'c-ref', label: t('nav.refresh'), icon: RefreshCw, hint: 'F5', run: () => refresh(id) }, { key: 'c-undo', label: t('cmd.undo'), icon: Undo2, hint: 'Ctrl+Z', run: () => undoLast() },
       { key: 'c-dual', label: t('view.dual'), icon: Columns2, hint: 'F9', run: () => toggleDual() }, { key: 'c-det', label: t('view.detailsPane'), icon: FileSearch, hint: 'Alt+P', run: () => S.set({ showDetails: !S.showDetails }) },
       { key: 'c-adv', label: t('cmd.advSearch'), icon: Filter, hint: 'Ctrl+Shift+F', run: () => openModal('search') },
-      { key: 'c-fs', label: t('view.fullscreen'), icon: Maximize, hint: 'F11', run: toggleFullscreen }
+      { key: 'c-fs', label: t('view.fullscreen'), icon: Maximize, hint: 'F11', run: toggleFullscreen },
+      ...systemToolsMenu().filter((i) => !i.sep && i.run).map((i, n) => ({ key: 'c-sys' + n, label: `${t('sys.title')}: ${i.label}`, icon: i.icon!, hint: i.kbd, run: i.run! }))
     ];
     if (real) cmds.push({ key: 'c-nf', label: t('new.folder'), icon: FolderPlus, hint: 'Ctrl+Shift+N', run: () => newItem(id, 'folder') }, { key: 'c-nt2', label: t('new.text'), icon: FilePlus, run: () => newItem(id, 'text') }, { key: 'c-term', label: t('cmd.openTerminal'), icon: Terminal, run: () => openWith('terminal', path as string) });
     const dirs: Cmd[] = [];

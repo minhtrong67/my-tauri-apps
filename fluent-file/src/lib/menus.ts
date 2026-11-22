@@ -3,12 +3,13 @@ import {
   FolderPlus, FolderSearch, Image as ImageIcon, Info, LayoutGrid, List, Maximize, Pencil, Pin, PinOff, Plus, RefreshCw, Scissors, SquareArrowOutUpRight,
   Tag, Terminal, Trash2, Undo2, Code2, FolderOutput, Home, Monitor, History, XCircle
 } from './icons';
-import { toast, type MenuItem } from '../store/ui';
-import { Palette as PaletteIcon } from './icons';
+import { dialog, toast, type MenuItem } from '../store/ui';
+import { fmtSize } from './format';
+import { Palette as PaletteIcon, Settings, HardDrive, Wrench } from './icons';
 import type { Drive, Entry, Kind, PaneId, TagId } from './types';
 import { getSettings, type ColId } from '../store/settings';
 import { t } from './i18n';
-import { appWindow } from './api';
+import { api, appWindow } from './api';
 import { baseName, extOf, HOME, isVirtual, parentOf, samePath, stripExt } from './paths';
 import { layoutOf } from './view';
 import { isArchive } from './fileTypes';
@@ -89,6 +90,34 @@ export async function toggleDual() {
   s.set({ dualPane: on });
   if (on) { await ensureSecondPane(); } else useExplorer.setState({ activePane: 'a' });
 }
+/** Windows system tools plus a couple of app utilities (More menu, command palette). */
+export function systemToolsMenu(): MenuItem[] {
+  const tool = (kind: string) => () => { void api.runSystem(kind).catch((e) => toast(String(e), 'error')); };
+  return [
+    { label: t('sys.control'), icon: Settings, run: tool('control') },
+    { label: t('sys.settings'), icon: Settings, run: tool('settings') },
+    { label: t('sys.taskmgr'), icon: Monitor, run: tool('taskmgr') },
+    { label: t('sys.devmgmt'), icon: HardDrive, run: tool('devmgmt') },
+    { label: t('sys.diskmgmt'), icon: HardDrive, run: tool('diskmgmt') },
+    { label: t('sys.services'), icon: Wrench, run: tool('services') },
+    { label: t('sys.eventvwr'), icon: History, run: tool('eventvwr') },
+    { label: t('sys.sysinfo'), icon: Info, run: tool('sysinfo') },
+    { label: t('sys.envvars'), icon: Terminal, run: tool('envvars') },
+    { label: t('sys.network'), icon: Monitor, run: tool('network') },
+    { label: t('sys.programs'), icon: AppWindow, run: tool('programs') },
+    { label: t('sys.regedit'), icon: Code2, run: tool('regedit') },
+    { sep: true },
+    { label: t('sys.cleanTemp'), icon: Trash2, run: () => { void cleanTempFiles(); } },
+    { label: t('sys.cleanmgr'), icon: Trash2, run: tool('cleanmgr') },
+    { label: t('sys.reload'), icon: RefreshCw, kbd: 'Ctrl+Shift+R', run: () => location.reload() }
+  ];
+}
+export async function cleanTempFiles() {
+  const r = await dialog({ kind: 'confirm', title: t('sys.cleanTemp'), message: t('sys.cleanAsk'), icon: Trash2, tone: 'warning', buttons: [{ id: 'cancel', label: t('common.cancel'), tone: 'tonal' }, { id: 'ok', label: t('sys.cleanGo'), tone: 'primary' }] });
+  if (r.id !== 'ok') return;
+  try { const res = await api.cleanTemp(); toast(t('sys.cleanDone', { size: fmtSize(res.freed, true), n: res.files }), 'success'); } catch (e) { toast(String(e), 'error'); }
+}
+
 export function moreMenuItems(id: PaneId): MenuItem[] {
   return [
     { label: t('cmd.newWindow'), icon: Plus, kbd: 'Ctrl+N', run: () => openNewWindow(ex().panes[id].path) },
@@ -99,6 +128,8 @@ export function moreMenuItems(id: PaneId): MenuItem[] {
     { label: t('cmd.selectAll'), icon: CheckSquare, kbd: 'Ctrl+A', run: () => selectAll(id) },
     { label: t('cmd.selectNone'), icon: CheckSquare, run: () => clearSelection(id) },
     { label: t('cmd.invert'), icon: CheckSquare, run: () => invertSelection(id) },
+    { sep: true },
+    { label: t('sys.title'), icon: Wrench, items: systemToolsMenu() },
     { sep: true },
     { label: t('view.fullscreen'), icon: Maximize, kbd: 'F11', run: toggleFullscreen }
   ];
@@ -205,12 +236,15 @@ function tidyMenu(items: MenuItem[]): MenuItem[] {
 }
 export function sidebarMenuItems(id: PaneId, path: string, drive?: Drive): MenuItem[] {
   if (!path || path === HOME) return [{ label: t('cmd.open'), icon: path === HOME ? Home : Monitor, run: () => navigate(id, path || '') }];
+  const defaultPlace = ex().places.find((p) => p.id !== 'home' && samePath(p.path, path));
   const items: MenuItem[] = [
     { label: t('cmd.open'), icon: FolderOpen, run: () => navigate(id, path) },
     { label: t('cmd.openNewTab'), icon: Plus, run: () => newTab(id, path) },
     { label: t('cmd.openNewWindow'), icon: SquareArrowOutUpRight, run: () => openNewWindow(path) },
     ...toolItems(path), { sep: true },
-    { label: isPinned(path) ? t('cmd.unpin') : t('cmd.pin'), icon: isPinned(path) ? PinOff : Pin, run: () => togglePin(path) },
+    defaultPlace
+      ? { label: t('cmd.unpin'), icon: PinOff, run: () => getSettings().set({ unpinned: [...getSettings().unpinned, defaultPlace.id] }) }
+      : { label: isPinned(path) ? t('cmd.unpin') : t('cmd.pin'), icon: isPinned(path) ? PinOff : Pin, run: () => togglePin(path) },
     { label: t('cmd.copyPathBtn'), icon: ClipboardCopy, run: () => copyText(path) }
   ];
   if (!drive && parentOf(path) !== '') items.push({ label: t('cmd.customizeFolder'), icon: PaletteIcon, run: () => openModal('folderStyle', { paths: [path] }) });

@@ -3,7 +3,7 @@ import { useExplorer, selectedEntries, openSelection, copyToClipboard, pasteClip
 import { closeMenu, isModalOpen, openModal, useUI } from '../store/ui';
 import { gridInfo } from '../components/FileList';
 import { useSettings } from '../store/settings';
-import { openNewWindow } from '../store/explorer';
+import { openNewWindow, openWith } from '../store/explorer';
 import { isVirtual, HOME } from '../lib/paths';
 import { setLayout } from '../store/explorer';
 import { layoutOf } from '../lib/view';
@@ -18,6 +18,13 @@ export function useShortcuts() {
       const ctrl = e.ctrlKey || e.metaKey; const k = e.key;
       if (isModalOpen() && !(ctrl && k.toLowerCase() === 'k')) return;
       const ex = useExplorer.getState(); const id = ex.activePane; const p = ex.panes[id]; const real = p.path !== null && !isVirtual(p.path);
+      if (ctrl && e.shiftKey && k.toLowerCase() === 'r') { e.preventDefault(); location.reload(); return; }
+      if (ctrl && e.altKey && k.toLowerCase() === 't') {
+        e.preventDefault();
+        const sel = selectedEntries(id); const target = sel.length === 1 && sel[0].isDir ? sel[0].path : p.path;
+        if (target && !isVirtual(target)) void openWith('terminal', target);
+        return;
+      }
       if (k === 'F5' || (ctrl && k.toLowerCase() === 'r')) { e.preventDefault(); void refresh(id); return; }
       if (k === 'F11') { e.preventDefault(); void toggleFullscreen(); return; }
       if (k === 'F9') { e.preventDefault(); void toggleDual(); return; }

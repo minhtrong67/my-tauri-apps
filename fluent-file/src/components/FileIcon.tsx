@@ -20,8 +20,8 @@ export const FileIcon = memo(function FileIcon({ entry, size = 20, className = '
     return (
       <span className={`relative inline-block flex-none ${className}`} style={{ width: size, height: size }}>
         <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden style={{ display: 'block' }}>
-          <path d="M14 5h26l12 12v38a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V9a4 4 0 0 1 4-4z" fill="var(--surface-container-high)" stroke={k} strokeOpacity=".55" strokeWidth="2" strokeLinejoin="round" />
-          <path d="M40 5v9a3 3 0 0 0 3 3h9z" fill={k} fillOpacity=".25" stroke={k} strokeOpacity=".55" strokeWidth="2" strokeLinejoin="round" />
+          <path d="M14 4h26l13 13v39a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z" fill={`color-mix(in oklab, ${k} 24%, var(--surface-container-high))`} />
+          <path d="M40 4v10a3 3 0 0 0 3 3h10z" fill={k} fillOpacity=".55" />
         </svg>
         <span className="pointer-events-none absolute inset-x-0 grid place-items-center" style={{ top: '40%', height: '40%', color: k }}><I style={{ width: '56%', height: '100%' }} strokeWidth={1.8} /></span>
       </span>

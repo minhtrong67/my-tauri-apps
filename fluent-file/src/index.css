@@ -145,10 +145,10 @@ svg { flex: none; }
 .btn.ripple::before { display: none; }
 
 /* ---------------------------------------------------------------- buttons */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; height: 2rem; padding: 0 1rem; min-width: 5rem; border: 1px solid var(--stroke); border-bottom-color: var(--stroke-b); border-radius: 4px; font-weight: 400; white-space: nowrap;
+.btn { transition: transform .1s var(--ease-fast), background-color .1s linear, border-color .1s linear, color .1s linear; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; height: 2rem; padding: 0 1rem; min-width: 5rem; border: 1px solid var(--stroke); border-bottom-color: var(--stroke-b); border-radius: 4px; font-weight: 400; white-space: nowrap;
   background: var(--control); color: var(--on-surface); transition: background-color .1s linear, border-color .1s linear, color .1s linear; }
 .btn:hover { background: var(--control-hover); }
-.btn:active { background: var(--press); color: color-mix(in oklab, var(--on-surface) 70%, transparent); }
+.btn:active { transform: scale(.985); background: var(--press); color: color-mix(in oklab, var(--on-surface) 70%, transparent); }
 .btn:disabled { opacity: .4; pointer-events: none; }
 .btn svg { width: 1rem; height: 1rem; }
 .btn-tonal { }
@@ -195,23 +195,24 @@ kbd { font: inherit; font-size: .75rem; color: var(--on-surface-variant); }
 /* ---------------------------------------------------------------- overlay animations (short, decelerating – Fluent motion) */
 @keyframes fade-in { from { opacity: 0; } }
 @keyframes fade-out { to { opacity: 0; } }
-@keyframes pop-in { from { opacity: 0; transform: scale(.96); } }
+@keyframes pop-in { from { opacity: 0; transform: scale(.94) translateY(6px); } }
 @keyframes pop-out { to { opacity: 0; transform: scale(.97); } }
 @keyframes sheet-in { from { opacity: 0; transform: translateY(24px); } }
-@keyframes menu-in { from { opacity: 0; transform: translateY(-6px); } }
-@keyframes toast-in { from { opacity: 0; transform: translateY(12px); } }
+@keyframes menu-in { from { opacity: 0; transform: translateY(-5px) scale(.97); } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(14px) scale(.96); } }
 @keyframes toast-out { to { opacity: 0; transform: translateY(6px); } }
 @keyframes slide-r { from { opacity: 0; transform: translateX(10px); } }
-@keyframes item-in { from { opacity: 0; transform: translateY(4px); } }
+@keyframes item-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes sel-in { from { transform: scaleY(.2); opacity: 0; } }
 @keyframes tab-in { from { opacity: 0; max-width: 0; } }
 @keyframes shimmer { 100% { transform: translateX(100%); } }
 @keyframes indeterminate { 0% { left: -40%; } 100% { left: 100%; } }
 @keyframes spin { to { transform: rotate(360deg); } }
 .anim-fade { animation: fade-in .15s linear; }
-.anim-pop { animation: pop-in .167s var(--ease-fast); }
+.anim-pop { animation: pop-in .22s cubic-bezier(.16, 1, .3, 1); }
 .anim-pop-out { animation: pop-out .1s linear forwards; }
 .anim-sheet { animation: sheet-in .25s var(--ease-fast); }
-.anim-menu { animation: menu-in .167s var(--ease-fast); transform-origin: top left; }
+.anim-menu { animation: menu-in .16s cubic-bezier(.16, 1, .3, 1); transform-origin: top left; }
 .anim-slide { animation: slide-r .25s var(--ease-fast); }
 .anim-item { animation: item-in .25s var(--ease-fast) backwards; }
 .skeleton { position: relative; overflow: hidden; background: var(--surface-container-highest); border-radius: 4px; }
@@ -224,7 +225,7 @@ kbd { font: inherit; font-size: .75rem; color: var(--on-surface-variant); }
 .row-item:hover { background: var(--hover); }
 .row-item.sel { background: var(--sel); }
 .row-item.sel:hover { background: var(--sel-strong); }
-.row-item:not(.tile).sel::after { content: ""; position: absolute; left: 0; top: 25%; bottom: 25%; width: 3px; border-radius: 2px; background: var(--primary); }
+.row-item:not(.tile).sel::after { content: ""; position: absolute; left: 0; top: 25%; bottom: 25%; width: 3px; border-radius: 2px; background: var(--primary); animation: sel-in .18s cubic-bezier(.16, 1, .3, 1); }
 .row-item.focus { box-shadow: inset 0 0 0 1px var(--primary); }
 .row-item.cut { opacity: .5; }
 .row-item.drop-target { background: var(--sel-strong); box-shadow: inset 0 0 0 1px var(--primary); }
@@ -282,26 +283,59 @@ kbd { font: inherit; font-size: .75rem; color: var(--on-surface-variant); }
 /* flat command bar */
 .toolbar-float { background: transparent; }
 
-/* ================================================================ window material (Mica / Mica Alt / Acrylic / Blur)
-   With a material active the window itself is transparent: the chrome shows the material and the content layers
-   are tinted translucent fills, exactly like WinUI's layer brushes. Dialogs stay solid (.solid). */
+/* ================================================================ window materials
+   The window is transparent when a material is active (Windows draws Mica / Mica Alt / Acrylic behind it), so the chrome (title
+   bar, sidebar, toolbars) stays see-through and only the content layer, flyouts and dialogs carry a tint. Each material has its own
+   recipe; flyouts (menus, dropdowns, palette, tooltips) and dialogs always follow the active one. */
 :root[data-fx]:not([data-fx="none"]),
 :root[data-fx]:not([data-fx="none"]) body { background: transparent; }
-:root[data-fx]:not([data-fx="none"]) {
-  --surface-container: transparent;
-  --surface: rgb(255 255 255 / .55);
-  --surface-container-low: rgb(255 255 255 / .6);
-  --control-hover: rgb(255 255 255 / .8);
+:root[data-fx]:not([data-fx="none"]) { --surface-container: transparent; --surface-container-high: var(--flyout); --surface-container-highest: rgb(128 128 128 / .22); --control-hover: rgb(255 255 255 / .8); }
+:root[data-fx]:not([data-fx="none"])[data-scheme="dark"] { --control-hover: rgb(255 255 255 / .084); }
+:root[data-fx]:not([data-fx="none"]) .bg-surface-container-high, :root[data-fx]:not([data-fx="none"]) .bg-surface-high, :root[data-fx]:not([data-fx="none"]) [role="menu"], :root[data-fx]:not([data-fx="none"]) [data-select-pop] {
+  backdrop-filter: blur(28px) saturate(1.5);
 }
-:root[data-fx]:not([data-fx="none"])[data-scheme="dark"] {
-  --surface: rgb(255 255 255 / .045);
-  --surface-container-low: rgb(255 255 255 / .06);
-  --control-hover: rgb(255 255 255 / .084);
+
+/* Mica: subtle, flat layers on the wallpaper tint */
+:root[data-fx="mica"] { --surface: rgb(255 255 255 / .55); --surface-container-low: rgb(255 255 255 / .65); --flyout: rgb(252 252 252 / .97); --dialog: rgb(243 243 243 / .96); }
+:root[data-fx="mica"][data-scheme="dark"] { --surface: rgb(255 255 255 / .045); --surface-container-low: rgb(255 255 255 / .065); --flyout: rgb(44 44 44 / .97); --dialog: rgb(32 32 32 / .96); }
+/* Mica Alt: stronger, more opaque content layer, like the tabbed title-bar material */
+:root[data-fx="tabbed"] { --surface: rgb(255 255 255 / .74); --surface-container-low: rgb(255 255 255 / .82); --flyout: rgb(252 252 252 / .98); --dialog: rgb(245 245 245 / .97); }
+:root[data-fx="tabbed"][data-scheme="dark"] { --surface: rgb(255 255 255 / .075); --surface-container-low: rgb(255 255 255 / .095); --flyout: rgb(46 46 46 / .98); --dialog: rgb(30 30 30 / .97); }
+/* Acrylic: see-through layers over the blurred desktop, fine noise like the real material */
+:root[data-fx="acrylic"] { --surface: rgb(255 255 255 / .3); --surface-container-low: rgb(255 255 255 / .42); --flyout: rgb(250 250 250 / .94); --dialog: rgb(246 246 246 / .92); }
+:root[data-fx="acrylic"][data-scheme="dark"] { --surface: rgb(255 255 255 / .03); --surface-container-low: rgb(255 255 255 / .05); --flyout: rgb(40 40 40 / .94); --dialog: rgb(30 30 30 / .92); }
+:root[data-fx="acrylic"] body::after, :root[data-fx="frosted"] body::after {
+  content: ""; position: fixed; inset: 0; z-index: 900; pointer-events: none; opacity: .025;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
-:root[data-fx="acrylic"], :root[data-fx="blur"] { --surface: rgb(255 255 255 / .42); }
-:root[data-fx="acrylic"][data-scheme="dark"], :root[data-fx="blur"][data-scheme="dark"] { --surface: rgb(255 255 255 / .03); }
+/* Frosted glass: milky veil over everything, heavy blur, visible grain */
+:root[data-fx="frosted"] { --surface-container: rgb(255 255 255 / .22); --surface: rgb(255 255 255 / .58); --surface-container-low: rgb(255 255 255 / .68); --flyout: rgb(252 252 253 / .96); --dialog: rgb(248 248 250 / .95); }
+:root[data-fx="frosted"][data-scheme="dark"] { --surface-container: rgb(24 24 30 / .38); --surface: rgb(38 38 44 / .55); --surface-container-low: rgb(52 52 60 / .5); --flyout: rgb(40 40 48 / .96); --dialog: rgb(30 30 36 / .95); }
+:root[data-fx="frosted"] body::after { opacity: .05; }
+:root[data-fx="frosted"] .card, :root[data-fx="frosted"] .pane-surface { backdrop-filter: blur(14px); }
+
+/* Liquid glass: clear, saturated panes with bright refractive edges and big radii */
+:root[data-fx="liquid"] { --surface: rgb(255 255 255 / .26); --surface-container-low: rgb(255 255 255 / .34); --flyout: rgb(255 255 255 / .86); --dialog: rgb(244 246 252 / .86); --control: rgb(255 255 255 / .5); --control-hover: rgb(255 255 255 / .7); --outline-variant: rgb(255 255 255 / .45); }
+:root[data-fx="liquid"][data-scheme="dark"] { --surface: rgb(255 255 255 / .06); --surface-container-low: rgb(255 255 255 / .09); --flyout: rgb(40 40 56 / .88); --dialog: rgb(30 30 44 / .88); --control: rgb(255 255 255 / .09); --control-hover: rgb(255 255 255 / .14); --outline-variant: rgb(255 255 255 / .16); }
+:root[data-fx="liquid"] body, :root[data-fx="liquid"] html {
+  background: radial-gradient(900px 520px at 8% -8%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 62%), radial-gradient(800px 480px at 105% 105%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%);
+}
+:root[data-fx="liquid"] .rounded-lg { border-radius: 16px; }
+:root[data-fx="liquid"] .rounded-md, :root[data-fx="liquid"] .btn, :root[data-fx="liquid"] .field, :root[data-fx="liquid"] .input-box, :root[data-fx="liquid"] .chip { border-radius: 10px; }
+:root[data-fx="liquid"] .card, :root[data-fx="liquid"] .pane-surface, :root[data-fx="liquid"] .solid { backdrop-filter: blur(22px) saturate(1.7); }
+:root[data-fx="liquid"] .card, :root[data-fx="liquid"] .pane-surface, :root[data-fx="liquid"] [role="menu"], :root[data-fx="liquid"] .solid, :root[data-fx="liquid"] [data-select-pop] {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .6), inset 0 0 0 1px rgb(255 255 255 / .16), 0 10px 30px rgb(0 0 0 / .14);
+}
+:root[data-fx="liquid"][data-scheme="dark"] .card, :root[data-fx="liquid"][data-scheme="dark"] .pane-surface, :root[data-fx="liquid"][data-scheme="dark"] [role="menu"], :root[data-fx="liquid"][data-scheme="dark"] .solid, :root[data-fx="liquid"][data-scheme="dark"] [data-select-pop] {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .2), inset 0 0 0 1px rgb(255 255 255 / .08), 0 10px 30px rgb(0 0 0 / .4);
+}
+:root[data-fx="liquid"] .row-item.sel { box-shadow: inset 0 0 0 1px rgb(255 255 255 / .35); }
+
+/* dialogs: opaque with no material, otherwise the material's dialog recipe on top of a blur */
 .solid { --surface: #FBFBFB; --surface-container-low: #F7F7F7; --surface-container: #F3F3F3; --control-hover: #F7F7F7; }
 :root[data-scheme="dark"] .solid { --surface: #272727; --surface-container-low: #2D2D2D; --surface-container: #202020; --control-hover: rgb(255 255 255 / .084); }
+:root[data-fx]:not([data-fx="none"]) .solid { --surface-container: var(--dialog); --surface: rgb(255 255 255 / .5); --surface-container-low: rgb(255 255 255 / .42); backdrop-filter: blur(30px) saturate(1.4); }
+:root[data-fx]:not([data-fx="none"])[data-scheme="dark"] .solid { --surface: rgb(255 255 255 / .05); --surface-container-low: rgb(255 255 255 / .07); }
 
 /* Fluent slider */
 .f-range { appearance: none; -webkit-appearance: none; background: transparent; height: 1.25rem; width: 100%; cursor: default; }
@@ -317,7 +351,7 @@ kbd { font: inherit; font-size: .75rem; color: var(--on-surface-variant); }
   content: ""; position: fixed; inset: 0; z-index: 900; pointer-events: none; opacity: .07; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
-:root[data-fx="frosted"] .card, :root[data-fx="frosted"] [data-pane] > div { backdrop-filter: blur(12px); }
+:root[data-fx="frosted"] .card, :root[data-fx="frosted"] .pane-surface { backdrop-filter: blur(12px); }
 
 /* ================================================================ Liquid glass: clear, saturated panes with bright edges */
 :root[data-fx="liquid"] { --surface: rgb(255 255 255 / .26); --surface-container-low: rgb(255 255 255 / .34); --surface-container-high: rgb(255 255 255 / .78); --control: rgb(255 255 255 / .5); --control-hover: rgb(255 255 255 / .7); --outline-variant: rgb(255 255 255 / .45); --surface-solid: rgb(246 247 252 / .92); }
@@ -327,13 +361,21 @@ kbd { font: inherit; font-size: .75rem; color: var(--on-surface-variant); }
 }
 :root[data-fx="liquid"] .rounded-lg { border-radius: 16px; }
 :root[data-fx="liquid"] .rounded-md, :root[data-fx="liquid"] .btn, :root[data-fx="liquid"] .field, :root[data-fx="liquid"] .input-box, :root[data-fx="liquid"] .chip { border-radius: 10px; }
-:root[data-fx="liquid"] .card, :root[data-fx="liquid"] [data-pane] > div, :root[data-fx="liquid"] [role="menu"], :root[data-fx="liquid"] .solid {
+:root[data-fx="liquid"] .card, :root[data-fx="liquid"] .pane-surface, :root[data-fx="liquid"] [role="menu"], :root[data-fx="liquid"] .solid {
   backdrop-filter: blur(22px) saturate(1.7);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .6), inset 0 0 0 1px rgb(255 255 255 / .16), 0 10px 30px rgb(0 0 0 / .14);
 }
-:root[data-fx="liquid"][data-scheme="dark"] .card, :root[data-fx="liquid"][data-scheme="dark"] [data-pane] > div, :root[data-fx="liquid"][data-scheme="dark"] [role="menu"], :root[data-fx="liquid"][data-scheme="dark"] .solid {
+:root[data-fx="liquid"][data-scheme="dark"] .card, :root[data-fx="liquid"][data-scheme="dark"] .pane-surface, :root[data-fx="liquid"][data-scheme="dark"] [role="menu"], :root[data-fx="liquid"][data-scheme="dark"] .solid {
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .2), inset 0 0 0 1px rgb(255 255 255 / .08), 0 10px 30px rgb(0 0 0 / .4);
 }
 :root[data-fx="liquid"] .solid { --surface: rgb(255 255 255 / .55); --surface-container: rgb(240 242 250 / .74); --surface-container-low: rgb(255 255 255 / .45); }
 :root[data-scheme="dark"][data-fx="liquid"] .solid { --surface: rgb(255 255 255 / .07); --surface-container: rgb(30 30 42 / .78); --surface-container-low: rgb(255 255 255 / .06); }
 :root[data-fx="liquid"] .row-item.sel { box-shadow: inset 0 0 0 1px rgb(255 255 255 / .35); }
+
+/* coloured navigation icons (sidebar, Quick access) */
+:root { --pc-home: #2F7DE1; --pc-desktop: #2D8CEB; --pc-documents: #5E7CE2; --pc-downloads: #2EA26A; --pc-pictures: #B04FD0; --pc-music: #F0604B; --pc-videos: #D6409F; --pc-thispc: #2D8CEB; --pc-drive: #6B7A90; --pc-recycle: #3AA05A; }
+:root[data-scheme="dark"] { --pc-home: #5AA6FF; --pc-desktop: #54B0FF; --pc-documents: #8FA6FF; --pc-downloads: #4FD08B; --pc-pictures: #D58AF0; --pc-music: #FF8A78; --pc-videos: #FF74C0; --pc-thispc: #54B0FF; --pc-drive: #9FB0C8; --pc-recycle: #62D184; }
+
+.ibtn:active, .cmd:active { transform: scale(.94); }
+.ibtn, .cmd { transition: transform .1s var(--ease-fast), background-color .1s linear, color .1s linear; }
+.tile-thumb img, .row-item img { transition: opacity .2s linear; }

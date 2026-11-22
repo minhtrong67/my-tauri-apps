@@ -1,3 +1,4 @@
+import type { FolderDesign } from '../lib/folderDesign';
 import { create } from 'zustand';
 import type { GroupBy, SortKey, TagId, ViewMode } from '../lib/types';
 import { DEFAULT_SEED } from '../lib/theme';
@@ -11,6 +12,11 @@ export interface Settings {
   theme: 'light' | 'dark' | 'system';
   seed: string;
   font: string;
+  /** app icon set: solid / outline (Fluent) or thin outline (Lucide); colourful sidebar icons */
+  iconStyle: 'filled' | 'regular' | 'lucide';
+  colorIcons: boolean;
+  /** default Quick access folders the user removed (ids) */
+  unpinned: string[];
   effect: 'mica' | 'tabbed' | 'acrylic' | 'frosted' | 'liquid' | 'none';
   /** UI font size in px (scales the whole interface) and file-list text size in px */
   uiFont: number;
@@ -49,7 +55,7 @@ export interface Settings {
   frequent: Record<string, number>;
   tags: Record<string, TagId[]>;
   tagNames: Partial<Record<TagId, string>>;
-  folderStyles: Record<string, { color?: string; icon?: string; tone?: 'light' | 'dark' }>;
+  folderStyles: Record<string, FolderDesign>;
   searchHistory: string[];
   savedSearches: SavedSearch[];
   layouts: Record<string, Layout>;
@@ -57,7 +63,7 @@ export interface Settings {
 }
 
 export const DEFAULTS: Settings = {
-  theme: 'system', seed: DEFAULT_SEED, font: 'system', effect: 'mica', uiFont: 14, listFont: 14, startTab: 'home', startPath: '', folderSizes: true, menu: {}, customMenu: [], density: 'comfortable',
+  theme: 'system', seed: DEFAULT_SEED, font: 'system', iconStyle: 'filled', colorIcons: true, unpinned: [], effect: 'mica', uiFont: 14, listFont: 14, startTab: 'home', startPath: '', folderSizes: true, menu: {}, customMenu: [], density: 'comfortable',
   lang: (typeof navigator !== 'undefined' && (navigator.language || 'en').toLowerCase().startsWith('vi')) ? 'vi' : 'en',
   view: 'details', sortKey: 'name', sortDir: 'asc', groupBy: 'none',
   showHidden: false, showExt: true, showChecks: false, showNav: true, showDetails: false, autoExpandTree: false,
@@ -80,6 +86,8 @@ function load(): Settings {
     s.uiFont = Math.max(11, Math.min(20, Number(s.uiFont) || 14)); s.listFont = Math.max(11, Math.min(22, Number(s.listFont) || 14));
     s.menu = { ...(raw.menu || {}) };
     if (!Array.isArray(s.customMenu)) s.customMenu = [];
+    if (!Array.isArray(s.unpinned)) s.unpinned = [];
+    if (!['filled', 'regular', 'lucide'].includes(s.iconStyle)) s.iconStyle = 'filled';
     return s;
   } catch { return { ...DEFAULTS }; }
 }

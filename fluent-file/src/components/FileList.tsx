@@ -3,6 +3,7 @@ import { ArrowLeftRight, Check, ChevronUp, MoveHorizontal } from '../lib/icons';
 import { useExplorer, getView, selectIndex, selectGroup, clearSelection, setSelection, openEntry, newTab, setLayout, commitRename, cancelRename, setActivePane, runPaste } from '../store/explorer';
 import { useSettings, type ColId } from '../store/settings';
 import { api, listen } from '../lib/api';
+import { ScrollTop } from './ui/ScrollTop';
 import { showMenu } from '../store/ui';
 import { layoutOf, shownName, typeLabel, type GroupInfo } from '../lib/view';
 import { fmtDate, fmtSize } from '../lib/format';
@@ -17,7 +18,7 @@ import { EmptyState } from './EmptyState';
 
 export const gridInfo: Record<PaneId, { cols: number }> = { a: { cols: 1 }, b: { cols: 1 } };
 /* Windows icon sizes: large 96px, medium 48px, small 32px (list rows use 20px) */
-const TILE = { large: { w: 152, h: 172, thumb: 112, icon: 96 }, grid: { w: 116, h: 124, thumb: 68, icon: 48 }, small: { w: 100, h: 106, thumb: 48, icon: 32 } } as const;
+const TILE = { large: { w: 168, h: 200, thumb: 136, icon: 120 }, grid: { w: 128, h: 150, thumb: 96, icon: 80 }, small: { w: 108, h: 118, thumb: 64, icon: 48 } } as const;
 const GAP = 6, PAD = 12;
 
 interface Pos { i: number; x: number; y: number; w: number; h: number }
@@ -32,6 +33,8 @@ const TagDots = memo(function TagDots({ tags, className = '' }: { tags: TagId[];
 const dirSizeCache = new Map<string, number>();
 const dsKey = (e: Entry) => `${pk(e.path)}|${e.modified}`;
 let sizeToken = 0;
+/** scroll position per folder, so going back lands where you were */
+const scrollMem = new Map<string, number>();
 
 interface ItemProps { dsize?: number; e: Entry; i: number; pos: Pos; sel: boolean; focus: boolean; cut: boolean; renaming: boolean; checks: boolean; showExt: boolean; tags: TagId[] | undefined; cols: ColId[]; lang: string; search: boolean; delay: number; tipSig: string; id: PaneId }
 
@@ -113,13 +116,15 @@ export function FileList({ id }: { id: PaneId }) {
   const scroller = useRef<HTMLDivElement>(null);
   const body = useRef<HTMLDivElement>(null);
   const [vp, setVp] = useState({ top: 0, h: 600, w: 800 });
+  const headRef = useRef<HTMLDivElement>(null);
+  const [sbw, setSbw] = useState(0);
   useLayoutEffect(() => {
     const el = scroller.current; if (!el) return;
-    const upd = () => setVp((v) => (v.h === el.clientHeight && v.w === el.clientWidth ? v : { ...v, h: el.clientHeight, w: el.clientWidth }));
+    const upd = () => { setSbw(el.offsetWidth - el.clientWidth); setVp((v) => (v.h === el.clientHeight && v.w === el.clientWidth ? v : { ...v, h: el.clientHeight, w: el.clientWidth })); };
     upd(); const ro = new ResizeObserver(upd); ro.observe(el); return () => ro.disconnect();
   }, []);
   const raf = useRef(0);
-  const onScroll = () => { if (raf.current) return; raf.current = requestAnimationFrame(() => { raf.current = 0; const el = scroller.current; if (el) setVp((v) => (v.top === el.scrollTop ? v : { ...v, top: el.scrollTop })); }); };
+  const onScroll = () => { if (headRef.current && scroller.current) headRef.current.scrollLeft = scroller.current.scrollLeft; if (raf.current) return; raf.current = requestAnimationFrame(() => { raf.current = 0; const el = scroller.current; if (el) setVp((v) => (v.top === el.scrollTop ? v : { ...v, top: el.scrollTop })); }); };
 
   const cols = useMemo(() => COL_ORDER.filter((c) => S.cols.includes(c)), [S.cols]);
   const colsTemplate = useMemo(() => ['minmax(220px, 1fr)', ...cols.map((c) => S.colW[c] + 'px')].join(' '), [cols, S.colW]);
@@ -155,6 +160,16 @@ export function FileList({ id }: { id: PaneId }) {
   }, [view, isGrid, mode, scale, S.density, vp.w]);
   gridInfo[id].cols = geo.cols;
 
+  useEffect(() => {
+    const el = scroller.current; const key = path ? pk(path) : '';
+    return () => { if (el && key) { scrollMem.delete(key); scrollMem.set(key, el.scrollTop); if (scrollMem.size > 200) scrollMem.delete(scrollMem.keys().next().value as string); } };
+  }, [path]);
+  const restored = useRef(false);
+  useLayoutEffect(() => {
+    if (restored.current || !scroller.current || !view.list.length || !path) return;
+    restored.current = true; const top = scrollMem.get(pk(path)); if (top) scroller.current.scrollTop = top;
+  }, [view.list.length, path]);
+
   /* folder sizes for the Size column: measured in the background, cancelled when the list changes, cached per folder */
   const [, setSizeTick] = useState(0);
   const slot = useRef(Math.floor(Math.random() * 64));
@@ -187,8 +202,8 @@ export function FileList({ id }: { id: PaneId }) {
   useEffect(() => {
     if (!reveal) return;
     const i = view.index.get(reveal.path); const el = scroller.current; if (i === undefined || !el) return;
-    const p = geo.items[i]; const top = p.y + headH, bottom = p.y + p.h + headH;
-    if (top - headH < el.scrollTop) el.scrollTop = Math.max(0, top - headH - 8);
+    const p = geo.items[i]; const top = p.y, bottom = p.y + p.h;
+    if (top < el.scrollTop) el.scrollTop = Math.max(0, top - 8);
     else if (bottom > el.scrollTop + el.clientHeight) el.scrollTop = bottom - el.clientHeight + 8;
   }, [reveal]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (scroller.current) scroller.current.scrollTop = 0; }, [path]);
@@ -222,7 +237,7 @@ export function FileList({ id }: { id: PaneId }) {
     // blank area: rubber-band selection
     if (isVirtual(path) || !view.list.length) return;
     const sc = scroller.current!; const rect = sc.getBoundingClientRect();
-    if (ev.clientX > rect.right - 14 || ev.clientY > rect.bottom - 14 || ev.clientY < rect.top + headH && !isGrid) return;
+    if (ev.clientX > rect.right - 14 || ev.clientY > rect.bottom - 14) return;
     startMarquee(ev, mod);
   };
   const onPointerUp = (ev: React.PointerEvent) => {
@@ -249,7 +264,7 @@ export function FileList({ id }: { id: PaneId }) {
       }
       setSelection(id, next, null);
       const r = sc.getBoundingClientRect();
-      if (cy < r.top + headH + 24) sc.scrollTop -= 14; else if (cy > r.bottom - 24) sc.scrollTop += 14;
+      if (cy < r.top + 24) sc.scrollTop -= 14; else if (cy > r.bottom - 24) sc.scrollTop += 14;
     };
     const move = (e: PointerEvent) => {
       cx = e.clientX; cy = e.clientY;
@@ -330,15 +345,18 @@ export function FileList({ id }: { id: PaneId }) {
   const empty = view.list.length === 0;
   const dropPath = path && !isVirtual(path) ? path : undefined;
   return (
-    <div ref={scroller} tabIndex={0} role="listbox" aria-multiselectable aria-label={t('list.aria')} data-list={id} data-drop-path={dropPath}
-      className="relative h-full overflow-auto outline-none" onScroll={onScroll}
-      onPointerDown={onPointerDown} onPointerUp={onPointerUp} onClick={onClick} onDoubleClick={onDouble} onAuxClick={onAux} onContextMenu={onContext}
-      style={{ ['--cols' as string]: colsTemplate, fontSize: S.listFont + 'px' }}>
+    <div className="relative flex h-full min-h-0 flex-col" style={{ ['--cols' as string]: colsTemplate, fontSize: S.listFont + 'px' }}>
       {!isGrid && (
-        <div className="sticky top-0 z-20 grid items-center border-b border-outline-variant bg-[var(--surface-solid)] px-[18px]" style={{ height: headH, gridTemplateColumns: 'var(--cols)', minWidth }}>
-          {headCell('name')}{cols.map(headCell)}
+        /* the header sits above the scroller, so rows never slide underneath it and it can stay transparent on every window material */
+        <div ref={headRef} className="flex-none overflow-hidden border-b border-outline-variant" style={{ paddingRight: sbw }} onContextMenu={onContext}>
+          <div className="grid items-center px-[18px]" style={{ height: headH, gridTemplateColumns: 'var(--cols)', minWidth }}>
+            {headCell('name')}{cols.map(headCell)}
+          </div>
         </div>
       )}
+    <div ref={scroller} tabIndex={0} role="listbox" aria-multiselectable aria-label={t('list.aria')} data-list={id} data-drop-path={dropPath}
+      className="relative min-h-0 flex-1 overflow-auto outline-none" onScroll={onScroll}
+      onPointerDown={onPointerDown} onPointerUp={onPointerUp} onClick={onClick} onDoubleClick={onDouble} onAuxClick={onAux} onContextMenu={onContext}>
       <div ref={body} className="relative" style={{ height: empty ? 'auto' : geo.total, minWidth: isGrid ? undefined : minWidth }}>
         {visGroups.map((g) => (
           <button key={'g' + g.start} type="button" data-g onClick={(e) => selectGroup(id, g.start, g.count, e.ctrlKey || e.metaKey)}
@@ -357,11 +375,13 @@ export function FileList({ id }: { id: PaneId }) {
         <div ref={marquee} className="marquee" style={{ display: 'none' }} />
       </div>
       {empty && (loading || (!path && !entries.length)) && (
-        <div className="absolute inset-x-0 top-12 space-y-2 px-4" aria-hidden>{Array.from({ length: 9 }, (_, k) => <div key={k} className="skeleton h-9" style={{ opacity: 1 - k * 0.09, animationDelay: k * 60 + 'ms' }} />)}</div>
+        <div className="absolute inset-x-0 top-2 space-y-2 px-4" aria-hidden>{Array.from({ length: 9 }, (_, k) => <div key={k} className="skeleton h-9" style={{ opacity: 1 - k * 0.09, animationDelay: k * 60 + 'ms' }} />)}</div>
       )}
       {empty && !loading && path !== null && (
-        <div className="absolute inset-0 top-10"><EmptyState kind={search || filter || kind !== 'all' ? 'search' : 'folder'} title={search || filter || kind !== 'all' ? t('empty.search') : t('empty.folder')} desc={search || filter || kind !== 'all' ? t('empty.searchHint') : t('empty.folderHint')} /></div>
+        <div className="absolute inset-0"><EmptyState kind={search || filter || kind !== 'all' ? 'search' : 'folder'} title={search || filter || kind !== 'all' ? t('empty.search') : t('empty.folder')} desc={search || filter || kind !== 'all' ? t('empty.searchHint') : t('empty.folderHint')} /></div>
       )}
+    </div>
+    <ScrollTop target={scroller} />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { ScrollArea } from './ui/ScrollTop';
 import { FolderIcon } from './FolderIcon';
 import { Clock, Command, FolderOpen, HardDrive, History, Home, Pin, Star, Tag, Trash2, Download, FileText, Image as ImageIcon, Music, Video, Monitor, X } from '../lib/icons';
 import { useExplorer, navigate, openRecent, setActivePane } from '../store/explorer';
@@ -8,7 +9,7 @@ import { baseName, parentOf, pk } from '../lib/paths';
 import { fmtDate, fmtSize } from '../lib/format';
 
 /** Accent colour per well-known place (reuses the adaptive file-type colours, so it works in light and dark). */
-const PLACE_ACCENT: Record<string, string> = { home: 'var(--primary)', desktop: 'var(--k-doc)', documents: 'var(--k-slide)', downloads: 'var(--k-sheet)', pictures: 'var(--k-image)', music: 'var(--k-audio)', videos: 'var(--k-video)' };
+const PLACE_ACCENT: Record<string, string> = { home: 'var(--pc-home)', desktop: 'var(--pc-desktop)', documents: 'var(--pc-documents)', downloads: 'var(--pc-downloads)', pictures: 'var(--pc-pictures)', music: 'var(--pc-music)', videos: 'var(--pc-videos)' };
 import type { Drive, PaneId } from '../lib/types';
 import { FileIcon } from './FileIcon';
 import { sidebarMenuItems, tagLabel, TAGS } from '../lib/menus';
@@ -39,10 +40,10 @@ export function DriveCard({ id, d, i = 0 }: { id: PaneId; d: Drive; i?: number }
 export function ThisPcPage({ id }: { id: PaneId }) {
   const t = useT(); const drives = useExplorer((s) => s.drives);
   return (
-    <div className="h-full overflow-auto p-5">
+    <ScrollArea className="p-5">
       <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold"><HardDrive className="size-4 text-primary" strokeWidth={1.75} />{t('sidebar.drives')}</h3>
       <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(17rem, 1fr))' }}>{drives.map((d, i) => <DriveCard key={d.path} id={id} d={d} i={i} />)}</div>
-    </div>
+    </ScrollArea>
   );
 }
 
@@ -64,7 +65,8 @@ export function HomePage({ id }: { id: PaneId }) {
   const t = useT(); const places = useExplorer((s) => s.places); const drives = useExplorer((s) => s.drives);
   const S = useSettings();
   const parentLabel = (p: string) => parentOf(p) || t('place.thispc');
-  const shown = new Set([...places.map((p) => pk(p.path)), ...S.pinned.map(pk)]);
+  const quick = places.filter((p) => p.id === 'home' || !S.unpinned.includes(p.id));
+  const shown = new Set([...quick.map((p) => pk(p.path)), ...S.pinned.map(pk)]);
   const frequent = Object.keys(S.frequent).filter((p) => !shown.has(pk(p))).sort((a, b) => S.frequent[b] - S.frequent[a]).slice(0, 8);
   const tagged = Object.keys(S.tags).length;
   const hour = new Date().getHours();
@@ -74,7 +76,7 @@ export function HomePage({ id }: { id: PaneId }) {
   const free = drives.reduce((a, d) => a + (d.free || 0), 0);
   let k = 0;
   return (
-    <div className="h-full overflow-auto p-5">
+    <ScrollArea className="p-5">
       <section className="anim-item relative mb-7 overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low p-6 max-[620px]:p-5" style={{ backgroundImage: 'linear-gradient(120deg, color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%)' }}>
         <div className="relative flex flex-wrap items-center gap-x-6 gap-y-4">
           <div className="min-w-0 flex-1 basis-64">
@@ -88,9 +90,9 @@ export function HomePage({ id }: { id: PaneId }) {
           <button type="button" onClick={() => openModal('palette')} className="btn btn-filled"><Command />{t('home.palette')}<kbd className="ml-1 rounded bg-on-primary/20 px-1.5 py-0.5 !text-on-primary">Ctrl+K</kbd></button>
         </div>
       </section>
-      <H icon={Star} count={places.length + S.pinned.length}>{t('home.quick')}</H>
+      <H icon={Star} count={quick.length + S.pinned.length}>{t('home.quick')}</H>
       <div className="grid gap-2.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(13.5rem, 1fr))' }}>
-        {places.map((p) => <PlaceCard key={p.id} id={id} path={p.path} icon={PLACE_ICON[p.id]} accent={PLACE_ACCENT[p.id]} label={p.id === 'home' ? baseName(p.path) : t('place.' + p.id)} sub={p.path} i={k++} />)}
+        {quick.map((p) => <PlaceCard key={p.id} id={id} path={p.path} icon={PLACE_ICON[p.id]} accent={PLACE_ACCENT[p.id]} label={p.id === 'home' ? baseName(p.path) : t('place.' + p.id)} sub={p.path} i={k++} />)}
         {S.pinned.map((p) => <PlaceCard key={p} id={id} path={p} icon={Pin} label={baseName(p)} sub={parentLabel(p)} i={k++} />)}
       </div>
       {frequent.length > 0 && <><H icon={History} count={frequent.length}>{t('home.frequent')}</H>
@@ -118,6 +120,6 @@ export function HomePage({ id }: { id: PaneId }) {
       ) : <div className="card"><EmptyState kind="clock" title={t('home.noRecent')} /></div>}
       <H icon={HardDrive} count={drives.length}>{t('sidebar.drives')}</H>
       <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(17rem, 1fr))' }}>{drives.map((d, i) => <DriveCard key={d.path} id={id} d={d} i={i} />)}</div>
-    </div>
+    </ScrollArea>
   );
 }

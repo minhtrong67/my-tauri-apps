@@ -55,8 +55,10 @@ export default function App() {
       <div className={`h-0.5 flex-none overflow-hidden transition-opacity duration-150 ${busy ? 'indet bg-primary/15 opacity-100' : 'opacity-0'}`} role="progressbar" aria-hidden={!busy} aria-label={t('common.loading')} />
       <TitleBar />
       <CommandBar />
-      <div className={`flex min-h-0 flex-1 gap-2 pr-2 pb-2 ${nav ? '' : 'pl-2'}`}>
-        {nav && <Sidebar />}
+      <div className="flex min-h-0 flex-1 gap-2 pr-2 pb-2">
+        {/* stays mounted so it can slide shut smoothly; hidden from keyboard and screen readers while closed */}
+        <div aria-hidden={!nav} className={`flex-none overflow-hidden ${nav ? 'w-60 opacity-100 max-[860px]:w-52' : 'w-0 opacity-0'}`}
+          style={{ visibility: nav ? 'visible' : 'hidden', transition: `width .22s var(--ease-fast), opacity .18s linear, visibility 0s linear ${nav ? '0s' : '.22s'}` }}><Sidebar /></div>
         <main className="relative flex min-h-0 min-w-0 flex-1 gap-2">
           {ready ? <><FilePane id="a" />{dual && <FilePane id="b" />}</> : <div className="grid flex-1 place-items-center"><Loader /></div>}
           <SelectionBar />

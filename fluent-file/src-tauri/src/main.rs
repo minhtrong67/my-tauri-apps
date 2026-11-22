@@ -928,6 +928,8 @@ fn main() {
             extras::folder_sizes,
             extras::get_accent_color,
             extras::run_custom,
+            extras::run_system,
+            extras::clean_temp,
             extras::dir_sizes,
             extras::set_tray,
             extras::set_global_shortcut,

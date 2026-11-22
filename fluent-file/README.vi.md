@@ -45,7 +45,8 @@ Fluent File giữ lại những phần của File Explorer mà mọi người d�
 | Chạy nền | **Khay hệ thống** tuỳ chọn, phím tắt toàn cục **Ctrl+Alt+E**, khôi phục thẻ, menu chuột phải **"Open with Fluent File"** của Explorer (do bộ cài thêm) |
 | Giao diện | Sáng / tối / theo hệ thống, 22 màu nhấn của Windows + màu tuỳ chỉnh, **mặc định dùng phông hệ thống Windows** (có thể chọn phông đã cài khác), cỡ chữ (nhỏ / vừa / lớn), English & Tiếng Việt |
 | Nền cửa sổ | Mica (mặc định), Mica Alt, Acrylic, **Kính mờ**, **Kính lỏng** hoặc nền đặc - Cài đặt > Giao diện (Mica cần Windows 11) |
-| Tùy biến | Màu + icon / emoji / logo nền tảng riêng cho từng thư mục, dung lượng thư mục ở cột Kích thước, trang khởi động, cỡ chữ giao diện và danh sách, màu nhấn tự động theo Windows, trình chỉnh menu chuột phải, thanh tiêu đề tùy chỉnh |
+| Tùy biến | Thiết kế riêng cho từng thư mục (8 kiểu thư mục, tô đặc / gradient, Material, Font Awesome, hơn 3.000 logo và emoji, nền biểu tượng, kích thước, độ lệch, 14 mẫu), dung lượng thư mục, trang khởi động, cỡ chữ giao diện và danh sách, kiểu biểu tượng (đặc / viền / mảnh), màu nhấn tự động theo Windows, trình chỉnh menu chuột phải, thanh tiêu đề tùy chỉnh |
+| Công cụ hệ thống | Menu "..." / bảng lệnh: Control Panel, Cài đặt Windows, Task Manager, Device Manager, Disk Management, Services, Biến môi trường, Registry Editor, Dọn tệp tạm, Tải lại ứng dụng; **Ctrl+Alt+T** mở terminal tại thư mục đang chọn |
 | Thư mục tùy chỉnh | Chuột phải thư mục > Tùy chỉnh thư mục: chọn màu và biểu tượng riêng cho từng thư mục |
 | Cột | Chuột phải tiêu đề cột (hoặc nhấp đúp cạnh cột) để tự vừa khít nội dung |
 | Cửa sổ | Ghi nhớ kích thước cửa sổ **hoặc** luôn mở phóng to tối đa |

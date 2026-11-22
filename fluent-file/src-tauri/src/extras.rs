@@ -305,6 +305,76 @@ pub fn run_custom(program: String, args: Vec<String>) -> Result<(), String> {
     cmd.spawn().map(|_| ()).map_err(|e| e.to_string())
 }
 
+/// Opens a built-in Windows tool (Control Panel, Task Manager, Device Manager ...).
+#[tauri::command]
+pub fn run_system(kind: String) -> Result<(), String> {
+    let (prog, args): (&str, &[&str]) = match kind.as_str() {
+        "control" => ("control.exe", &[]),
+        "settings" => ("explorer.exe", &["ms-settings:"]),
+        "taskmgr" => ("taskmgr.exe", &[]),
+        "devmgmt" => ("mmc.exe", &["devmgmt.msc"]),
+        "diskmgmt" => ("mmc.exe", &["diskmgmt.msc"]),
+        "services" => ("mmc.exe", &["services.msc"]),
+        "eventvwr" => ("mmc.exe", &["eventvwr.msc"]),
+        "cleanmgr" => ("cleanmgr.exe", &[]),
+        "sysinfo" => ("msinfo32.exe", &[]),
+        "envvars" => ("rundll32.exe", &["sysdm.cpl,EditEnvironmentVariables"]),
+        "network" => ("control.exe", &["ncpa.cpl"]),
+        "programs" => ("control.exe", &["appwiz.cpl"]),
+        "regedit" => ("regedit.exe", &[]),
+        _ => return Err("unknown-tool".into()),
+    };
+    std::process::Command::new(prog).args(args).spawn().map(|_| ()).map_err(|e| e.to_string())
+}
+
+#[derive(Serialize)]
+pub struct CleanResult {
+    freed: u64,
+    files: u32,
+    skipped: u32,
+}
+
+fn clean_dir(dir: &Path, cutoff: std::time::SystemTime, r: &mut CleanResult, depth: u32) {
+    let Ok(rd) = fs::read_dir(dir) else { return };
+    for e in rd.flatten() {
+        let p = e.path();
+        let Ok(ft) = e.file_type() else { continue };
+        if ft.is_symlink() {
+            continue;
+        }
+        let old = e.metadata().ok().and_then(|m| m.modified().ok()).map(|t| t < cutoff).unwrap_or(false);
+        if ft.is_dir() {
+            if depth < 8 {
+                clean_dir(&p, cutoff, r, depth + 1);
+                if old {
+                    let _ = fs::remove_dir(&p); // only succeeds when it is empty
+                }
+            }
+        } else if old {
+            let len = e.metadata().map(|m| m.len()).unwrap_or(0);
+            if fs::remove_file(&p).is_ok() {
+                r.freed += len;
+                r.files += 1;
+            } else {
+                r.skipped += 1; // in use
+            }
+        }
+    }
+}
+
+/// Deletes temp files that have not been modified for a day (files in use are skipped).
+#[tauri::command]
+pub async fn clean_temp() -> Result<CleanResult, String> {
+    tauri::async_runtime::spawn_blocking(|| {
+        let cutoff = std::time::SystemTime::now() - std::time::Duration::from_secs(24 * 3600);
+        let mut r = CleanResult { freed: 0, files: 0, skipped: 0 };
+        clean_dir(&std::env::temp_dir(), cutoff, &mut r, 0);
+        r
+    })
+    .await
+    .map_err(|e| e.to_string())
+}
+
 /// The Windows accent colour ("#RRGGBB"), read from the registry; None on other systems.
 #[tauri::command]
 pub fn get_accent_color() -> Option<String> {
