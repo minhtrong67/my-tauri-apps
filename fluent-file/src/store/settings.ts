@@ -17,6 +17,8 @@ export interface Settings {
   colorIcons: boolean;
   /** default Quick access folders the user removed (ids) */
   unpinned: string[];
+  /** Quick access order: "p:<place id>" / "d:<folder>" keys */
+  quickOrder: string[];
   effect: 'mica' | 'tabbed' | 'acrylic' | 'frosted' | 'liquid' | 'none';
   /** UI font size in px (scales the whole interface) and file-list text size in px */
   uiFont: number;
@@ -65,7 +67,7 @@ export interface Settings {
 }
 
 export const DEFAULTS: Settings = {
-  theme: 'system', seed: DEFAULT_SEED, font: 'system', iconStyle: 'filled', colorIcons: true, unpinned: [], effect: 'mica', uiFont: 14, listFont: 14, startTab: 'home', startPath: '', folderSizes: true, menu: {}, customMenu: [], randomStyles: [], density: 'comfortable',
+  theme: 'system', seed: DEFAULT_SEED, font: 'system', iconStyle: 'filled', colorIcons: true, unpinned: [], quickOrder: [], effect: 'mica', uiFont: 14, listFont: 14, startTab: 'home', startPath: '', folderSizes: true, menu: {}, customMenu: [], randomStyles: [], density: 'comfortable',
   lang: (typeof navigator !== 'undefined' && (navigator.language || 'en').toLowerCase().startsWith('vi')) ? 'vi' : 'en',
   view: 'details', sortKey: 'name', sortDir: 'asc', groupBy: 'none',
   showHidden: false, showExt: true, showChecks: false, showNav: true, showDetails: false, autoExpandTree: false,
@@ -90,6 +92,7 @@ function load(): Settings {
     if (!Array.isArray(s.customMenu)) s.customMenu = [];
     if (!Array.isArray(s.randomStyles)) s.randomStyles = [];
     if (!Array.isArray(s.unpinned)) s.unpinned = [];
+    if (!Array.isArray(s.quickOrder)) s.quickOrder = [];
     if (!['filled', 'regular', 'lucide'].includes(s.iconStyle)) s.iconStyle = 'filled';
     return s;
   } catch { return { ...DEFAULTS }; }

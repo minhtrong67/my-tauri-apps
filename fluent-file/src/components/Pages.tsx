@@ -1,6 +1,7 @@
 import { ScrollArea } from './ui/ScrollTop';
+import { quickItems } from '../lib/quick';
 import { FolderIcon } from './FolderIcon';
-import { Clock, Command, FolderOpen, HardDrive, History, Home, Pin, Star, Tag, Trash2, Download, FileText, Image as ImageIcon, Music, Video, Monitor, X } from '../lib/icons';
+import { Clock, Command, FolderOpen, HardDrive, History, Home, Star, Tag, Trash2, Download, FileText, Image as ImageIcon, Music, Video, Monitor, X } from '../lib/icons';
 import { useExplorer, navigate, openRecent, setActivePane } from '../store/explorer';
 import { useSettings } from '../store/settings';
 import { openModal, showMenu } from '../store/ui';
@@ -65,8 +66,9 @@ export function HomePage({ id }: { id: PaneId }) {
   const t = useT(); const places = useExplorer((s) => s.places); const drives = useExplorer((s) => s.drives);
   const S = useSettings();
   const parentLabel = (p: string) => parentOf(p) || t('place.thispc');
-  const quick = places.filter((p) => p.id === 'home' || !S.unpinned.includes(p.id));
-  const shown = new Set([...quick.map((p) => pk(p.path)), ...S.pinned.map(pk)]);
+  const quick = quickItems(places, S.pinned, S.unpinned, S.quickOrder);
+  const homePlace = places.find((p) => p.id === 'home');
+  const shown = new Set([...(homePlace ? [pk(homePlace.path)] : []), ...quick.map((p) => pk(p.path))]);
   const frequent = Object.keys(S.frequent).filter((p) => !shown.has(pk(p))).sort((a, b) => S.frequent[b] - S.frequent[a]).slice(0, 8);
   const tagged = Object.keys(S.tags).length;
   const hour = new Date().getHours();
@@ -90,10 +92,12 @@ export function HomePage({ id }: { id: PaneId }) {
           <button type="button" onClick={() => openModal('palette')} className="btn btn-filled"><Command />{t('home.palette')}<kbd className="ml-1 rounded bg-on-primary/20 px-1.5 py-0.5 !text-on-primary">Ctrl+K</kbd></button>
         </div>
       </section>
-      <H icon={Star} count={quick.length + S.pinned.length}>{t('home.quick')}</H>
+      <H icon={Star} count={quick.length + (homePlace ? 1 : 0)}>{t('home.quick')}</H>
       <div className="grid gap-2.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(13.5rem, 1fr))' }}>
-        {quick.map((p) => <PlaceCard key={p.id} id={id} path={p.path} icon={PLACE_ICON[p.id]} accent={PLACE_ACCENT[p.id]} label={p.id === 'home' ? baseName(p.path) : t('place.' + p.id)} sub={p.path} i={k++} />)}
-        {S.pinned.map((p) => <PlaceCard key={p} id={id} path={p} icon={Pin} label={baseName(p)} sub={parentLabel(p)} i={k++} />)}
+        {homePlace && <PlaceCard id={id} path={homePlace.path} icon={PLACE_ICON.home} accent={PLACE_ACCENT.home} label={baseName(homePlace.path)} sub={homePlace.path} i={k++} />}
+        {quick.map((p) => p.placeId
+          ? <PlaceCard key={p.key} id={id} path={p.path} icon={PLACE_ICON[p.placeId]} accent={PLACE_ACCENT[p.placeId]} label={t('place.' + p.placeId)} sub={p.path} i={k++} />
+          : <PlaceCard key={p.key} id={id} path={p.path} folder label={baseName(p.path)} sub={parentLabel(p.path)} i={k++} />)}
       </div>
       {frequent.length > 0 && <><H icon={History} count={frequent.length}>{t('home.frequent')}</H>
         <div className="grid gap-2.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(13.5rem, 1fr))' }}>{frequent.map((p) => <PlaceCard key={p} id={id} path={p} label={baseName(p)} sub={parentLabel(p)} folder accent="var(--folder)" i={k++} />)}</div></>}

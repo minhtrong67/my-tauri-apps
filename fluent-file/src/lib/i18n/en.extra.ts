@@ -244,7 +244,7 @@ export const enExtra: Record<string, string> = {
   "settings.colorIcons": "Colorful sidebar icons",
   "settings.d.colorIcons": "Give Desktop, Documents, Downloads and the other places their own color",
   "settings.quick": "Quick access",
-  "settings.d.quick": "Folders you removed from Quick access with “Unpin”",
+  "settings.d.quick": "Drag items in the sidebar to reorder Quick access. Bring back folders you removed with “Unpin”.",
   "settings.quickRestore": "Restore default folders",
   "sys.title": "System tools",
   "sys.control": "Control Panel",
@@ -284,4 +284,6 @@ export const enExtra: Record<string, string> = {
   "rr.datetime": "Date, time and random",
   "rr.words": "Random words",
   "rr.keep": "Original name + random",
+  "quick.moveUp": "Move up",
+  "quick.moveDown": "Move down",
 };

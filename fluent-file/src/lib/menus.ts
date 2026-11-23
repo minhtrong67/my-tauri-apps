@@ -5,7 +5,7 @@ import {
 } from './icons';
 import { dialog, toast, type MenuItem } from '../store/ui';
 import { fmtSize } from './format';
-import { Palette as PaletteIcon, Settings, HardDrive, Wrench, Shuffle } from './icons';
+import { Palette as PaletteIcon, Settings, HardDrive, Wrench, Shuffle, ChevronUp, ChevronDown } from './icons';
 import type { Drive, Entry, Kind, PaneId, TagId } from './types';
 import { getSettings, type ColId } from '../store/settings';
 import { t } from './i18n';
@@ -18,6 +18,7 @@ import { useExplorer, randomRename, activeTab, selectedEntries, selectAll, inver
 import { pk } from './paths';
 import { menuOn, runCustomEntry } from './menuCatalog';
 import { BUILTIN_STYLES } from './randomRename';
+import { moveQuick, quickItems } from './quick';
 
 const ex = () => useExplorer.getState();
 export const tagLabel = (id: TagId) => getSettings().tagNames[id]?.trim() || t(TAGS.find((x) => x.id === id)!.key);
@@ -247,6 +248,7 @@ function tidyMenu(items: MenuItem[]): MenuItem[] {
 export function sidebarMenuItems(id: PaneId, path: string, drive?: Drive): MenuItem[] {
   if (!path || path === HOME) return [{ label: t('cmd.open'), icon: path === HOME ? Home : Monitor, run: () => navigate(id, path || '') }];
   const defaultPlace = ex().places.find((p) => p.id !== 'home' && samePath(p.path, path));
+  const quickKey = defaultPlace && !getSettings().unpinned.includes(defaultPlace.id) ? 'p:' + defaultPlace.id : isPinned(path) ? 'd:' + pk(path) : null;
   const items: MenuItem[] = [
     { label: t('cmd.open'), icon: FolderOpen, run: () => navigate(id, path) },
     { label: t('cmd.openNewTab'), icon: Plus, run: () => newTab(id, path) },
@@ -257,6 +259,10 @@ export function sidebarMenuItems(id: PaneId, path: string, drive?: Drive): MenuI
       : { label: isPinned(path) ? t('cmd.unpin') : t('cmd.pin'), icon: isPinned(path) ? PinOff : Pin, run: () => togglePin(path) },
     { label: t('cmd.copyPathBtn'), icon: ClipboardCopy, run: () => copyText(path) }
   ];
+  if (quickKey) {
+    const list = quickItems(ex().places, getSettings().pinned, getSettings().unpinned, getSettings().quickOrder); const at = list.findIndex((q) => q.key === quickKey);
+    items.push({ sep: true }, { label: t('quick.moveUp'), icon: ChevronUp, disabled: at <= 0, run: () => moveQuick(list, quickKey, at - 1) }, { label: t('quick.moveDown'), icon: ChevronDown, disabled: at < 0 || at >= list.length - 1, run: () => moveQuick(list, quickKey, at + 1) });
+  }
   if (!drive && parentOf(path) !== '') items.push({ label: t('cmd.customizeFolder'), icon: PaletteIcon, run: () => openModal('folderStyle', { paths: [path] }) });
   const d = drive || ex().drives.find((x) => samePath(x.path, path));
   if (d) items.push({ sep: true }, { label: t('cmd.properties'), icon: Info, run: () => showDriveProperties(d) });

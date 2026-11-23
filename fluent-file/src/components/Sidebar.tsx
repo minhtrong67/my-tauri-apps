@@ -1,5 +1,5 @@
 import { FolderIcon } from './FolderIcon';
-import { memo } from 'react';
+import { memo, useMemo, useRef, useState } from 'react';
 import { ChevronRight, HardDrive, Home, Monitor, Trash2 } from '../lib/icons';
 import { useExplorer, navigate, toggleTree, openRecycle, setActivePane } from '../store/explorer';
 import { useSettings } from '../store/settings';
@@ -9,14 +9,16 @@ import { baseName, HOME, parentOf, pk, samePath } from '../lib/paths';
 import type { Drive, PaneId } from '../lib/types';
 import { PLACE_ICON, driveLabel } from './Pages';
 import { sidebarMenuItems } from '../lib/menus';
+import { moveQuick, quickItems } from '../lib/quick';
 import type { LucideIcon } from '../lib/icons';
 
-function NavItem({ icon: Icon, tint, label, path, active, onClick, drive, id, depth = 0, folder, trailing }: { tint?: string; icon?: LucideIcon; label: string; path: string; active: boolean; onClick: () => void; drive?: Drive; id: PaneId; depth?: number; folder?: boolean; trailing?: React.ReactNode }) {
+function NavItem({ icon: Icon, tint, label, path, active, onClick, drive, id, depth = 0, folder, trailing, qk, onQuickDown, dragging, qline }: { qk?: string; onQuickDown?: (e: React.PointerEvent) => void; dragging?: boolean; qline?: 'before' | 'after'; tint?: string; icon?: LucideIcon; label: string; path: string; active: boolean; onClick: () => void; drive?: Drive; id: PaneId; depth?: number; folder?: boolean; trailing?: React.ReactNode }) {
   return (
-    <div className={`group/n relative flex items-center rounded-md transition-colors duration-100 ${active ? 'bg-on-surface/6' : 'hover:bg-on-surface/5'}`} style={{ paddingLeft: depth * 12 }}>
+    <div data-qk={qk} className={`group/n relative flex items-center rounded-md transition-colors duration-100 ${dragging ? 'opacity-45' : ''} ${active ? 'bg-on-surface/6' : 'hover:bg-on-surface/5'}`} style={{ paddingLeft: depth * 12 }}>
+      {qline && <span aria-hidden className={`pointer-events-none absolute right-1 left-1 z-10 h-0.5 rounded-full bg-primary ${qline === 'before' ? '-top-[3px]' : '-bottom-[3px]'}`} />}
       {active && <span aria-hidden className="absolute top-1/2 left-0 h-4 w-[3px] -translate-y-1/2 rounded-full bg-primary" />}
       {trailing}
-      <button type="button" title={path || label} data-drop-path={path && path !== HOME ? path : undefined} onClick={onClick}
+      <button type="button" title={path || label} data-drop-path={path && path !== HOME ? path : undefined} onClick={onClick} onPointerDown={onQuickDown}
         onContextMenu={(e) => { e.preventDefault(); showMenu(sidebarMenuItems(id, path, drive), e.clientX, e.clientY); }}
         className="flex min-h-8 min-w-0 flex-1 items-center gap-3 rounded-[inherit] py-1 pr-3 pl-3 text-left">
         {folder || !Icon ? <FolderIcon path={path} size={20} /> : <Icon className={`size-[1.125rem] ${active && !tint ? 'text-primary' : ''}`} strokeWidth={1.6} style={tint ? { color: tint } : undefined} />}
@@ -59,16 +61,42 @@ export function Sidebar() {
   const t = useT();
   const id = useExplorer((s) => s.activePane); const cur = useExplorer((s) => s.panes[s.activePane].path);
   const places = useExplorer((s) => s.places); const drives = useExplorer((s) => s.drives);
-  const pinned = useSettings((s) => s.pinned); const unpinned = useSettings((s) => s.unpinned); const colorful = useSettings((s) => s.colorIcons);
+  const pinned = useSettings((s) => s.pinned); const unpinned = useSettings((s) => s.unpinned); const colorful = useSettings((s) => s.colorIcons); const order = useSettings((s) => s.quickOrder);
+  const quick = useMemo(() => quickItems(places, pinned, unpinned, order), [places, pinned, unpinned, order]);
+  const navRef = useRef<HTMLElement>(null); const suppress = useRef(false);
+  const [drag, setDrag] = useState<{ key: string; slot: number } | null>(null);
+  /* drag a Quick access item up or down to reorder it; the line shows where it will land (also: right-click > Move up / Move down) */
+  const onQuickDown = (key: string) => (e: React.PointerEvent) => {
+    if (e.button !== 0) return;
+    const startY = e.clientY; let active = false; let slot = 0;
+    const move = (ev: PointerEvent) => {
+      if (!active && Math.abs(ev.clientY - startY) < 6) return;
+      active = true;
+      const els = [...(navRef.current?.querySelectorAll<HTMLElement>('[data-qk]') ?? [])];
+      slot = els.filter((el) => { const r = el.getBoundingClientRect(); return ev.clientY > r.top + r.height / 2; }).length;
+      setDrag({ key, slot });
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+      setDrag(null);
+      if (!active) return;
+      suppress.current = true; setTimeout(() => { suppress.current = false; }, 0);
+      const from = quick.findIndex((q) => q.key === key);
+      moveQuick(quick, key, from < slot ? slot - 1 : slot);
+    };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+  };
+  const qline = (i: number): 'before' | 'after' | undefined => (drag ? (drag.slot === i ? 'before' : drag.slot === quick.length && i === quick.length - 1 ? 'after' : undefined) : undefined);
   const tc = (k: string) => (colorful ? `var(--pc-${k})` : undefined);
   const go = (p: string) => () => void navigate(id, p);
   const Sec = ({ children }: { children: string }) => <div className="px-3 pt-3 pb-1 text-xs font-semibold text-on-surface-variant">{children}</div>;
   return (
-    <nav aria-label={t('sidebar.aria')} className="flex h-full w-60 flex-none flex-col gap-0.5 overflow-y-auto bg-surface-container px-2 pt-1 pb-3 max-[860px]:w-52">
+    <nav ref={navRef} aria-label={t('sidebar.aria')} className="flex h-full w-60 flex-none flex-col gap-0.5 overflow-y-auto bg-surface-container px-2 pt-1 pb-3 max-[860px]:w-52">
       <NavItem id={id} icon={Home} tint={tc('home')} label={t('place.home')} path={HOME} active={cur === HOME} onClick={go(HOME)} />
       <Sec>{t('sidebar.quick')}</Sec>
-      {places.filter((p) => p.id !== 'home' && !unpinned.includes(p.id)).map((p) => <NavItem key={p.id} id={id} icon={PLACE_ICON[p.id]} tint={tc(p.id)} label={t('place.' + p.id)} path={p.path} active={!!cur && samePath(cur, p.path)} onClick={go(p.path)} />)}
-      {pinned.map((p) => <NavItem key={p} id={id} folder label={baseName(p)} path={p} active={!!cur && samePath(cur, p)} onClick={go(p)} />)}
+      {quick.map((q, i) => q.placeId
+        ? <NavItem key={q.key} qk={q.key} onQuickDown={onQuickDown(q.key)} dragging={drag?.key === q.key} qline={qline(i)} id={id} icon={PLACE_ICON[q.placeId]} tint={tc(q.placeId)} label={t('place.' + q.placeId)} path={q.path} active={!!cur && samePath(cur, q.path)} onClick={() => { if (!suppress.current) go(q.path)(); }} />
+        : <NavItem key={q.key} qk={q.key} onQuickDown={onQuickDown(q.key)} dragging={drag?.key === q.key} qline={qline(i)} id={id} folder label={baseName(q.path)} path={q.path} active={!!cur && samePath(cur, q.path)} onClick={() => { if (!suppress.current) go(q.path)(); }} />)}
       <Sec>{t('sidebar.thispc')}</Sec>
       <NavItem id={id} icon={Monitor} tint={tc('thispc')} label={t('place.thispc')} path="" active={cur === ''} onClick={go('')} />
       {drives.map((d) => <TreeRow key={d.path} path={d.path} name={d.name} drive={d} depth={0} cur={cur} id={id} />)}

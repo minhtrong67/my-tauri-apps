@@ -244,7 +244,7 @@ export const viExtra: Record<string, string> = {
   "settings.colorIcons": "Biểu tượng sidebar nhiều màu",
   "settings.d.colorIcons": "Cho Desktop, Documents, Downloads và các mục khác mỗi mục một màu riêng",
   "settings.quick": "Truy cập nhanh",
-  "settings.d.quick": "Các thư mục bạn đã bỏ khỏi Truy cập nhanh bằng “Bỏ ghim”",
+  "settings.d.quick": "Kéo các mục trong sidebar để sắp xếp Truy cập nhanh. Khôi phục thư mục đã bỏ bằng “Bỏ ghim”.",
   "settings.quickRestore": "Khôi phục thư mục mặc định",
   "sys.title": "Công cụ hệ thống",
   "sys.control": "Control Panel",
@@ -284,4 +284,6 @@ export const viExtra: Record<string, string> = {
   "rr.datetime": "Ngày, giờ và ngẫu nhiên",
   "rr.words": "Từ ngẫu nhiên",
   "rr.keep": "Tên gốc + ngẫu nhiên",
+  "quick.moveUp": "Di chuyển lên",
+  "quick.moveDown": "Di chuyển xuống",
 };

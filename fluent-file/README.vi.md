@@ -48,6 +48,7 @@ Fluent File giữ lại những phần của File Explorer mà mọi người d�
 | Tùy biến | Thiết kế riêng cho từng thư mục (8 kiểu thư mục, tô đặc / gradient, Material, Font Awesome, hơn 3.000 logo và emoji, nền biểu tượng, kích thước, độ lệch, 14 mẫu), dung lượng thư mục, trang khởi động, cỡ chữ giao diện và danh sách, kiểu biểu tượng (đặc / viền / mảnh), màu nhấn tự động theo Windows, trình chỉnh menu chuột phải, thanh tiêu đề tùy chỉnh |
 | Công cụ hệ thống | Nút hộp công cụ / bảng lệnh: Control Panel, Cài đặt Windows, Task Manager, Device Manager, Disk Management, Services, Biến môi trường, Registry Editor, Dọn tệp tạm, Tải lại ứng dụng; **Ctrl+Alt+T** mở terminal tại thư mục đang chọn |
 | Đổi tên ngẫu nhiên | Chuột phải > Đổi tên ngẫu nhiên: chữ, số, GUID, ngày + ngẫu nhiên, từ ... cùng các mẫu riêng ({l:8}, {guid}, {date}, {n:3}, {name} ...) trong Cài đặt > Menu chuột phải |
+| Truy cập nhanh | Kéo các mục trong sidebar để sắp xếp (hoặc chuột phải > Di chuyển lên / xuống), bỏ ghim thư mục mặc định, ghim thư mục bất kỳ; trang Home theo cùng thứ tự |
 | Thư mục tùy chỉnh | Chuột phải thư mục > Tùy chỉnh thư mục: chọn màu và biểu tượng riêng cho từng thư mục |
 | Cột | Chuột phải tiêu đề cột (hoặc nhấp đúp cạnh cột) để tự vừa khít nội dung |
 | Cửa sổ | Ghi nhớ kích thước cửa sổ **hoặc** luôn mở phóng to tối đa |

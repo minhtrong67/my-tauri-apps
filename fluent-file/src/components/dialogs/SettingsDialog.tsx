@@ -102,9 +102,9 @@ function General() {
           <Segmented ariaLabel={t('settings.language')} value={S.lang} onChange={(v) => S.set({ lang: v })} options={[{ value: 'en', label: t('settings.langEn'), icon: Globe }, { value: 'vi', label: t('settings.langVi'), icon: Globe }]} />
         </SettingRow>
       </SectionCard>
-      <SectionCard title={t('settings.quick')} reset={["unpinned"]}>
+      <SectionCard title={t('settings.quick')} reset={["unpinned", "quickOrder"]}>
         <SettingRow icon={Pin} title={t('settings.quick')} desc={t('settings.d.quick')}>
-          <Button tone="tonal" small icon={RotateCcw} label={t('settings.quickRestore')} disabled={S.unpinned.length === 0} onClick={() => S.set({ unpinned: [] })} />
+          <Button tone="tonal" small icon={RotateCcw} label={t('settings.quickRestore')} disabled={S.unpinned.length === 0 && S.quickOrder.length === 0} onClick={() => S.set({ unpinned: [], quickOrder: [] })} />
         </SettingRow>
       </SectionCard>
       <SectionCard title={t('settings.startTab')} reset={["startTab", "startPath"]}>
