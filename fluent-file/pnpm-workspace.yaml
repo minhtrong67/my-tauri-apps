@@ -1,2 +1,6 @@
+# pnpm 10+ blocks dependency build scripts unless they are allowed here.
+# esbuild (used by Vite) needs its install script to fetch its native binary.
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: true
+onlyBuiltDependencies:
+  - esbuild

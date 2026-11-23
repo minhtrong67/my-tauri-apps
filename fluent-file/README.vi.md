@@ -46,7 +46,8 @@ Fluent File giữ lại những phần của File Explorer mà mọi người d�
 | Giao diện | Sáng / tối / theo hệ thống, 22 màu nhấn của Windows + màu tuỳ chỉnh, **mặc định dùng phông hệ thống Windows** (có thể chọn phông đã cài khác), cỡ chữ (nhỏ / vừa / lớn), English & Tiếng Việt |
 | Nền cửa sổ | Mica (mặc định), Mica Alt, Acrylic, **Kính mờ**, **Kính lỏng** hoặc nền đặc - Cài đặt > Giao diện (Mica cần Windows 11) |
 | Tùy biến | Thiết kế riêng cho từng thư mục (8 kiểu thư mục, tô đặc / gradient, Material, Font Awesome, hơn 3.000 logo và emoji, nền biểu tượng, kích thước, độ lệch, 14 mẫu), dung lượng thư mục, trang khởi động, cỡ chữ giao diện và danh sách, kiểu biểu tượng (đặc / viền / mảnh), màu nhấn tự động theo Windows, trình chỉnh menu chuột phải, thanh tiêu đề tùy chỉnh |
-| Công cụ hệ thống | Menu "..." / bảng lệnh: Control Panel, Cài đặt Windows, Task Manager, Device Manager, Disk Management, Services, Biến môi trường, Registry Editor, Dọn tệp tạm, Tải lại ứng dụng; **Ctrl+Alt+T** mở terminal tại thư mục đang chọn |
+| Công cụ hệ thống | Nút hộp công cụ / bảng lệnh: Control Panel, Cài đặt Windows, Task Manager, Device Manager, Disk Management, Services, Biến môi trường, Registry Editor, Dọn tệp tạm, Tải lại ứng dụng; **Ctrl+Alt+T** mở terminal tại thư mục đang chọn |
+| Đổi tên ngẫu nhiên | Chuột phải > Đổi tên ngẫu nhiên: chữ, số, GUID, ngày + ngẫu nhiên, từ ... cùng các mẫu riêng ({l:8}, {guid}, {date}, {n:3}, {name} ...) trong Cài đặt > Menu chuột phải |
 | Thư mục tùy chỉnh | Chuột phải thư mục > Tùy chỉnh thư mục: chọn màu và biểu tượng riêng cho từng thư mục |
 | Cột | Chuột phải tiêu đề cột (hoặc nhấp đúp cạnh cột) để tự vừa khít nội dung |
 | Cửa sổ | Ghi nhớ kích thước cửa sổ **hoặc** luôn mở phóng to tối đa |

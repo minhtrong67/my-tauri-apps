@@ -5,7 +5,7 @@ import {
 } from './icons';
 import { dialog, toast, type MenuItem } from '../store/ui';
 import { fmtSize } from './format';
-import { Palette as PaletteIcon, Settings, HardDrive, Wrench } from './icons';
+import { Palette as PaletteIcon, Settings, HardDrive, Wrench, Shuffle } from './icons';
 import type { Drive, Entry, Kind, PaneId, TagId } from './types';
 import { getSettings, type ColId } from '../store/settings';
 import { t } from './i18n';
@@ -14,9 +14,10 @@ import { baseName, extOf, HOME, isVirtual, parentOf, samePath, stripExt } from '
 import { layoutOf } from './view';
 import { isArchive } from './fileTypes';
 import { openModal } from '../store/ui';
-import { useExplorer, activeTab, selectedEntries, selectAll, invertSelection, clearSelection, setLayout, setKind, copyToClipboard, copyPaths, copyText, pasteClipboard, deleteSelection, renameSelection, undoLast, newItem, newTab, navigate, jumpHistory, refresh, openNewWindow, openSelection, openWith, revealItem, showProperties, showDriveProperties, isPinned, togglePin, toggleTag, clearTags, setWallpaper, extractArchive, compressSelection, copyToOtherPane, previewEntry, openRecycle, ensureSecondPane } from '../store/explorer';
+import { useExplorer, randomRename, activeTab, selectedEntries, selectAll, invertSelection, clearSelection, setLayout, setKind, copyToClipboard, copyPaths, copyText, pasteClipboard, deleteSelection, renameSelection, undoLast, newItem, newTab, navigate, jumpHistory, refresh, openNewWindow, openSelection, openWith, revealItem, showProperties, showDriveProperties, isPinned, togglePin, toggleTag, clearTags, setWallpaper, extractArchive, compressSelection, copyToOtherPane, previewEntry, openRecycle, ensureSecondPane } from '../store/explorer';
 import { pk } from './paths';
 import { menuOn, runCustomEntry } from './menuCatalog';
+import { BUILTIN_STYLES } from './randomRename';
 
 const ex = () => useExplorer.getState();
 export const tagLabel = (id: TagId) => getSettings().tagNames[id]?.trim() || t(TAGS.find((x) => x.id === id)!.key);
@@ -129,8 +130,6 @@ export function moreMenuItems(id: PaneId): MenuItem[] {
     { label: t('cmd.selectNone'), icon: CheckSquare, run: () => clearSelection(id) },
     { label: t('cmd.invert'), icon: CheckSquare, run: () => invertSelection(id) },
     { sep: true },
-    { label: t('sys.title'), icon: Wrench, items: systemToolsMenu() },
-    { sep: true },
     { label: t('view.fullscreen'), icon: Maximize, kbd: 'F11', run: toggleFullscreen }
   ];
 }
@@ -148,6 +147,16 @@ function toolItems(path: string): MenuItem[] {
   if (T.code) items.push({ label: t('cmd.openCode'), icon: Code2, run: () => openWith('code', path) });
   return items;
 }
+/** Random rename styles: built-in ones, then the user's own, then a shortcut to edit them. */
+function randomMenu(id: PaneId): MenuItem[] {
+  const own = getSettings().randomStyles;
+  return [
+    ...BUILTIN_STYLES.map((b): MenuItem => ({ label: t(b.key), icon: Shuffle, run: () => void randomRename(id, b.pattern) })),
+    ...(own.length ? [{ sep: true } as MenuItem, ...own.map((o): MenuItem => ({ label: o.label, icon: Shuffle, run: () => void randomRename(id, o.pattern) }))] : []),
+    { sep: true }, { label: t('cmd.randomCustomize'), icon: Settings, run: () => openModal('settings') }
+  ];
+}
+
 /** user-defined entries (Settings > Context menu) that apply to the given kind of target */
 function customItems(scope: 'file' | 'folder' | 'bg', paths: string[]): MenuItem[] {
   const list = getSettings().customMenu.filter((c) => c.scope === 'any' ? scope !== 'bg' : c.scope === scope);
@@ -195,6 +204,7 @@ export function itemMenuItems(id: PaneId): MenuItem[] {
     if (T.winrar) c.push({ label: t('cmd.rar'), icon: FileArchive, run: () => compressSelection(id, 'rar') });
     items.push({ label: t('cmd.compress'), icon: FileArchive, items: c });
   }
+  if (on('random')) items.push({ label: t('cmd.randomRename'), icon: Shuffle, items: randomMenu(id) });
   if (on('tag')) items.push({ label: t('tag.title'), icon: Tag, items: tagMenu(paths) });
   if (getSettings().dualPane && on('otherPane')) items.push({ label: t('cmd.copyOther'), icon: FolderInput, run: () => copyToOtherPane(id, false) }, { label: t('cmd.moveOther'), icon: FolderOutput, run: () => copyToOtherPane(id, true) });
   if (on('copyPath')) items.push({ label: t('cmd.copyPath'), icon: ClipboardCopy, kbd: 'Ctrl+Shift+C', run: () => copyPaths(id) });

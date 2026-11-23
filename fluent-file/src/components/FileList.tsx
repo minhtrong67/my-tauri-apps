@@ -36,9 +36,9 @@ let sizeToken = 0;
 /** scroll position per folder, so going back lands where you were */
 const scrollMem = new Map<string, number>();
 
-interface ItemProps { dsize?: number; e: Entry; i: number; pos: Pos; sel: boolean; focus: boolean; cut: boolean; renaming: boolean; checks: boolean; showExt: boolean; tags: TagId[] | undefined; cols: ColId[]; lang: string; search: boolean; delay: number; tipSig: string; id: PaneId }
+interface ItemProps { isz?: number; dsize?: number; e: Entry; i: number; pos: Pos; sel: boolean; focus: boolean; cut: boolean; renaming: boolean; checks: boolean; showExt: boolean; tags: TagId[] | undefined; cols: ColId[]; lang: string; search: boolean; delay: number; tipSig: string; id: PaneId }
 
-function RenameInput({ id, e }: { id: PaneId; e: Entry }) {
+function RenameInput({ id, e, center }: { id: PaneId; e: Entry; center?: boolean }) {
   const ref = useRef<HTMLInputElement>(null);
   const done = useRef(false);
   useLayoutEffect(() => {
@@ -47,7 +47,7 @@ function RenameInput({ id, e }: { id: PaneId; e: Entry }) {
   }, [e]);
   const finish = (commit: boolean) => { if (done.current) return; done.current = true; if (commit) void commitRename(id, e.path, ref.current?.value.trim() || ''); else cancelRename(id); };
   return <input ref={ref} defaultValue={e.name} spellCheck={false} aria-label="Rename" data-rename
-    className="h-7 min-w-0 flex-1 rounded-lg bg-surface px-2 text-[inherit] ring-2 ring-primary outline-none"
+    className={`h-7 w-full min-w-0 flex-1 rounded-md bg-[var(--surface-solid)] px-2 text-[inherit] ring-2 ring-primary outline-none ${center ? 'text-center' : ''}`}
     onKeyDown={(ev) => { ev.stopPropagation(); if (ev.key === 'Enter') { ev.preventDefault(); finish(true); } else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); } }}
     onBlur={() => finish(true)} onPointerDown={(ev) => ev.stopPropagation()} onDoubleClick={(ev) => ev.stopPropagation()} />;
 }
@@ -56,7 +56,7 @@ const Check_ = ({ on }: { on: boolean }) => (
   <span data-chk className={`grid size-5 flex-none place-items-center rounded border transition-all duration-100 ${on ? 'border-primary bg-primary text-on-primary' : 'border-outline opacity-0 group-hover/row:opacity-100'}`}>{on && <Check className="size-3.5" strokeWidth={2.5} />}</span>
 );
 
-const Row = memo(function Row({ dsize, e, i, pos, sel, focus, cut, renaming, checks, showExt, tags, cols, lang, search, delay, tipSig, id }: ItemProps) {
+const Row = memo(function Row({ isz = 20, dsize, e, i, pos, sel, focus, cut, renaming, checks, showExt, tags, cols, lang, search, delay, tipSig, id }: ItemProps) {
   const tip = tipSig;
   return (
     <div role="option" aria-selected={sel} data-i={i} data-drop-path={e.isDir ? e.path : undefined} title={tip}
@@ -64,11 +64,11 @@ const Row = memo(function Row({ dsize, e, i, pos, sel, focus, cut, renaming, che
       style={{ top: pos.y, height: pos.h, left: 6, right: 6, gridTemplateColumns: 'var(--cols)', animationDelay: delay > 0 ? delay + 'ms' : undefined }}>
       <div className="flex min-w-0 items-center gap-2.5 pr-3">
         {checks && <Check_ on={sel} />}
-        <FileIcon entry={e} size={20} />
+        <FileIcon entry={e} size={isz} />
         {renaming ? <RenameInput id={id} e={e} /> : <span className="truncate" data-nm>{shownName(e, showExt)}</span>}
         {tags && <TagDots tags={tags} />}
       </div>
-      {cols.map((c) => c === 'size' ? <div key={c} className="pr-4 text-right text-on-surface-variant tabular-nums">{e.isDir ? (dsize === undefined ? '' : fmtSize(dsize)) : fmtSize(e.size)}</div>
+      {cols.map((c) => c === 'size' ? <div key={c} className="pr-4 text-right whitespace-nowrap text-on-surface-variant tabular-nums">{e.isDir ? (dsize === undefined ? '' : fmtSize(dsize)) : fmtSize(e.size)}</div>
         : c === 'type' && search ? <div key={c} className="truncate pr-3 text-on-surface-variant" title={parentOf(e.path) || ''}>{parentOf(e.path) || ''}</div>
         : <div key={c} className="truncate pr-3 text-on-surface-variant">{c === 'modified' ? fmtDate(e.modified, lang) : c === 'created' ? fmtDate(e.created, lang) : typeLabel(e, lang)}</div>)}
     </div>
@@ -79,7 +79,7 @@ const Tile = memo(function Tile({ e, i, pos, sel, focus, cut, renaming, checks, 
   const T = TILE[mode];
   return (
     <div role="option" aria-selected={sel} data-i={i} data-drop-path={e.isDir ? e.path : undefined} title={tipSig}
-      className={`row-item tile group/row absolute flex flex-col items-center rounded-lg px-1.5 pt-2 ${sel ? 'sel' : ''} ${focus ? 'focus' : ''} ${cut ? 'cut' : ''} ${e.hidden ? 'opacity-60' : ''} ${delay >= 0 ? 'anim-item' : ''}`}
+      className={`row-item tile group/row absolute flex flex-col items-center rounded-lg px-1.5 pt-2 ${renaming ? 'z-20' : ''} ${sel ? 'sel' : ''} ${focus ? 'focus' : ''} ${cut ? 'cut' : ''} ${e.hidden ? 'opacity-60' : ''} ${delay >= 0 ? 'anim-item' : ''}`}
       style={{ left: pos.x, top: pos.y, width: pos.w, height: pos.h, animationDelay: delay > 0 ? delay + 'ms' : undefined }}>
       {checks && <span className="absolute top-2 left-2 z-10"><Check_ on={sel} /></span>}
       <div className="tile-thumb relative grid flex-none place-items-center overflow-hidden" style={{ width: T.thumb, height: Math.round(T.thumb * 0.9) }}>
@@ -87,7 +87,7 @@ const Tile = memo(function Tile({ e, i, pos, sel, focus, cut, renaming, checks, 
         {tags && <TagDots tags={tags} className="absolute right-1.5 bottom-1.5" />}
       </div>
       <div className="mt-1.5 w-full px-0.5 text-center">
-        {renaming ? <RenameInput id={id} e={e} /> : <span className="line-clamp-2 break-words text-[0.8125rem] leading-[1.15rem]" data-nm>{shownName(e, showExt)}</span>}
+        {renaming ? <RenameInput id={id} e={e} center /> : <span className="line-clamp-2 break-words text-[0.8125rem] leading-[1.15rem]" data-nm>{shownName(e, showExt)}</span>}
       </div>
     </div>
   );
@@ -127,8 +127,8 @@ export function FileList({ id }: { id: PaneId }) {
   const onScroll = () => { if (headRef.current && scroller.current) headRef.current.scrollLeft = scroller.current.scrollLeft; if (raf.current) return; raf.current = requestAnimationFrame(() => { raf.current = 0; const el = scroller.current; if (el) setVp((v) => (v.top === el.scrollTop ? v : { ...v, top: el.scrollTop })); }); };
 
   const cols = useMemo(() => COL_ORDER.filter((c) => S.cols.includes(c)), [S.cols]);
-  const colsTemplate = useMemo(() => ['minmax(220px, 1fr)', ...cols.map((c) => S.colW[c] + 'px')].join(' '), [cols, S.colW]);
-  const minWidth = 220 + cols.reduce((n, c) => n + S.colW[c], 0) + 24;
+  const colsTemplate = useMemo(() => [`minmax(${Math.round(220 * scale)}px, 1fr)`, ...cols.map((c) => Math.round(S.colW[c] * scale) + 'px')].join(' '), [cols, S.colW, scale]);
+  const minWidth = Math.round(220 * scale) + cols.reduce((n, c) => n + Math.round(S.colW[c] * scale), 0) + 24;
   const headH = Math.round(40 * scale);
 
   /* geometry of every item, so rendering can be virtualised and the marquee can hit-test */
@@ -308,8 +308,8 @@ export function FileList({ id }: { id: PaneId }) {
   };
   const resize = (ev: React.PointerEvent, col: ColId) => {
     ev.preventDefault(); ev.stopPropagation();
-    const startX = ev.clientX, start = S.colW[col]; const el = ev.currentTarget as HTMLElement; el.setPointerCapture(ev.pointerId);
-    const move = (e: PointerEvent) => S.set({ colW: { ...useSettings.getState().colW, [col]: Math.max(70, Math.min(600, Math.round(start + e.clientX - startX))) } });
+    const startX = ev.clientX, start = S.colW[col] * scale; const el = ev.currentTarget as HTMLElement; el.setPointerCapture(ev.pointerId);
+    const move = (e: PointerEvent) => S.set({ colW: { ...useSettings.getState().colW, [col]: Math.max(70, Math.min(600, Math.round((start + e.clientX - startX) / scale))) } });
     const up = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); };
     el.addEventListener('pointermove', move); el.addEventListener('pointerup', up);
   };
@@ -325,7 +325,7 @@ export function FileList({ id }: { id: PaneId }) {
         const txt = col === 'size' ? (e.isDir ? '' : fmtSize(e.size)) : col === 'modified' ? fmtDate(e.modified, S.lang) : col === 'created' ? fmtDate(e.created, S.lang) : col === 'type' && search ? (parentOf(e.path) || '') : typeLabel(e, S.lang);
         if (txt) m = Math.max(m, g.measureText(txt).width + (col === 'size' ? 30 : 22));
       }
-      next[col] = Math.max(70, Math.min(600, Math.ceil(m)));
+      next[col] = Math.max(70, Math.min(600, Math.ceil(m / scale)));
     }
     S.set({ colW: next });
   };
@@ -368,7 +368,7 @@ export function FileList({ id }: { id: PaneId }) {
           const e = view.list[p.i];
           const props: ItemProps = {
             e, i: p.i, pos: p, sel: selected.has(e.path), focus: focusPath === e.path, cut: cutSet.has(e.path), renaming: renaming === e.path,
-            checks: S.showChecks, showExt: S.showExt, tags: S.tags[pk(e.path)], cols, lang: S.lang, search: !!search, delay: p.i < 18 ? p.i * 12 : -1, tipSig: tipOf(e), id, dsize: e.isDir && !isGrid ? dirSizeCache.get(dsKey(e)) : undefined
+            checks: S.showChecks, showExt: S.showExt, tags: S.tags[pk(e.path)], cols, lang: S.lang, search: !!search, delay: p.i < 18 ? p.i * 12 : -1, tipSig: tipOf(e), id, isz: Math.round(20 * scale), dsize: e.isDir && !isGrid ? dirSizeCache.get(dsKey(e)) : undefined
           };
           return isGrid ? <Tile key={e.path} {...props} mode={mode} thumbs={S.thumbnails} /> : <Row key={e.path} {...props} />;
         })}

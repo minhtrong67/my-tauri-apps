@@ -1,5 +1,8 @@
 import type { LucideIcon } from '../../lib/icons';
 import type { ReactNode } from 'react';
+import { RotateCcw } from '../../lib/icons';
+import { DEFAULTS, useSettings, type Settings } from '../../store/settings';
+import { useT } from '../../lib/i18n';
 
 export function Switch({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
   return <input type="checkbox" role="switch" aria-label={label} className="sw" checked={checked} onChange={(e) => onChange(e.target.checked)} />;
@@ -33,9 +36,20 @@ export function SettingRow({ icon: Icon, title, desc, children, stack }: { icon?
     </div>
   );
 }
-export const SectionCard = ({ children, title }: { children: ReactNode; title?: string }) => (
-  <section className="mb-5">
-    {title && <h3 className="mb-2 px-1 text-sm font-semibold">{title}</h3>}
-    <div className="flex flex-col gap-1">{children}</div>
-  </section>
-);
+/** A titled group of settings. With `reset` (setting keys) a "Reset" button appears as soon as one of them differs from its default. */
+export function SectionCard({ children, title, reset }: { children: ReactNode; title?: string; reset?: string[] }) {
+  const t = useT(); const S = useSettings();
+  const dirty = !!reset?.some((k) => JSON.stringify((S as unknown as Record<string, unknown>)[k]) !== JSON.stringify((DEFAULTS as unknown as Record<string, unknown>)[k]));
+  return (
+    <section className="mb-5">
+      {title && (
+        <div className="mb-2 flex min-h-7 items-center justify-between px-1">
+          <h3 className="text-sm font-semibold">{title}</h3>
+          {dirty && <button type="button" onClick={() => S.set(Object.fromEntries(reset!.map((k) => [k, (DEFAULTS as unknown as Record<string, unknown>)[k]])) as Partial<Settings>)}
+            className="ripple flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-primary animate-[fade-in_.15s_linear]"><RotateCcw className="size-3.5" strokeWidth={1.75} />{t('settings.reset')}</button>}
+        </div>
+      )}
+      <div className="flex flex-col gap-1">{children}</div>
+    </section>
+  );
+}

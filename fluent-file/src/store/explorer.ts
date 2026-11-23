@@ -1,3 +1,4 @@
+import { expandPattern, safeName } from '../lib/randomRename';
 import { create } from 'zustand';
 import { AlertTriangle, Copy as CopyIcon, Trash2, X, Check, Replace, SkipForward } from '../lib/icons';
 import { api } from '../lib/api';
@@ -532,6 +533,24 @@ export async function commitRename(id: PaneId, path: string, newName: string) {
     pushUndo({ type: 'rename', from: path, to: np });
     await refresh(id, [np]);
   } catch (err) { toast(errText(err), 'error'); }
+}
+/** Renames every selected item with a random name built from `pattern`, keeping extensions and avoiding clashes. */
+export async function randomRename(id: PaneId, pattern: string) {
+  const sel = selectedEntries(id); if (!sel.length) return;
+  const taken = new Set(pane(id).entries.map((e) => e.name.toLowerCase()));
+  const done: { from: string; to: string }[] = []; let index = 0;
+  for (const e of sel) {
+    index++;
+    const dot = !e.isDir ? e.name.lastIndexOf('.') : -1; const ext = dot > 0 ? e.name.slice(dot) : ''; const stem = ext ? e.name.slice(0, -ext.length) : e.name;
+    let nn = e.name;
+    for (let tries = 0; tries < 30; tries++) { nn = (safeName(expandPattern(pattern, { index, name: stem })) || 'file') + ext; if (!taken.has(nn.toLowerCase())) break; }
+    taken.add(nn.toLowerCase());
+    try { const np = await api.renameItem(e.path, nn); done.push({ from: e.path, to: np }); } catch (err) { toast(errText(err), 'error'); }
+  }
+  if (!done.length) return;
+  pushUndo({ type: 'rename-many', pairs: done });
+  await refresh(id, done.map((d) => d.to));
+  toast(t('msg.randomDone', { n: done.length }), 'success');
 }
 export async function renameSelection(id: PaneId) {
   const sel = selectedEntries(id);

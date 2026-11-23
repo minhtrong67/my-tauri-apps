@@ -3,6 +3,8 @@ import { AppWindow, File, FileArchive, FileAudio, FileCode2, FileImage, FileSpre
 import type { Entry } from '../lib/types';
 import { FolderIcon } from './FolderIcon';
 import { catOf, hasNativeIcon, isRaster, isSvg } from '../lib/fileTypes';
+import { EXT_GLYPH, GLYPHS } from '../lib/fileGlyphs.generated';
+import { extOf } from '../lib/paths';
 import { api, convertFileSrc } from '../lib/api';
 
 const ICONS: Record<string, LucideIcon> = {
@@ -13,6 +15,20 @@ export const FileIcon = memo(function FileIcon({ entry, size = 20, className = '
   const cat = catOf(entry);
   if (hasNativeIcon(entry)) return <NativeIcon entry={entry} size={size} className={className} />;
   if (cat === 'folder') return <FolderIcon path={entry.path} size={size} className={className} />;
+  /* well-known file types (html, css, js, json, xml, py, sql ...) get their own coloured glyph */
+  const lower = entry.name.toLowerCase();
+  const gk = EXT_GLYPH[extOf(entry.name)] ?? (lower === 'dockerfile' ? 'mdiDocker' : undefined);
+  const glyph = gk ? GLYPHS[gk] : undefined;
+  if (glyph) {
+    if (size >= 40) return (
+      <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden className={`flex-none ${className}`}>
+        <path d="M14 4h26l13 13v39a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z" fill={`color-mix(in oklab, ${glyph.c} 22%, var(--surface-container-high))`} />
+        <path d="M40 4v10a3 3 0 0 0 3 3h10z" fill={glyph.c} fillOpacity=".55" />
+        <svg x="16" y="22" width="32" height="32" viewBox="0 0 24 24"><path d={glyph.p} fill={glyph.c} /></svg>
+      </svg>
+    );
+    return <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden className={`flex-none ${className}`}><path d={glyph.p} fill={glyph.c} /></svg>;
+  }
   const I = ICONS[cat] || File;
   if (size >= 40) {
     /* large view: a page with a folded corner, tinted by file type, like the Windows file-type icons */

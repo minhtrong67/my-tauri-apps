@@ -26,6 +26,8 @@ export interface Settings {
   folderSizes: boolean;
   /** context menu entries the user switched on / off (id -> visible); missing = the entry's default */
   menu: Record<string, boolean>;
+  /** the user's own random-rename styles (the built-in ones live in lib/randomRename.ts) */
+  randomStyles: { id: string; label: string; pattern: string }[];
   customMenu: { id: string; label: string; program: string; args: string; scope: 'file' | 'folder' | 'any' | 'bg' }[];
   density: 'comfortable' | 'compact';
   lang: 'en' | 'vi';
@@ -63,7 +65,7 @@ export interface Settings {
 }
 
 export const DEFAULTS: Settings = {
-  theme: 'system', seed: DEFAULT_SEED, font: 'system', iconStyle: 'filled', colorIcons: true, unpinned: [], effect: 'mica', uiFont: 14, listFont: 14, startTab: 'home', startPath: '', folderSizes: true, menu: {}, customMenu: [], density: 'comfortable',
+  theme: 'system', seed: DEFAULT_SEED, font: 'system', iconStyle: 'filled', colorIcons: true, unpinned: [], effect: 'mica', uiFont: 14, listFont: 14, startTab: 'home', startPath: '', folderSizes: true, menu: {}, customMenu: [], randomStyles: [], density: 'comfortable',
   lang: (typeof navigator !== 'undefined' && (navigator.language || 'en').toLowerCase().startsWith('vi')) ? 'vi' : 'en',
   view: 'details', sortKey: 'name', sortDir: 'asc', groupBy: 'none',
   showHidden: false, showExt: true, showChecks: false, showNav: true, showDetails: false, autoExpandTree: false,
@@ -86,6 +88,7 @@ function load(): Settings {
     s.uiFont = Math.max(11, Math.min(20, Number(s.uiFont) || 14)); s.listFont = Math.max(11, Math.min(22, Number(s.listFont) || 14));
     s.menu = { ...(raw.menu || {}) };
     if (!Array.isArray(s.customMenu)) s.customMenu = [];
+    if (!Array.isArray(s.randomStyles)) s.randomStyles = [];
     if (!Array.isArray(s.unpinned)) s.unpinned = [];
     if (!['filled', 'regular', 'lucide'].includes(s.iconStyle)) s.iconStyle = 'filled';
     return s;

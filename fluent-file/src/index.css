@@ -379,3 +379,7 @@ kbd { font: inherit; font-size: .75rem; color: var(--on-surface-variant); }
 .ibtn:active, .cmd:active { transform: scale(.94); }
 .ibtn, .cmd { transition: transform .1s var(--ease-fast), background-color .1s linear, color .1s linear; }
 .tile-thumb img, .row-item img { transition: opacity .2s linear; }
+
+/* document previews are always opaque so text stays crisp on every window material */
+:root { --preview-bg: #FFFFFF; --preview-fg: #1A1A1A; }
+:root[data-scheme="dark"] { --preview-bg: #1E1E1E; --preview-fg: #E8E8E8; }

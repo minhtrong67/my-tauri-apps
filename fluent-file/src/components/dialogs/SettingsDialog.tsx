@@ -1,12 +1,13 @@
 import { ScrollArea } from '../ui/ScrollTop';
 import { useState } from 'react';
-import { AppWindow, Pin, HardDrive, Plus, Layers, Check, Columns2, Eye, EyeOff, FileText, FolderTree, Globe, Heart, ImageIcon, Info, Languages, LayoutGrid, Maximize2, Monitor, Moon, Palette, Pipette, Rocket, RotateCcw, Ruler, Save, Settings as Gear, ShieldCheck, Sparkles, Sun, Trash2, Type, History, Keyboard, TextCursorInput, Rows3, Rows4, ListChecks, Check as CheckIcon, PanelRight, AppWindowMac, SquareArrowOutUpRight } from '../../lib/icons';
+import { Shuffle, AppWindow, Pin, HardDrive, Plus, Layers, Check, Columns2, Eye, EyeOff, FileText, FolderTree, Globe, Heart, ImageIcon, Info, Languages, LayoutGrid, Maximize2, Monitor, Moon, Palette, Pipette, Rocket, RotateCcw, Ruler, Save, Settings as Gear, ShieldCheck, Sparkles, Sun, Trash2, Type, History, Keyboard, TextCursorInput, Rows3, Rows4, ListChecks, Check as CheckIcon, PanelRight, AppWindowMac, SquareArrowOutUpRight } from '../../lib/icons';
 import { useSettings } from '../../store/settings';
 import { useUI, toast } from '../../store/ui';
 import { useT } from '../../lib/i18n';
 import { FONTS, PALETTE, validHex, LIGHT_SWATCH, AUTO_SEED, DEFAULT_SEED, type SwatchDef } from '../../lib/theme';
 import { Slider } from '../ui/Slider';
 import { MENU_DEFS, menuOn } from '../../lib/menuCatalog';
+import { BUILTIN_STYLES, expandPattern } from '../../lib/randomRename';
 import { useExplorer } from '../../store/explorer';
 import { Modal } from '../ui/Modal';
 import { Select } from '../ui/Select';
@@ -31,12 +32,12 @@ function Appearance() {
   const custom = !auto && !PALETTE.some((p) => p.hex.toLowerCase() === S.seed.toLowerCase());
   return (
     <>
-      <SectionCard title={t('settings.theme')}>
+      <SectionCard title={t('settings.theme')} reset={["theme"]}>
         <SettingRow icon={Sun} title={t('settings.theme')} desc={t('settings.d.theme')} stack>
           <Segmented ariaLabel={t('settings.theme')} value={S.theme} onChange={(v) => S.set({ theme: v })} options={[{ value: 'light', label: t('settings.light'), icon: Sun }, { value: 'dark', label: t('settings.dark'), icon: Moon }, { value: 'system', label: t('settings.system'), icon: Monitor }]} />
         </SettingRow>
       </SectionCard>
-      <SectionCard title={t('settings.color')}>
+      <SectionCard title={t('settings.color')} reset={["seed"]}>
         <SettingRow icon={Palette} title={t('settings.color')} desc={t('settings.d.color')} stack>
           <div className="flex flex-wrap items-center gap-2" role="radiogroup" aria-label={t('settings.color')}>
             <button type="button" role="radio" aria-checked={auto} title={t('settings.d.auto')} onClick={() => pick(AUTO_SEED)}
@@ -58,7 +59,7 @@ function Appearance() {
           </div>
         </SettingRow>
       </SectionCard>
-      <SectionCard title={t('settings.iconStyle')}>
+      <SectionCard title={t('settings.iconStyle')} reset={["iconStyle", "colorIcons"]}>
         <SettingRow icon={Sparkles} title={t('settings.iconStyle')} desc={t('settings.d.iconStyle')}>
           <Segmented ariaLabel={t('settings.iconStyle')} value={S.iconStyle} onChange={(v) => S.set({ iconStyle: v })}
             options={[{ value: 'filled', label: t('iconStyle.filled') }, { value: 'regular', label: t('iconStyle.regular') }, { value: 'lucide', label: t('iconStyle.lucide') }]} />
@@ -67,13 +68,13 @@ function Appearance() {
           <Switch label={t('settings.colorIcons')} checked={S.colorIcons} onChange={(v) => S.set({ colorIcons: v })} />
         </SettingRow>
       </SectionCard>
-      <SectionCard title={t('settings.effect')}>
+      <SectionCard title={t('settings.effect')} reset={["effect"]}>
         <SettingRow icon={Layers} title={t('settings.effect')} desc={t('settings.d.effect')}>
           <Select ariaLabel={t('settings.effect')} value={S.effect} onChange={(v) => S.set({ effect: v as typeof S.effect })} width={190}
             options={(['mica', 'tabbed', 'acrylic', 'frosted', 'liquid', 'none'] as const).map((v) => ({ value: v, label: t('effect.' + v) }))} />
         </SettingRow>
       </SectionCard>
-      <SectionCard title={t('settings.font')}>
+      <SectionCard title={t('settings.font')} reset={["font", "uiFont", "listFont"]}>
         <SettingRow icon={Type} title={t('settings.font')} desc={t('settings.d.font')}>
           <Select ariaLabel={t('settings.font')} value={S.font} onChange={(v) => S.set({ font: v })} width={220}
             options={FONTS.map((f) => ({ value: f.id, label: f.label || t('settings.fontSystem'), style: { fontFamily: f.stack } }))} />
@@ -96,20 +97,20 @@ function General() {
   const t = useT(); const S = useSettings();
   return (
     <>
-      <SectionCard title={t('settings.language')}>
+      <SectionCard title={t('settings.language')} reset={["lang"]}>
         <SettingRow icon={Languages} title={t('settings.language')} desc={t('settings.d.language')} stack>
           <Segmented ariaLabel={t('settings.language')} value={S.lang} onChange={(v) => S.set({ lang: v })} options={[{ value: 'en', label: t('settings.langEn'), icon: Globe }, { value: 'vi', label: t('settings.langVi'), icon: Globe }]} />
         </SettingRow>
       </SectionCard>
-      <SectionCard title={t('settings.quick')}>
+      <SectionCard title={t('settings.quick')} reset={["unpinned"]}>
         <SettingRow icon={Pin} title={t('settings.quick')} desc={t('settings.d.quick')}>
           <Button tone="tonal" small icon={RotateCcw} label={t('settings.quickRestore')} disabled={S.unpinned.length === 0} onClick={() => S.set({ unpinned: [] })} />
         </SettingRow>
       </SectionCard>
-      <SectionCard title={t('settings.startTab')}>
+      <SectionCard title={t('settings.startTab')} reset={["startTab", "startPath"]}>
         <StartTab />
       </SectionCard>
-      <SectionCard title={t('settings.windowOnStart')}>
+      <SectionCard title={t('settings.windowOnStart')} reset={["windowMode"]}>
         <SettingRow icon={AppWindow} title={t('settings.windowOnStart')} desc={t('settings.d.windowStart')} stack>
           <div className="grid gap-2 sm:grid-cols-2" role="radiogroup">
             {([['remember', Save, t('settings.winRemember'), t('settings.d.winRemember')], ['maximized', Maximize2, t('settings.winMax'), t('settings.d.winMax')]] as const).map(([v, I, title, desc]) => (
@@ -121,7 +122,7 @@ function General() {
           </div>
         </SettingRow>
       </SectionCard>
-      <SectionCard title={t('settings.background')}>
+      <SectionCard title={t('settings.background')} reset={["globalShortcut", "restoreTabs", "trayEnabled"]}>
         <SettingRow icon={AppWindowMac} title={t('settings.tray')} desc={t('settings.d.tray')}><Switch label={t('settings.tray')} checked={S.trayEnabled} onChange={(v) => S.set({ trayEnabled: v })} /></SettingRow>
         <SettingRow icon={Keyboard} title={t('settings.shortcut')} desc={t('settings.d.shortcut')}><Switch label={t('settings.shortcut')} checked={S.globalShortcut} onChange={(v) => S.set({ globalShortcut: v })} /></SettingRow>
         <SettingRow icon={History} title={t('settings.restoreTabs')} desc={t('settings.d.restoreTabs')}><Switch label={t('settings.restoreTabs')} checked={S.restoreTabs} onChange={(v) => S.set({ restoreTabs: v })} /></SettingRow>
@@ -142,7 +143,7 @@ function Files() {
   );
   return (
     <>
-      <SectionCard title={t('settings.files')}>
+      <SectionCard title={t('settings.files')} reset={["view", "showHidden", "showExt", "showChecks", "thumbnails", "folderSizes", "rememberLayouts"]}>
         <SettingRow icon={LayoutGrid} title={t('settings.defaultView')} desc={t('settings.d.view')}>
           <Select ariaLabel={t('settings.defaultView')} value={S.view} onChange={(v) => S.set({ view: v })} width={190} options={[{ value: 'details', label: t('view.details') }, { value: 'large', label: t('view.large') }, { value: 'grid', label: t('view.medium') }, { value: 'small', label: t('view.small') }]} />
         </SettingRow>
@@ -150,11 +151,11 @@ function Files() {
         {row(ImageIcon, 'thumbnails', 'thumbnails')}{row(HardDrive, 'folderSizes', 'folderSizes')}{row(Rows3, 'rememberLayouts', 'rememberLayouts')}
         <SettingRow icon={ImageIcon} title={t('settings.clearCache')} desc={t('settings.d.clearCache')}><Button tone="tonal" small icon={Trash2} label={t('settings.clearCacheBtn')} onClick={() => void clear()} /></SettingRow>
       </SectionCard>
-      <SectionCard title={t('settings.layout')}>
+      <SectionCard title={t('settings.layout')} reset={["showDetails", "showNav", "autoExpandTree"]}>
         {row(PanelRight, 'showDetails', 'showDetails')}{row(FolderTree, 'showNav', 'showNav')}{row(FolderTree, 'autoExpandTree', 'autoExpandTree')}
         <SettingRow icon={Columns2} title={t('settings.dual')} desc={t('settings.d.dual')}><Switch label={t('settings.dual')} checked={S.dualPane} onChange={() => void toggleDual()} /></SettingRow>
       </SectionCard>
-      <SectionCard title={t('settings.tags')}>
+      <SectionCard title={t('settings.tags')} reset={["tagNames"]}>
         <div className="grid gap-2 px-4 py-3 sm:grid-cols-2">
           {TAGS.map((tg) => (
             <label key={tg.id} className="input-box !h-9 !w-auto gap-3 !px-3">
@@ -163,7 +164,7 @@ function Files() {
             </label>))}
         </div>
       </SectionCard>
-      <SectionCard title={t('settings.safety')}>
+      <SectionCard title={t('settings.safety')} reset={["confirmDelete"]}>
         {row(ShieldCheck, 'confirmDelete', 'confirmDelete')}
         <SettingRow icon={RotateCcw} title={t('settings.maintenance')} desc={t('settings.d.reset')}><Button tone="danger" small icon={RotateCcw} label={t('settings.resetBtn')} onClick={() => void reset()} /></SettingRow>
       </SectionCard>
@@ -189,6 +190,38 @@ function StartTab() {
   );
 }
 
+function RandomStyles() {
+  const t = useT(); const S = useSettings();
+  const [f, setF] = useState({ label: '', pattern: '{l:6}_{d:3}' });
+  const sample = (pat: string) => { try { return expandPattern(pat, { index: 1, name: 'photo' }); } catch { return ''; } };
+  const add = () => {
+    if (!f.label.trim() || !f.pattern.trim()) return;
+    S.set({ randomStyles: [...S.randomStyles, { id: 'r' + Date.now().toString(36), label: f.label.trim(), pattern: f.pattern.trim() }] });
+    setF({ ...f, label: '' });
+  };
+  return (
+    <SectionCard title={t('menu.random')} reset={['randomStyles']}>
+      <div className="flex flex-wrap gap-1.5 rounded-md border border-outline-variant bg-surface px-4 py-3">
+        {BUILTIN_STYLES.map((b) => <span key={b.id} className="rounded-md bg-on-surface/6 px-2 py-1 text-xs" title={b.pattern}>{t(b.key)} <span className="font-mono text-on-surface-variant">{sample(b.pattern)}</span></span>)}
+      </div>
+      {S.randomStyles.map((r) => (
+        <div key={r.id} className="flex items-center gap-3 rounded-md border border-outline-variant bg-surface px-4 py-2.5">
+          <Shuffle className="size-5 flex-none" strokeWidth={1.6} />
+          <div className="min-w-0 flex-1"><div className="truncate">{r.label}</div><div className="truncate font-mono text-xs text-on-surface-variant">{r.pattern} → {sample(r.pattern)}</div></div>
+          <button type="button" className="ibtn sm ripple" aria-label={t('cmd.delete')} onClick={() => S.set({ randomStyles: S.randomStyles.filter((x) => x.id !== r.id) })}><Trash2 strokeWidth={1.75} /></button>
+        </div>
+      ))}
+      <div className="grid gap-2 rounded-md border border-outline-variant bg-surface p-4 sm:grid-cols-[1fr_1.4fr_auto]">
+        <input className="field" placeholder={t('menu.random.name')} aria-label={t('menu.random.name')} value={f.label} onChange={(e) => setF({ ...f, label: e.target.value })} />
+        <input className="field font-mono" placeholder={t('menu.random.pattern')} aria-label={t('menu.random.pattern')} spellCheck={false} value={f.pattern} onChange={(e) => setF({ ...f, pattern: e.target.value })} />
+        <Button tone="filled" small icon={Plus} label={t('menu.random.add')} disabled={!f.label.trim() || !f.pattern.trim()} onClick={add} />
+        <p className="text-xs text-on-surface-variant sm:col-span-3">{t('menu.random.hint')}</p>
+        <p className="text-xs text-on-surface-variant sm:col-span-3">{t('menu.random.example')}: <span className="font-mono">{sample(f.pattern)}</span></p>
+      </div>
+    </SectionCard>
+  );
+}
+
 function MenuPrefs() {
   const t = useT(); const S = useSettings();
   const [f, setF] = useState({ label: '', program: '', args: '{path}', scope: 'any' as 'file' | 'folder' | 'any' | 'bg' });
@@ -201,7 +234,7 @@ function MenuPrefs() {
   return (
     <>
       {groups.map(([g, title]) => (
-        <SectionCard key={g} title={title}>
+        <SectionCard key={g} title={title} reset={['menu']}>
           <div className="grid gap-1 sm:grid-cols-2">
             {MENU_DEFS.filter((d) => d.group === g).map((d) => (
               <label key={d.id} className="flex items-center justify-between gap-3 rounded-md border border-outline-variant bg-surface px-4 py-2.5">
@@ -212,7 +245,8 @@ function MenuPrefs() {
           </div>
         </SectionCard>
       ))}
-      <SectionCard title={t('menu.custom')}>
+      <RandomStyles />
+      <SectionCard title={t('menu.custom')} reset={['customMenu', 'randomStyles']}>
         {S.customMenu.length === 0 && <div className="rounded-md border border-outline-variant bg-surface px-4 py-3 text-on-surface-variant">{t('menu.none')}</div>}
         {S.customMenu.map((c) => (
           <div key={c.id} className="flex items-center gap-3 rounded-md border border-outline-variant bg-surface px-4 py-2.5">

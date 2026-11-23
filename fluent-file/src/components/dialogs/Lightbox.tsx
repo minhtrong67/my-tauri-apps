@@ -58,7 +58,7 @@ export function Lightbox() {
   if (!e) return null;
   const k = kindOf(e); const src = convertFileSrc(e.path);
   return createPortal(
-    <div className="fixed inset-0 z-[120] flex flex-col bg-black/85 anim-fade" style={{ backdropFilter: 'blur(6px)' }} role="dialog" aria-modal="true" aria-label={e.name}>
+    <div className="fixed inset-0 z-[120] flex flex-col bg-black/92 anim-fade" style={{ backdropFilter: 'blur(6px)' }} role="dialog" aria-modal="true" aria-label={e.name}>
       <header className="flex flex-none items-center gap-2 px-4 py-2 text-white">
         <span className="min-w-0 flex-1 truncate text-base font-semibold">{e.name}</span>
         {list.length > 1 && <span className="text-xs opacity-70">{idx + 1} / {list.length}</span>}
@@ -71,7 +71,7 @@ export function Lightbox() {
           {k === 'vid' && <div className="grid size-full place-items-center p-4"><video src={src} controls autoPlay className="max-h-full max-w-full rounded-lg" /></div>}
           {k === 'aud' && <div className="grid size-full place-items-center"><audio src={src} controls autoPlay className="w-[min(32rem,90%)]" /></div>}
           {k === 'pdf' && <iframe src={src} title={e.name} className="size-full rounded-t-lg border-0 bg-white" />}
-          {(k === 'txt' || k === 'md') && <div className="mx-auto h-full max-w-4xl overflow-auto rounded-t-lg bg-surface text-on-surface"><TextView e={e} md={k === 'md'} /></div>}
+          {(k === 'txt' || k === 'md') && <div className="mx-auto h-full max-w-4xl overflow-auto rounded-t-lg bg-[var(--preview-bg)] text-[var(--preview-fg)] shadow-[var(--shadow-3)]"><TextView e={e} md={k === 'md'} /></div>}
           {k === 'none' && <div className="grid size-full place-items-center text-white"><div className="text-center"><FileQuestion className="mx-auto mb-3 size-14 opacity-70" />{t('preview.none')}</div></div>}
         </div>
         {list.length > 1 && <>
