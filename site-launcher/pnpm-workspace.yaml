@@ -1,0 +1,5 @@
+# esbuild cần chạy postinstall; khai báo cho cả pnpm cũ (onlyBuiltDependencies) và pnpm mới (allowBuilds)
+onlyBuiltDependencies:
+  - esbuild
+allowBuilds:
+  esbuild: true
