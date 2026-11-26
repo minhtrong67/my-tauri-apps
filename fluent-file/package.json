@@ -17,6 +17,7 @@
     "clean:stale": "node scripts/clean-stale.mjs"
   },
   "dependencies": {
+    "@crabnebula/tauri-plugin-drag": "^2.1.0",
     "@fluentui/react-icons": "^2.0.347",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
     "@mdi/js": "^7.4.47",

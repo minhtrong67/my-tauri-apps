@@ -91,7 +91,7 @@ export function Sidebar() {
   const go = (p: string) => () => void navigate(id, p);
   const Sec = ({ children }: { children: string }) => <div className="px-3 pt-3 pb-1 text-xs font-semibold text-on-surface-variant">{children}</div>;
   return (
-    <nav ref={navRef} aria-label={t('sidebar.aria')} className="flex h-full w-60 flex-none flex-col gap-0.5 overflow-y-auto bg-surface-container px-2 pt-1 pb-3 max-[860px]:w-52">
+    <nav ref={navRef} aria-label={t('sidebar.aria')} className="flex h-full w-full flex-none flex-col gap-0.5 overflow-y-auto bg-surface-container px-2 pt-1 pb-3 ">
       <NavItem id={id} icon={Home} tint={tc('home')} label={t('place.home')} path={HOME} active={cur === HOME} onClick={go(HOME)} />
       <Sec>{t('sidebar.quick')}</Sec>
       {quick.map((q, i) => q.placeId

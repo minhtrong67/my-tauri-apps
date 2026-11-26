@@ -286,4 +286,5 @@ export const viExtra: Record<string, string> = {
   "rr.keep": "Tên gốc + ngẫu nhiên",
   "quick.moveUp": "Di chuyển lên",
   "quick.moveDown": "Di chuyển xuống",
+  "effect.material": "Material You (Material Design 3)",
 };

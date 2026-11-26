@@ -8,6 +8,7 @@ import { t } from '../lib/i18n';
 import { onFileOp, refresh, runPaste, toggleTreeRefresh, useExplorer, openNewWindow } from '../store/explorer';
 import { useUI, toast } from '../store/ui';
 import { isVirtual } from '../lib/paths';
+import { isNativeDragActive } from '../lib/nativeDrag';
 import type { PaneId } from '../lib/types';
 
 /** Theme, language, window material, window title/size, watcher events, native file drops and tray. */
@@ -37,15 +38,18 @@ export function useAppEffects() {
   useEffect(() => {
     const root = document.documentElement;
     const win = appWindow;
-    if (!win) { root.dataset.fx = 'none'; return; }
+    if (!win) { root.dataset.fx = 'none'; root.dataset.style = effect === 'material' ? 'material' : ''; return; }
     const seq = ++fxSeq;
+    // Material You is a look, not a Windows material: the window stays solid and the CSS switches to tonal Material 3 surfaces
+    root.dataset.style = effect === 'material' ? 'material' : '';
     const run = async () => {
       try {
         await win.clearEffects();
-        if (effect === 'none') { if (seq === fxSeq) root.dataset.fx = 'none'; return; }
+        if (effect === 'none' || effect === 'material') { if (seq === fxSeq) root.dataset.fx = 'none'; return; }
         await new Promise((r) => setTimeout(r, 80));
         if (seq !== fxSeq) return;
         const kind = { mica: Effect.Mica, tabbed: Effect.Tabbed, acrylic: Effect.Acrylic, frosted: Effect.Acrylic, liquid: Effect.Acrylic }[effect];
+        if (kind === undefined) return;
         const dark = isDark(useSettings.getState().theme);
         await win.setEffects({ effects: [kind], state: EffectState.Active, color: dark ? [32, 32, 32, 150] : [243, 243, 243, 150] });
         if (seq === fxSeq) root.dataset.fx = effect;
@@ -121,6 +125,7 @@ export function useAppEffects() {
     let un: (() => void) | undefined; let hover: HTMLElement | null = null;
     const mark = (el: HTMLElement | null) => { if (hover !== el) { hover?.classList.remove('drop-target'); hover = el; hover?.classList.add('drop-target'); } };
     void onFileDrop((e) => {
+      if (isNativeDragActive()) { useUI.setState({ extDrop: { active: false } }); mark(null); return; } // our own drag-out coming back over the window
       if (e.type === 'enter' || e.type === 'over') { useUI.setState({ extDrop: { active: true } }); const el = e.x !== undefined ? (document.elementFromPoint(e.x, e.y as number) as HTMLElement | null) : null; mark(el?.closest<HTMLElement>('[data-drop-path]:not([data-drop-path=""])') ?? null); }
       else if (e.type === 'leave') { useUI.setState({ extDrop: { active: false } }); mark(null); }
       else if (e.type === 'drop') {

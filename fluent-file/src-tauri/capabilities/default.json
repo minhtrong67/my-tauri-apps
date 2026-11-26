@@ -14,6 +14,7 @@
     "core:window:allow-set-title",
     "core:window:allow-set-theme",
     "core:window:allow-set-effects",
+    "drag:default",
     "core:window:allow-minimize",
     "core:window:allow-toggle-maximize",
     "core:window:allow-close",

@@ -295,36 +295,66 @@ pub fn run_custom(program: String, args: Vec<String>) -> Result<(), String> {
     if program.trim().is_empty() {
         return Err("empty-program".into());
     }
-    let mut cmd = std::process::Command::new(program.trim());
-    cmd.args(args);
     #[cfg(windows)]
     {
-        use std::os::windows::process::CommandExt;
-        cmd.creation_flags(0x0800_0000);
+        let quoted: Vec<String> = args.iter().map(|a| if a.contains(' ') || a.is_empty() { format!("\"{}\"", a.replace('"', "")) } else { a.clone() }).collect();
+        shell_open(program.trim(), &quoted.join(" "))
     }
-    cmd.spawn().map(|_| ()).map_err(|e| e.to_string())
+    #[cfg(not(windows))]
+    {
+        std::process::Command::new(program.trim()).args(args).spawn().map(|_| ()).map_err(|e| e.to_string())
+    }
+}
+
+/// Starts a program the way Explorer does (ShellExecute): programs that need administrator rights show the UAC prompt
+/// instead of failing with "requires elevation" (os error 740).
+#[cfg(windows)]
+fn shell_open(file: &str, params: &str) -> Result<(), String> {
+    use windows::{
+        core::{HSTRING, PCWSTR},
+        Win32::UI::{Shell::ShellExecuteW, WindowsAndMessaging::SW_SHOWNORMAL},
+    };
+    let verb = HSTRING::from("open");
+    let f = HSTRING::from(file);
+    let p = HSTRING::from(params);
+    let r = unsafe {
+        if params.is_empty() {
+            ShellExecuteW(None, &verb, &f, PCWSTR::null(), PCWSTR::null(), SW_SHOWNORMAL)
+        } else {
+            ShellExecuteW(None, &verb, &f, &p, PCWSTR::null(), SW_SHOWNORMAL)
+        }
+    };
+    if (r.0 as isize) > 32 { Ok(()) } else { Err(format!("could not start {file} (code {})", r.0 as isize)) }
 }
 
 /// Opens a built-in Windows tool (Control Panel, Task Manager, Device Manager ...).
 #[tauri::command]
 pub fn run_system(kind: String) -> Result<(), String> {
-    let (prog, args): (&str, &[&str]) = match kind.as_str() {
-        "control" => ("control.exe", &[]),
-        "settings" => ("explorer.exe", &["ms-settings:"]),
-        "taskmgr" => ("taskmgr.exe", &[]),
-        "devmgmt" => ("mmc.exe", &["devmgmt.msc"]),
-        "diskmgmt" => ("mmc.exe", &["diskmgmt.msc"]),
-        "services" => ("mmc.exe", &["services.msc"]),
-        "eventvwr" => ("mmc.exe", &["eventvwr.msc"]),
-        "cleanmgr" => ("cleanmgr.exe", &[]),
-        "sysinfo" => ("msinfo32.exe", &[]),
-        "envvars" => ("rundll32.exe", &["sysdm.cpl,EditEnvironmentVariables"]),
-        "network" => ("control.exe", &["ncpa.cpl"]),
-        "programs" => ("control.exe", &["appwiz.cpl"]),
-        "regedit" => ("regedit.exe", &[]),
+    let (prog, args): (&str, &str) = match kind.as_str() {
+        "control" => ("control.exe", ""),
+        "settings" => ("ms-settings:", ""),
+        "taskmgr" => ("taskmgr.exe", ""),
+        "devmgmt" => ("devmgmt.msc", ""),
+        "diskmgmt" => ("diskmgmt.msc", ""),
+        "services" => ("services.msc", ""),
+        "eventvwr" => ("eventvwr.msc", ""),
+        "cleanmgr" => ("cleanmgr.exe", ""),
+        "sysinfo" => ("msinfo32.exe", ""),
+        "envvars" => ("rundll32.exe", "sysdm.cpl,EditEnvironmentVariables"),
+        "network" => ("ncpa.cpl", ""),
+        "programs" => ("appwiz.cpl", ""),
+        "regedit" => ("regedit.exe", ""),
         _ => return Err("unknown-tool".into()),
     };
-    std::process::Command::new(prog).args(args).spawn().map(|_| ()).map_err(|e| e.to_string())
+    #[cfg(windows)]
+    {
+        shell_open(prog, args)
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = (prog, args);
+        Err("windows-only".into())
+    }
 }
 
 #[derive(Serialize)]

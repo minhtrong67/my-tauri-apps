@@ -881,6 +881,7 @@ fn main() {
     tauri::Builder::default()
         .manage(OpState::default())
         .manage(extras::ExtraState::default())
+        .plugin(tauri_plugin_drag::init()) // drag files out of the window into other apps
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(|app, _shortcut, event| {

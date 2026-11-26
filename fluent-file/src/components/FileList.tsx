@@ -4,6 +4,7 @@ import { useExplorer, getView, selectIndex, selectGroup, clearSelection, setSele
 import { useSettings, type ColId } from '../store/settings';
 import { api, listen } from '../lib/api';
 import { ScrollTop } from './ui/ScrollTop';
+import { dragOut } from '../lib/nativeDrag';
 import { showMenu } from '../store/ui';
 import { layoutOf, shownName, typeLabel, type GroupInfo } from '../lib/view';
 import { fmtDate, fmtSize } from '../lib/format';
@@ -18,7 +19,7 @@ import { EmptyState } from './EmptyState';
 
 export const gridInfo: Record<PaneId, { cols: number }> = { a: { cols: 1 }, b: { cols: 1 } };
 /* Windows icon sizes: large 96px, medium 48px, small 32px (list rows use 20px) */
-const TILE = { large: { w: 168, h: 200, thumb: 136, icon: 120 }, grid: { w: 128, h: 150, thumb: 96, icon: 80 }, small: { w: 108, h: 118, thumb: 64, icon: 48 } } as const;
+const TILE = { large: { w: 148, h: 178, thumb: 124, icon: 108 }, grid: { w: 112, h: 134, thumb: 88, icon: 72 }, small: { w: 96, h: 108, thumb: 60, icon: 44 } } as const;
 const GAP = 6, PAD = 12;
 
 interface Pos { i: number; x: number; y: number; w: number; h: number }
@@ -147,12 +148,13 @@ export function FileList({ id }: { id: PaneId }) {
     const T = TILE[mode]; const tw0 = Math.round(T.w * scale), th = Math.round(T.h * scale), gh = Math.round(40 * scale);
     const avail = Math.max(tw0, vp.w - PAD * 2);
     const nc = Math.max(1, Math.floor((avail + GAP) / (tw0 + GAP)));
-    const tw = Math.floor((avail - (nc - 1) * GAP) / nc); // spread the spare width over the tiles instead of leaving a gap at the right
+    const tw = Math.min(Math.round(tw0 * 1.15), Math.floor((avail - (nc - 1) * GAP) / nc)); // tiles grow a little to use the row, the rest is split evenly on both sides
+    const x0 = PAD + Math.max(0, Math.floor((avail - (nc * tw + (nc - 1) * GAP)) / 2));
     let col = 0;
     view.list.forEach((_, i) => {
       const g = view.groups.get(i);
       if (g) { if (col !== 0) { y += th + GAP; col = 0; } groups.push({ ...g, y, h: gh }); y += gh; }
-      items[i] = { i, x: PAD + col * (tw + GAP), y, w: tw, h: th };
+      items[i] = { i, x: x0 + col * (tw + GAP), y, w: tw, h: th };
       col++; if (col === nc) { col = 0; y += th + GAP; }
     });
     if (col !== 0) y += th + GAP;
@@ -231,7 +233,7 @@ export function FileList({ id }: { id: PaneId }) {
       else { pending.current = i; useExplorer.setState((s) => ({ panes: { ...s.panes, [id]: { ...s.panes[id], focus: e.path } } })); }
       const paths = [...useExplorer.getState().panes[id].selected];
       if (!mod && !ev.shiftKey && !paths.includes(e.path)) paths.push(e.path);
-      beginDrag(ev, paths, (target, copy) => { pending.current = null; void runPaste(paths, target, !copy); });
+      beginDrag(ev, paths, (target, copy) => { pending.current = null; void runPaste(paths, target, !copy); }, (out) => { pending.current = null; void dragOut(out); });
       return;
     }
     // blank area: rubber-band selection

@@ -286,4 +286,5 @@ export const enExtra: Record<string, string> = {
   "rr.keep": "Original name + random",
   "quick.moveUp": "Move up",
   "quick.moveDown": "Move down",
+  "effect.material": "Material You (Material Design 3)",
 };

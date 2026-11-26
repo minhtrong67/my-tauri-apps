@@ -383,3 +383,52 @@ kbd { font: inherit; font-size: .75rem; color: var(--on-surface-variant); }
 /* document previews are always opaque so text stays crisp on every window material */
 :root { --preview-bg: #FFFFFF; --preview-fg: #1A1A1A; }
 :root[data-scheme="dark"] { --preview-bg: #1E1E1E; --preview-fg: #E8E8E8; }
+
+/* ================================================================ Material You (Material Design 3)
+   A solid window with tonal surfaces tinted by the accent colour, large rounded shapes and pill controls. */
+:root[data-style="material"] {
+  --surface-container: color-mix(in oklab, var(--primary) 7%, #F6F5F8);
+  --surface: color-mix(in oklab, var(--primary) 3%, #FFFFFF);
+  --surface-container-low: color-mix(in oklab, var(--primary) 6%, #FFFFFF);
+  --surface-container-high: color-mix(in oklab, var(--primary) 10%, #F9F8FB);
+  --surface-container-highest: color-mix(in oklab, var(--primary) 14%, #F0EFF3);
+  --secondary-container: color-mix(in oklab, var(--primary) 20%, #FFFFFF);
+  --on-secondary-container: color-mix(in oklab, var(--primary) 70%, #000000);
+  --primary-container: color-mix(in oklab, var(--primary) 24%, #FFFFFF);
+  --on-primary-container: color-mix(in oklab, var(--primary) 78%, #000000);
+  --outline-variant: color-mix(in oklab, var(--primary) 14%, #DAD9DE);
+  --control: color-mix(in oklab, var(--primary) 5%, #FFFFFF); --control-hover: color-mix(in oklab, var(--primary) 10%, #FFFFFF);
+  --hover: color-mix(in oklab, var(--primary) 9%, transparent); --sel: color-mix(in oklab, var(--primary) 18%, transparent); --sel-strong: color-mix(in oklab, var(--primary) 26%, transparent);
+  --surface-solid: color-mix(in oklab, var(--primary) 3%, #FFFFFF);
+}
+:root[data-style="material"][data-scheme="dark"] {
+  --surface-container: color-mix(in oklab, var(--primary) 8%, #141218);
+  --surface: color-mix(in oklab, var(--primary) 5%, #1C1B20);
+  --surface-container-low: color-mix(in oklab, var(--primary) 7%, #211F26);
+  --surface-container-high: color-mix(in oklab, var(--primary) 11%, #2B2930);
+  --surface-container-highest: color-mix(in oklab, var(--primary) 15%, #36343B);
+  --secondary-container: color-mix(in oklab, var(--primary) 26%, #1C1B20);
+  --on-secondary-container: color-mix(in oklab, var(--primary) 30%, #FFFFFF);
+  --primary-container: color-mix(in oklab, var(--primary) 34%, #1C1B20);
+  --on-primary-container: color-mix(in oklab, var(--primary) 25%, #FFFFFF);
+  --outline-variant: color-mix(in oklab, var(--primary) 16%, #49454F);
+  --control: color-mix(in oklab, var(--primary) 8%, #1C1B20); --control-hover: color-mix(in oklab, var(--primary) 14%, #1C1B20);
+  --surface-solid: color-mix(in oklab, var(--primary) 5%, #1C1B20);
+}
+:root[data-style="material"] .rounded-lg { border-radius: 24px; }
+:root[data-style="material"] .rounded-md { border-radius: 14px; }
+:root[data-style="material"] .solid { border-radius: 28px; border-color: transparent; }
+:root[data-style="material"] .btn, :root[data-style="material"] .chip, :root[data-style="material"] .field, :root[data-style="material"] .input-box,
+:root[data-style="material"] .cmd, :root[data-style="material"] .ibtn { border-radius: 999px; }
+:root[data-style="material"] .btn { border-color: transparent; padding: 0 1.5rem; }
+:root[data-style="material"] .btn-tonal { background: var(--secondary-container); color: var(--on-secondary-container); }
+:root[data-style="material"] .btn-tonal:hover { background: color-mix(in oklab, var(--on-secondary-container) 8%, var(--secondary-container)); }
+:root[data-style="material"] .btn-sm { padding: 0 1rem; }
+:root[data-style="material"] .field, :root[data-style="material"] .input-box { border-color: var(--outline-variant); }
+:root[data-style="material"] .row-item { border-radius: 16px; }
+:root[data-style="material"] .row-item:not(.tile).sel::after, :root[data-style="material"] [class*="w-[3px]"] { display: none; }
+:root[data-style="material"] .group\/n { border-radius: 999px; }
+:root[data-style="material"] .group\/n.bg-on-surface\/6 { background: var(--secondary-container); color: var(--on-secondary-container); }
+:root[data-style="material"] .ibtn.on, :root[data-style="material"] .chip.on { background: var(--secondary-container); color: var(--on-secondary-container); }
+:root[data-style="material"] .swatch { border-radius: 50%; }
+:root[data-style="material"] .tile-thumb img { border-radius: 12px; }

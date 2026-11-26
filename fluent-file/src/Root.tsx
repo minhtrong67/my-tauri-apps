@@ -34,6 +34,25 @@ function Gate({ name, children }: { name: ModalName; children: ReactNode }) {
   return seen || open ? <Suspense fallback={null}>{children}</Suspense> : null;
 }
 
+/** thin handle between sidebar and panes: drag to resize, double-click to reset */
+function SidebarGrip({ onResizing }: { onResizing: (v: boolean) => void }) {
+  const down = (e: React.PointerEvent) => {
+    e.preventDefault();
+    const startX = e.clientX, start = useSettings.getState().sidebarW;
+    onResizing(true); document.body.style.cursor = 'col-resize';
+    const move = (ev: PointerEvent) => useSettings.getState().set({ sidebarW: Math.max(180, Math.min(420, Math.round(start + ev.clientX - startX))) });
+    const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); document.body.style.cursor = ''; onResizing(false); };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+  };
+  return (
+    <div role="separator" aria-orientation="vertical" aria-label="Resize sidebar" className="group relative z-10 w-0 flex-none">
+      <div onPointerDown={down} onDoubleClick={() => useSettings.getState().set({ sidebarW: 240 })} className="absolute -left-2 top-0 h-full w-3 cursor-col-resize">
+        <div className="mx-auto h-full w-0.5 rounded-full bg-transparent transition-colors duration-150 group-hover:bg-primary/60" />
+      </div>
+    </div>
+  );
+}
+
 function DragLayer() {
   const t = useT(); const d = useUI((s) => s.dragging); const ext = useUI((s) => s.extDrop.active);
   return (
@@ -47,6 +66,7 @@ function DragLayer() {
 export default function App() {
   const t = useT();
   const dual = useSettings((s) => s.dualPane); const nav = useSettings((s) => s.showNav); const details = useSettings((s) => s.showDetails);
+  const sidebarW = useSettings((s) => s.sidebarW); const [resizing, setResizing] = useState(false);
   const ready = useExplorer((s) => s.ready); const busy = useUI((s) => s.loading > 0);
   useAppEffects(); useShortcuts();
   useEffect(() => { void initExplorer().then(() => requestAnimationFrame(() => document.body.classList.remove('booting'))); }, []);
@@ -57,8 +77,9 @@ export default function App() {
       <CommandBar />
       <div className="flex min-h-0 flex-1 gap-2 pr-2 pb-2">
         {/* stays mounted so it can slide shut smoothly; hidden from keyboard and screen readers while closed */}
-        <div aria-hidden={!nav} className={`flex-none overflow-hidden ${nav ? 'w-60 opacity-100 max-[860px]:w-52' : 'w-0 opacity-0'}`}
-          style={{ visibility: nav ? 'visible' : 'hidden', transition: `width .22s var(--ease-fast), opacity .18s linear, visibility 0s linear ${nav ? '0s' : '.22s'}` }}><Sidebar /></div>
+        <div aria-hidden={!nav} className={`flex-none overflow-hidden ${nav ? 'opacity-100' : 'opacity-0'}`}
+          style={{ width: nav ? `min(${sidebarW}px, 45vw)` : 0, visibility: nav ? 'visible' : 'hidden', transition: resizing ? 'none' : `width .22s var(--ease-fast), opacity .18s linear, visibility 0s linear ${nav ? '0s' : '.22s'}` }}><Sidebar /></div>
+        {nav && <SidebarGrip onResizing={setResizing} />}
         <main className="relative flex min-h-0 min-w-0 flex-1 gap-2">
           {ready ? <><FilePane id="a" />{dual && <FilePane id="b" />}</> : <div className="grid flex-1 place-items-center"><Loader /></div>}
           <SelectionBar />

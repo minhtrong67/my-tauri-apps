@@ -39,23 +39,27 @@ function Appearance() {
       </SectionCard>
       <SectionCard title={t('settings.color')} reset={["seed"]}>
         <SettingRow icon={Palette} title={t('settings.color')} desc={t('settings.d.color')} stack>
-          <div className="flex flex-wrap items-center gap-2" role="radiogroup" aria-label={t('settings.color')}>
+          {/* one tidy row for the two special choices, then the palette as an even grid */}
+          <div className="flex flex-wrap items-center gap-2">
             <button type="button" role="radio" aria-checked={auto} title={t('settings.d.auto')} onClick={() => pick(AUTO_SEED)}
-              className={`flex h-8 items-center gap-2 rounded-md border px-3 transition-colors duration-100 ${auto ? 'border-primary bg-primary/12 text-primary' : 'border-outline-variant hover:bg-on-surface/5'}`}>
+              className={`flex h-9 items-center gap-2 rounded-md border px-3 transition-colors duration-100 ${auto ? 'border-primary bg-primary/12 text-primary' : 'border-outline-variant hover:bg-on-surface/5'}`}>
               <Sparkles className="size-4" strokeWidth={1.75} />{t('settings.auto')}{auto && <Check className="size-4" strokeWidth={2.5} />}
             </button>
+            <div className={`flex h-9 items-center gap-2 rounded-md border pr-1 pl-2 transition-colors duration-100 ${custom ? 'border-primary bg-primary/12' : 'border-outline-variant'}`}>
+              <label className="relative grid size-6 cursor-pointer place-items-center rounded-full border border-on-surface/25" style={{ background: validHex(hex) ? hex : DEFAULT_SEED }} title={t('settings.custom')}>
+                <Pipette className="size-3.5 text-white mix-blend-difference" strokeWidth={1.75} />
+                <input type="color" className="absolute inset-0 size-full cursor-pointer opacity-0" value={validHex(hex) ? hex : DEFAULT_SEED} onChange={(e) => pick(e.target.value)} aria-label={t('settings.custom')} />
+              </label>
+              <span className="text-xs text-on-surface-variant">{t('settings.custom')}</span>
+              <input className="h-7 w-[5.5rem] rounded bg-transparent px-1 font-mono text-[0.8125rem] outline-none focus:bg-on-surface/6" value={hex} maxLength={7} spellCheck={false} aria-label="HEX" onChange={(e) => { setHex(e.target.value); if (validHex(e.target.value)) S.set({ seed: e.target.value }); }} />
+            </div>
+          </div>
+          <div className="mt-3 grid grid-cols-11 gap-2 max-[760px]:grid-cols-6" role="radiogroup" aria-label={t('settings.color')}>
             {PALETTE.map((p: SwatchDef) => {
               const on = !auto && p.hex.toLowerCase() === S.seed.toLowerCase(); const name = lang === 'vi' ? p.vi : p.en;
-              return <button key={p.hex} type="button" role="radio" aria-checked={on} aria-label={t('settings.swatch', { name, hex: p.hex })} title={`${name} (${p.hex})`} onClick={() => pick(p.hex)} className={`swatch ${on ? 'on' : ''}`} style={{ background: p.hex }}>
+              return <button key={p.hex} type="button" role="radio" aria-checked={on} aria-label={t('settings.swatch', { name, hex: p.hex })} title={`${name} (${p.hex})`} onClick={() => pick(p.hex)} className={`swatch !h-9 !w-full ${on ? 'on' : ''}`} style={{ background: p.hex }}>
                 {on && <Check className="size-4" strokeWidth={2.5} style={{ color: LIGHT_SWATCH.has(p.hex.toLowerCase()) ? '#222' : '#fff' }} />}</button>;
             })}
-          </div>
-          <div className="mt-4 flex items-center gap-3">
-            <label className={`swatch cursor-pointer ${custom ? 'on' : ''}`} style={{ background: validHex(hex) ? hex : DEFAULT_SEED }} title={t('settings.custom')}>
-              <Pipette className="size-4 text-white mix-blend-difference" strokeWidth={1.75} /><input type="color" className="absolute inset-0 size-full cursor-pointer opacity-0" value={validHex(hex) ? hex : DEFAULT_SEED} onChange={(e) => pick(e.target.value)} aria-label={t('settings.custom')} />
-            </label>
-            <input className="field !w-32 font-mono" value={hex} maxLength={7} spellCheck={false} aria-label="HEX" onChange={(e) => { setHex(e.target.value); if (validHex(e.target.value)) S.set({ seed: e.target.value }); }} />
-            <span className="text-xs text-on-surface-variant">{t('settings.custom')}</span>
           </div>
         </SettingRow>
       </SectionCard>
@@ -71,7 +75,7 @@ function Appearance() {
       <SectionCard title={t('settings.effect')} reset={["effect"]}>
         <SettingRow icon={Layers} title={t('settings.effect')} desc={t('settings.d.effect')}>
           <Select ariaLabel={t('settings.effect')} value={S.effect} onChange={(v) => S.set({ effect: v as typeof S.effect })} width={190}
-            options={(['mica', 'tabbed', 'acrylic', 'frosted', 'liquid', 'none'] as const).map((v) => ({ value: v, label: t('effect.' + v) }))} />
+            options={(['mica', 'tabbed', 'acrylic', 'frosted', 'liquid', 'material', 'none'] as const).map((v) => ({ value: v, label: t('effect.' + v) }))} />
         </SettingRow>
       </SectionCard>
       <SectionCard title={t('settings.font')} reset={["font", "uiFont", "listFont"]}>
@@ -151,7 +155,7 @@ function Files() {
         {row(ImageIcon, 'thumbnails', 'thumbnails')}{row(HardDrive, 'folderSizes', 'folderSizes')}{row(Rows3, 'rememberLayouts', 'rememberLayouts')}
         <SettingRow icon={ImageIcon} title={t('settings.clearCache')} desc={t('settings.d.clearCache')}><Button tone="tonal" small icon={Trash2} label={t('settings.clearCacheBtn')} onClick={() => void clear()} /></SettingRow>
       </SectionCard>
-      <SectionCard title={t('settings.layout')} reset={["showDetails", "showNav", "autoExpandTree"]}>
+      <SectionCard title={t('settings.layout')} reset={["showDetails", "showNav", "autoExpandTree", "sidebarW"]}>
         {row(PanelRight, 'showDetails', 'showDetails')}{row(FolderTree, 'showNav', 'showNav')}{row(FolderTree, 'autoExpandTree', 'autoExpandTree')}
         <SettingRow icon={Columns2} title={t('settings.dual')} desc={t('settings.d.dual')}><Switch label={t('settings.dual')} checked={S.dualPane} onChange={() => void toggleDual()} /></SettingRow>
       </SectionCard>

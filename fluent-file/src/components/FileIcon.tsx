@@ -101,6 +101,6 @@ export const Thumb = memo(function Thumb({ entry, size, iconSize, big, enabled }
     void r.promise.then((v) => { if (live) setSrc(v || (big && entry.size < 6 * 1024 * 1024 && /\.(png|jpe?g|gif|webp|bmp)$/i.test(entry.name) ? convertFileSrc(entry.path) : null)); });
     return () => { live = false; r.cancel(); };
   }, [entry.path, key, raster, svg, size, big]);
-  if (src && !bad) return <img src={src} alt="" decoding="async" draggable={false} onError={() => setBad(true)} className="size-full animate-[fade-in_.2s] rounded-[inherit] object-cover ring-1 ring-outline-variant" />;
+  if (src && !bad) return <img src={src} alt="" decoding="async" draggable={false} onError={() => setBad(true)} className="max-h-full max-w-full animate-[fade-in_.2s] rounded-[3px] object-contain shadow-[0_0_0_1px_var(--outline-variant),0_1px_3px_rgb(0_0_0/.18)]" />;
   return <FileIcon entry={entry} size={iconSize} />;
 });
