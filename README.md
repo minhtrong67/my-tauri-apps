@@ -1,24 +1,23 @@
 <div align="center">
 
-# 🚀 My Tauri Apps Collection
+# 🚀 My Tauri Apps
 
-**A modern, lightweight suite of 17+ desktop applications built with Tauri 2, Rust, and Material Design 3.**
+**A monorepo of lightweight desktop apps built with Tauri 2, Rust and React, styled with Material Design 3 and Fluent Design.**
 
 [![Tauri 2](https://img.shields.io/badge/Tauri-2.x-24C8DB?logo=tauri&logoColor=white)](https://tauri.app)
 [![Rust](https://img.shields.io/badge/Rust-1.77%2B-DEA584?logo=rust&logoColor=white)](https://www.rust-lang.org)
-[![Design](https://img.shields.io/badge/Design-Material%20Design%203-6750A4)](https://m3.material.io)
+[![React](https://img.shields.io/badge/React-TypeScript-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-0078D4?logo=windows&logoColor=white)](https://github.com/minhtrong67/my-tauri-apps/releases)
-[![i18n](https://img.shields.io/badge/i18n-English%20%7C%20Ti%E1%BA%BFng%20Vi%E1%BB%87t-2E7D32)](#-applications-catalog)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Apps Count](https://img.shields.io/badge/Applications-17%20Apps-orange)](#-applications-catalog)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+[![Download on MEGA](https://img.shields.io/badge/Download-Installers%20on%20MEGA-D9272E?logo=mega&logoColor=white)](https://mega.nz/folder/gQhygbSR#U1sZ5eMceyMRiswi_D58-A)
 
-<p align="center">
-  <a href="#-applications-catalog"><strong>Browse Apps</strong></a> •
-  <a href="https://github.com/minhtrong67/my-tauri-apps/releases"><strong>Download Releases</strong></a> •
-  <a href="#-cargo-workspace-architecture"><strong>Architecture</strong></a> •
-  <a href="#%EF%B8%8F-getting-started--development"><strong>Build & Run</strong></a> •
-  <a href="#-ti%E1%BA%BFng-vi%E1%BB%87t"><strong>Tiếng Việt</strong></a>
-</p>
+[Website](https://minhtrong67.github.io/my-tauri-apps/) •
+[Apps](#-apps) •
+[Architecture](#-architecture) •
+[Getting Started](#%EF%B8%8F-getting-started) •
+[Download](#-download) •
+[Tiếng Việt](#-tiếng-việt)
 
 </div>
 
@@ -26,74 +25,84 @@
 
 ## 🌟 Overview
 
-Welcome to **My Tauri Apps Collection** — a centralized monorepo containing **17 high-performance desktop applications**. Every app in this suite is crafted with a focus on speed, low resource consumption, clean native UX, and Google's **Material Design 3** design system.
+**My Tauri Apps** is a collection of small, fast desktop applications. Each app is a separate [Tauri 2](https://tauri.app) project with a Rust backend and a web frontend rendered by the system **WebView2**, so installers are small and memory use stays low compared with Electron-based apps.
 
-### Why this Monorepo?
-Developing 17 separate Tauri desktop applications normally means maintaining 17 independent `target/` build directories in Rust. In standard development, each target folder easily occupies 2–5 GB, quickly eating up **50–80 GB+ of disk space**.
+The apps come in two design families:
 
-By structuring this project as a **unified Cargo Workspace**:
-- ⚡ **Shared Build Cache**: All 17 apps compile into a single root `./target` folder, saving tens of gigabytes of storage.
-- 🔄 **Dependency Reuse**: Common Rust crates (`tauri`, `serde`, `tokio`, etc.) are compiled once and shared.
-- 📦 **Consistent Optimization**: Global release profiles enforce Link-Time Optimization (`lto`), symbol stripping, and size optimization (`opt-level = "s"`) across all apps.
+- 🎨 **Material** apps follow [Material Design 3](https://m3.material.io/) with dynamic color and light/dark themes.
+- 🪟 **Fluent** apps follow Windows Fluent Design for a native Windows 11 look.
 
----
+### Highlights
 
-## 📱 Applications Catalog
-
-| Icon | Application | Category | Description | Tech & UI |
-| :---: | :--- | :--- | :--- | :--- |
-| <img src="material-calculator/src-tauri/icons/128x128@2x.png" width="36" height="36" alt="Calculator" /> | [**Material Calculator**](./material-calculator) | Productivity | Standard, Scientific, Programmer (64-bit BigInt), Unit Converter & Date calculator. | Vanilla JS • M3 Dynamic Color |
-| <img src="material-calendar/src-tauri/icons/128x128.png" width="36" height="36" alt="Calendar" /> | [**Material Calendar**](./material-calendar) | Productivity | Desktop calendar with event tracking, schedules, reminders, and custom theme presets. | Vite • Vanilla JS • M3 |
-| <img src="material-note/src/assets/logo.svg" width="36" height="36" alt="Note" /> | [**Material Note**](./material-note) | Productivity | Ultra-fast tabbed notepad with syntax highlighting, auto-saving, and Markdown support. | Vanilla JS • M3 |
-| <img src="material-file/src/assets/logo.svg" width="36" height="36" alt="File" /> | [**Material File**](./material-file) | System & File | Tabbed file explorer inspired by Windows 11 with quick search and split navigation. | Vanilla JS • M3 |
-| <img src="case-converter/src/assets/logo.svg" width="36" height="36" alt="Case Converter" /> | [**Case Converter**](./case-converter) | Utility | Convert text between 19 letter cases (camelCase, snake_case, etc.) with text sorting & cleanup. | Vanilla JS • M3 |
-| <img src="chrome-launcher/src-tauri/icons/icon.png" width="36" height="36" alt="Chrome Launcher" /> | [**Chrome Launcher**](./chrome-launcher) | Utility | One-click Chrome profile manager to open/close profiles with designated sets of tabs. | React 18 • TypeScript • M3 |
-| <img src="material-docx/src-tauri/icons/128x128@2x.png" width="36" height="36" alt="Docx" /> | [**Material Docx**](./material-docx) | Document | Word-style rich text processor with real `.docx` import, export, and editing. | Vanilla JS • M3 |
-| <img src="material-xlsx/src-tauri/icons/128x128@2x.png" width="36" height="36" alt="Xlsx" /> | [**Material Xlsx**](./material-xlsx) | Document | Fast spreadsheet editor for `.xlsx` workbooks, formula calculation, and formatting. | Rust backend • Vanilla JS • M3 |
-| <img src="material-csv/src-tauri/icons/128x128@2x.png" width="36" height="36" alt="CSV" /> | [**Material CSV**](./material-csv) | Data Tool | Spreadsheet-style CSV/TSV editor with sort, filter, and export to Excel, JSON, Markdown, HTML. | Vanilla JS • M3 |
-| <img src="material-readme/src-tauri/icons/128x128@2x.png" width="36" height="36" alt="Readme" /> | [**Material Readme**](./material-readme) | Document | Dedicated Markdown editor & viewer with live split preview, made for crafting READMEs. | Vanilla JS • M3 |
-| <img src="material-music-player/src-tauri/icons/icon.png" width="36" height="36" alt="Music" /> | [**Material Music Player**](./material-music-player) | Multimedia | Local audio player with playlist management, synced lyrics, album artwork, and equalizer. | React 18 • TypeScript • M3 |
-| <img src="material-video-player/src-tauri/icons/icon.png" width="36" height="36" alt="Video" /> | [**Material Video Player**](./material-video-player) | Multimedia | Hardware-accelerated media player supporting all major codecs, subtitle sync, and playlists. | React 18 • TypeScript • M3 |
-| <img src="material-edit/src-tauri/icons/128x128@2x.png" width="36" height="36" alt="Video Editor" /> | [**Material Edit**](./material-edit) | Multimedia | CapCut-inspired lightweight video editor with timeline, clips trimming, transitions, and audio. | Vanilla JS • M3 |
-| <img src="material-photo/src-tauri/icons/png/128.png" width="36" height="36" alt="Photo" /> | [**Material Photo**](./material-photo) | Multimedia | Photo viewer and editor with automatic gallery scanning, filters, crop, and adjustments. | Vanilla JS • Lucide • M3 |
-| <img src="material-screenshot/assets/icon.svg" width="36" height="36" alt="Screenshot" /> | [**Material Screenshot**](./material-screenshot) | Graphics | Turn plain screenshots into stylish mockups with gradients, rounded corners, shadows & frames. | Vanilla JS • M3 |
-| <img src="mp3-downloader/src/app-icon.png" width="36" height="36" alt="MP3 Downloader" /> | [**MP3 Downloader**](./mp3-downloader) | Media Tool | High-quality audio extractor for YouTube, TikTok, and Spotify links with ID3 tagging. | Vanilla JS • M3 |
-| <img src="material-weather/src-tauri/icons/128x128@2x.png" width="36" height="36" alt="Weather" /> | [**Material Weather**](./material-weather) | Information | Real-time weather forecasting with hourly/daily predictions, animated visuals & multi-city tracking. | Vite • Vanilla JS • M3 |
+- ⚡ **Lightweight**: Rust backend, system WebView, size-optimized release builds.
+- 🧩 **Single-purpose apps**: calculator, notes, file explorer, document and data editors, media players and more.
+- 🌐 **Bilingual**: most apps support English and Vietnamese.
+- 📦 **One workspace**: all apps share one Cargo workspace and one build cache.
 
 ---
 
-## 🗂️ App Categories
+## 📱 Apps
 
-### 💼 Productivity & Utilities
-- **[Material Calculator](./material-calculator)**: Full expression evaluation without `eval`, 64-bit programmer mode with bit toggling grid, 12 unit conversion categories, and date difference calculator.
-- **[Material Calendar](./material-calendar)**: Intuitive calendar management with smooth date navigation, agenda overview, and dynamic theme tints.
-- **[Material Note](./material-note)**: Tabbed plain text and markdown notepad. Auto-saves content, fast search, line counting, and zero bloat.
-- **[Material File](./material-file)**: Clean alternative to native file managers with tabs, breadcrumbs, bookmarks, and responsive dual views.
-- **[Case Converter](./case-converter)**: Transform text across 19 casing formats (camelCase, PascalCase, kebab-case, snake_case, CONSTANT_CASE, Title Case, etc.) plus text utilities.
-- **[Chrome Launcher](./chrome-launcher)**: Control multiple Chrome profiles with preset tab groups in one click.
+### Material Design 3
 
-### 📄 Documents & Data Processing
-- **[Material Docx](./material-docx)**: Word-style desktop document processor supporting `.docx` reading, rich styling, paragraphs, and printing.
-- **[Material Xlsx](./material-xlsx)**: Clean and snappy spreadsheet editor for `.xlsx` spreadsheets with multi-sheet support and formulas.
-- **[Material CSV](./material-csv)**: High-speed tabular CSV/TSV manager with multi-cell selection, sorting, filtering, and export to CSV, TSV, JSON, Excel, Markdown, and HTML.
-- **[Material Readme](./material-readme)**: Real-time Markdown editor tailored for polishing GitHub `README.md` files with theme presets and instant preview.
+| App | Folder | Description |
+| --- | ------ | ----------- |
+| 🧮 **Material Calculator** | [`material-calculator`](./material-calculator) | Standard, scientific and 64-bit programmer modes, unit converter and date calculator. |
+| 📅 **Material Calendar** | [`material-calendar`](./material-calendar) | Desktop calendar with events, schedules, reminders and theme presets. |
+| 📝 **Material Note** | [`material-note`](./material-note) | Tabbed notepad with autosave and Markdown support. |
+| 📁 **Material File** | [`material-file`](./material-file) | Tabbed file explorer inspired by Windows 11, with quick search. |
+| 📄 **Material Docx** | [`material-docx`](./material-docx) | Word-style rich text editor with real `.docx` import and export. |
+| 📊 **Material Xlsx** | [`material-xlsx`](./material-xlsx) | Spreadsheet editor for `.xlsx` workbooks with formulas and formatting. |
+| 🗃️ **Material CSV** | [`material-csv`](./material-csv) | CSV/TSV editor with sort, filter and export to Excel, JSON, Markdown and HTML. |
+| 🧾 **Material JSON** | [`material-json`](./material-json) | JSON viewer and editor. |
+| 📕 **Material PDF** | [`material-pdf`](./material-pdf) | PDF viewer and tools. |
+| 📘 **Material Readme** | [`material-readme`](./material-readme) | Markdown editor with live split preview, made for writing READMEs. |
+| 🎵 **Material Music** | [`material-music`](./material-music) | Local audio player with playlists, synced lyrics, album art and equalizer. |
+| 🎬 **Material Video** | [`material-video`](./material-video) | Media player with subtitle support and playlists. |
+| ✂️ **Material Edit** | [`material-edit`](./material-edit) | Lightweight video editor with timeline, trimming, transitions and audio. |
+| 🖼️ **Material Photo** | [`material-photo`](./material-photo) | Photo viewer and editor with gallery scanning, filters, crop and adjustments. |
+| 📸 **Material Screenshot** | [`material-screenshot`](./material-screenshot) | Turn screenshots into styled mockups with gradients, rounded corners, shadows and frames. |
+| 🌤️ **Material Weather** | [`material-weather`](./material-weather) | Weather forecast with hourly and daily views, animated visuals and multiple cities. |
+| 🎨 **Material Theme Builder** | [`material-theme-builder`](./material-theme-builder) | Build Material 3 color themes. |
+| 🔷 **Material ICO** | [`material-ico`](./material-ico) | Create and convert `.ico` icons. |
+| 📋 **Material Menu** | [`material-menu`](./material-menu) | Menu / launcher utility. |
 
-### 🎨 Multimedia & Creativity
-- **[Material Music Player](./material-music-player)**: Clean local music player with library organization, audio equalizer, lyrics, and media controls.
-- **[Material Video Player](./material-video-player)**: Hardware-accelerated desktop media player with subtitle support (.srt, .vtt), playback speed adjustment, and playlists.
-- **[Material Edit](./material-edit)**: CapCut-inspired lightweight video editor with multi-track timeline, video trimming, text overlays, and audio tools.
-- **[Material Photo](./material-photo)**: Modern photo gallery and image editor with crop, rotate, color adjustments, and instant filter presets.
-- **[Material Screenshot](./material-screenshot)**: Convert plain screenshots into professional showcase graphics with customizable gradients, mockups, and drop shadows.
-- **[MP3 Downloader](./mp3-downloader)**: Convert online links from YouTube, TikTok, and Spotify into MP3 files with automatic ID3 tags and album art.
+### Fluent Design
 
-### 🌤️ Weather & Life
-- **[Material Weather](./material-weather)**: Weather dashboard with live condition telemetry, 7-day outlook, air quality ratings, and interactive temperature curves.
+| App | Folder | Description |
+| --- | ------ | ----------- |
+| 📝 **Fluent Note** | [`fluent-note`](./fluent-note) | Notepad in Fluent style. |
+| 📁 **Fluent File** | [`fluent-file`](./fluent-file) | File explorer in Fluent style. |
+| 🗃️ **Fluent CSV** | [`fluent-csv`](./fluent-csv) | CSV editor in Fluent style. |
+| 🧾 **Fluent JSON** | [`fluent-json`](./fluent-json) | JSON viewer and editor in Fluent style. |
+| 📘 **Fluent MD** | [`fluent-md`](./fluent-md) | Markdown editor in Fluent style. |
+| 🎵 **Fluent Music** | [`fluent-music`](./fluent-music) | Music player in Fluent style. |
+| 🎧 **Fluent MP3** | [`fluent-mp3`](./fluent-mp3) | MP3 tool in Fluent style. |
+| 🎬 **Fluent Video** | [`fluent-video`](./fluent-video) | Video player in Fluent style. |
+| 🖼️ **Fluent Photos** | [`fluent-photos`](./fluent-photos) | Photo viewer in Fluent style. |
+| ✂️ **Fluent Edits** | [`fluent-edits`](./fluent-edits) | Editing tool in Fluent style. |
+| 🗂️ **Fluent Folder Icon** | [`fluent-folder-icon`](./fluent-folder-icon) | Folder icon customizer in Fluent style. |
+| 🤖 **Fluent Claude** | [`fluent-claude`](./fluent-claude) | Claude desktop client in Fluent style. |
+
+### Utilities
+
+| App | Folder | Description |
+| --- | ------ | ----------- |
+| 🔤 **Case Converter** | [`case-converter`](./case-converter) | Convert text between 19 letter cases with sorting and cleanup tools. |
+| 🌐 **Chrome Launcher** | [`chrome-launcher`](./chrome-launcher) | Open and close Chrome profiles with preset sets of tabs. |
+| 🔗 **Site Launcher** | [`site-launcher`](./site-launcher) | Quickly open favorite websites. |
+| 🎧 **MP3 Downloader** | [`mp3-downloader`](./mp3-downloader) | Extract audio from supported links with ID3 tagging. |
+| 🖼️ **Code Image** | [`code-image`](./code-image) | Turn code snippets into shareable images. |
+| 📂 **Custom Folder Icon** | [`custom-folder-icon`](./custom-folder-icon) | Change Windows folder icons. |
+| 📈 **Claude Tracker** | [`claude-tracker`](./claude-tracker) | Track Claude usage. |
+
+> 📝 Rows describing an app only by name or style (for example the Fluent apps, Material JSON/PDF/Theme Builder/ICO/Menu, Code Image, Site Launcher and Claude Tracker) are short placeholders. Replace them with accurate descriptions.
 
 ---
 
-## ⚡ Cargo Workspace Architecture
+## ⚡ Architecture
 
-All applications in this repository are managed through a unified Cargo Workspace defined in the root [`Cargo.toml`](./Cargo.toml):
+All apps are members of one **Cargo workspace** defined in the root [`Cargo.toml`](./Cargo.toml):
 
 ```toml
 [workspace]
@@ -104,149 +113,124 @@ members = ["*/src-tauri"]
 debug = 0
 
 [profile.release]
-opt-level = "s"      # Optimize for size
-lto = true            # Link-Time Optimization across crates
-codegen-units = 1     # Maximize LTO optimization efficiency
-strip = true          # Strip all debug symbols from binaries
-panic = "abort"       # Remove panic unwinding overhead
+opt-level = "s"       # optimize for size
+lto = true            # link-time optimization
+codegen-units = 1     # better LTO results
+strip = true          # strip debug symbols
+panic = "abort"       # remove unwinding overhead
 ```
 
-### Directory Structure
+### Why a workspace?
+
+A separate `target/` folder per Tauri app can take several GB each. With a workspace:
+
+- **Shared build cache**: every app compiles into one root `target/` folder.
+- **Dependency reuse**: common crates such as `tauri`, `serde` and `tokio` are built once.
+- **Consistent release profile**: every app gets the same size and performance settings.
+
+### Project layout
 
 ```text
 my-tauri-apps/
-├── Cargo.toml                  # Shared Cargo workspace config
-├── Cargo.lock                  # Unified dependency lockfile
-├── target/                     # Shared build cache across all 17 apps
-│
-├── material-calculator/        # App 1
+├── Cargo.toml              # workspace configuration
+├── Cargo.lock              # shared lockfile
+├── index.html              # project website
+├── <app-name>/
 │   ├── package.json
-│   ├── vite.config.js
-│   ├── src/                    # Frontend UI (HTML / CSS / JS)
-│   └── src-tauri/              # Rust Tauri backend
+│   ├── src/                # frontend (React / TypeScript or vanilla JS)
+│   └── src-tauri/          # Rust backend and Tauri config
 │       └── Cargo.toml
-│
-├── material-music-player/      # App 2
-│   ├── package.json
-│   ├── src/                    # React 18 / TypeScript
-│   └── src-tauri/
-│
-├── ... (15 more applications)
-└── README.md                   # Workspace documentation
+└── ...
 ```
 
 ---
 
-## 🛠️ Getting Started & Development
+## 🛠️ Getting Started
 
 ### Prerequisites
 
-Ensure you have the following installed on your machine:
-- **Node.js**: `v18.0.0` or higher (`v20+` recommended)
-- **Rust & Cargo**: `v1.77` or higher ([rustup.rs](https://rustup.rs))
-- **C++ Build Tools**: Visual Studio C++ Build Tools (on Windows) or equivalent OS build essentials
-- **WebView2**: Built into Windows 10/11
+- **Node.js** 18 or newer (20+ recommended)
+- **Rust** 1.77 or newer ([rustup.rs](https://rustup.rs))
+- **Visual Studio C++ Build Tools** on Windows
+- **WebView2** (included in Windows 10/11)
 
-### Clone the Repository
+### Clone
 
 ```bash
 git clone https://github.com/minhtrong67/my-tauri-apps.git
 cd my-tauri-apps
 ```
 
-### Running an Application in Development
-
-Navigate into any application's directory, install frontend dependencies, and launch the Tauri dev server:
+### Run an app in development
 
 ```bash
-# Example: Launching Material Calculator
-cd material-calculator
-
-# Install dependencies
+cd material-calculator   # any app folder
 npm install
-
-# Start development with hot-reload
 npm run tauri dev
 ```
 
-### Building a Production Installer
-
-To produce a production installer (`.exe` / `.msi` on Windows):
+### Build an installer
 
 ```bash
 cd material-calculator
 npm run tauri build
 ```
 
-The resulting optimized installer will be available inside:
-`target/release/bundle/nsis/` or `target/release/bundle/msi/`.
+Installers are written to `target/release/bundle/` (`nsis/` for `.exe`, `msi/` for `.msi`).
 
 ---
 
-## 📥 Downloading Pre-built Apps
+## 📥 Download
 
-You do not need to compile the code if you just want to use the applications!
+Prebuilt Windows installers for all apps are available on MEGA:
 
-1. Head over to the **[GitHub Releases](https://github.com/minhtrong67/my-tauri-apps/releases)** tab.
-2. Select the latest release version.
-3. Download the standalone installer (`.exe`) for any application you want.
-4. Run the installer and enjoy!
+<div align="center">
+
+[![Download from MEGA](https://img.shields.io/badge/⬇%20Download%20all%20apps-MEGA-D9272E?style=for-the-badge&logo=mega&logoColor=white)](https://mega.nz/folder/gQhygbSR#U1sZ5eMceyMRiswi_D58-A)
+
+</div>
+
+**How to install**
+
+1. Open the MEGA folder above and download the installer of the app you want.
+2. Run the installer (`.exe` or `.msi`).
+3. If Windows SmartScreen shows a warning, click **More info → Run anyway**. The installers are not code-signed.
+
+Installers may also be published on the [Releases](https://github.com/minhtrong67/my-tauri-apps/releases) page.
 
 ---
 
 ## 🇻🇳 Tiếng Việt
 
-### Giới thiệu
-**My Tauri Apps Collection** là bộ sưu tập **17 ứng dụng desktop** gọn nhẹ, hiện đại được phát triển bằng **Tauri 2**, **Rust** và ngôn ngữ thiết kế **Material Design 3**.
+**My Tauri Apps** là bộ sưu tập ứng dụng desktop gọn nhẹ viết bằng **Tauri 2**, **Rust** và **React**, thiết kế theo **Material Design 3** và **Fluent Design**.
 
-### Điểm nổi bật
-- 🚀 **Hiệu năng vượt trội**: Tiết kiệm RAM và CPU hơn nhiều lần so với các ứng dụng Electron truyền thống.
-- 🎨 **Giao diện Material Design 3**: Hỗ trợ màu động (Dynamic Color), giao diện Sáng / Tối (Light / Dark mode), hiệu ứng Ripple và chuyển cảnh mượt mà.
-- 🌐 **Hỗ trợ Song ngữ**: Đa số ứng dụng hỗ trợ cả tiếng Anh và tiếng Việt.
-- ⚡ **Kiến trúc Cargo Workspace**: Gom 17 dự án vào chung một workspace giúp tái sử dụng cache biên dịch của Rust (`target/`), tiết kiệm hàng chục GB ổ cứng.
+- 🚀 Tiết kiệm RAM và dung lượng hơn so với ứng dụng Electron.
+- 🧩 Mỗi ứng dụng làm tốt một việc: máy tính, ghi chú, quản lý tệp, soạn thảo văn bản/bảng tính/CSV, trình phát nhạc và video, chỉnh sửa ảnh, v.v.
+- 🌐 Hỗ trợ song ngữ Anh - Việt ở đa số ứng dụng.
+- ⚡ Toàn bộ dự án dùng chung một **Cargo Workspace**, chia sẻ bộ nhớ đệm biên dịch và tiết kiệm hàng chục GB ổ cứng.
 
-### Danh sách ứng dụng chính
-1. **Material Calculator**: Máy tính đa năng (Cơ bản, Khoa học, Lập trình viên 64-bit, Đổi đơn vị, Tính ngày).
-2. **Material Calendar**: Lịch để bàn thanh lịch, nhắc việc và sự kiện.
-3. **Material Note**: Sổ tay ghi chú nhiều tab, hỗ trợ Markdown và tự động lưu.
-4. **Material File**: Trình quản lý tệp tin dạng tab phong cách Windows 11.
-5. **Case Converter**: Chuyển đổi qua lại giữa 19 định dạng chữ (camelCase, snake_case, PascalCase,...) và công cụ văn bản.
-6. **Chrome Launcher**: Quản lý và mở nhanh nhiều hồ sơ (profile) Google Chrome kèm bộ tab định trước.
-7. **Material Docx**: Trình soạn thảo văn bản hỗ trợ đọc, ghi và chỉnh sửa file Word `.docx`.
-8. **Material Xlsx**: Bảng tính nhanh nhẹn cho file `.xlsx`.
-9. **Material CSV**: Trình chỉnh sửa dữ liệu CSV/TSV dạng bảng tính, lọc, tìm kiếm và xuất sang Excel/JSON/Markdown/HTML.
-10. **Material Readme**: Trình soạn thảo Markdown chuyên biệt để viết file `README.md` với chế độ xem trước trực tiếp.
-11. **Material Music Player**: Trình phát nhạc offline với lời bài hát, bìa album và equalizer.
-12. **Material Video Player**: Trình phát video tăng tốc phần cứng, hỗ trợ phụ đề và danh sách phát.
-13. **Material Edit**: Trình biên tập video nhẹ nhàng phong cách CapCut với dòng thời gian (timeline).
-14. **Material Photo**: Trình xem và chỉnh sửa ảnh (cắt, xoay, bộ lọc màu, tinh chỉnh thông số).
-15. **Material Screenshot**: Biến ảnh chụp màn hình thô thành ảnh mockup chuyên nghiệp với nền gradient và đổ bóng.
-16. **MP3 Downloader**: Tải và trích xuất âm thanh chất lượng cao từ link YouTube, TikTok, Spotify kèm thẻ ID3 tag.
-17. **Material Weather**: Ứng dụng xem dự báo thời tiết theo thời gian thực và 7 ngày tới.
-
-### Hướng dẫn tải ứng dụng
-Tất cả các bản cài đặt sẵn cho Windows (`.exe`) đều được phát hành tại mục **[Releases](https://github.com/minhtrong67/my-tauri-apps/releases)**. Bạn chỉ cần tải về và mở file để cài đặt.
+Tải bản cài đặt Windows (`.exe`) của toàn bộ ứng dụng tại [MEGA](https://mega.nz/folder/gQhygbSR#U1sZ5eMceyMRiswi_D58-A).
 
 ---
 
 ## 🤝 Contributing
 
-Contributions, feedback, and suggestions are welcome!
+Issues and pull requests are welcome.
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create a branch: `git checkout -b feature/my-feature`
+3. Commit: `git commit -m "feat: add my feature"`
+4. Push: `git push origin feature/my-feature`
 5. Open a Pull Request
-
----
 
 ## 📜 License & Credits
 
-- **Author**: [`minhtrong67`](https://github.com/minhtrong67)
-- **AI Assistance**: Built with the collaborative assistance of **Claude** (Anthropic)
-- **License**: Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for more details.
+- **Author**: [minhtrong67](https://github.com/minhtrong67)
+- **AI assistance**: built with the help of Claude (Anthropic)
+- **License**: [MIT](./LICENSE)
 
 <div align="center">
-  <sub>Built with ❤️ using Tauri 2 and Material Design 3</sub>
+
+Built with ❤️ using Tauri 2, Rust and React
+
 </div>
