@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { LogicalSize } from '@tauri-apps/api/dpi';
 import { Effect, EffectState } from '@tauri-apps/api/window';
 import { api, appWindow, IS_TAURI, listen, onFileDrop } from '../lib/api';
-import { applyTheme, AUTO_SEED, isDark, onSystemSchemeChange, setSystemAccent } from '../lib/theme';
+import { applyTheme, AUTO_SEED, onSystemSchemeChange, setSystemAccent } from '../lib/theme';
 import { useSettings } from '../store/settings';
 import { t } from '../lib/i18n';
 import { onFileOp, refresh, runPaste, toggleTreeRefresh, useExplorer, openNewWindow } from '../store/explorer';
@@ -12,7 +12,6 @@ import { isNativeDragActive } from '../lib/nativeDrag';
 import type { PaneId } from '../lib/types';
 
 /** Theme, language, window material, window title/size, watcher events, native file drops and tray. */
-let fxSeq = 0;
 export function useAppEffects() {
   const theme = useSettings((s) => s.theme); const seed = useSettings((s) => s.seed); const font = useSettings((s) => s.font);
   const uiFont = useSettings((s) => s.uiFont); const density = useSettings((s) => s.density); const lang = useSettings((s) => s.lang);
@@ -32,37 +31,17 @@ export function useAppEffects() {
   }, [theme, seed, font, uiFont, density, accentTick]);
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
 
-  // window material. Mica / Mica Alt / Acrylic are drawn by Windows; Frosted and Liquid glass are Acrylic plus CSS glass layers.
-  // The previous material is always cleared first (and given a moment to go away) so switching never leaves the old one behind.
-  const effect = useSettings((s) => s.effect);
+  // window material: Mica for the whole app. Without support (e.g. Windows 10) the window just stays solid.
   useEffect(() => {
-    const root = document.documentElement;
-    const win = appWindow;
-    if (!win) { root.dataset.fx = 'none'; root.dataset.style = effect === 'material' ? 'material' : ''; return; }
-    const seq = ++fxSeq;
-    // Material You is a look, not a Windows material: the window stays solid and the CSS switches to tonal Material 3 surfaces
-    root.dataset.style = effect === 'material' ? 'material' : '';
-    const run = async () => {
-      try {
-        await win.clearEffects();
-        if (effect === 'none' || effect === 'material') { if (seq === fxSeq) root.dataset.fx = 'none'; return; }
-        await new Promise((r) => setTimeout(r, 80));
-        if (seq !== fxSeq) return;
-        const kind = { mica: Effect.Mica, tabbed: Effect.Tabbed, acrylic: Effect.Acrylic, frosted: Effect.Acrylic, liquid: Effect.Acrylic }[effect];
-        if (kind === undefined) return;
-        const dark = isDark(useSettings.getState().theme);
-        await win.setEffects({ effects: [kind], state: EffectState.Active, color: dark ? [32, 32, 32, 150] : [243, 243, 243, 150] });
-        if (seq === fxSeq) root.dataset.fx = effect;
-      } catch {
-        if (seq !== fxSeq) return;
-        root.dataset.fx = 'none';
-        if (effect !== 'mica') toast(t('settings.effectUnsupported'), 'warning');
-      }
-    };
-    void run();
-    const un = onSystemSchemeChange(() => { if (useSettings.getState().theme === 'system' && (effect === 'acrylic' || effect === 'frosted' || effect === 'liquid')) void run(); });
-    return () => { un(); };
-  }, [effect, theme]);
+    const root = document.documentElement; const win = appWindow;
+    if (!win) { root.dataset.fx = 'none'; return; }
+    let off = false;
+    void (async () => {
+      try { await win.setEffects({ effects: [Effect.Mica], state: EffectState.Active }); if (!off) root.dataset.fx = 'mica'; }
+      catch { if (!off) root.dataset.fx = 'none'; }
+    })();
+    return () => { off = true; };
+  }, []);
 
   // window title follows the active folder
   const path = useExplorer((s) => s.panes[s.activePane].path);

@@ -1,6 +1,6 @@
 import { ScrollArea } from '../ui/ScrollTop';
 import { useState } from 'react';
-import { Shuffle, AppWindow, Pin, HardDrive, Plus, Layers, Check, Columns2, Eye, EyeOff, FileText, FolderTree, Globe, Heart, ImageIcon, Info, Languages, LayoutGrid, Maximize2, Monitor, Moon, Palette, Pipette, Rocket, RotateCcw, Ruler, Save, Settings as Gear, ShieldCheck, Sparkles, Sun, Trash2, Type, History, Keyboard, TextCursorInput, Rows3, Rows4, ListChecks, Check as CheckIcon, PanelRight, AppWindowMac, SquareArrowOutUpRight } from '../../lib/icons';
+import { Shuffle, Clock, ArrowLeftRight, AppWindow, Pin, HardDrive, Plus, Check, Columns2, Eye, EyeOff, FileText, FolderTree, Globe, Heart, ImageIcon, Info, Languages, LayoutGrid, Maximize2, Monitor, Moon, Palette, Pipette, Rocket, RotateCcw, Ruler, Save, Settings as Gear, ShieldCheck, Sparkles, Sun, Trash2, Type, History, Keyboard, TextCursorInput, Rows3, Rows4, ListChecks, Check as CheckIcon, PanelRight, AppWindowMac, SquareArrowOutUpRight } from '../../lib/icons';
 import { useSettings } from '../../store/settings';
 import { useUI, toast } from '../../store/ui';
 import { useT } from '../../lib/i18n';
@@ -8,6 +8,9 @@ import { FONTS, PALETTE, validHex, LIGHT_SWATCH, AUTO_SEED, DEFAULT_SEED, type S
 import { Slider } from '../ui/Slider';
 import { MENU_DEFS, menuOn } from '../../lib/menuCatalog';
 import { BUILTIN_STYLES, expandPattern } from '../../lib/randomRename';
+import { fmtDate, formatPattern } from '../../lib/format';
+
+const DATE_PRESETS = ['dd/MM/yyyy', 'MM/dd/yyyy', 'yyyy-MM-dd', 'dd.MM.yyyy', 'd MMM yyyy', 'dd-MM-yyyy'];
 import { useExplorer } from '../../store/explorer';
 import { Modal } from '../ui/Modal';
 import { Select } from '../ui/Select';
@@ -70,12 +73,6 @@ function Appearance() {
         </SettingRow>
         <SettingRow icon={Palette} title={t('settings.colorIcons')} desc={t('settings.d.colorIcons')}>
           <Switch label={t('settings.colorIcons')} checked={S.colorIcons} onChange={(v) => S.set({ colorIcons: v })} />
-        </SettingRow>
-      </SectionCard>
-      <SectionCard title={t('settings.effect')} reset={["effect"]}>
-        <SettingRow icon={Layers} title={t('settings.effect')} desc={t('settings.d.effect')}>
-          <Select ariaLabel={t('settings.effect')} value={S.effect} onChange={(v) => S.set({ effect: v as typeof S.effect })} width={190}
-            options={(['mica', 'tabbed', 'acrylic', 'frosted', 'liquid', 'material', 'none'] as const).map((v) => ({ value: v, label: t('effect.' + v) }))} />
         </SettingRow>
       </SectionCard>
       <SectionCard title={t('settings.font')} reset={["font", "uiFont", "listFont"]}>
@@ -154,6 +151,31 @@ function Files() {
         {row(EyeOff, 'showHidden', 'showHidden')}{row(FileText, 'showExt', 'showExt')}{row(ListChecks, 'showChecks', 'showChecks')}
         {row(ImageIcon, 'thumbnails', 'thumbnails')}{row(HardDrive, 'folderSizes', 'folderSizes')}{row(Rows3, 'rememberLayouts', 'rememberLayouts')}
         <SettingRow icon={ImageIcon} title={t('settings.clearCache')} desc={t('settings.d.clearCache')}><Button tone="tonal" small icon={Trash2} label={t('settings.clearCacheBtn')} onClick={() => void clear()} /></SettingRow>
+      </SectionCard>
+      <SectionCard title={t('settings.datetime')} reset={["dateFmt", "dateCustom", "timeFmt", "showSeconds"]}>
+        <SettingRow icon={Clock} title={t('settings.dateFmt')} desc={`${t('settings.d.dateFmt')} ${fmtDate(Date.now(), S.lang)}`} stack={S.dateFmt === 'custom'}>
+          <Select ariaLabel={t('settings.dateFmt')} value={S.dateFmt} onChange={(v) => S.set({ dateFmt: v })} width={250}
+            options={[{ value: 'auto', label: t('date.auto') }, ...DATE_PRESETS.map((p) => ({ value: p, label: p + '  ·  ' + formatPattern(Date.now(), p, S.lang) })), { value: 'custom', label: t('date.custom') }]} />
+          {S.dateFmt === 'custom' && (
+            <div className="flex w-full flex-col gap-1.5">
+              <input className="field font-mono" value={S.dateCustom} spellCheck={false} aria-label={t('date.custom')} placeholder="dd/MM/yyyy HH:mm" onChange={(e) => S.set({ dateCustom: e.target.value })} />
+              <p className="text-xs text-on-surface-variant">{t('date.hint')}</p>
+            </div>
+          )}
+        </SettingRow>
+        {S.dateFmt !== 'custom' && (<>
+          <SettingRow icon={Clock} title={t('settings.timeFmt')} desc={t('settings.d.timeFmt')}>
+            <Segmented ariaLabel={t('settings.timeFmt')} value={S.timeFmt} onChange={(v) => S.set({ timeFmt: v })} options={[{ value: 'auto', label: t('time.auto') }, { value: '12', label: t('time.12') }, { value: '24', label: t('time.24') }]} />
+          </SettingRow>
+          <SettingRow icon={Clock} title={t('settings.seconds')} desc={t('settings.d.seconds')}>
+            <Switch label={t('settings.seconds')} checked={S.showSeconds} onChange={(v) => S.set({ showSeconds: v })} />
+          </SettingRow>
+        </>)}
+      </SectionCard>
+      <SectionCard title={t('settings.columns')} reset={["autoFitCols"]}>
+        <SettingRow icon={ArrowLeftRight} title={t('settings.autoFitCols')} desc={t('settings.d.autoFitCols')}>
+          <Switch label={t('settings.autoFitCols')} checked={S.autoFitCols} onChange={(v) => S.set({ autoFitCols: v })} />
+        </SettingRow>
       </SectionCard>
       <SectionCard title={t('settings.layout')} reset={["showDetails", "showNav", "autoExpandTree", "sidebarW"]}>
         {row(PanelRight, 'showDetails', 'showDetails')}{row(FolderTree, 'showNav', 'showNav')}{row(FolderTree, 'autoExpandTree', 'autoExpandTree')}
@@ -325,7 +347,7 @@ export function SettingsDialog() {
             <div className="min-w-0 flex-1"><h2 className="truncate text-xl font-semibold">{cur.label}</h2><p className="truncate text-on-surface-variant">{cur.sub}</p></div>
             <Button tone="filled" icon={CheckIcon} label={t('common.done')} onClick={() => closeModal('settings')} data-autofocus />
           </header>
-          <ScrollArea key={panel} root="flex-1" className="anim-slide px-5 pt-1 pb-6">
+          <ScrollArea key={panel} root="flex-1" btn="bottom-3 left-1/2 -ml-[1.125rem]" className="anim-slide px-5 pt-1 pb-6">
             {panel === 'appearance' && <Appearance />}{panel === 'general' && <General />}{panel === 'files' && <Files />}{panel === 'menu' && <MenuPrefs />}{panel === 'about' && <About />}
           </ScrollArea>
         </div>

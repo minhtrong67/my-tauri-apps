@@ -44,13 +44,15 @@ Fluent File keeps the parts of File Explorer people use every day — quick acce
 | Live | The list **refreshes by itself** when files change (file watcher) |
 | Background | Optional **system-tray** mode, global shortcut **Ctrl+Alt+E**, restore tabs, **"Open with Fluent File"** Explorer context menu (installed by the setup) |
 | Appearance | Light / dark / system, 22 Windows accent colours + custom colour, **Windows system font by default** (other installed fonts optional), text size (small / medium / large), English & Tiếng Việt |
-| Window material | Mica (default), Mica Alt, Acrylic, **Frosted glass**, **Liquid glass**, **Material You (Material Design 3)** or solid - Settings > Appearance (Mica needs Windows 11) |
+| Window material | Mica on the whole window (Windows 11); falls back to solid colours when Mica is not available |
 | Customization | Per-folder look in a full designer (8 folder styles, solid / gradient fills, Material, Font Awesome, 3,000+ logos and emoji, badge, size, offset, 14 presets), folder sizes, start page, UI and list font sizes, icon style (solid / outline / thin), automatic Windows accent colour, context-menu editor, custom title bar |
 | System tools | Toolbox button / command palette: Control Panel, Windows Settings, Task Manager, Device Manager, Disk Management, Services, Environment variables, Registry Editor, Clean temp files, Reload app; **Ctrl+Alt+T** opens a terminal in the selected folder |
 | Random rename | Right-click > Random rename: letters, digits, GUID, date + random, words ... plus your own patterns ({l:8}, {guid}, {date}, {n:3}, {name} ...) in Settings > Context menu |
 | Quick access | Drag items in the sidebar to reorder them (or right-click > Move up / Move down), unpin default folders, pin any folder; the Home page follows the same order |
 | Drag out | Drag files from the list out of the window into other programs (Chrome upload areas, Explorer, chat apps); dropping them back on the window is ignored |
 | Layout | Drag the edge of the sidebar to resize it (double-click to reset); thumbnails show the whole image instead of a cropped square |
+| Date and time | Show dates as dd/MM/yyyy, MM/dd/yyyy, yyyy-MM-dd ... or your own pattern; 12-hour or 24-hour time, optional seconds |
+| Columns | "Always auto fit columns" keeps every column as wide as its content (or fit once from the header menu) |
 | Custom folders | Right-click a folder > Customize folder: pick a colour and a glyph per folder |
 | Columns | Right-click a column header (or double-click its edge) to auto fit it to its content |
 | Window | Remember the window size **or** always open maximised |

@@ -23,12 +23,12 @@ export function ScrollTop({ target, className = 'bottom-4 right-5' }: { target: 
 }
 
 /** A scrolling area with its own back-to-top button. */
-export function ScrollArea({ className = '', root = 'h-full', children }: { className?: string; root?: string; children: ReactNode }) {
+export function ScrollArea({ className = '', root = 'h-full', btn, children }: { className?: string; root?: string; btn?: string; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   return (
     <div className={`relative min-h-0 ${root}`}>
       <div ref={ref} className={`h-full overflow-auto ${className}`}>{children}</div>
-      <ScrollTop target={ref} />
+      <ScrollTop target={ref} className={btn} />
     </div>
   );
 }

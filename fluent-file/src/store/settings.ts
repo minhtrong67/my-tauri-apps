@@ -17,11 +17,17 @@ export interface Settings {
   colorIcons: boolean;
   /** default Quick access folders the user removed (ids) */
   unpinned: string[];
+  /** date / time display: 'auto' (system) or a pattern such as dd/MM/yyyy; 'custom' uses dateCustom (a full pattern incl. time) */
+  dateFmt: string;
+  dateCustom: string;
+  timeFmt: 'auto' | '12' | '24';
+  showSeconds: boolean;
+  /** keep every column fitted to its content automatically */
+  autoFitCols: boolean;
   /** sidebar width in px (drag its right edge to resize) */
   sidebarW: number;
   /** Quick access order: "p:<place id>" / "d:<folder>" keys */
   quickOrder: string[];
-  effect: 'mica' | 'tabbed' | 'acrylic' | 'frosted' | 'liquid' | 'material' | 'none';
   /** UI font size in px (scales the whole interface) and file-list text size in px */
   uiFont: number;
   listFont: number;
@@ -69,7 +75,7 @@ export interface Settings {
 }
 
 export const DEFAULTS: Settings = {
-  theme: 'system', seed: DEFAULT_SEED, font: 'system', iconStyle: 'filled', colorIcons: true, unpinned: [], sidebarW: 240, quickOrder: [], effect: 'mica', uiFont: 14, listFont: 14, startTab: 'home', startPath: '', folderSizes: true, menu: {}, customMenu: [], randomStyles: [], density: 'comfortable',
+  theme: 'system', seed: DEFAULT_SEED, font: 'system', iconStyle: 'filled', colorIcons: true, unpinned: [], dateFmt: 'auto', dateCustom: 'dd/MM/yyyy HH:mm', timeFmt: 'auto', showSeconds: false, autoFitCols: false, sidebarW: 240, quickOrder: [], uiFont: 14, listFont: 14, startTab: 'home', startPath: '', folderSizes: true, menu: {}, customMenu: [], randomStyles: [], density: 'comfortable',
   lang: (typeof navigator !== 'undefined' && (navigator.language || 'en').toLowerCase().startsWith('vi')) ? 'vi' : 'en',
   view: 'details', sortKey: 'name', sortDir: 'asc', groupBy: 'none',
   showHidden: false, showExt: true, showChecks: false, showNav: true, showDetails: false, autoExpandTree: false,
@@ -87,7 +93,6 @@ function load(): Settings {
     const s = { ...DEFAULTS, ...raw } as Settings;
     s.colW = { ...DEFAULTS.colW, ...(raw.colW || {}) };
     if (!Array.isArray(s.cols)) s.cols = DEFAULTS.cols.slice();
-    if ((s.effect as string) === 'blur') s.effect = 'acrylic';
     if (raw.uiFont === undefined && raw.fontSize) s.uiFont = ({ sm: 13, md: 14, lg: 15.5 } as Record<string, number>)[raw.fontSize as string] ?? 14;
     s.uiFont = Math.max(11, Math.min(20, Number(s.uiFont) || 14)); s.listFont = Math.max(11, Math.min(22, Number(s.listFont) || 14));
     s.menu = { ...(raw.menu || {}) };
@@ -95,6 +100,7 @@ function load(): Settings {
     if (!Array.isArray(s.randomStyles)) s.randomStyles = [];
     if (!Array.isArray(s.unpinned)) s.unpinned = [];
     if (!Array.isArray(s.quickOrder)) s.quickOrder = [];
+    if (!['auto', '12', '24'].includes(s.timeFmt)) s.timeFmt = 'auto';
     s.sidebarW = Math.max(180, Math.min(420, Number(s.sidebarW) || 240));
     if (!['filled', 'regular', 'lucide'].includes(s.iconStyle)) s.iconStyle = 'filled';
     return s;

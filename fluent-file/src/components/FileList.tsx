@@ -37,7 +37,7 @@ let sizeToken = 0;
 /** scroll position per folder, so going back lands where you were */
 const scrollMem = new Map<string, number>();
 
-interface ItemProps { isz?: number; dsize?: number; e: Entry; i: number; pos: Pos; sel: boolean; focus: boolean; cut: boolean; renaming: boolean; checks: boolean; showExt: boolean; tags: TagId[] | undefined; cols: ColId[]; lang: string; search: boolean; delay: number; tipSig: string; id: PaneId }
+interface ItemProps { df?: string; isz?: number; dsize?: number; e: Entry; i: number; pos: Pos; sel: boolean; focus: boolean; cut: boolean; renaming: boolean; checks: boolean; showExt: boolean; tags: TagId[] | undefined; cols: ColId[]; lang: string; search: boolean; delay: number; tipSig: string; id: PaneId }
 
 function RenameInput({ id, e, center }: { id: PaneId; e: Entry; center?: boolean }) {
   const ref = useRef<HTMLInputElement>(null);
@@ -128,8 +128,11 @@ export function FileList({ id }: { id: PaneId }) {
   const onScroll = () => { if (headRef.current && scroller.current) headRef.current.scrollLeft = scroller.current.scrollLeft; if (raf.current) return; raf.current = requestAnimationFrame(() => { raf.current = 0; const el = scroller.current; if (el) setVp((v) => (v.top === el.scrollTop ? v : { ...v, top: el.scrollTop })); }); };
 
   const cols = useMemo(() => COL_ORDER.filter((c) => S.cols.includes(c)), [S.cols]);
-  const colsTemplate = useMemo(() => [`minmax(${Math.round(220 * scale)}px, 1fr)`, ...cols.map((c) => Math.round(S.colW[c] * scale) + 'px')].join(' '), [cols, S.colW, scale]);
-  const minWidth = Math.round(220 * scale) + cols.reduce((n, c) => n + Math.round(S.colW[c] * scale), 0) + 24;
+  const [fitW, setFitW] = useState<Partial<Record<ColId, number>>>({});
+  /** column width in 100%-text units: the fitted width when "always auto fit" is on, otherwise the saved/dragged one */
+  const cw = (c: ColId) => (S.autoFitCols ? fitW[c] : undefined) ?? S.colW[c];
+  const colsTemplate = useMemo(() => [`minmax(${Math.round(220 * scale)}px, 1fr)`, ...cols.map((c) => Math.round(cw(c) * scale) + 'px')].join(' '), [cols, S.colW, fitW, S.autoFitCols, scale]); // eslint-disable-line react-hooks/exhaustive-deps
+  const minWidth = Math.round(220 * scale) + cols.reduce((n, c) => n + Math.round(cw(c) * scale), 0) + 24;
   const headH = Math.round(40 * scale);
 
   /* geometry of every item, so rendering can be virtualised and the marquee can hit-test */
@@ -173,7 +176,7 @@ export function FileList({ id }: { id: PaneId }) {
   }, [view.list.length, path]);
 
   /* folder sizes for the Size column: measured in the background, cancelled when the list changes, cached per folder */
-  const [, setSizeTick] = useState(0);
+  const [sizeTick, setSizeTick] = useState(0);
   const slot = useRef(Math.floor(Math.random() * 64));
   const realDir = !!path && !isVirtual(path) && !search;
   useEffect(() => {
@@ -295,8 +298,9 @@ export function FileList({ id }: { id: PaneId }) {
     if (head) {
       const col = head.dataset.col as 'name' | ColId;
       showMenu([
-        ...(col !== 'name' ? [{ label: t('cmd.autoFit'), icon: MoveHorizontal, run: () => autoFit([col]) }] : []),
-        { label: t('cmd.autoFitAll'), icon: ArrowLeftRight, run: () => autoFit(cols) }, { sep: true }, ...columnMenuItems()
+        ...(col !== 'name' && !S.autoFitCols ? [{ label: t('cmd.autoFit'), icon: MoveHorizontal, run: () => autoFit([col]) }] : []),
+        ...(!S.autoFitCols ? [{ label: t('cmd.autoFitAll'), icon: ArrowLeftRight, run: () => autoFit(cols) }] : []),
+        { label: t('cmd.autoFitAlways'), icon: ArrowLeftRight, check: S.autoFitCols, run: () => S.set({ autoFitCols: !S.autoFitCols }) }, { sep: true }, ...columnMenuItems()
       ], ev.clientX, ev.clientY); return;
     }
     const i = indexOf(ev.target);
@@ -316,21 +320,28 @@ export function FileList({ id }: { id: PaneId }) {
     el.addEventListener('pointermove', move); el.addEventListener('pointerup', up);
   };
 
-  /** Fit columns to their content (header label or widest cell), like Explorer's "Size column to fit". */
-  const autoFit = (which: ColId[]) => {
-    const g = document.createElement('canvas').getContext('2d'); const host = scroller.current; if (!g || !host) return;
+  /** Widths that fit the header label or the widest cell of each column (in 100%-text units). */
+  const measureCols = (which: ColId[]): Partial<Record<ColId, number>> => {
+    const g = document.createElement('canvas').getContext('2d'); const host = scroller.current; if (!g || !host) return {};
     const cs = getComputedStyle(host); g.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-    const next = { ...useSettings.getState().colW };
+    const out: Partial<Record<ColId, number>> = {}; const list = view.list.length > 4000 ? view.list.slice(0, 4000) : view.list;
     for (const col of which) {
       let m = g.measureText(colLabel(col)).width + 44;
-      for (const e of view.list) {
-        const txt = col === 'size' ? (e.isDir ? '' : fmtSize(e.size)) : col === 'modified' ? fmtDate(e.modified, S.lang) : col === 'created' ? fmtDate(e.created, S.lang) : col === 'type' && search ? (parentOf(e.path) || '') : typeLabel(e, S.lang);
+      for (const e of list) {
+        const ds = e.isDir ? dirSizeCache.get(dsKey(e)) : undefined;
+        const txt = col === 'size' ? (e.isDir ? (ds === undefined ? '' : fmtSize(ds)) : fmtSize(e.size)) : col === 'modified' ? fmtDate(e.modified, S.lang) : col === 'created' ? fmtDate(e.created, S.lang) : col === 'type' && search ? (parentOf(e.path) || '') : typeLabel(e, S.lang);
         if (txt) m = Math.max(m, g.measureText(txt).width + (col === 'size' ? 30 : 22));
       }
-      next[col] = Math.max(70, Math.min(600, Math.ceil(m / scale)));
+      out[col] = Math.max(70, Math.min(600, Math.ceil(m / scale)));
     }
-    S.set({ colW: next });
+    return out;
   };
+  /** one-off "Auto fit" from the header menu: the result is saved like a manual resize */
+  const autoFit = (which: ColId[]) => { const w = measureCols(which); if (Object.keys(w).length) S.set({ colW: { ...useSettings.getState().colW, ...w } }); };
+  useLayoutEffect(() => {
+    if (!S.autoFitCols || isGrid) return;
+    setFitW(measureCols(cols));
+  }, [S.autoFitCols, isGrid, view.list, cols, scale, S.dateFmt, S.dateCustom, S.timeFmt, S.showSeconds, S.lang, sizeTick]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const colLabel = (c: ColId) => (c === 'type' && search ? t('col.location') : t('col.' + c));
   const headCell = (cid: 'name' | ColId) => {
@@ -339,7 +350,7 @@ export function FileList({ id }: { id: PaneId }) {
       <button key={cid} type="button" data-head data-col={cid} onClick={() => sortBy(cid)} className={`group/h relative flex h-full min-w-0 items-center gap-1 px-1 text-left text-on-surface-variant transition-colors hover:text-on-surface ${cid === 'size' ? 'justify-end pr-5' : ''} ${sorted ? '!text-primary' : ''}`}>
         <span className="truncate">{cid === 'name' ? t('col.name') : colLabel(cid)}</span>
         <ChevronUp className={`size-4 flex-none transition-transform duration-150 ${sorted ? 'opacity-100' : 'opacity-0'} ${sorted && L.sortDir === 'desc' ? 'rotate-180' : ''}`} />
-        {cid !== 'name' && <i onPointerDown={(e) => resize(e, cid)} onClick={(e) => e.stopPropagation()} onDoubleClick={(e) => { e.stopPropagation(); autoFit([cid]); }} title={t('cmd.autoFit')} className="absolute top-1.5 right-0 bottom-1.5 w-2 cursor-col-resize after:absolute after:inset-y-0 after:left-1 after:w-px after:bg-outline-variant hover:after:w-0.5 hover:after:bg-primary" />}
+        {cid !== 'name' && !S.autoFitCols && <i onPointerDown={(e) => resize(e, cid)} onClick={(e) => e.stopPropagation()} onDoubleClick={(e) => { e.stopPropagation(); autoFit([cid]); }} title={t('cmd.autoFit')} className="absolute top-1.5 right-0 bottom-1.5 w-2 cursor-col-resize after:absolute after:inset-y-0 after:left-1 after:w-px after:bg-outline-variant hover:after:w-0.5 hover:after:bg-primary" />}
       </button>
     );
   };
@@ -370,7 +381,7 @@ export function FileList({ id }: { id: PaneId }) {
           const e = view.list[p.i];
           const props: ItemProps = {
             e, i: p.i, pos: p, sel: selected.has(e.path), focus: focusPath === e.path, cut: cutSet.has(e.path), renaming: renaming === e.path,
-            checks: S.showChecks, showExt: S.showExt, tags: S.tags[pk(e.path)], cols, lang: S.lang, search: !!search, delay: p.i < 18 ? p.i * 12 : -1, tipSig: tipOf(e), id, isz: Math.round(20 * scale), dsize: e.isDir && !isGrid ? dirSizeCache.get(dsKey(e)) : undefined
+            checks: S.showChecks, showExt: S.showExt, tags: S.tags[pk(e.path)], cols, lang: S.lang, search: !!search, delay: p.i < 18 ? p.i * 12 : -1, tipSig: tipOf(e), id, df: S.dateFmt + '|' + S.dateCustom + '|' + S.timeFmt + '|' + S.showSeconds, isz: Math.round(20 * scale), dsize: e.isDir && !isGrid ? dirSizeCache.get(dsKey(e)) : undefined
           };
           return isGrid ? <Tile key={e.path} {...props} mode={mode} thumbs={S.thumbnails} /> : <Row key={e.path} {...props} />;
         })}
